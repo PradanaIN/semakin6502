@@ -1,4 +1,12 @@
-import { Controller, Post, Get, Body, Query, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Query,
+  UseGuards,
+  ParseIntPipe,
+} from "@nestjs/common";
 import { TambahanService } from "./kegiatan-tambahan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { AddTambahanDto } from "./dto/add-tambahan.dto";
@@ -14,7 +22,7 @@ export class TambahanController {
   }
 
   @Get()
-  getByUser(@Query("user_id") userId: number) {
+  getByUser(@Query("user_id", ParseIntPipe) userId: number) {
     return this.tambahanService.getByUser(userId);
   }
 }
