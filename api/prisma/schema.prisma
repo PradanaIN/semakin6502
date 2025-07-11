@@ -1,0 +1,79 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int                @id @default(autoincrement())
+  nama      String
+  email     String             @unique
+  password  String
+  role      String
+  members   Member[]
+  penugasan Penugasan[]        @relation("PenugasanUser")
+  laporan   LaporanHarian[]
+  tambahan  KegiatanTambahan[]
+}
+
+model Team {
+  id       Int      @id @default(autoincrement())
+  nama_tim String
+  members  Member[]
+  masterKegiatan MasterKegiatan[]
+}
+
+model Member {
+  id        Int    @id @default(autoincrement())
+  userId    Int
+  teamId    Int
+  is_leader Boolean
+  user      User   @relation(fields: [userId], references: [id])
+  team      Team   @relation(fields: [teamId], references: [id])
+}
+
+model MasterKegiatan {
+  id            Int     @id @default(autoincrement())
+  teamId        Int
+  nama_kegiatan String
+  team          Team    @relation(fields: [teamId], references: [id])
+  penugasan     Penugasan[]
+}
+
+model Penugasan {
+  id          Int      @id @default(autoincrement())
+  kegiatanId  Int
+  pegawaiId   Int
+  minggu      Int
+  bulan       String
+  tahun       Int
+  kegiatan    MasterKegiatan @relation(fields: [kegiatanId], references: [id])
+  pegawai     User    @relation(name: "PenugasanUser", fields: [pegawaiId], references: [id])
+  laporan     LaporanHarian[]
+}
+
+model LaporanHarian {
+  id         Int      @id @default(autoincrement())
+  penugasanId Int
+  tanggal    DateTime
+  status     String
+  bukti_link String?
+  catatan    String?
+  pegawaiId  Int
+  penugasan  Penugasan @relation(fields: [penugasanId], references: [id])
+  pegawai    User      @relation(fields: [pegawaiId], references: [id])
+}
+
+model KegiatanTambahan {
+  id       Int      @id @default(autoincrement())
+  nama     String
+  tanggal  DateTime
+  status   String
+  bukti_link String?
+  userId   Int
+  user     User     @relation(fields: [userId], references: [id])
+}
