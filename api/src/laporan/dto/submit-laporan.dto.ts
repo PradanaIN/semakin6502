@@ -18,6 +18,7 @@ export class SubmitLaporanDto {
   @IsString()
   catatan?: string;
 
+  @IsOptional()
   @IsInt()
-  pegawaiId!: number;
+  pegawaiId?: number;
 }

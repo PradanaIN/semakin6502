@@ -14,6 +14,7 @@ export class AddTambahanDto {
   @IsString()
   bukti_link?: string;
 
+  @IsOptional()
   @IsInt()
-  userId!: number;
+  userId?: number;
 }

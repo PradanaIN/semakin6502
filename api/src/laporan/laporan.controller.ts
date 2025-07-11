@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Body, Query, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Query,
+  UseGuards,
+  Req,
+} from "@nestjs/common";
+import { Request } from "express";
 import { LaporanService } from "./laporan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { SubmitLaporanDto } from "./dto/submit-laporan.dto";
@@ -9,8 +18,9 @@ export class LaporanController {
   constructor(private readonly laporanService: LaporanService) {}
 
   @Post()
-  submit(@Body() body: SubmitLaporanDto) {
-    return this.laporanService.submit(body);
+  submit(@Body() body: SubmitLaporanDto, @Req() req: Request) {
+    const userId = (req.user as any).userId;
+    return this.laporanService.submit({ ...body, pegawaiId: userId });
   }
 
   @Get()
