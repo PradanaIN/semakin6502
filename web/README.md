@@ -10,3 +10,19 @@ Currently, two official plugins are available:
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+
+## Environment Variables
+
+Create a `.env` file based on `.env.example` and set the API base URL used by axios:
+
+```bash
+cp .env.example .env
+```
+
+The variable is accessed via `import.meta.env`:
+
+```
+VITE_API_URL=http://localhost:3000
+```
+
+Adjust the URL if your backend runs on a different host/port.
