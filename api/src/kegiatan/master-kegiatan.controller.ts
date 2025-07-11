@@ -11,13 +11,11 @@ export class MasterKegiatanController {
   constructor(private readonly masterService: MasterKegiatanService) {}
 
   @Post()
-  @Roles("ketua")
   create(@Body() body: any, @Req() req: Request) {
     return this.masterService.create(body, (req.user as any).userId);
   }
 
   @Get()
-  @Roles("ketua")
   findAll() {
     return this.masterService.findAll();
   }

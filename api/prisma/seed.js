@@ -47,10 +47,10 @@ function main() {
                         data: [
                             { nama: 'Admin Utama', email: 'admin@bps.go.id', password: 'admin123', role: 'admin' },
                             { nama: 'Pimpinan BPS', email: 'pimpinan@bps.go.id', password: 'pimpinan123', role: 'pimpinan' },
-                            { nama: 'Ketua Tim Sosial', email: 'ketua.sosial@bps.go.id', password: 'ketua123', role: 'ketua' },
-                            { nama: 'Ketua Tim IPDS', email: 'ketua.ipds@bps.go.id', password: 'ketua456', role: 'ketua' },
-                            { nama: 'Anggota A', email: 'anggota.a@bps.go.id', password: 'anggota123', role: 'anggota' },
-                            { nama: 'Anggota B', email: 'anggota.b@bps.go.id', password: 'anggota456', role: 'anggota' },
+                            { nama: 'Ketua Tim Sosial', email: 'ketua.sosial@bps.go.id', password: 'ketua123', role: 'pegawai' },
+                            { nama: 'Ketua Tim IPDS', email: 'ketua.ipds@bps.go.id', password: 'ketua456', role: 'pegawai' },
+                            { nama: 'Anggota A', email: 'anggota.a@bps.go.id', password: 'anggota123', role: 'pegawai' },
+                            { nama: 'Anggota B', email: 'anggota.b@bps.go.id', password: 'anggota456', role: 'pegawai' },
                         ]
                     })];
                 case 1:

@@ -30,7 +30,7 @@ async function main() {
       nama: "Ketua Tim Sosial",
       email: "ketua.sosial@bps.go.id",
       password: await hash("password"),
-      role: "ketua",
+      role: "pegawai",
     },
   });
 
@@ -39,7 +39,7 @@ async function main() {
       nama: "Ketua Tim IPDS",
       email: "ketua.ipds@bps.go.id",
       password: await hash("password"),
-      role: "ketua",
+      role: "pegawai",
     },
   });
 
@@ -48,7 +48,7 @@ async function main() {
       nama: "Anggota A",
       email: "anggota.a@bps.go.id",
       password: await hash("password"),
-      role: "anggota",
+      role: "pegawai",
     },
   });
 
@@ -57,7 +57,7 @@ async function main() {
       nama: "Anggota B",
       email: "anggota.b@bps.go.id",
       password: await hash("password"),
-      role: "anggota",
+      role: "pegawai",
     },
   });
 
