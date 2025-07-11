@@ -1,14 +1,13 @@
-import { useState } from "react";
 import LoginPage from "./pages/auth/LoginPage";
-import Dashboard from "./pages/dashboard/Dashboard";
+import AppRoutes from "./routes/AppRoutes";
+import { useAuth } from "./pages/auth/useAuth";
 
 export default function App() {
-  const [token, setToken] = useState("");
-  const [user, setUser] = useState(null);
+  const { token, user } = useAuth();
 
-  if (!token) {
-    return <LoginPage setToken={setToken} setUser={setUser} />;
+  if (!token || !user) {
+    return <LoginPage />;
   }
 
-  return <Dashboard user={user} setToken={setToken} />;
+  return <AppRoutes />;
 }
