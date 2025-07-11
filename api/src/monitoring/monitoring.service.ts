@@ -1,19 +1,18 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class MonitoringService {
+  constructor(private prisma: PrismaService) {}
   harian(tanggal: string) {
-    return prisma.laporanHarian.findMany({
+    return this.prisma.laporanHarian.findMany({
       where: { tanggal: new Date(tanggal) },
     });
   }
 
   mingguan(minggu: string) {
     // Asumsikan minggu format "2025-06-01"
-    return prisma.laporanHarian.findMany({
+    return this.prisma.laporanHarian.findMany({
       where: {
         tanggal: {
           gte: new Date(minggu),
@@ -23,7 +22,7 @@ export class MonitoringService {
   }
 
   bulanan(bulan: string) {
-    return prisma.laporanHarian.findMany({
+    return this.prisma.laporanHarian.findMany({
       where: {
         tanggal: {
           gte: new Date(`${bulan}-01`),
