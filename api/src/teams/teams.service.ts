@@ -1,35 +1,34 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class TeamsService {
+  constructor(private prisma: PrismaService) {}
   findAll() {
-    return prisma.team.findMany({ include: { members: true } });
+    return this.prisma.team.findMany({ include: { members: true } });
   }
 
   findOne(id: number) {
-    return prisma.team.findUnique({
+    return this.prisma.team.findUnique({
       where: { id },
       include: { members: true },
     });
   }
 
   create(data: any) {
-    return prisma.team.create({ data });
+    return this.prisma.team.create({ data });
   }
 
   update(id: number, data: any) {
-    return prisma.team.update({ where: { id }, data });
+    return this.prisma.team.update({ where: { id }, data });
   }
 
   remove(id: number) {
-    return prisma.team.delete({ where: { id } });
+    return this.prisma.team.delete({ where: { id } });
   }
 
   addMember(teamId: number, member: { user_id: number; is_leader: boolean }) {
-    return prisma.member.create({
+    return this.prisma.member.create({
       data: {
         teamId,
         userId: member.user_id,

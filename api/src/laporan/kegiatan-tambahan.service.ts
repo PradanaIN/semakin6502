@@ -1,15 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class TambahanService {
+  constructor(private prisma: PrismaService) {}
   add(data: any) {
-    return prisma.kegiatanTambahan.create({ data });
+    return this.prisma.kegiatanTambahan.create({ data });
   }
 
   getByUser(userId: number) {
-    return prisma.kegiatanTambahan.findMany({ where: { userId } });
+    return this.prisma.kegiatanTambahan.findMany({ where: { userId } });
   }
 }

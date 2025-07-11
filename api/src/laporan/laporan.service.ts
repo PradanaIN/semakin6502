@@ -1,16 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class LaporanService {
+  constructor(private prisma: PrismaService) {}
   submit(data: any) {
-    return prisma.laporanHarian.create({ data });
+    return this.prisma.laporanHarian.create({ data });
   }
 
   getByTanggal(tanggal: string) {
-    return prisma.laporanHarian.findMany({
+    return this.prisma.laporanHarian.findMany({
       where: { tanggal: new Date(tanggal) },
     });
   }
