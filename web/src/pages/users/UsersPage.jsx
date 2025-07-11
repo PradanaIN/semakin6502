@@ -17,6 +17,12 @@ export default function UsersPage() {
   useEffect(() => {
     fetchUsers();
     fetchRoles();
+  const [showForm, setShowForm] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [form, setForm] = useState({ nama: "", email: "", password: "", role: "" });
+
+  useEffect(() => {
+    fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
@@ -76,6 +82,10 @@ export default function UsersPage() {
       await axios.delete(`/users/${id}`);
       fetchUsers();
       Swal.fire("Dihapus", "Pengguna berhasil dihapus", "success");
+    if (!confirm("Hapus pengguna ini?")) return;
+    try {
+      await axios.delete(`/users/${id}`);
+      fetchUsers();
     } catch (err) {
       console.error("Gagal menghapus pengguna", err);
     }
@@ -90,7 +100,7 @@ export default function UsersPage() {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
-
+    
   if (user?.role !== "admin") {
     return (
       <div className="p-6 text-center">Anda tidak memiliki akses ke halaman ini.</div>
@@ -122,6 +132,7 @@ export default function UsersPage() {
         </thead>
         <tbody>
           {paginatedUsers.map((u) => (
+          {users.map((u) => (
             <tr key={u.id} className="border-t dark:border-gray-700">
               <td className="px-4 py-2">{u.id}</td>
               <td className="px-4 py-2">{u.nama}</td>
@@ -247,6 +258,12 @@ export default function UsersPage() {
                     </option>
                   ))}
                 </select>
+                <input
+                  type="text"
+                  value={form.role}
+                  onChange={(e) => setForm({ ...form, role: e.target.value })}
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                />
               </div>
             </div>
             <div className="flex justify-end space-x-2 pt-2">
@@ -260,6 +277,7 @@ export default function UsersPage() {
                   });
                   if (r.isConfirmed) setShowForm(false);
                 }}
+                onClick={() => setShowForm(false)}
                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
               >
                 Batal
