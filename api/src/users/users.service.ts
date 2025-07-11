@@ -6,7 +6,11 @@ import { hashPassword } from "../common/hash";
 export class UsersService {
   constructor(private prisma: PrismaService) {}
   findAll() {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany({
+      include: {
+        members: { include: { team: true } },
+      },
+    });
   }
 
   findOne(id: number) {

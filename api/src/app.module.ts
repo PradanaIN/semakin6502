@@ -6,6 +6,7 @@ import { TeamsModule } from "./teams/teams.module";
 import { KegiatanModule } from "./kegiatan/kegiatan.module";
 import { LaporanModule } from "./laporan/laporan.module";
 import { MonitoringModule } from "./monitoring/monitoring.module";
+import { RolesModule } from "./roles/roles.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { MonitoringModule } from "./monitoring/monitoring.module";
     KegiatanModule,
     LaporanModule,
     MonitoringModule,
+    RolesModule,
   ],
   providers: [PrismaService],
   exports: [PrismaService],
