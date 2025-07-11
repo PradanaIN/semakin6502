@@ -22,10 +22,18 @@ const Dashboard = () => {
       const bulan = today.toISOString().slice(0, 7);
 
       try {
+        const filters = {};
+        if (user?.role === "anggota") {
+          filters.userId = user.id;
+        }
+        if (user?.role === "ketua" && user?.teamId) {
+          filters.teamId = user.teamId;
+        }
+
         const [dailyRes, weeklyRes, monthlyRes] = await Promise.all([
-          axios.get("/monitoring/harian", { params: { tanggal } }),
-          axios.get("/monitoring/mingguan", { params: { minggu } }),
-          axios.get("/monitoring/bulanan", { params: { bulan } }),
+          axios.get("/monitoring/harian", { params: { tanggal, ...filters } }),
+          axios.get("/monitoring/mingguan", { params: { minggu, ...filters } }),
+          axios.get("/monitoring/bulanan", { params: { bulan, ...filters } }),
         ]);
 
         setDailyData(dailyRes.data);
