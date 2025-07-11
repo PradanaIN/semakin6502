@@ -12,13 +12,11 @@ export class PenugasanController {
   constructor(private readonly penugasanService: PenugasanService) {}
 
   @Post()
-  @Roles("ketua")
   assign(@Body() body: AssignPenugasanDto, @Req() req: Request) {
     return this.penugasanService.assign(body, (req.user as any).userId);
   }
 
   @Get()
-  @Roles("ketua")
   findAll() {
     return this.penugasanService.findAll();
   }

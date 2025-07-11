@@ -79,14 +79,11 @@ Server berjalan di: `http://localhost:3000`
 
 ## 🔐 Role & Akses
 
-| Role     | Akses                                                                 |
-|----------|------------------------------------------------------------------------|
-| admin    | CRUD user, CRUD tim, monitoring                                        |
-| pimpinan | Melihat monitoring semua                                               |
-| ketua    | CRUD master kegiatan, assign penugasan, monitoring tim-nya             |
-| anggota  | Mengisi laporan harian, kegiatan tambahan                              |
-
----
+| Role       | Akses sistem |
+|------------|------------------------------------------------|
+| admin      | CRUD user, CRUD tim, monitoring |
+| pimpinan   | Melihat monitoring semua |
+| pegawai    | Hak akses berdasarkan keanggotaan tim |
 
 ## 📬 Endpoint Penting
 
@@ -95,10 +92,10 @@ Server berjalan di: `http://localhost:3000`
 | POST   | `/auth/login`              | Login user & dapatkan token  | semua    |
 | GET    | `/users`                   | Lihat semua user             | admin    |
 | GET    | `/teams`                   | Daftar tim                   | admin    |
-| POST   | `/master-kegiatan`         | Tambah kegiatan              | ketua    |
-| POST   | `/penugasan`               | Assign penugasan             | ketua    |
-| POST   | `/laporan-harian`          | Laporan kegiatan harian      | anggota  |
-| POST   | `/kegiatan-tambahan`       | Laporan kegiatan tambahan    | anggota  |
+| POST   | `/master-kegiatan`         | Tambah kegiatan              | ketua tim    |
+| POST   | `/penugasan`               | Assign penugasan             | ketua tim    |
+| POST   | `/laporan-harian`          | Laporan kegiatan harian      | pegawai  |
+| POST   | `/kegiatan-tambahan`       | Laporan kegiatan tambahan    | pegawai  |
 | GET    | `/monitoring/harian`       | Monitoring harian            | semua    |
 
 ---
