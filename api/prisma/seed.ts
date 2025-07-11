@@ -6,6 +6,16 @@ const prisma = new PrismaClient();
 async function main() {
   const hash = hashPassword;
 
+  await prisma.role.createMany({
+    data: [
+      { name: "admin" },
+      { name: "pimpinan" },
+      { name: "ketua" },
+      { name: "anggota" },
+    ],
+    skipDuplicates: true,
+  });
+
   // Buat user satu per satu agar dapat userId
   const admin = await prisma.user.create({
     data: {
