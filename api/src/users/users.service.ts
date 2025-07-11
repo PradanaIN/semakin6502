@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
+import { hashPassword } from "../common/hash";
 
 @Injectable()
 export class UsersService {
@@ -12,11 +13,17 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
-  create(data: any) {
+  async create(data: any) {
+    if (data.password) {
+      data.password = await hashPassword(data.password);
+    }
     return this.prisma.user.create({ data });
   }
 
-  update(id: number, data: any) {
+  async update(id: number, data: any) {
+    if (data.password) {
+      data.password = await hashPassword(data.password);
+    }
     return this.prisma.user.update({ where: { id }, data });
   }
 
