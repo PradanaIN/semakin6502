@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   UseGuards,
+  ParseIntPipe,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
@@ -28,7 +29,7 @@ export class UsersController {
 
   @Get(":id")
   @Roles("admin")
-  findOne(@Param("id") id: number) {
+  findOne(@Param("id", ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
   }
 
@@ -40,13 +41,13 @@ export class UsersController {
 
   @Put(":id")
   @Roles("admin")
-  update(@Param("id") id: number, @Body() body: UpdateUserDto) {
+  update(@Param("id", ParseIntPipe) id: number, @Body() body: UpdateUserDto) {
     return this.usersService.update(id, body);
   }
 
   @Delete(":id")
   @Roles("admin")
-  remove(@Param("id") id: number) {
+  remove(@Param("id", ParseIntPipe) id: number) {
     return this.usersService.remove(id);
   }
 }

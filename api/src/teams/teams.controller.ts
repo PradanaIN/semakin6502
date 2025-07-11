@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   UseGuards,
+  ParseIntPipe,
 } from "@nestjs/common";
 import { TeamsService } from "./teams.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
@@ -26,7 +27,7 @@ export class TeamsController {
 
   @Get(":id")
   @Roles("admin")
-  findOne(@Param("id") id: number) {
+  findOne(@Param("id", ParseIntPipe) id: number) {
     return this.teamsService.findOne(id);
   }
 
@@ -38,19 +39,19 @@ export class TeamsController {
 
   @Put(":id")
   @Roles("admin")
-  update(@Param("id") id: number, @Body() body: any) {
+  update(@Param("id", ParseIntPipe) id: number, @Body() body: any) {
     return this.teamsService.update(id, body);
   }
 
   @Delete(":id")
   @Roles("admin")
-  remove(@Param("id") id: number) {
+  remove(@Param("id", ParseIntPipe) id: number) {
     return this.teamsService.remove(id);
   }
 
   @Post(":id/members")
   @Roles("admin")
-  addMember(@Param("id") teamId: number, @Body() member: any) {
+  addMember(@Param("id", ParseIntPipe) teamId: number, @Body() member: any) {
     return this.teamsService.addMember(teamId, member);
   }
 }
