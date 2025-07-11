@@ -1,15 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class PenugasanService {
+  constructor(private prisma: PrismaService) {}
   findAll() {
-    return prisma.penugasan.findMany();
+    return this.prisma.penugasan.findMany();
   }
 
   assign(data: any) {
-    return prisma.penugasan.create({ data });
+    return this.prisma.penugasan.create({ data });
   }
 }

@@ -3,6 +3,7 @@ import { PenugasanService } from "./penugasan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/guards/roles.decorator";
+import { AssignPenugasanDto } from "./dto/assign-penugasan.dto";
 
 @Controller("penugasan")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -11,7 +12,7 @@ export class PenugasanController {
 
   @Post()
   @Roles("ketua")
-  assign(@Body() body: any) {
+  assign(@Body() body: AssignPenugasanDto) {
     return this.penugasanService.assign(body);
   }
 

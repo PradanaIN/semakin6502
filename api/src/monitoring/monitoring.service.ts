@@ -18,7 +18,7 @@ export class MonitoringService {
 
     const records = await prisma.laporanHarian.findMany({
       where: { tanggal: { gte: start, lte: end } },
-      select: { tanggal: true },
+      select: { tanggal: true }
     });
 
     const exists = new Set(
@@ -121,7 +121,7 @@ export class MonitoringService {
 
     const harian = await prisma.laporanHarian.findMany({
       where: { tanggal: { gte: start, lte: end } },
-      select: { tanggal: true },
+      select: { tanggal: true }
     });
 
     const tambahan = await prisma.kegiatanTambahan.findMany({
