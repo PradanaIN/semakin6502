@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
-import * as bcrypt from "bcrypt";
+import { hashPassword } from "../src/common/hash";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const hash = (pwd: string) => bcrypt.hash(pwd, 10);
+  const hash = hashPassword;
 
   // Buat user satu per satu agar dapat userId
   const admin = await prisma.user.create({
