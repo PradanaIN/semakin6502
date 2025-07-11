@@ -1,10 +1,22 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import { useAuth } from "../auth/useAuth";
 
 export default function UsersPage() {
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [form, setForm] = useState({ nama: "", email: "", password: "", role: "" });
+  const [pageSize, setPageSize] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetchUsers();
+    fetchRoles();
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [form, setForm] = useState({ nama: "", email: "", password: "", role: "" });
@@ -19,6 +31,15 @@ export default function UsersPage() {
       setUsers(res.data);
     } catch (err) {
       console.error("Gagal mengambil pengguna", err);
+    }
+  };
+
+  const fetchRoles = async () => {
+    try {
+      const res = await axios.get("/roles");
+      setRoles(res.data);
+    } catch (err) {
+      console.error("Gagal mengambil role", err);
     }
   };
 
@@ -43,12 +64,24 @@ export default function UsersPage() {
       }
       setShowForm(false);
       fetchUsers();
+      Swal.fire("Berhasil", "Pengguna disimpan", "success");
     } catch (err) {
       console.error("Gagal menyimpan pengguna", err);
     }
   };
 
   const deleteUser = async (id) => {
+    const res = await Swal.fire({
+      title: "Hapus pengguna ini?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Hapus",
+    });
+    if (!res.isConfirmed) return;
+    try {
+      await axios.delete(`/users/${id}`);
+      fetchUsers();
+      Swal.fire("Dihapus", "Pengguna berhasil dihapus", "success");
     if (!confirm("Hapus pengguna ini?")) return;
     try {
       await axios.delete(`/users/${id}`);
@@ -58,6 +91,16 @@ export default function UsersPage() {
     }
   };
 
+  const filteredUsers = users.filter(
+    (u) =>
+      u.nama.toLowerCase().includes(search.toLowerCase()) ||
+      u.email.toLowerCase().includes(search.toLowerCase())
+  );
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+    
   if (user?.role !== "admin") {
     return (
       <div className="p-6 text-center">Anda tidak memiliki akses ke halaman ini.</div>
@@ -82,16 +125,19 @@ export default function UsersPage() {
             <th className="px-4 py-2">ID</th>
             <th className="px-4 py-2">Nama</th>
             <th className="px-4 py-2">Email</th>
+            <th className="px-4 py-2">Tim</th>
             <th className="px-4 py-2">Role</th>
             <th className="px-4 py-2">Aksi</th>
           </tr>
         </thead>
         <tbody>
+          {paginatedUsers.map((u) => (
           {users.map((u) => (
             <tr key={u.id} className="border-t dark:border-gray-700">
               <td className="px-4 py-2">{u.id}</td>
               <td className="px-4 py-2">{u.nama}</td>
               <td className="px-4 py-2">{u.email}</td>
+              <td className="px-4 py-2">{u.members?.[0]?.team?.nama_tim || "-"}</td>
               <td className="px-4 py-2 capitalize">{u.role}</td>
               <td className="px-4 py-2 space-x-2">
                 <button
@@ -111,6 +157,58 @@ export default function UsersPage() {
           ))}
         </tbody>
       </table>
+
+      <div className="flex items-center justify-between mt-4">
+        <div className="space-x-2">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+            placeholder="Cari pengguna..."
+            className="border px-2 py-1 rounded"
+          />
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(parseInt(e.target.value, 10));
+              setCurrentPage(1);
+            }}
+            className="border px-2 py-1 rounded"
+          >
+            {[5, 10, 15, 20, 25].map((n) => (
+              <option key={n} value={n}>
+                {n} / halaman
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="space-x-2">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+          <span>
+            {currentPage} / {Math.ceil(filteredUsers.length / pageSize) || 1}
+          </span>
+          <button
+            onClick={() =>
+              setCurrentPage((p) =>
+                Math.min(Math.ceil(filteredUsers.length / pageSize), p + 1)
+              )
+            }
+            disabled={currentPage >= Math.ceil(filteredUsers.length / pageSize)}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -148,6 +246,18 @@ export default function UsersPage() {
               </div>
               <div>
                 <label className="block text-sm mb-1">Role</label>
+                <select
+                  value={form.role}
+                  onChange={(e) => setForm({ ...form, role: e.target.value })}
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                >
+                  <option value="">Pilih role</option>
+                  {roles.map((r) => (
+                    <option key={r.id} value={r.name}>
+                      {r.name}
+                    </option>
+                  ))}
+                </select>
                 <input
                   type="text"
                   value={form.role}
@@ -158,6 +268,15 @@ export default function UsersPage() {
             </div>
             <div className="flex justify-end space-x-2 pt-2">
               <button
+                onClick={async () => {
+                  const r = await Swal.fire({
+                    title: "Batalkan perubahan?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Ya",
+                  });
+                  if (r.isConfirmed) setShowForm(false);
+                }}
                 onClick={() => setShowForm(false)}
                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
               >

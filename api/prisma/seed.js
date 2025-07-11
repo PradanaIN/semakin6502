@@ -43,7 +43,18 @@ function main() {
         var users, sosial, ipds, kegiatanSosial1, kegiatanSosial2, kegiatanIpds1, kegiatanIpds2, tugasA, tugasB, tugasC;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, prisma.user.createMany({
+                case 0: return [4 /*yield*/, prisma.role.createMany({
+                        data: [
+                            { name: 'admin' },
+                            { name: 'pimpinan' },
+                            { name: 'ketua' },
+                            { name: 'anggota' }
+                        ],
+                        skipDuplicates: true
+                    })];
+                case 1:
+                    _a.sent();
+                    return [4 /*yield*/, prisma.user.createMany({
                         data: [
                             { nama: 'Admin Utama', email: 'admin@bps.go.id', password: 'admin123', role: 'admin' },
                             { nama: 'Pimpinan BPS', email: 'pimpinan@bps.go.id', password: 'pimpinan123', role: 'pimpinan' },
@@ -53,13 +64,13 @@ function main() {
                             { nama: 'Anggota B', email: 'anggota.b@bps.go.id', password: 'anggota456', role: 'pegawai' },
                         ]
                     })];
-                case 1:
+                case 2:
                     users = _a.sent();
                     return [4 /*yield*/, prisma.team.create({ data: { nama_tim: 'Sosial' } })];
-                case 2:
+                case 3:
                     sosial = _a.sent();
                     return [4 /*yield*/, prisma.team.create({ data: { nama_tim: 'IPDS' } })];
-                case 3:
+                case 4:
                     ipds = _a.sent();
                     // Members
                     return [4 /*yield*/, prisma.member.createMany({
