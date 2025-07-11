@@ -1,6 +1,7 @@
 import { Controller, Post, Get, Body, Query, UseGuards } from "@nestjs/common";
 import { TambahanService } from "./kegiatan-tambahan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
+import { AddTambahanDto } from "./dto/add-tambahan.dto";
 
 @Controller("kegiatan-tambahan")
 @UseGuards(JwtAuthGuard)
@@ -8,7 +9,7 @@ export class TambahanController {
   constructor(private readonly tambahanService: TambahanService) {}
 
   @Post()
-  add(@Body() body: any) {
+  add(@Body() body: AddTambahanDto) {
     return this.tambahanService.add(body);
   }
 
