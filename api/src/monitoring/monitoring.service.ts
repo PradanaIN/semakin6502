@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 @Injectable()
 export class MonitoringService {
-  async harian(tanggal: string) {
+  async harian(tanggal: string, teamId?: number, userId?: number) {
     const base = new Date(tanggal);
     if (isNaN(base.getTime()))
       throw new BadRequestException("tanggal tidak valid");
@@ -16,9 +16,16 @@ export class MonitoringService {
     const start = new Date(year, month, 1);
     const end = new Date(year, month + 1, 0);
 
+    const where: any = { tanggal: { gte: start, lte: end } };
+    if (userId) where.pegawaiId = userId;
+    if (teamId)
+      where.penugasan = {
+        kegiatan: { teamId }
+      };
+
     const records = await prisma.laporanHarian.findMany({
-      where: { tanggal: { gte: start, lte: end } },
-      select: { tanggal: true }
+      where,
+      select: { tanggal: true },
     });
 
     const exists = new Set(
@@ -35,7 +42,7 @@ export class MonitoringService {
     return result;
   }
 
-  async mingguan(minggu: string) {
+  async mingguan(minggu: string, teamId?: number, userId?: number) {
     const start = new Date(minggu);
     if (isNaN(start.getTime()))
       throw new BadRequestException("minggu tidak valid");
@@ -43,8 +50,15 @@ export class MonitoringService {
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
 
+    const where: any = { tanggal: { gte: start, lte: end } };
+    if (userId) where.pegawaiId = userId;
+    if (teamId)
+      where.penugasan = {
+        kegiatan: { teamId },
+      };
+
     const records = await prisma.laporanHarian.findMany({
-      where: { tanggal: { gte: start, lte: end } },
+      where,
       select: { tanggal: true, status: true },
     });
 
@@ -112,20 +126,34 @@ export class MonitoringService {
     };
   }
 
-  async bulanan(bulan: string) {
+  async bulanan(bulan: string, teamId?: number, userId?: number) {
     const year = parseInt(bulan, 10);
     if (isNaN(year)) throw new BadRequestException("bulan tidak valid");
 
     const start = new Date(year, 0, 1);
     const end = new Date(year, 11, 31);
 
+    const harianWhere: any = { tanggal: { gte: start, lte: end } };
+    if (userId) harianWhere.pegawaiId = userId;
+    if (teamId)
+      harianWhere.penugasan = {
+        kegiatan: { teamId },
+      };
+
     const harian = await prisma.laporanHarian.findMany({
-      where: { tanggal: { gte: start, lte: end } },
-      select: { tanggal: true }
+      where: harianWhere,
+      select: { tanggal: true },
     });
 
+    const tambahanWhere: any = { tanggal: { gte: start, lte: end } };
+    if (userId) tambahanWhere.userId = userId;
+    if (teamId)
+      tambahanWhere.user = {
+        members: { some: { teamId } },
+      };
+
     const tambahan = await prisma.kegiatanTambahan.findMany({
-      where: { tanggal: { gte: start, lte: end } },
+      where: tambahanWhere,
       select: { tanggal: true },
     });
 
