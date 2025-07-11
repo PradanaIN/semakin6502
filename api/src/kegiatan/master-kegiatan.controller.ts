@@ -1,4 +1,5 @@
-import { Controller, Post, Get, Body, UseGuards } from "@nestjs/common";
+import { Controller, Post, Get, Body, UseGuards, Req } from "@nestjs/common";
+import { Request } from "express";
 import { MasterKegiatanService } from "./master-kegiatan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -11,8 +12,8 @@ export class MasterKegiatanController {
 
   @Post()
   @Roles("ketua")
-  create(@Body() body: any) {
-    return this.masterService.create(body);
+  create(@Body() body: any, @Req() req: Request) {
+    return this.masterService.create(body, (req.user as any).userId);
   }
 
   @Get()
