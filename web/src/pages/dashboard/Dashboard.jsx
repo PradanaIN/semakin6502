@@ -10,20 +10,31 @@ const Dashboard = () => {
   const [weeklyData, setWeeklyData] = useState(null);
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     const fetchAllData = async () => {
+      const today = new Date();
+      const tanggal = today.toISOString().split("T")[0];
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - today.getDay() + 1);
+      const minggu = startOfWeek.toISOString().split("T")[0];
+      const bulan = today.toISOString().slice(0, 7);
+
       try {
         const [dailyRes, weeklyRes, monthlyRes] = await Promise.all([
-          axios.get("/monitoring/harian"),
-          axios.get("/monitoring/mingguan"),
-          axios.get("/monitoring/bulanan"),
+          axios.get("/monitoring/harian", { params: { tanggal } }),
+          axios.get("/monitoring/mingguan", { params: { minggu } }),
+          axios.get("/monitoring/bulanan", { params: { bulan } }),
         ]);
 
         setDailyData(dailyRes.data);
         setWeeklyData(weeklyRes.data);
         setMonthlyData(monthlyRes.data);
       } catch (error) {
+        if (error?.response && [401, 403].includes(error.response.status)) {
+          setErrorMsg("Anda tidak memiliki akses untuk melihat monitoring.");
+        }
         console.error("Gagal mengambil data monitoring:", error);
       } finally {
         setLoading(false);
@@ -39,6 +50,14 @@ const Dashboard = () => {
         <p className="text-gray-600 dark:text-gray-300">
           Memuat data monitoring...
         </p>
+      </div>
+    );
+  }
+
+  if (errorMsg) {
+    return (
+      <div className="p-6 text-center">
+        <p className="text-red-500 dark:text-red-400">{errorMsg}</p>
       </div>
     );
   }
