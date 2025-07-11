@@ -3,6 +3,7 @@ import LoginPage from "../pages/auth/LoginPage";
 import Dashboard from "../pages/dashboard/Dashboard";
 import Layout from "../pages/layout/Layout";
 import { useAuth } from "../pages/auth/useAuth";
+import UsersPage from "../pages/users/UsersPage";
 
 function PrivateRoute({ children }) {
   const { token, user } = useAuth();
@@ -33,6 +34,7 @@ export default function AppRoutes() {
         }
       >
         <Route index element={<Dashboard />} />
+        <Route path="users" element={<UsersPage />} />
         {/* Tambahkan rute lainnya nanti di sini */}
       </Route>
     </Routes>
