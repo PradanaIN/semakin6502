@@ -1,3 +1,6 @@
 node_modules
-.env
+web/node_modules
 dist/
+build/
+.env
+.env.*
