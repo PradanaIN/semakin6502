@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, ForbiddenException } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 
 @Injectable()
@@ -8,7 +8,13 @@ export class MasterKegiatanService {
     return this.prisma.masterKegiatan.findMany();
   }
 
-  create(data: any) {
+  async create(data: any, userId: number) {
+    const leader = await this.prisma.member.findFirst({
+      where: { teamId: data.teamId, userId, is_leader: true },
+    });
+    if (!leader) {
+      throw new ForbiddenException("bukan ketua tim kegiatan ini");
+    }
     return this.prisma.masterKegiatan.create({ data });
   }
 }

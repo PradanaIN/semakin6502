@@ -1,4 +1,5 @@
-import { Controller, Post, Get, Body, UseGuards } from "@nestjs/common";
+import { Controller, Post, Get, Body, UseGuards, Req } from "@nestjs/common";
+import { Request } from "express";
 import { PenugasanService } from "./penugasan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -12,8 +13,8 @@ export class PenugasanController {
 
   @Post()
   @Roles("ketua")
-  assign(@Body() body: AssignPenugasanDto) {
-    return this.penugasanService.assign(body);
+  assign(@Body() body: AssignPenugasanDto, @Req() req: Request) {
+    return this.penugasanService.assign(body, (req.user as any).userId);
   }
 
   @Get()
