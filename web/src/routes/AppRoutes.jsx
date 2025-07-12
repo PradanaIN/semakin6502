@@ -4,6 +4,7 @@ import Dashboard from "../pages/dashboard/Dashboard";
 import Layout from "../pages/layout/Layout";
 import { useAuth } from "../pages/auth/useAuth";
 import UsersPage from "../pages/users/UsersPage";
+import TeamsPage from "../pages/teams/TeamsPage";
 import MasterKegiatanPage from "../pages/master/MasterKegiatanPage";
 
 function PrivateRoute({ children }) {
@@ -36,6 +37,7 @@ export default function AppRoutes() {
       >
         <Route index element={<Dashboard />} />
         <Route path="users" element={<UsersPage />} />
+        <Route path="teams" element={<TeamsPage />} />
         <Route path="master-kegiatan" element={<MasterKegiatanPage />} />
         {/* Tambahkan rute lainnya nanti di sini */}
       </Route>
