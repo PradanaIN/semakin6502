@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../auth/useAuth";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import Swal from "sweetalert2";
 import {
   FaBell,
@@ -59,9 +59,9 @@ export default function Layout() {
     setNotifCount(0);
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const html = document.documentElement;
-    darkMode ? html.classList.add("dark") : html.classList.remove("dark");
+    html.classList.toggle("dark", darkMode);
     localStorage.setItem("theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
@@ -179,7 +179,7 @@ export default function Layout() {
                   onChange={(e) => setDarkMode(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full" />
+                <div className="relative w-11 h-6 bg-gray-200 dark:bg-gray-700 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full" />
               </label>
               <FaMoon className="text-blue-400" />
             </div>
