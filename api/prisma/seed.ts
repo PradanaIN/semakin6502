@@ -265,10 +265,124 @@ async function main() {
     skipDuplicates: true,
   });
 
-  const teams = await prisma.team.findMany({
-    where: { nama_tim: { in: teamNames } },
-  });
-  const teamMap = new Map(teams.map((t) => [t.nama_tim, t.id]));
+  const teams = await prisma.team.findMany({ where: { nama_tim: { in: teamNames } } });
+  const teamMap = new Map(teams.map((t: any) => [t.nama_tim, t.id]));
+
+  const kegiatanByTeam: Record<string, string[]> = {
+    Umum: [
+      "SAKIP",
+      "SPI",
+      "Keuangan",
+      "Kepegawaian",
+      "Kehumasan",
+      "Kearsipan",
+      "BMN",
+      "Pengadaan barang dan jasa",
+      "Rapat/Sosialisasi",
+      "TB",
+      "Apel/Upacara",
+      "Anggaran",
+      "Rapat",
+      "ZI",
+      "Monev",
+    ],
+    Sosial: [
+      "Susenas Maret",
+      "Susenas Sep",
+      "Seruti Tw I",
+      "Seruti Tw II",
+      "Seruti Tw III",
+      "Seruti Tw IV",
+      "Podes",
+      "Polkam",
+      "Sakernas Feb",
+      "Sakernas Ags",
+      "Supas",
+      "Desa Cantik",
+    ],
+    Distribusi: [
+      "SHK",
+      "SHP",
+      "SHPED",
+      "SHPB",
+      "SHMP",
+      "VHTS",
+      "VHTL",
+      "SIMOPPEL",
+      "LLAU",
+      "SHKK",
+      "SVPEB",
+      "VPBD",
+      "VPEK",
+      "PJ II/5",
+      "SKP",
+      "SVK",
+      "SLK-KSP",
+      "VREST",
+      "SLK-BUMD",
+      "K3",
+      "ECOMMERCE",
+      "UPD PARIWISATA",
+      "SBR",
+      "SE2026",
+      "POLDIS",
+    ],
+    Produksi: [
+      "SKTH",
+      "KOMSTRAT",
+      "UPDATING DIREKTORI PERUSAHAAN AWAL",
+      "SIMENTAL",
+      "VN HORTI",
+      "CAPTIVE POWER",
+      "IBS",
+      "AIR BERSIH TAHUNAN",
+      "PENGGALIAN URT",
+      "IMK TAHUNAN",
+      "RAPAT & KOORDINASI",
+      "SKTR",
+      "KSA",
+      "UBINAN",
+      "STPIM",
+      "SIUTAN-PBPH",
+      "SIM-TP",
+      "SPH",
+      "UDPE",
+      "MIGAS",
+      "NON MIGAS",
+      "IMK TRIWULANAN",
+      "PENGGALIAN BERBADAN HUKUM TRIWULANAN",
+      "BRIEFING IMK TAHUNAN",
+    ],
+    Neraca: [
+      "Neraca Produksi",
+      "Neraca Pengeluaran",
+      "Analisis Lintas Sektor",
+      "Penjaminan Kualitas QG",
+    ],
+    IPDS: [
+      "Wilkerstat SE2026",
+      "Pembinaan Statistik Sektoral",
+      "Metadata dan Romantik",
+      "KCDA",
+      "SPBE",
+      "PEKPPP",
+      "PST",
+      "Pengolahan",
+    ],
+  };
+
+  for (const [teamName, kegiatan] of Object.entries(kegiatanByTeam)) {
+    const teamId = teamMap.get(teamName);
+    if (!teamId) continue;
+    for (const nama of kegiatan) {
+      const existing = await prisma.masterKegiatan.findFirst({
+        where: { teamId, nama_kegiatan: nama },
+      });
+      if (!existing) {
+        await prisma.masterKegiatan.create({ data: { teamId, nama_kegiatan: nama } });
+      }
+    }
+  }
 
   for (const u of rawUsers) {
     const role = roleMap[u.role] || "anggota";
