@@ -97,10 +97,6 @@ export default function TeamsPage() {
     );
   }
 
-  if (loading) {
-    return <div className="p-6 text-center">Memuat data...</div>;
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
@@ -140,7 +136,11 @@ export default function TeamsPage() {
           </tr>
         </thead>
         <tbody>
-          {paginated.length === 0 ? (
+          {loading ? (
+            <tr>
+              <td colSpan="4" className="py-4 text-center">Memuat data...</td>
+            </tr>
+          ) : paginated.length === 0 ? (
             <tr>
               <td colSpan="4" className="py-4 text-center">
                 Data tidak ditemukan
