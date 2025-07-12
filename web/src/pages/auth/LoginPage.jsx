@@ -4,7 +4,7 @@ import { useAuth } from "./useAuth";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ identifier: "", password: "" });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { setToken, setUser } = useAuth();
@@ -28,7 +28,7 @@ export default function LoginPage() {
       window.location.href = "/";
     } catch (err) {
       console.error("Login failed:", err?.response?.data || err.message);
-      setError("Login gagal. Periksa email dan password.");
+      setError("Login gagal. Periksa email/username dan password.");
 
       // hanya kosongkan password
       setForm((prev) => ({ ...prev, password: "" }));
@@ -49,13 +49,13 @@ export default function LoginPage() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm text-zinc-700 dark:text-zinc-300 mb-1">
-              Email <span className="text-red-500">*</span>
+              Email atau Username <span className="text-red-500">*</span>
             </label>
             <input
-              type="email"
-              placeholder="Email"
-              value={form.email ?? ""}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              type="text"
+              placeholder="Email atau Username"
+              value={form.identifier ?? ""}
+              onChange={(e) => setForm({ ...form, identifier: e.target.value })}
               className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
             />
           </div>

@@ -56,6 +56,7 @@ async function main() {
     update: {},
     create: {
       nama: "Admin Utama",
+      username: "admin",
       email: "admin@bps.go.id",
       username: "admin",
       password: await hashPassword("password"),
