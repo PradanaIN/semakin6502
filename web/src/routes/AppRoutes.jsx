@@ -4,6 +4,7 @@ import Dashboard from "../pages/dashboard/Dashboard";
 import Layout from "../pages/layout/Layout";
 import { useAuth } from "../pages/auth/useAuth";
 import UsersPage from "../pages/users/UsersPage";
+import MasterKegiatanPage from "../pages/master/MasterKegiatanPage";
 
 function PrivateRoute({ children }) {
   const { token, user } = useAuth();
@@ -35,6 +36,7 @@ export default function AppRoutes() {
       >
         <Route index element={<Dashboard />} />
         <Route path="users" element={<UsersPage />} />
+        <Route path="master-kegiatan" element={<MasterKegiatanPage />} />
         {/* Tambahkan rute lainnya nanti di sini */}
       </Route>
     </Routes>
