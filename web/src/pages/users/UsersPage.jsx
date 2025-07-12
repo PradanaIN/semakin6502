@@ -88,7 +88,6 @@ export default function UsersPage() {
       (u.nama.toLowerCase().includes(search.toLowerCase()) ||
         u.email.toLowerCase().includes(search.toLowerCase())) &&
       (roleFilter ? u.role === roleFilter : true)
-  );
   const paginatedUsers = filteredUsers.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
