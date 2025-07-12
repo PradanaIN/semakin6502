@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 
 export default function MasterKegiatanPage() {
@@ -106,9 +107,10 @@ export default function MasterKegiatanPage() {
         <h1 className="text-2xl font-bold">Master Kegiatan</h1>
         <button
           onClick={openCreate}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
         >
-          Tambah Kegiatan
+          <Plus size={16} />
+          <span className="hidden sm:inline">Tambah Kegiatan</span>
         </button>
       </div>
 
@@ -149,7 +151,7 @@ export default function MasterKegiatanPage() {
 
       <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
         <thead>
-          <tr className="bg-gray-200 dark:bg-gray-700 text-left text-sm uppercase">
+          <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
             <th className="px-4 py-2">ID</th>
             <th className="px-4 py-2">Tim</th>
             <th className="px-4 py-2">Nama Kegiatan</th>
@@ -167,15 +169,15 @@ export default function MasterKegiatanPage() {
               <td className="px-4 py-2 space-x-2">
                 <button
                   onClick={() => openEdit(item)}
-                  className="px-3 py-1 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                  className="p-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
                 >
-                  Edit
+                  <Pencil size={16} />
                 </button>
                 <button
                   onClick={() => deleteItem(item)}
-                  className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                  className="p-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
                 >
-                  Hapus
+                  <Trash2 size={16} />
                 </button>
               </td>
             </tr>
