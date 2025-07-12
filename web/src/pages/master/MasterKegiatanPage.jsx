@@ -15,6 +15,7 @@ export default function MasterKegiatanPage() {
   const [filterTeam, setFilterTeam] = useState("");
   const [search, setSearch] = useState("");
 
+
   const fetchItems = useCallback(async () => {
     try {
       const res = await axios.get("/master-kegiatan", {
