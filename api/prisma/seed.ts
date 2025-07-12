@@ -20,6 +20,7 @@ async function main() {
   const admin = await prisma.user.create({
     data: {
       nama: "Admin Utama",
+      username: "admin",
       email: "admin@bps.go.id",
       password: await hash("password"),
       role: "admin",
@@ -31,6 +32,7 @@ async function main() {
     update: {},
     create: {
       nama: "Pimpinan BPS",
+      username: "pimpinan",
       email: "pimpinan@bps.go.id",
       password: await hash("password"),
       role: "pimpinan",
@@ -42,6 +44,7 @@ async function main() {
     update: {},
     create: {
       nama: "Ketua Tim Sosial",
+      username: "ketua.sosial",
       email: "ketua.sosial@bps.go.id",
       password: await hash("password"),
       role: "ketua",
@@ -53,6 +56,7 @@ async function main() {
     update: {},
     create: {
       nama: "Ketua Tim IPDS",
+      username: "ketua.ipds",
       email: "ketua.ipds@bps.go.id",
       password: await hash("password"),
       role: "ketua",
@@ -64,6 +68,7 @@ async function main() {
     update: {},
     create: {
       nama: "Anggota A",
+      username: "anggota.a",
       email: "anggota.a@bps.go.id",
       password: await hash("password"),
       role: "anggota",
@@ -75,6 +80,7 @@ async function main() {
     update: {},
     create: {
       nama: "Anggota B",
+      username: "anggota.b",
       email: "anggota.b@bps.go.id",
       password: await hash("password"),
       role: "anggota",

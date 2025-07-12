@@ -90,7 +90,7 @@ Server berjalan di: `http://localhost:3000`
 
 | Method | Endpoint                   | Deskripsi                    | Role     |
 |--------|----------------------------|------------------------------|----------|
-| POST   | `/auth/login`              | Login user & dapatkan token  | semua    |
+| POST   | `/auth/login`              | Login user & dapatkan token (body: `{ identifier, password }`) | semua    |
 | GET    | `/users`                   | Lihat semua user             | admin    |
 | GET    | `/teams`                   | Daftar tim                   | admin    |
 | POST   | `/master-kegiatan`         | Tambah kegiatan              | ketua tim    |
