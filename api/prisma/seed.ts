@@ -16,11 +16,10 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // Upsert users so if they already exist by email, they won't fail
-  const admin = await prisma.user.upsert({
-    where: { email: "admin@bps.go.id" },
-    update: {}, // if exists, do nothing or update here
-    create: {
+
+  // Buat user satu per satu agar dapat userId
+  const admin = await prisma.user.create({
+    data: {
       nama: "Admin Utama",
       email: "admin@bps.go.id",
       password: await hash("password"),
