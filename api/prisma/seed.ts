@@ -16,11 +16,9 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // Upsert users so if they already exist by email, they won't fail
-  const admin = await prisma.user.upsert({
-    where: { email: "admin@bps.go.id" },
-    update: {}, // if exists, do nothing or update here
-    create: {
+  // Buat user satu per satu agar dapat userId
+  const admin = await prisma.user.create({
+    data: {
       nama: "Admin Utama",
       email: "admin@bps.go.id",
       password: await hash("password"),
@@ -46,7 +44,7 @@ async function main() {
       nama: "Ketua Tim Sosial",
       email: "ketua.sosial@bps.go.id",
       password: await hash("password"),
-      role: "pegawai",
+      role: "ketua",
     },
   });
 
@@ -57,7 +55,7 @@ async function main() {
       nama: "Ketua Tim IPDS",
       email: "ketua.ipds@bps.go.id",
       password: await hash("password"),
-      role: "pegawai",
+      role: "ketua",
     },
   });
 
@@ -68,7 +66,7 @@ async function main() {
       nama: "Anggota A",
       email: "anggota.a@bps.go.id",
       password: await hash("password"),
-      role: "pegawai",
+      role: "anggota",
     },
   });
 
@@ -79,25 +77,37 @@ async function main() {
       nama: "Anggota B",
       email: "anggota.b@bps.go.id",
       password: await hash("password"),
-      role: "pegawai",
+      role: "anggota",
     },
   });
 
   // Teams
+  await prisma.team.createMany({
+    data: [
+      { nama_tim: "Pimpinan" },
+      { nama_tim: "Umum" },
+      { nama_tim: "Sosial" },
+      { nama_tim: "Neraca" },
+      { nama_tim: "Produksi" },
+      { nama_tim: "Distribusi" },
+      { nama_tim: "IPDS" },
+      { nama_tim: "Humas" },
+    ],
+    skipDuplicates: true,
+  });
+
   const sosial = await prisma.team.create({ data: { nama_tim: "Sosial" } });
   const ipds = await prisma.team.create({ data: { nama_tim: "IPDS" } });
 
-  // Members
   await prisma.member.createMany({
     data: [
-      { userId: ketuaSosial.id, teamId: sosial.id, is_leader: true },
-      { userId: ketuaIpds.id, teamId: ipds.id, is_leader: true },
-      { userId: anggotaA.id, teamId: sosial.id, is_leader: false },
-      { userId: anggotaB.id, teamId: ipds.id, is_leader: false },
+      { userId: ketuaSosial.id, teamId: sosial!.id, is_leader: true },
+      { userId: ketuaIpds.id, teamId: ipds!.id, is_leader: true },
+      { userId: anggotaA.id, teamId: sosial!.id, is_leader: false },
+      { userId: anggotaB.id, teamId: ipds!.id, is_leader: false },
     ],
   });
 
-  // Master Kegiatan
   const kegiatanSosial1 = await prisma.masterKegiatan.create({
     data: {
       teamId: sosial.id,
