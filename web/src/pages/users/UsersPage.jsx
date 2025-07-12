@@ -65,17 +65,17 @@ export default function UsersPage() {
   };
 
   const deleteUser = async (id) => {
-    const result = await Swal.fire({
+    const res = await Swal.fire({
       title: "Hapus pengguna ini?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Hapus",
     });
-    if (!result.isConfirmed) return;
+    if (!res.isConfirmed) return;
     try {
       await axios.delete(`/users/${id}`);
       fetchUsers();
-      await Swal.fire("Dihapus", "Pengguna berhasil dihapus", "success");
+      Swal.fire("Dihapus", "Pengguna berhasil dihapus", "success");
     } catch (err) {
       console.error("Gagal menghapus pengguna", err);
       Swal.fire("Error", "Gagal menghapus pengguna", "error");
