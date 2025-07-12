@@ -51,6 +51,10 @@ export default function UsersPage() {
   };
 
   const saveUser = async () => {
+    if (!form.nama || !form.email || (!editingUser && !form.password) || !form.role) {
+      Swal.fire("Lengkapi data", "Semua field wajib diisi", "warning");
+      return;
+    }
     try {
       if (editingUser) {
         await axios.put(`/users/${editingUser.id}`, form);
@@ -62,6 +66,7 @@ export default function UsersPage() {
       Swal.fire("Berhasil", "Pengguna disimpan", "success");
     } catch (err) {
       console.error("Gagal menyimpan pengguna", err);
+      Swal.fire("Error", "Gagal menyimpan pengguna", "error");
     }
   };
 
@@ -237,7 +242,9 @@ export default function UsersPage() {
             </h2>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm mb-1">Nama</label>
+                <label className="block text-sm mb-1">
+                  Nama <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   value={form.nama}
@@ -246,7 +253,9 @@ export default function UsersPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Email</label>
+                <label className="block text-sm mb-1">
+                  Email <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="email"
                   value={form.email}
@@ -255,7 +264,9 @@ export default function UsersPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Password</label>
+                <label className="block text-sm mb-1">
+                  Password <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="password"
                   value={form.password}
@@ -264,7 +275,9 @@ export default function UsersPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Role</label>
+                <label className="block text-sm mb-1">
+                  Role <span className="text-red-500">*</span>
+                </label>
                 <select
                   value={form.role}
                   onChange={(e) => setForm({ ...form, role: e.target.value })}
@@ -300,6 +313,7 @@ export default function UsersPage() {
               >
                 Simpan
               </button>
+              <p className="text-xs text-gray-500 ml-2 self-center">* wajib diisi</p>
             </div>
           </div>
         </div>

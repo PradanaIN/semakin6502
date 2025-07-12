@@ -57,6 +57,10 @@ export default function MasterKegiatanPage() {
   };
 
   const saveItem = async () => {
+    if (!form.teamId || isNaN(form.teamId) || !form.nama_kegiatan) {
+      Swal.fire("Lengkapi data", "Tim dan nama kegiatan wajib diisi", "warning");
+      return;
+    }
     try {
       if (editing) {
         await axios.put(`/master-kegiatan/${editing.id}`, form);
@@ -69,6 +73,7 @@ export default function MasterKegiatanPage() {
       Swal.fire("Berhasil", "Kegiatan disimpan", "success");
     } catch (err) {
       console.error("Gagal menyimpan kegiatan", err);
+      Swal.fire("Error", "Gagal menyimpan kegiatan", "error");
     }
   };
 
@@ -204,7 +209,9 @@ export default function MasterKegiatanPage() {
             </h2>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm mb-1">Tim</label>
+                <label className="block text-sm mb-1">
+                  Tim <span className="text-red-500">*</span>
+                </label>
                 <select
                   value={form.teamId}
                   onChange={(e) => setForm({ ...form, teamId: parseInt(e.target.value, 10) })}
@@ -219,7 +226,9 @@ export default function MasterKegiatanPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm mb-1">Nama Kegiatan</label>
+                <label className="block text-sm mb-1">
+                  Nama Kegiatan <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   value={form.nama_kegiatan}
@@ -252,6 +261,7 @@ export default function MasterKegiatanPage() {
               >
                 Simpan
               </button>
+              <p className="text-xs text-gray-500 ml-2 self-center">* wajib diisi</p>
             </div>
           </div>
         </div>
