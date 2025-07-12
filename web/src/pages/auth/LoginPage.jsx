@@ -28,7 +28,7 @@ export default function LoginPage() {
       window.location.href = "/";
     } catch (err) {
       console.error("Login failed:", err?.response?.data || err.message);
-      setError("Login gagal. Periksa email/username dan password.");
+      setError("Login gagal. Periksa data login Anda.");
 
       // hanya kosongkan password
       setForm((prev) => ({ ...prev, password: "" }));

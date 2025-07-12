@@ -8,11 +8,12 @@ export class AuthService {
   constructor(private jwtService: JwtService, private prisma: PrismaService) {}
 
   async login(identifier: string, password: string) {
-    const where = identifier.includes("@")
-      ? { email: identifier }
-      : { username: identifier };
-    const user = await this.prisma.user.findUnique({ where });
-    if (!user) throw new UnauthorizedException("Email/Username tidak ditemukan");
+    const user = await this.prisma.user.findFirst({
+      where: {
+        OR: [{ email: identifier }, { username: identifier }],
+      },
+    });
+    if (!user) throw new UnauthorizedException("User tidak ditemukan");
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) throw new UnauthorizedException("Password salah");
