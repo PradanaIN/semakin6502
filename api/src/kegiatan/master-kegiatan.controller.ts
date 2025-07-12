@@ -1,4 +1,15 @@
-import { Controller, Post, Get, Body, UseGuards, Req } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Get,
+  Put,
+  Delete,
+  Param,
+  Body,
+  UseGuards,
+  Req,
+  ParseIntPipe,
+} from "@nestjs/common";
 import { Request } from "express";
 import { MasterKegiatanService } from "./master-kegiatan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
@@ -18,5 +29,19 @@ export class MasterKegiatanController {
   @Get()
   findAll() {
     return this.masterService.findAll();
+  }
+
+  @Put(":id")
+  update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() body: any,
+    @Req() req: Request,
+  ) {
+    return this.masterService.update(id, body, (req.user as any).userId);
+  }
+
+  @Delete(":id")
+  remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+    return this.masterService.remove(id, (req.user as any).userId);
   }
 }
