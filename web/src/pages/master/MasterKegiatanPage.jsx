@@ -49,9 +49,11 @@ export default function MasterKegiatanPage() {
     }
   };
 
-  if (user?.role !== "ketua") {
+  if (user?.role !== "ketua" && user?.role !== "admin") {
     return (
-      <div className="p-6 text-center">Anda tidak memiliki akses ke halaman ini.</div>
+      <div className="p-6 text-center">
+        Anda tidak memiliki akses ke halaman ini.
+      </div>
     );
   }
 
@@ -79,7 +81,9 @@ export default function MasterKegiatanPage() {
           {items.map((item) => (
             <tr key={item.id} className="border-t dark:border-gray-700">
               <td className="px-4 py-2">{item.id}</td>
-              <td className="px-4 py-2">{item.team?.nama_tim || item.teamId}</td>
+              <td className="px-4 py-2">
+                {item.team?.nama_tim || item.teamId}
+              </td>
               <td className="px-4 py-2">{item.nama_kegiatan}</td>
             </tr>
           ))}
@@ -95,7 +99,9 @@ export default function MasterKegiatanPage() {
                 <label className="block text-sm mb-1">Tim</label>
                 <select
                   value={form.teamId}
-                  onChange={(e) => setForm({ ...form, teamId: parseInt(e.target.value, 10) })}
+                  onChange={(e) =>
+                    setForm({ ...form, teamId: parseInt(e.target.value, 10) })
+                  }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 >
                   <option value="">Pilih tim</option>
@@ -111,7 +117,9 @@ export default function MasterKegiatanPage() {
                 <input
                   type="text"
                   value={form.nama_kegiatan}
-                  onChange={(e) => setForm({ ...form, nama_kegiatan: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, nama_kegiatan: e.target.value })
+                  }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
