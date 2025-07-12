@@ -8,6 +8,20 @@ export class TeamsService {
     return this.prisma.team.findMany({ include: { members: true } });
   }
 
+  findByLeader(userId: number) {
+    return this.prisma.team.findMany({
+      where: { members: { some: { userId, is_leader: true } } },
+      include: { members: true },
+    });
+  }
+
+  findByMember(userId: number) {
+    return this.prisma.team.findMany({
+      where: { members: { some: { userId } } },
+      include: { members: true },
+    });
+  }
+
   findOne(id: number) {
     return this.prisma.team.findUnique({
       where: { id },

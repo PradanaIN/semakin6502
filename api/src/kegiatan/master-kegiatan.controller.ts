@@ -12,6 +12,8 @@ import {
 } from "@nestjs/common";
 import { Request } from "express";
 import { MasterKegiatanService } from "./master-kegiatan.service";
+import { CreateMasterKegiatanDto } from "./dto/create-master-kegiatan.dto";
+import { UpdateMasterKegiatanDto } from "./dto/update-master-kegiatan.dto";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/guards/roles.decorator";
@@ -22,8 +24,12 @@ export class MasterKegiatanController {
   constructor(private readonly masterService: MasterKegiatanService) {}
 
   @Post()
-  create(@Body() body: any, @Req() req: Request) {
-    return this.masterService.create(body, (req.user as any).userId);
+  create(
+    @Body() body: CreateMasterKegiatanDto,
+    @Req() req: Request,
+  ) {
+    const u = req.user as any;
+    return this.masterService.create(body, u.userId, u.role);
   }
 
   @Get()
@@ -40,14 +46,16 @@ export class MasterKegiatanController {
   @Put(":id")
   update(
     @Param("id", ParseIntPipe) id: number,
-    @Body() body: any,
+    @Body() body: UpdateMasterKegiatanDto,
     @Req() req: Request,
   ) {
-    return this.masterService.update(id, body, (req.user as any).userId);
+    const u = req.user as any;
+    return this.masterService.update(id, body, u.userId, u.role);
   }
 
   @Delete(":id")
   remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
-    return this.masterService.remove(id, (req.user as any).userId);
+    const u = req.user as any;
+    return this.masterService.remove(id, u.userId, u.role);
   }
 }

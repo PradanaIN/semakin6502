@@ -57,6 +57,10 @@ export default function MasterKegiatanPage() {
   };
 
   const saveItem = async () => {
+    if (!form.teamId || isNaN(form.teamId) || !form.nama_kegiatan) {
+      Swal.fire("Lengkapi data", "Tim dan nama kegiatan wajib diisi", "warning");
+      return;
+    }
     try {
       if (editing) {
         await axios.put(`/master-kegiatan/${editing.id}`, form);
@@ -69,6 +73,7 @@ export default function MasterKegiatanPage() {
       Swal.fire("Berhasil", "Kegiatan disimpan", "success");
     } catch (err) {
       console.error("Gagal menyimpan kegiatan", err);
+      Swal.fire("Error", "Gagal menyimpan kegiatan", "error");
     }
   };
 
