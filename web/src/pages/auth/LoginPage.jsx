@@ -55,7 +55,7 @@ export default function LoginPage() {
         >
           <div>
             <label className="block text-sm text-zinc-700 dark:text-zinc-300 mb-1">
-              Email atau Username <span className="text-red-500">*</span>
+              Email atau Username
             </label>
             <input
               type="text"
@@ -68,7 +68,7 @@ export default function LoginPage() {
 
           <div>
             <label className="block text-sm text-zinc-700 dark:text-zinc-300 mb-1">
-              Password <span className="text-red-500">*</span>
+              Password
             </label>
             <div className="relative">
               <input
@@ -98,11 +98,10 @@ export default function LoginPage() {
           >
             Login
           </button>
-          <p className="text-xs text-zinc-500 mt-1">* wajib diisi</p>
         </form>
 
         <p className="text-xs text-zinc-400 text-center">
-          &copy; 2025 Badan Pusat Statistik — Bulungan
+          &copy; 2025 Badan Pusat Statistik Kabupaten Bulungan
         </p>
       </div>
     </div>
