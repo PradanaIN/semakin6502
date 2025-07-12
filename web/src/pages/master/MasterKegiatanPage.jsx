@@ -8,6 +8,7 @@ export default function MasterKegiatanPage() {
   const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     teamId: "",
     nama_kegiatan: "",
@@ -21,6 +22,7 @@ export default function MasterKegiatanPage() {
   const [search, setSearch] = useState("");
   const fetchItems = useCallback(async () => {
     try {
+      setLoading(true);
       const res = await axios.get("/master-kegiatan", {
         params: {
           page,
@@ -32,6 +34,8 @@ export default function MasterKegiatanPage() {
       setLastPage(res.data.lastPage);
     } catch (err) {
       console.error("Gagal mengambil master kegiatan", err);
+    } finally {
+      setLoading(false);
     }
   }, [page, filterTeam, search]);
 
@@ -115,6 +119,10 @@ export default function MasterKegiatanPage() {
     );
   }
 
+  if (loading) {
+    return <div className="p-6 text-center">Memuat data...</div>;
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-end">
@@ -176,7 +184,14 @@ export default function MasterKegiatanPage() {
           </tr>
         </thead>
         <tbody>
-          {items.map((item) => (
+          {items.length === 0 ? (
+            <tr>
+              <td colSpan="5" className="py-4 text-center">
+                Data tidak ditemukan
+              </td>
+            </tr>
+          ) : (
+          items.map((item) => (
             <tr
               key={item.id}
               className="border-t dark:border-gray-700 text-center"
@@ -204,7 +219,8 @@ export default function MasterKegiatanPage() {
                 </button>
               </td>
             </tr>
-          ))}
+          ))
+          )}
         </tbody>
       </table>
 
