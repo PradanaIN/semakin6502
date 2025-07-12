@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2, Search } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 
 export default function TeamsPage() {
@@ -87,7 +87,9 @@ export default function TeamsPage() {
 
   if (user?.role !== "admin") {
     return (
-      <div className="p-6 text-center">Anda tidak memiliki akses ke halaman ini.</div>
+      <div className="p-6 text-center">
+        Anda tidak memiliki akses ke halaman ini.
+      </div>
     );
   }
 
@@ -95,17 +97,21 @@ export default function TeamsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <h1 className="text-2xl font-bold mr-2">Kelola Tim</h1>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            placeholder="Cari tim..."
-            className="border rounded px-3 py-2 bg-white text-gray-900"
-          />
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search size={16} className="text-gray-400 dark:text-gray-300" />
+            </div>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Cari tim..."
+              className="w-full border rounded pl-10 pr-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
         </div>
         <button
           onClick={openCreate}
@@ -127,7 +133,10 @@ export default function TeamsPage() {
         </thead>
         <tbody>
           {paginated.map((t) => (
-            <tr key={t.id} className="border-t dark:border-gray-700">
+            <tr
+              key={t.id}
+              className="border-t dark:border-gray-700 text-center"
+            >
               <td className="px-4 py-2">{t.id}</td>
               <td className="px-4 py-2">{t.nama_tim}</td>
               <td className="px-4 py-2">{t.members?.length || 0}</td>
@@ -158,10 +167,14 @@ export default function TeamsPage() {
               setPageSize(parseInt(e.target.value, 10));
               setCurrentPage(1);
             }}
-            className="border rounded px-3 py-2 bg-white text-gray-900"
+            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
           >
             {[5, 10, 15, 20, 25].map((n) => (
-              <option key={n} value={n} className="text-gray-900">
+              <option
+                key={n}
+                value={n}
+                className="text-gray-900 dark:text-gray-200"
+              >
                 {n} / halaman
               </option>
             ))}
@@ -175,7 +188,10 @@ export default function TeamsPage() {
           >
             Prev
           </button>
-          {Array.from({ length: Math.ceil(filtered.length / pageSize) || 1 }, (_, i) => i + 1).map((n) => (
+          {Array.from(
+            { length: Math.ceil(filtered.length / pageSize) || 1 },
+            (_, i) => i + 1
+          ).map((n) => (
             <button
               key={n}
               onClick={() => setCurrentPage(n)}
@@ -189,7 +205,11 @@ export default function TeamsPage() {
             </button>
           ))}
           <button
-            onClick={() => setCurrentPage((p) => Math.min(Math.ceil(filtered.length / pageSize), p + 1))}
+            onClick={() =>
+              setCurrentPage((p) =>
+                Math.min(Math.ceil(filtered.length / pageSize), p + 1)
+              )
+            }
             disabled={currentPage >= Math.ceil(filtered.length / pageSize)}
             className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
           >
@@ -210,7 +230,9 @@ export default function TeamsPage() {
                 <input
                   type="text"
                   value={form.nama_tim}
-                  onChange={(e) => setForm({ ...form, nama_tim: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, nama_tim: e.target.value })
+                  }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>

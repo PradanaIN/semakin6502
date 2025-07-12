@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2, Search } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 
 export default function UsersPage() {
@@ -10,7 +10,12 @@ export default function UsersPage() {
   const [roles, setRoles] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
-  const [form, setForm] = useState({ nama: "", email: "", password: "", role: "" });
+  const [form, setForm] = useState({
+    nama: "",
+    email: "",
+    password: "",
+    role: "",
+  });
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -52,7 +57,12 @@ export default function UsersPage() {
   };
 
   const saveUser = async () => {
-    if (!form.nama || !form.email || (!editingUser && !form.password) || !form.role) {
+    if (
+      !form.nama ||
+      !form.email ||
+      (!editingUser && !form.password) ||
+      !form.role
+    ) {
       Swal.fire("Lengkapi data", "Semua field wajib diisi", "warning");
       return;
     }
@@ -102,7 +112,9 @@ export default function UsersPage() {
 
   if (user?.role !== "admin") {
     return (
-      <div className="p-6 text-center">Anda tidak memiliki akses ke halaman ini.</div>
+      <div className="p-6 text-center">
+        Anda tidak memiliki akses ke halaman ini.
+      </div>
     );
   }
 
@@ -110,18 +122,22 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <h1 className="text-2xl font-bold mr-2">Kelola Pengguna</h1>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            placeholder="Cari pengguna..."
-            className="border rounded px-3 py-2 bg-white text-gray-900"
-          />
-          <select
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search size={16} className="text-gray-400 dark:text-gray-300" />
+            </div>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Cari pengguna..."
+              className="border rounded-md pl-10 pr-3 py-2 bg-white text-black dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+          {/* <select
             value={roleFilter}
             onChange={(e) => {
               setRoleFilter(e.target.value);
@@ -135,7 +151,7 @@ export default function UsersPage() {
                 {r.name}
               </option>
             ))}
-          </select>
+          </select> */}
         </div>
         <button
           onClick={openCreate}
@@ -160,12 +176,14 @@ export default function UsersPage() {
         <tbody>
           {paginatedUsers.map((u) => (
             <tr key={u.id} className="border-t dark:border-gray-700">
-              <td className="px-4 py-2">{u.id}</td>
+              <td className="px-4 py-2 text-center">{u.id}</td>
               <td className="px-4 py-2">{u.nama}</td>
-              <td className="px-4 py-2">{u.email}</td>
-              <td className="px-4 py-2">{u.members?.[0]?.team?.nama_tim || "-"}</td>
-              <td className="px-4 py-2 capitalize">{u.role}</td>
-              <td className="px-4 py-2 space-x-2">
+              <td className="px-4 py-2 text">{u.email}</td>
+              <td className="px-4 py-2 text-center">
+                {u.members?.[0]?.team?.nama_tim || "-"}
+              </td>
+              <td className="px-4 py-2 capitalize text-center">{u.role}</td>
+              <td className="px-4 py-2 space-x-2 text-center">
                 <button
                   onClick={() => openEdit(u)}
                   className="p-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
@@ -192,10 +210,14 @@ export default function UsersPage() {
               setPageSize(parseInt(e.target.value, 10));
               setCurrentPage(1);
             }}
-            className="border rounded px-3 py-2 bg-white text-gray-900"
+            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
           >
             {[5, 10, 15, 20, 25].map((n) => (
-              <option key={n} value={n} className="text-gray-900">
+              <option
+                key={n}
+                value={n}
+                className="text-gray-900 dark:text-gray-200"
+              >
                 {n} / halaman
               </option>
             ))}
@@ -209,7 +231,10 @@ export default function UsersPage() {
           >
             Prev
           </button>
-          {Array.from({ length: Math.ceil(filteredUsers.length / pageSize) || 1 }, (_, i) => i + 1).map((n) => (
+          {Array.from(
+            { length: Math.ceil(filteredUsers.length / pageSize) || 1 },
+            (_, i) => i + 1
+          ).map((n) => (
             <button
               key={n}
               onClick={() => setCurrentPage(n)}
@@ -272,7 +297,9 @@ export default function UsersPage() {
                 <input
                   type="password"
                   value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, password: e.target.value })
+                  }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
@@ -315,7 +342,9 @@ export default function UsersPage() {
               >
                 Simpan
               </button>
-              <p className="text-xs text-gray-500 ml-2 self-center">* wajib diisi</p>
+              <p className="text-xs text-gray-500 ml-2 self-center">
+                * wajib diisi
+              </p>
             </div>
           </div>
         </div>

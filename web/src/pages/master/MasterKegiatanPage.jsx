@@ -1,14 +1,18 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2, Search } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 
 export default function MasterKegiatanPage() {
   const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [teams, setTeams] = useState([]);
-  const [form, setForm] = useState({ teamId: "", nama_kegiatan: "", deskripsi: "" });
+  const [form, setForm] = useState({
+    teamId: "",
+    nama_kegiatan: "",
+    deskripsi: "",
+  });
   const [editing, setEditing] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [page, setPage] = useState(1);
@@ -53,13 +57,21 @@ export default function MasterKegiatanPage() {
 
   const openEdit = (item) => {
     setEditing(item);
-    setForm({ teamId: item.teamId, nama_kegiatan: item.nama_kegiatan, deskripsi: item.deskripsi || "" });
+    setForm({
+      teamId: item.teamId,
+      nama_kegiatan: item.nama_kegiatan,
+      deskripsi: item.deskripsi || "",
+    });
     setShowForm(true);
   };
 
   const saveItem = async () => {
     if (!form.teamId || isNaN(form.teamId) || !form.nama_kegiatan) {
-      Swal.fire("Lengkapi data", "Tim dan nama kegiatan wajib diisi", "warning");
+      Swal.fire(
+        "Lengkapi data",
+        "Tim dan nama kegiatan wajib diisi",
+        "warning"
+      );
       return;
     }
     try {
@@ -97,55 +109,59 @@ export default function MasterKegiatanPage() {
 
   if (!["ketua", "admin"].includes(user?.role)) {
     return (
-      <div className="p-6 text-center">Anda tidak memiliki akses ke halaman ini.</div>
+      <div className="p-6 text-center">
+        Anda tidak memiliki akses ke halaman ini.
+      </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Master Kegiatan</h1>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-        >
-          <Plus size={16} />
-          <span className="hidden sm:inline">Tambah Kegiatan</span>
-        </button>
-      </div>
+      <div className="flex justify-between items-end">
+        <div className="flex items-end space-x-2">
+          <div>
+            <select
+              value={filterTeam}
+              onChange={(e) => {
+                setPage(1);
+                setFilterTeam(e.target.value);
+              }}
+              className="border px-2 py-1 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
+            >
+              <option value="">Semua</option>
+              {teams.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.nama_tim}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      <div className="flex items-end space-x-2">
-        <div>
-          <label className="text-sm block">Filter Tim</label>
-          <select
-            value={filterTeam}
-            onChange={(e) => {
-              setPage(1);
-              setFilterTeam(e.target.value);
-            }}
-            className="border px-2 py-1 rounded"
-          >
-            <option value="">Semua</option>
-            {teams.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.nama_tim}
-              </option>
-            ))}
-          </select>
+          <div className="relative flex-1 max-w-sm">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search size={16} className="text-gray-400 dark:text-gray-300" />
+            </div>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => {
+                setPage(1);
+                setSearch(e.target.value);
+              }}
+              className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="Cari kegiatan..."
+            />
+          </div>
         </div>
 
-        <div className="flex-1 max-w-sm">
-          <label className="text-sm block">Cari</label>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => {
-              setPage(1);
-              setSearch(e.target.value);
-            }}
-            className="w-full border rounded px-3 py-1"
-            placeholder="Nama kegiatan"
-          />
+        <div>
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+          >
+            <Plus size={16} />
+            <span className="hidden sm:inline">Tambah Kegiatan</span>
+          </button>
         </div>
       </div>
 
@@ -161,11 +177,18 @@ export default function MasterKegiatanPage() {
         </thead>
         <tbody>
           {items.map((item) => (
-            <tr key={item.id} className="border-t dark:border-gray-700">
+            <tr
+              key={item.id}
+              className="border-t dark:border-gray-700 text-center"
+            >
               <td className="px-4 py-2">{item.id}</td>
-              <td className="px-4 py-2">{item.team?.nama_tim || item.teamId}</td>
+              <td className="px-4 py-2">
+                {item.team?.nama_tim || item.teamId}
+              </td>
               <td className="px-4 py-2">{item.nama_kegiatan}</td>
-              <td className="px-4 py-2">{item.deskripsi}</td>
+              <th className="px-4 py-2">
+                {!item.deskripsi ? "-" : item.deskripsi}
+              </th>
               <td className="px-4 py-2 space-x-2">
                 <button
                   onClick={() => openEdit(item)}
@@ -193,7 +216,9 @@ export default function MasterKegiatanPage() {
         >
           Prev
         </button>
-        <span className="px-2 py-1">Page {page} / {lastPage}</span>
+        <span className="px-2 py-1">
+          Page {page} / {lastPage}
+        </span>
         <button
           onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
           disabled={page >= lastPage}
@@ -216,7 +241,9 @@ export default function MasterKegiatanPage() {
                 </label>
                 <select
                   value={form.teamId}
-                  onChange={(e) => setForm({ ...form, teamId: parseInt(e.target.value, 10) })}
+                  onChange={(e) =>
+                    setForm({ ...form, teamId: parseInt(e.target.value, 10) })
+                  }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 >
                   <option value="">Pilih tim</option>
@@ -234,7 +261,9 @@ export default function MasterKegiatanPage() {
                 <input
                   type="text"
                   value={form.nama_kegiatan}
-                  onChange={(e) => setForm({ ...form, nama_kegiatan: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, nama_kegiatan: e.target.value })
+                  }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
@@ -242,7 +271,9 @@ export default function MasterKegiatanPage() {
                 <label className="block text-sm mb-1">Deskripsi</label>
                 <textarea
                   value={form.deskripsi}
-                  onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, deskripsi: e.target.value })
+                  }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
@@ -263,7 +294,9 @@ export default function MasterKegiatanPage() {
               >
                 Simpan
               </button>
-              <p className="text-xs text-gray-500 ml-2 self-center">* wajib diisi</p>
+              <p className="text-xs text-gray-500 ml-2 self-center">
+                * wajib diisi
+              </p>
             </div>
           </div>
         </div>
