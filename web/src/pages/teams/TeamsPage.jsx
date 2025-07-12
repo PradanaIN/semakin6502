@@ -129,7 +129,7 @@ export default function TeamsPage() {
       <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-            <th className="px-4 py-2">ID</th>
+            <th className="px-4 py-2">No</th>
             <th className="px-4 py-2">Nama Tim</th>
             <th className="px-4 py-2">Jumlah Anggota</th>
             <th className="px-4 py-2">Aksi</th>
@@ -149,30 +149,30 @@ export default function TeamsPage() {
               </td>
             </tr>
           ) : (
-            paginated.map((t) => (
-              <tr
-                key={t.id}
-                className="border-t dark:border-gray-700 text-center"
-              >
-                <td className="px-4 py-2">{t.id}</td>
-                <td className="px-4 py-2">{t.nama_tim}</td>
-                <td className="px-4 py-2">{t.members?.length || 0}</td>
-                <td className="px-4 py-2 space-x-2">
-                  <button
-                    onClick={() => openEdit(t)}
-                    className="p-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
-                  >
-                    <Pencil size={16} />
-                  </button>
-                  <button
-                    onClick={() => deleteTeam(t.id)}
-                    className="p-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </td>
-              </tr>
-            ))
+          paginated.map((t, idx) => (
+            <tr
+              key={t.id}
+              className="border-t dark:border-gray-700 text-center"
+            >
+              <td className="px-4 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
+              <td className="px-4 py-2">{t.nama_tim}</td>
+              <td className="px-4 py-2">{t.members?.length || 0}</td>
+              <td className="px-4 py-2 space-x-2">
+                <button
+                  onClick={() => openEdit(t)}
+                  className="p-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                >
+                  <Pencil size={16} />
+                </button>
+                <button
+                  onClick={() => deleteTeam(t.id)}
+                  className="p-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </td>
+            </tr>
+          ))
           )}
         </tbody>
       </table>

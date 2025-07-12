@@ -169,7 +169,7 @@ export default function UsersPage() {
       <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-            <th className="px-4 py-2">ID</th>
+            <th className="px-4 py-2">No</th>
             <th className="px-4 py-2">Nama</th>
             <th className="px-4 py-2">Email</th>
             <th className="px-4 py-2">Tim</th>
@@ -191,31 +191,31 @@ export default function UsersPage() {
               </td>
             </tr>
           ) : (
-            paginatedUsers.map((u) => (
+            paginatedUsers.map((u, idx) => (
               <tr key={u.id} className="border-t dark:border-gray-700">
-                <td className="px-4 py-2 text-center">{u.id}</td>
-                <td className="px-4 py-2">{u.nama}</td>
-                <td className="px-4 py-2 text">{u.email}</td>
-                <td className="px-4 py-2 text-center">
-                  {u.members?.[0]?.team?.nama_tim || "-"}
-                </td>
-                <td className="px-4 py-2 capitalize text-center">{u.role}</td>
-                <td className="px-4 py-2 space-x-2 text-center">
-                  <button
-                    onClick={() => openEdit(u)}
-                    className="p-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
-                  >
-                    <Pencil size={16} />
-                  </button>
-                  <button
-                    onClick={() => deleteUser(u.id)}
-                    className="p-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </td>
-              </tr>
-            ))
+                <td className="px-4 py-2 text-center">{(currentPage - 1) * pageSize + idx + 1}</td>
+              <td className="px-4 py-2">{u.nama}</td>
+              <td className="px-4 py-2 text">{u.email}</td>
+              <td className="px-4 py-2 text-center">
+                {u.members?.[0]?.team?.nama_tim || "-"}
+              </td>
+              <td className="px-4 py-2 capitalize text-center">{u.role}</td>
+              <td className="px-4 py-2 space-x-2 text-center">
+                <button
+                  onClick={() => openEdit(u)}
+                  className="p-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                >
+                  <Pencil size={16} />
+                </button>
+                <button
+                  onClick={() => deleteUser(u.id)}
+                  className="p-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </td>
+            </tr>
+          ))
           )}
         </tbody>
       </table>
