@@ -51,6 +51,10 @@ export default function UsersPage() {
   };
 
   const saveUser = async () => {
+    if (!form.nama || !form.email || (!editingUser && !form.password) || !form.role) {
+      Swal.fire("Lengkapi data", "Semua field wajib diisi", "warning");
+      return;
+    }
     try {
       if (editingUser) {
         await axios.put(`/users/${editingUser.id}`, form);
@@ -62,6 +66,7 @@ export default function UsersPage() {
       Swal.fire("Berhasil", "Pengguna disimpan", "success");
     } catch (err) {
       console.error("Gagal menyimpan pengguna", err);
+      Swal.fire("Error", "Gagal menyimpan pengguna", "error");
     }
   };
 

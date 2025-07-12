@@ -1,5 +1,7 @@
 import { Injectable, ForbiddenException } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
+import { CreateMasterKegiatanDto } from "./dto/create-master-kegiatan.dto";
+import { UpdateMasterKegiatanDto } from "./dto/update-master-kegiatan.dto";
 
 @Injectable()
 export class MasterKegiatanService {
@@ -36,7 +38,7 @@ export class MasterKegiatanService {
     };
   }
 
-  async create(data: any, userId: number, role: string) {
+  async create(data: CreateMasterKegiatanDto, userId: number, role: string) {
     if (role !== "admin") {
       const leader = await this.prisma.member.findFirst({
         where: { teamId: data.teamId, userId, is_leader: true },
@@ -48,7 +50,12 @@ export class MasterKegiatanService {
     return this.prisma.masterKegiatan.create({ data, include: { team: true } });
   }
 
-  async update(id: number, data: any, userId: number, role: string) {
+  async update(
+    id: number,
+    data: UpdateMasterKegiatanDto,
+    userId: number,
+    role: string,
+  ) {
     const existing = await this.prisma.masterKegiatan.findUnique({
       where: { id },
     });
