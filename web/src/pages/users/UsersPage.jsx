@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 
 export default function UsersPage() {
@@ -10,7 +11,7 @@ export default function UsersPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [form, setForm] = useState({ nama: "", email: "", password: "", role: "" });
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
@@ -138,15 +139,16 @@ export default function UsersPage() {
         </div>
         <button
           onClick={openCreate}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
         >
-          Tambah Pengguna
+          <Plus size={16} />
+          <span className="hidden sm:inline">Tambah Pengguna</span>
         </button>
       </div>
 
       <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
         <thead>
-          <tr className="bg-gray-200 dark:bg-gray-700 text-left text-sm uppercase">
+          <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
             <th className="px-4 py-2">ID</th>
             <th className="px-4 py-2">Nama</th>
             <th className="px-4 py-2">Email</th>
@@ -166,15 +168,15 @@ export default function UsersPage() {
               <td className="px-4 py-2 space-x-2">
                 <button
                   onClick={() => openEdit(u)}
-                  className="px-3 py-1 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                  className="p-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
                 >
-                  Edit
+                  <Pencil size={16} />
                 </button>
                 <button
                   onClick={() => deleteUser(u.id)}
-                  className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                  className="p-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
                 >
-                  Hapus
+                  <Trash2 size={16} />
                 </button>
               </td>
             </tr>
