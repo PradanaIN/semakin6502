@@ -7,19 +7,30 @@ export default function MasterKegiatanPage() {
   const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [teams, setTeams] = useState([]);
-  const [form, setForm] = useState({ teamId: "", nama_kegiatan: "" });
+  const [form, setForm] = useState({ teamId: "", nama_kegiatan: "", deskripsi: "" });
   const [editing, setEditing] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [filterTeam, setFilterTeam] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchItems();
     fetchTeams();
-  }, []);
+  }, [page, filterTeam, search]);
 
   const fetchItems = async () => {
     try {
-      const res = await axios.get("/master-kegiatan");
-      setItems(res.data);
+      const res = await axios.get("/master-kegiatan", {
+        params: {
+          page,
+          team: filterTeam || undefined,
+          search: search || undefined,
+        },
+      });
+      setItems(res.data.data);
+      setLastPage(res.data.lastPage);
     } catch (err) {
       console.error("Gagal mengambil master kegiatan", err);
     }
@@ -36,13 +47,13 @@ export default function MasterKegiatanPage() {
 
   const openCreate = () => {
     setEditing(null);
-    setForm({ teamId: "", nama_kegiatan: "" });
+    setForm({ teamId: "", nama_kegiatan: "", deskripsi: "" });
     setShowForm(true);
   };
 
   const openEdit = (item) => {
     setEditing(item);
-    setForm({ teamId: item.teamId, nama_kegiatan: item.nama_kegiatan });
+    setForm({ teamId: item.teamId, nama_kegiatan: item.nama_kegiatan, deskripsi: item.deskripsi || "" });
     setShowForm(true);
   };
 
@@ -81,9 +92,7 @@ export default function MasterKegiatanPage() {
 
   if (!["ketua", "admin"].includes(user?.role)) {
     return (
-      <div className="p-6 text-center">
-        Anda tidak memiliki akses ke halaman ini.
-      </div>
+      <div className="p-6 text-center">Anda tidak memiliki akses ke halaman ini.</div>
     );
   }
 
@@ -99,12 +108,47 @@ export default function MasterKegiatanPage() {
         </button>
       </div>
 
+      <div className="flex items-end space-x-2">
+        <div>
+          <label className="text-sm block">Filter Tim</label>
+          <select
+            value={filterTeam}
+            onChange={(e) => {
+              setPage(1);
+              setFilterTeam(e.target.value);
+            }}
+            className="border px-2 py-1 rounded"
+          >
+            <option value="">Semua</option>
+            {teams.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.nama_tim}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex-1">
+          <label className="text-sm block">Cari</label>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => {
+              setPage(1);
+              setSearch(e.target.value);
+            }}
+            className="w-full border rounded px-3 py-1"
+            placeholder="Nama kegiatan"
+          />
+        </div>
+      </div>
+
       <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-left text-sm uppercase">
             <th className="px-4 py-2">ID</th>
             <th className="px-4 py-2">Tim</th>
             <th className="px-4 py-2">Nama Kegiatan</th>
+            <th className="px-4 py-2">Deskripsi</th>
             <th className="px-4 py-2">Aksi</th>
           </tr>
         </thead>
@@ -112,10 +156,9 @@ export default function MasterKegiatanPage() {
           {items.map((item) => (
             <tr key={item.id} className="border-t dark:border-gray-700">
               <td className="px-4 py-2">{item.id}</td>
-              <td className="px-4 py-2">
-                {item.team?.nama_tim || item.teamId}
-              </td>
+              <td className="px-4 py-2">{item.team?.nama_tim || item.teamId}</td>
               <td className="px-4 py-2">{item.nama_kegiatan}</td>
+              <td className="px-4 py-2">{item.deskripsi}</td>
               <td className="px-4 py-2 space-x-2">
                 <button
                   onClick={() => openEdit(item)}
@@ -135,6 +178,24 @@ export default function MasterKegiatanPage() {
         </tbody>
       </table>
 
+      <div className="flex justify-end space-x-2 mt-2">
+        <button
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={page === 1}
+          className="px-3 py-1 border rounded disabled:opacity-50"
+        >
+          Prev
+        </button>
+        <span className="px-2 py-1">Page {page} / {lastPage}</span>
+        <button
+          onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
+          disabled={page >= lastPage}
+          className="px-3 py-1 border rounded disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
+
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
@@ -146,9 +207,7 @@ export default function MasterKegiatanPage() {
                 <label className="block text-sm mb-1">Tim</label>
                 <select
                   value={form.teamId}
-                  onChange={(e) =>
-                    setForm({ ...form, teamId: parseInt(e.target.value, 10) })
-                  }
+                  onChange={(e) => setForm({ ...form, teamId: parseInt(e.target.value, 10) })}
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 >
                   <option value="">Pilih tim</option>
@@ -164,9 +223,15 @@ export default function MasterKegiatanPage() {
                 <input
                   type="text"
                   value={form.nama_kegiatan}
-                  onChange={(e) =>
-                    setForm({ ...form, nama_kegiatan: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, nama_kegiatan: e.target.value })}
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                />
+              </div>
+              <div>
+                <label className="block text-sm mb-1">Deskripsi</label>
+                <textarea
+                  value={form.deskripsi}
+                  onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
@@ -177,7 +242,6 @@ export default function MasterKegiatanPage() {
                   setShowForm(false);
                   setEditing(null);
                 }}
-                n
                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
               >
                 Batal

@@ -5,8 +5,36 @@ import { PrismaService } from "../prisma.service";
 export class MasterKegiatanService {
   constructor(private prisma: PrismaService) {}
 
-  findAll() {
-    return this.prisma.masterKegiatan.findMany({ include: { team: true } });
+  async findAll(params: {
+    page?: number;
+    limit?: number;
+    teamId?: number;
+    search?: string;
+  }) {
+    const page = params.page && params.page > 0 ? params.page : 1;
+    const limit = params.limit && params.limit > 0 ? params.limit : 10;
+    const skip = (page - 1) * limit;
+    const where: any = {};
+    if (params.teamId) where.teamId = params.teamId;
+    if (params.search)
+      where.nama_kegiatan = { contains: params.search, mode: "insensitive" };
+
+    const [data, total] = await this.prisma.$transaction([
+      this.prisma.masterKegiatan.findMany({
+        where,
+        include: { team: true },
+        skip,
+        take: limit,
+      }),
+      this.prisma.masterKegiatan.count({ where }),
+    ]);
+
+    return {
+      data,
+      total,
+      page,
+      lastPage: Math.ceil(total / limit),
+    };
   }
 
   async create(data: any, userId: number) {
