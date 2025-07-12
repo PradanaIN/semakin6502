@@ -168,7 +168,7 @@ export default function MasterKegiatanPage() {
                 onClick={() => {
                   setShowForm(false);
                   setEditing(null);
-                }}
+                }}n
                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
               >
                 Batal

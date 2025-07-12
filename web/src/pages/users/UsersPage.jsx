@@ -13,6 +13,7 @@ export default function UsersPage() {
   const [pageSize, setPageSize] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
 
   useEffect(() => {
     fetchUsers();
@@ -65,17 +66,17 @@ export default function UsersPage() {
   };
 
   const deleteUser = async (id) => {
-    const res = await Swal.fire({
+    const result = await Swal.fire({
       title: "Hapus pengguna ini?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Hapus",
     });
-    if (!res.isConfirmed) return;
+    if (!result.isConfirmed) return;
     try {
       await axios.delete(`/users/${id}`);
       fetchUsers();
-      Swal.fire("Dihapus", "Pengguna berhasil dihapus", "success");
+      await Swal.fire("Dihapus", "Pengguna berhasil dihapus", "success");
     } catch (err) {
       console.error("Gagal menghapus pengguna", err);
       Swal.fire("Error", "Gagal menghapus pengguna", "error");
@@ -84,9 +85,9 @@ export default function UsersPage() {
 
   const filteredUsers = users.filter(
     (u) =>
-      u.nama.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase())
-  );
+      (u.nama.toLowerCase().includes(search.toLowerCase()) ||
+        u.email.toLowerCase().includes(search.toLowerCase())) &&
+      (roleFilter ? u.role === roleFilter : true)
   const paginatedUsers = filteredUsers.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
@@ -100,8 +101,35 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Kelola Pengguna</h1>
+      <div className="flex flex-wrap justify-between items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <h1 className="text-2xl font-bold mr-2">Kelola Pengguna</h1>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+            placeholder="Cari pengguna..."
+            className="border rounded px-3 py-2 bg-white text-gray-900"
+          />
+          <select
+            value={roleFilter}
+            onChange={(e) => {
+              setRoleFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border rounded px-3 py-2 bg-white text-gray-900"
+          >
+            <option value="">Semua Role</option>
+            {roles.map((r) => (
+              <option key={r.id} value={r.name} className="text-gray-900">
+                {r.name}
+              </option>
+            ))}
+          </select>
+        </div>
         <button
           onClick={openCreate}
           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
@@ -150,42 +178,42 @@ export default function UsersPage() {
 
       <div className="flex items-center justify-between mt-4">
         <div className="space-x-2">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            placeholder="Cari pengguna..."
-            className="border px-2 py-1 rounded"
-          />
           <select
             value={pageSize}
             onChange={(e) => {
               setPageSize(parseInt(e.target.value, 10));
               setCurrentPage(1);
             }}
-            className="border px-2 py-1 rounded"
+            className="border rounded px-3 py-2 bg-white text-gray-900"
           >
             {[5, 10, 15, 20, 25].map((n) => (
-              <option key={n} value={n}>
+              <option key={n} value={n} className="text-gray-900">
                 {n} / halaman
               </option>
             ))}
           </select>
         </div>
-        <div className="space-x-2">
+        <div className="space-x-1">
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
           >
             Prev
           </button>
-          <span>
-            {currentPage} / {Math.ceil(filteredUsers.length / pageSize) || 1}
-          </span>
+          {Array.from({ length: Math.ceil(filteredUsers.length / pageSize) || 1 }, (_, i) => i + 1).map((n) => (
+            <button
+              key={n}
+              onClick={() => setCurrentPage(n)}
+              className={`px-3 py-1 rounded-full ${
+                currentPage === n
+                  ? "bg-blue-600 text-white"
+                  : "border bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+              }`}
+            >
+              {n}
+            </button>
+          ))}
           <button
             onClick={() =>
               setCurrentPage((p) =>
@@ -193,7 +221,7 @@ export default function UsersPage() {
               )
             }
             disabled={currentPage >= Math.ceil(filteredUsers.length / pageSize)}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
           >
             Next
           </button>
