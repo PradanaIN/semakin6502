@@ -8,11 +8,13 @@ import {
   Body,
   UseGuards,
   ParseIntPipe,
+  Req,
 } from "@nestjs/common";
 import { TeamsService } from "./teams.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/guards/roles.decorator";
+import { Request } from "express";
 
 @Controller("teams")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -20,9 +22,12 @@ export class TeamsController {
   constructor(private teamsService: TeamsService) {}
 
   @Get()
-  @Roles("admin")
-  findAll() {
-    return this.teamsService.findAll();
+  findAll(@Req() req: Request) {
+    const { user } = req as any;
+    if (user.role === "admin") {
+      return this.teamsService.findAll();
+    }
+    return this.teamsService.findByLeader(user.userId);
   }
 
   @Get(":id")
