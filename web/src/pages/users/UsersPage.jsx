@@ -8,6 +8,7 @@ export default function UsersPage() {
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [form, setForm] = useState({
@@ -19,7 +20,7 @@ export default function UsersPage() {
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("");
+  const [roleFilter, _setRoleFilter] = useState("");
 
   useEffect(() => {
     fetchUsers();
@@ -28,10 +29,13 @@ export default function UsersPage() {
 
   const fetchUsers = async () => {
     try {
+      setLoading(true);
       const res = await axios.get("/users");
       setUsers(res.data);
     } catch (err) {
       console.error("Gagal mengambil pengguna", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -118,6 +122,7 @@ export default function UsersPage() {
     );
   }
 
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
@@ -174,9 +179,20 @@ export default function UsersPage() {
           </tr>
         </thead>
         <tbody>
-          {paginatedUsers.map((u) => (
-            <tr key={u.id} className="border-t dark:border-gray-700">
-              <td className="px-4 py-2 text-center">{u.id}</td>
+          {loading ? (
+            <tr>
+              <td colSpan="6" className="py-4 text-center">Memuat data...</td>
+            </tr>
+          ) : paginatedUsers.length === 0 ? (
+            <tr>
+              <td colSpan="6" className="py-4 text-center">
+                Data tidak ditemukan
+              </td>
+            </tr>
+          ) : (
+            paginatedUsers.map((u) => (
+              <tr key={u.id} className="border-t dark:border-gray-700">
+                <td className="px-4 py-2 text-center">{u.id}</td>
               <td className="px-4 py-2">{u.nama}</td>
               <td className="px-4 py-2 text">{u.email}</td>
               <td className="px-4 py-2 text-center">
@@ -198,7 +214,8 @@ export default function UsersPage() {
                 </button>
               </td>
             </tr>
-          ))}
+          ))
+          )}
         </tbody>
       </table>
 

@@ -7,6 +7,7 @@ import { useAuth } from "../auth/useAuth";
 export default function TeamsPage() {
   const { user } = useAuth();
   const [teams, setTeams] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingTeam, setEditingTeam] = useState(null);
   const [form, setForm] = useState({ nama_tim: "" });
@@ -20,10 +21,13 @@ export default function TeamsPage() {
 
   const fetchTeams = async () => {
     try {
+      setLoading(true);
       const res = await axios.get("/teams");
       setTeams(res.data);
     } catch (err) {
       console.error("Gagal mengambil tim", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,6 +97,7 @@ export default function TeamsPage() {
     );
   }
 
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
@@ -132,7 +137,18 @@ export default function TeamsPage() {
           </tr>
         </thead>
         <tbody>
-          {paginated.map((t) => (
+          {loading ? (
+            <tr>
+              <td colSpan="4" className="py-4 text-center">Memuat data...</td>
+            </tr>
+          ) : paginated.length === 0 ? (
+            <tr>
+              <td colSpan="4" className="py-4 text-center">
+                Data tidak ditemukan
+              </td>
+            </tr>
+          ) : (
+          paginated.map((t) => (
             <tr
               key={t.id}
               className="border-t dark:border-gray-700 text-center"
@@ -155,7 +171,8 @@ export default function TeamsPage() {
                 </button>
               </td>
             </tr>
-          ))}
+          ))
+          )}
         </tbody>
       </table>
 
