@@ -16,7 +16,6 @@ async function main() {
     skipDuplicates: true,
   });
 
-
   // Buat user satu per satu agar dapat userId
   const admin = await prisma.user.create({
     data: {
@@ -97,31 +96,29 @@ async function main() {
     skipDuplicates: true,
   });
 
-  const sosial = await prisma.team.findFirst({ where: { nama_tim: "Sosial" } });
-  const ipds = await prisma.team.findFirst({ where: { nama_tim: "IPDS" } });
+  const sosial = await prisma.team.create({ data: { nama_tim: "Sosial" } });
+  const ipds = await prisma.team.create({ data: { nama_tim: "IPDS" } });
 
-  // Members
   await prisma.member.createMany({
     data: [
-      { userId: ketuaSosial.id, teamId: sosial.id, is_leader: true },
-      { userId: ketuaIpds.id, teamId: ipds.id, is_leader: true },
-      { userId: anggotaA.id, teamId: sosial.id, is_leader: false },
-      { userId: anggotaB.id, teamId: ipds.id, is_leader: false },
+      { userId: ketuaSosial.id, teamId: sosial!.id, is_leader: true },
+      { userId: ketuaIpds.id, teamId: ipds!.id, is_leader: true },
+      { userId: anggotaA.id, teamId: sosial!.id, is_leader: false },
+      { userId: anggotaB.id, teamId: ipds!.id, is_leader: false },
     ],
   });
 
-  // Master Kegiatan
   const kegiatanSosial1 = await prisma.masterKegiatan.create({
-    data: { teamId: sosial.id, nama_kegiatan: "Pendataan Sosial Ekonomi" },
+    data: { teamId: sosial!.id, nama_kegiatan: "Pendataan Sosial Ekonomi" },
   });
   const kegiatanSosial2 = await prisma.masterKegiatan.create({
-    data: { teamId: sosial.id, nama_kegiatan: "Pengolahan Data Survei" },
+    data: { teamId: sosial!.id, nama_kegiatan: "Pengolahan Data Survei" },
   });
   const kegiatanIpds1 = await prisma.masterKegiatan.create({
-    data: { teamId: ipds.id, nama_kegiatan: "Pemetaan Digital IPDS" },
+    data: { teamId: ipds!.id, nama_kegiatan: "Pemetaan Digital IPDS" },
   });
   const kegiatanIpds2 = await prisma.masterKegiatan.create({
-    data: { teamId: ipds.id, nama_kegiatan: "Pemeliharaan Sistem Statistik" },
+    data: { teamId: ipds!.id, nama_kegiatan: "Pemeliharaan Sistem Statistik" },
   });
 
   // Penugasan
