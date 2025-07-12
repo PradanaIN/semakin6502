@@ -14,9 +14,11 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
     links.push({ to: "/teams", label: "Kelola Tim" });
   }
 
-  if (user?.role === "ketua") {
+  if (user?.role === "ketua" || user?.role === "admin") {
     links.push({ to: "/master-kegiatan", label: "Master Kegiatan" });
-    links.push({ to: "/penugasan", label: "Penugasan Mingguan" });
+    if (user?.role === "ketua") {
+      links.push({ to: "/penugasan", label: "Penugasan Mingguan" });
+    }
   }
 
   if (user?.role === "anggota" || user?.role === "ketua") {
