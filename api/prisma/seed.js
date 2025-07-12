@@ -37,96 +37,259 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("@prisma/client");
+var hash_1 = require("../src/common/hash");
 var prisma = new client_1.PrismaClient();
+var rawUsers = [
+    { nama: "Yuda Agus Irianto", email: "yuda@bps.go.id", username: "yuda", password: "password", team: "Pimpinan", role: "Pimpinan" },
+    { nama: "Warsidi", email: "warsidi2@bps.go.id", username: "warsidi2", password: "password", team: "Sosial", role: "Anggota Tim" },
+    { nama: "Muhamadsyah", email: "muhamadsyah@bps.go.id", username: "muhamadsyah", password: "password", team: "Neraca", role: "Anggota Tim" },
+    { nama: "Dwi Prasetyono", email: "dwipras@bps.go.id", username: "dwipras", password: "password", team: "Produksi", role: "Ketua Tim" },
+    { nama: "Tiara Kusuma Widianingrum", email: "tiara.kusuma@bps.go.id", username: "tiara.kusuma", password: "password", team: "Sosial", role: "Ketua Tim" },
+    { nama: "Idhamsyah", email: "idhamsyah@bps.go.id", username: "idhamsyah", password: "password", team: "Umum", role: "Anggota Tim" },
+    { nama: "Mohammad Agusti Rahman", email: "agusti.rahman@bps.go.id", username: "agusti.rahman", password: "password", team: "Distribusi", role: "Ketua Tim" },
+    { nama: "Okta Wahyu Nugraha", email: "okta.nugraha@bps.go.id", username: "okta.nugraha", password: "password", team: "Umum", role: "Anggota Tim" },
+    { nama: "Rosetina Fini Alsera", email: "finialsera@bps.go.id", username: "finialsera", password: "password", team: "Umum", role: "Anggota Tim" },
+    { nama: "Shafa", email: "sha.fa@bps.go.id", username: "sha.fa", password: "password", team: "Umum", role: "Anggota Tim" },
+    { nama: "Ari Susilowati", email: "arisusilo@bps.go.id", username: "arisusilo", password: "password", team: "Umum", role: "Ketua Tim" },
+    { nama: "Rifki Maulana", email: "rifki.maulana@bps.go.id", username: "rifki.maulana", password: "password", team: "Neraca", role: "Ketua Tim" },
+    { nama: "Sega Purwa Wika", email: "sega.wika@bps.go.id", username: "sega.wika", password: "password", team: "Distribusi", role: "Anggota Tim" },
+    { nama: "Alphin Pratama Husada", email: "alphin.pratama@bps.go.id", username: "alphin.pratama", password: "password", team: "Produksi", role: "Anggota Tim" },
+    { nama: "Bambang Luhat", email: "bambang_luhat@bps.go.id", username: "bambang_luhat", password: "password", team: "Produksi", role: "Anggota Tim" },
+    { nama: "Fachri Izzudin Lazuardi", email: "fachri.lazuardi@bps.go.id", username: "fachri.lazuardi", password: "password", team: "IPDS", role: "Ketua Tim" },
+    { nama: "Andi Nurdiansyah", email: "andi.nurdiansyah@bps.go.id", username: "andi.nurdiansyah", password: "password", team: "Sosial", role: "Anggota Tim" },
+    { nama: "Afnita Rahma Auliya Putri", email: "afnita.rahma@bps.go.id", username: "afnita.rahma", password: "password", team: "IPDS", role: "Anggota Tim" },
+    { nama: "Anissa Nurullya Fernanda", email: "anissa.nurullya@bps.go.id", username: "anissa.nurullya", password: "password", team: "Neraca", role: "Anggota Tim" },
+    { nama: "Febri Fatika Sari", email: "febri.fatika@bps.go.id", username: "febri.fatika", password: "password", team: "Distribusi", role: "Anggota Tim" },
+    { nama: "Marini Safa Aziza", email: "marinisafa@bps.go.id", username: "marinisafa", password: "password", team: "Sosial", role: "Anggota Tim" },
+    { nama: "Najwa Fairus Samaya", email: "najwa.fairus@bps.go.id", username: "najwa.fairus", password: "password", team: "Neraca", role: "Anggota Tim" },
+    { nama: "Fiqah Rochmah Ningtyas Duana Putri", email: "fiqah.putri@bps.go.id", username: "fiqah.putri", password: "password", team: "Produksi", role: "Anggota Tim" },
+    { nama: "Lia Aulia Hayati", email: "liaauliahayati@bps.go.id", username: "liaauliahayati", password: "password", team: "Produksi", role: "Anggota Tim" },
+    { nama: "Mardiana", email: "mar.diana@bps.go.id", username: "mar.diana", password: "password", team: "Distribusi", role: "Anggota Tim" },
+    { nama: "Novanni Indi Pradana", email: "novanniindipradana@bps.go.id", username: "novanniindipradana", password: "password", team: "IPDS", role: "Anggota Tim" },
+    { nama: "Elly Astutik", email: "elly.astutik@bps.go.id", username: "elly.astutik", password: "password", team: "Umum", role: "Anggota Tim" },
+    { nama: "Ayu Pinta Gabina Siregar", email: "ayu.pinta@bps.go.id", username: "ayu.pinta", password: "password", team: "Umum", role: "Anggota Tim" },
+];
+var roleMap = {
+    "Pimpinan": "pimpinan",
+    "Ketua Tim": "ketua",
+    "Anggota Tim": "anggota",
+};
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var users, sosial, ipds, kegiatanSosial1, kegiatanSosial2, kegiatanIpds1, kegiatanIpds2, tugasA, tugasB, tugasC;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var _a, _b, teamNames, teams, teamMap, kegiatanByTeam, _i, _c, _d, teamName, kegiatan, teamId, _e, kegiatan_1, nama, existing, _f, rawUsers_1, u, role, user, _g, _h, teamId;
+        var _j, _k, _l, _m;
+        return __generator(this, function (_o) {
+            switch (_o.label) {
                 case 0: return [4 /*yield*/, prisma.role.createMany({
                         data: [
-                            { name: 'admin' },
-                            { name: 'pimpinan' },
-                            { name: 'ketua' },
-                            { name: 'anggota' }
+                            { name: "admin" },
+                            { name: "pimpinan" },
+                            { name: "ketua" },
+                            { name: "anggota" },
                         ],
-                        skipDuplicates: true
+                        skipDuplicates: true,
                     })];
                 case 1:
-                    _a.sent();
-                    return [4 /*yield*/, prisma.user.createMany({
-                        data: [
-                            { nama: 'Admin Utama', email: 'admin@bps.go.id', password: 'admin123', role: 'admin' },
-                            { nama: 'Pimpinan BPS', email: 'pimpinan@bps.go.id', password: 'pimpinan123', role: 'pimpinan' },
-                            { nama: 'Ketua Tim Sosial', email: 'ketua.sosial@bps.go.id', password: 'ketua123', role: 'pegawai' },
-                            { nama: 'Ketua Tim IPDS', email: 'ketua.ipds@bps.go.id', password: 'ketua456', role: 'pegawai' },
-                            { nama: 'Anggota A', email: 'anggota.a@bps.go.id', password: 'anggota123', role: 'pegawai' },
-                            { nama: 'Anggota B', email: 'anggota.b@bps.go.id', password: 'anggota456', role: 'pegawai' },
-                        ]
-                    })];
-                case 2:
-                    users = _a.sent();
-                    return [4 /*yield*/, prisma.team.create({ data: { nama_tim: 'Sosial' } })];
+                    _o.sent();
+                    _b = (_a = prisma.user).upsert;
+                    _j = {
+                        where: { email: "admin@bps.go.id" },
+                        update: {}
+                    };
+                    _k = {
+                        nama: "Admin Utama",
+                        username: "admin",
+                        email: "admin@bps.go.id"
+                    };
+                    return [4 /*yield*/, (0, hash_1.hashPassword)("password")];
+                case 2: return [4 /*yield*/, _b.apply(_a, [(_j.create = (_k.password = _o.sent(),
+                            _k.role = "admin",
+                            _k),
+                            _j)])];
                 case 3:
-                    sosial = _a.sent();
-                    return [4 /*yield*/, prisma.team.create({ data: { nama_tim: 'IPDS' } })];
-                case 4:
-                    ipds = _a.sent();
-                    // Members
-                    return [4 /*yield*/, prisma.member.createMany({
-                            data: [
-                                { userId: 3, teamId: sosial.id, is_leader: true },
-                                { userId: 4, teamId: ipds.id, is_leader: true },
-                                { userId: 5, teamId: sosial.id, is_leader: false },
-                                { userId: 6, teamId: ipds.id, is_leader: false },
-                            ]
+                    _o.sent();
+                    teamNames = Array.from(new Set(rawUsers.map(function (u) { return u.team; })));
+                    return [4 /*yield*/, prisma.team.createMany({
+                            data: teamNames.map(function (n) { return ({ nama_tim: n }); }),
+                            skipDuplicates: true,
                         })];
                 case 4:
-                    // Members
-                    _a.sent();
-                    return [4 /*yield*/, prisma.masterKegiatan.create({ data: { teamId: sosial.id, nama_kegiatan: 'Pendataan Sosial Ekonomi' } })];
+                    _o.sent();
+                    return [4 /*yield*/, prisma.team.findMany({ where: { nama_tim: { in: teamNames } } })];
                 case 5:
-                    kegiatanSosial1 = _a.sent();
-                    return [4 /*yield*/, prisma.masterKegiatan.create({ data: { teamId: sosial.id, nama_kegiatan: 'Pengolahan Data Survei' } })];
+                    teams = _o.sent();
+                    teamMap = new Map(teams.map(function (t) { return [t.nama_tim, t.id]; }));
+                    kegiatanByTeam = {
+                        Umum: [
+                            "SAKIP",
+                            "SPI",
+                            "Keuangan",
+                            "Kepegawaian",
+                            "Kehumasan",
+                            "Kearsipan",
+                            "BMN",
+                            "Pengadaan barang dan jasa",
+                            "Rapat/Sosialisasi",
+                            "TB",
+                            "Apel/Upacara",
+                            "Anggaran",
+                            "Rapat",
+                            "ZI",
+                            "Monev",
+                        ],
+                        Sosial: [
+                            "Susenas Maret",
+                            "Susenas Sep",
+                            "Seruti Tw I",
+                            "Seruti Tw II",
+                            "Seruti Tw III",
+                            "Seruti Tw IV",
+                            "Podes",
+                            "Polkam",
+                            "Sakernas Feb",
+                            "Sakernas Ags",
+                            "Supas",
+                            "Desa Cantik",
+                        ],
+                        Distribusi: [
+                            "SHK",
+                            "SHP",
+                            "SHPED",
+                            "SHPB",
+                            "SHMP",
+                            "VHTS",
+                            "VHTL",
+                            "SIMOPPEL",
+                            "LLAU",
+                            "SHKK",
+                            "SVPEB",
+                            "VPBD",
+                            "VPEK",
+                            "PJ II/5",
+                            "SKP",
+                            "SVK",
+                            "SLK-KSP",
+                            "VREST",
+                            "SLK-BUMD",
+                            "K3",
+                            "ECOMMERCE",
+                            "UPD PARIWISATA",
+                            "SBR",
+                            "SE2026",
+                            "POLDIS",
+                        ],
+                        Produksi: [
+                            "SKTH",
+                            "KOMSTRAT",
+                            "UPDATING DIREKTORI PERUSAHAAN AWAL",
+                            "SIMENTAL",
+                            "VN HORTI",
+                            "CAPTIVE POWER",
+                            "IBS",
+                            "AIR BERSIH TAHUNAN",
+                            "PENGGALIAN URT",
+                            "IMK TAHUNAN",
+                            "RAPAT & KOORDINASI",
+                            "SKTR",
+                            "KSA",
+                            "UBINAN",
+                            "STPIM",
+                            "SIUTAN-PBPH",
+                            "SIM-TP",
+                            "SPH",
+                            "UDPE",
+                            "MIGAS",
+                            "NON MIGAS",
+                            "IMK TRIWULANAN",
+                            "PENGGALIAN BERBADAN HUKUM TRIWULANAN",
+                            "BRIEFING IMK TAHUNAN",
+                        ],
+                        Neraca: [
+                            "Neraca Produksi",
+                            "Neraca Pengeluaran",
+                            "Analisis Lintas Sektor",
+                            "Penjaminan Kualitas QG",
+                        ],
+                        IPDS: [
+                            "Wilkerstat SE2026",
+                            "Pembinaan Statistik Sektoral",
+                            "Metadata dan Romantik",
+                            "KCDA",
+                            "SPBE",
+                            "PEKPPP",
+                            "PST",
+                            "Pengolahan",
+                        ],
+                    };
+                    _i = 0, _c = Object.entries(kegiatanByTeam);
+                    _o.label = 6;
                 case 6:
-                    kegiatanSosial2 = _a.sent();
-                    return [4 /*yield*/, prisma.masterKegiatan.create({ data: { teamId: ipds.id, nama_kegiatan: 'Pemetaan Digital IPDS' } })];
+                    if (!(_i < _c.length)) return [3 /*break*/, 12];
+                    _d = _c[_i], teamName = _d[0], kegiatan = _d[1];
+                    teamId = teamMap.get(teamName);
+                    if (!teamId)
+                        return [3 /*break*/, 11];
+                    _e = 0, kegiatan_1 = kegiatan;
+                    _o.label = 7;
                 case 7:
-                    kegiatanIpds1 = _a.sent();
-                    return [4 /*yield*/, prisma.masterKegiatan.create({ data: { teamId: ipds.id, nama_kegiatan: 'Pemeliharaan Sistem Statistik' } })];
+                    if (!(_e < kegiatan_1.length)) return [3 /*break*/, 11];
+                    nama = kegiatan_1[_e];
+                    return [4 /*yield*/, prisma.masterKegiatan.findFirst({
+                            where: { teamId: teamId, nama_kegiatan: nama },
+                        })];
                 case 8:
-                    kegiatanIpds2 = _a.sent();
-                    return [4 /*yield*/, prisma.penugasan.create({ data: { kegiatanId: kegiatanSosial1.id, pegawaiId: 5, minggu: 1, bulan: 'Juni', tahun: 2025 } })];
+                    existing = _o.sent();
+                    if (!!existing) return [3 /*break*/, 10];
+                    return [4 /*yield*/, prisma.masterKegiatan.create({ data: { teamId: teamId, nama_kegiatan: nama } })];
                 case 9:
-                    tugasA = _a.sent();
-                    return [4 /*yield*/, prisma.penugasan.create({ data: { kegiatanId: kegiatanSosial2.id, pegawaiId: 5, minggu: 1, bulan: 'Juni', tahun: 2025 } })];
+                    _o.sent();
+                    _o.label = 10;
                 case 10:
-                    tugasB = _a.sent();
-                    return [4 /*yield*/, prisma.penugasan.create({ data: { kegiatanId: kegiatanIpds1.id, pegawaiId: 6, minggu: 1, bulan: 'Juni', tahun: 2025 } })];
+                    _e++;
+                    return [3 /*break*/, 7];
                 case 11:
-                    tugasC = _a.sent();
-                    // Laporan Harian
-                    return [4 /*yield*/, prisma.laporanHarian.createMany({
-                            data: [
-                                { penugasanId: tugasA.id, tanggal: new Date('2025-06-02'), status: 'Selesai Dikerjakan', bukti_link: 'http://link.com/bukti1', catatan: 'Tuntas', pegawaiId: 5 },
-                                { penugasanId: tugasB.id, tanggal: new Date('2025-06-02'), status: 'Sedang Dikerjakan', bukti_link: 'http://link.com/bukti2', catatan: '', pegawaiId: 5 },
-                                { penugasanId: tugasC.id, tanggal: new Date('2025-06-03'), status: 'Belum Dikerjakan', bukti_link: null, catatan: '', pegawaiId: 6 },
-                            ]
-                        })];
+                    _i++;
+                    return [3 /*break*/, 6];
                 case 12:
-                    // Laporan Harian
-                    _a.sent();
-                    // Kegiatan Tambahan
-                    return [4 /*yield*/, prisma.kegiatanTambahan.createMany({
-                            data: [
-                                { nama: 'Penyusunan Laporan Internal', tanggal: new Date('2025-06-04'), status: 'Selesai Dikerjakan', bukti_link: 'http://link.com/bukti3', userId: 5 },
-                                { nama: 'Pelatihan Statistik', tanggal: new Date('2025-06-04'), status: 'Sedang Dikerjakan', bukti_link: null, userId: 6 },
-                            ]
-                        })];
+                    _f = 0, rawUsers_1 = rawUsers;
+                    _o.label = 13;
                 case 13:
-                    // Kegiatan Tambahan
-                    _a.sent();
-                    return [2 /*return*/];
+                    if (!(_f < rawUsers_1.length)) return [3 /*break*/, 18];
+                    u = rawUsers_1[_f];
+                    role = roleMap[u.role] || "anggota";
+                    _h = (_g = prisma.user).upsert;
+                    _l = {
+                        where: { email: u.email },
+                        update: {}
+                    };
+                    _m = {
+                        nama: u.nama,
+                        email: u.email,
+                        username: u.username
+                    };
+                    return [4 /*yield*/, (0, hash_1.hashPassword)(u.password)];
+                case 14: return [4 /*yield*/, _h.apply(_g, [(_l.create = (_m.password = _o.sent(),
+                            _m.role = role,
+                            _m),
+                            _l)])];
+                case 15:
+                    user = _o.sent();
+                    teamId = teamMap.get(u.team);
+                    if (!teamId) return [3 /*break*/, 17];
+                    return [4 /*yield*/, prisma.member.create({
+                            data: {
+                                userId: user.id,
+                                teamId: teamId,
+                                is_leader: role !== "anggota",
+                            },
+                        })];
+                case 16:
+                    _o.sent();
+                    _o.label = 17;
+                case 17:
+                    _f++;
+                    return [3 /*break*/, 13];
+                case 18: return [2 /*return*/];
             }
         });
     });
