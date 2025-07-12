@@ -83,7 +83,8 @@ Server berjalan di: `http://localhost:3000`
 |------------|------------------------------------------------|
 | admin      | CRUD user, CRUD tim, monitoring |
 | pimpinan   | Melihat monitoring semua |
-| pegawai    | Hak akses berdasarkan keanggotaan tim |
+| ketua tim  | Mengelola kegiatan dan penugasan |
+| anggota tim| Hak akses berdasarkan keanggotaan tim |
 
 ## 📬 Endpoint Penting
 
@@ -94,8 +95,8 @@ Server berjalan di: `http://localhost:3000`
 | GET    | `/teams`                   | Daftar tim                   | admin    |
 | POST   | `/master-kegiatan`         | Tambah kegiatan              | ketua tim    |
 | POST   | `/penugasan`               | Assign penugasan             | ketua tim    |
-| POST   | `/laporan-harian`          | Laporan kegiatan harian      | pegawai  |
-| POST   | `/kegiatan-tambahan`       | Laporan kegiatan tambahan    | pegawai  |
+| POST   | `/laporan-harian`          | Laporan kegiatan harian      | anggota tim |
+| POST   | `/kegiatan-tambahan`       | Laporan kegiatan tambahan    | anggota tim |
 | GET    | `/monitoring/harian`       | Monitoring harian            | semua    |
 
 ---

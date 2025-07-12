@@ -50,4 +50,18 @@ export class MasterKegiatanController {
   remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
     return this.masterService.remove(id, (req.user as any).userId);
   }
+
+  @Put(":id")
+  update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() body: any,
+    @Req() req: Request,
+  ) {
+    return this.masterService.update(id, body, (req.user as any).userId);
+  }
+
+  @Delete(":id")
+  remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+    return this.masterService.remove(id, (req.user as any).userId);
+  }
 }
