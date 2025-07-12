@@ -16,9 +16,11 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // Buat user satu per satu agar dapat userId
-  const admin = await prisma.user.create({
-    data: {
+  // Upsert users so if they already exist by email, they won't fail
+  const admin = await prisma.user.upsert({
+    where: { email: "admin@bps.go.id" },
+    update: {}, // if exists, do nothing or update here
+    create: {
       nama: "Admin Utama",
       email: "admin@bps.go.id",
       password: await hash("password"),
@@ -26,8 +28,10 @@ async function main() {
     },
   });
 
-  const pimpinan = await prisma.user.create({
-    data: {
+  const pimpinan = await prisma.user.upsert({
+    where: { email: "pimpinan@bps.go.id" },
+    update: {},
+    create: {
       nama: "Pimpinan BPS",
       email: "pimpinan@bps.go.id",
       password: await hash("password"),
@@ -35,8 +39,10 @@ async function main() {
     },
   });
 
-  const ketuaSosial = await prisma.user.create({
-    data: {
+  const ketuaSosial = await prisma.user.upsert({
+    where: { email: "ketua.sosial@bps.go.id" },
+    update: {},
+    create: {
       nama: "Ketua Tim Sosial",
       email: "ketua.sosial@bps.go.id",
       password: await hash("password"),
@@ -44,8 +50,10 @@ async function main() {
     },
   });
 
-  const ketuaIpds = await prisma.user.create({
-    data: {
+  const ketuaIpds = await prisma.user.upsert({
+    where: { email: "ketua.ipds@bps.go.id" },
+    update: {},
+    create: {
       nama: "Ketua Tim IPDS",
       email: "ketua.ipds@bps.go.id",
       password: await hash("password"),
@@ -53,8 +61,10 @@ async function main() {
     },
   });
 
-  const anggotaA = await prisma.user.create({
-    data: {
+  const anggotaA = await prisma.user.upsert({
+    where: { email: "anggota.a@bps.go.id" },
+    update: {},
+    create: {
       nama: "Anggota A",
       email: "anggota.a@bps.go.id",
       password: await hash("password"),
@@ -62,8 +72,10 @@ async function main() {
     },
   });
 
-  const anggotaB = await prisma.user.create({
-    data: {
+  const anggotaB = await prisma.user.upsert({
+    where: { email: "anggota.b@bps.go.id" },
+    update: {},
+    create: {
       nama: "Anggota B",
       email: "anggota.b@bps.go.id",
       password: await hash("password"),
