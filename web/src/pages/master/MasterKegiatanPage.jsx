@@ -18,6 +18,7 @@ export default function MasterKegiatanPage() {
   const [showForm, setShowForm] = useState(false);
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
   const [filterTeam, setFilterTeam] = useState("");
   const [search, setSearch] = useState("");
   const fetchItems = useCallback(async () => {
@@ -26,6 +27,7 @@ export default function MasterKegiatanPage() {
       const res = await axios.get("/master-kegiatan", {
         params: {
           page,
+          limit: perPage,
           team: filterTeam || undefined,
           search: search || undefined,
         },
@@ -37,7 +39,7 @@ export default function MasterKegiatanPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, filterTeam, search]);
+  }, [page, perPage, filterTeam, search]);
 
   const fetchTeams = useCallback(async () => {
     try {
@@ -156,6 +158,21 @@ export default function MasterKegiatanPage() {
               placeholder="Cari kegiatan..."
             />
           </div>
+
+          <div>
+            <select
+              value={perPage}
+              onChange={(e) => {
+                setPage(1);
+                setPerPage(parseInt(e.target.value, 10));
+              }}
+              className="border px-2 py-1 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+            </select>
+          </div>
         </div>
 
         <div>
@@ -167,12 +184,13 @@ export default function MasterKegiatanPage() {
             <span className="hidden sm:inline">Tambah Kegiatan</span>
           </button>
         </div>
+
       </div>
 
       <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-            <th className="px-4 py-2">ID</th>
+            <th className="px-4 py-2">No</th>
             <th className="px-4 py-2">Tim</th>
             <th className="px-4 py-2">Nama Kegiatan</th>
             <th className="px-4 py-2">Deskripsi</th>
@@ -191,12 +209,12 @@ export default function MasterKegiatanPage() {
               </td>
             </tr>
           ) : (
-          items.map((item) => (
+          items.map((item, idx) => (
             <tr
               key={item.id}
               className="border-t dark:border-gray-700 text-center"
             >
-              <td className="px-4 py-2">{item.id}</td>
+              <td className="px-4 py-2">{(page - 1) * perPage + idx + 1}</td>
               <td className="px-4 py-2">
                 {item.team?.nama_tim || item.teamId}
               </td>
