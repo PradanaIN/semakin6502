@@ -16,8 +16,7 @@ export class MasterKegiatanService {
     const skip = (page - 1) * limit;
     const where: any = {};
     if (params.teamId) where.teamId = params.teamId;
-    if (params.search)
-      where.nama_kegiatan = { contains: params.search, mode: "insensitive" };
+    if (params.search) where.nama_kegiatan = { contains: params.search };
 
     const [data, total] = await this.prisma.$transaction([
       this.prisma.masterKegiatan.findMany({

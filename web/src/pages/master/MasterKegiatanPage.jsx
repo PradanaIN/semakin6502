@@ -14,8 +14,6 @@ export default function MasterKegiatanPage() {
   const [lastPage, setLastPage] = useState(1);
   const [filterTeam, setFilterTeam] = useState("");
   const [search, setSearch] = useState("");
-
-
   const fetchItems = useCallback(async () => {
     try {
       const res = await axios.get("/master-kegiatan", {
@@ -128,7 +126,8 @@ export default function MasterKegiatanPage() {
             ))}
           </select>
         </div>
-        <div className="flex-1">
+
+        <div className="flex-1 max-w-sm">
           <label className="text-sm block">Cari</label>
           <input
             type="text"
