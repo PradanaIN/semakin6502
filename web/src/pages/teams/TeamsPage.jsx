@@ -113,7 +113,7 @@ export default function TeamsPage() {
                 setCurrentPage(1);
               }}
               placeholder="Cari tim..."
-              className="w-full border rounded pl-10 pr-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -138,7 +138,9 @@ export default function TeamsPage() {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="4" className="py-4 text-center">Memuat data...</td>
+              <td colSpan="4" className="py-4 text-center">
+                Memuat data...
+              </td>
             </tr>
           ) : paginated.length === 0 ? (
             <tr>
@@ -147,30 +149,30 @@ export default function TeamsPage() {
               </td>
             </tr>
           ) : (
-          paginated.map((t) => (
-            <tr
-              key={t.id}
-              className="border-t dark:border-gray-700 text-center"
-            >
-              <td className="px-4 py-2">{t.id}</td>
-              <td className="px-4 py-2">{t.nama_tim}</td>
-              <td className="px-4 py-2">{t.members?.length || 0}</td>
-              <td className="px-4 py-2 space-x-2">
-                <button
-                  onClick={() => openEdit(t)}
-                  className="p-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
-                >
-                  <Pencil size={16} />
-                </button>
-                <button
-                  onClick={() => deleteTeam(t.id)}
-                  className="p-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </td>
-            </tr>
-          ))
+            paginated.map((t) => (
+              <tr
+                key={t.id}
+                className="border-t dark:border-gray-700 text-center"
+              >
+                <td className="px-4 py-2">{t.id}</td>
+                <td className="px-4 py-2">{t.nama_tim}</td>
+                <td className="px-4 py-2">{t.members?.length || 0}</td>
+                <td className="px-4 py-2 space-x-2">
+                  <button
+                    onClick={() => openEdit(t)}
+                    className="p-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                  >
+                    <Pencil size={16} />
+                  </button>
+                  <button
+                    onClick={() => deleteTeam(t.id)}
+                    className="p-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </td>
+              </tr>
+            ))
           )}
         </tbody>
       </table>
@@ -185,7 +187,7 @@ export default function TeamsPage() {
             }}
             className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
           >
-            {[5, 10, 15, 20, 25].map((n) => (
+            {[5, 10, 25].map((n) => (
               <option
                 key={n}
                 value={n}

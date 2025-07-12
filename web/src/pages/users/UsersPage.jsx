@@ -138,7 +138,7 @@ export default function UsersPage() {
                 setCurrentPage(1);
               }}
               placeholder="Cari pengguna..."
-              className="border rounded-md pl-10 pr-3 py-2 bg-white text-black dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-black dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
           {/* <select
@@ -180,7 +180,9 @@ export default function UsersPage() {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="6" className="py-4 text-center">Memuat data...</td>
+              <td colSpan="6" className="py-4 text-center">
+                Memuat data...
+              </td>
             </tr>
           ) : paginatedUsers.length === 0 ? (
             <tr>
@@ -192,28 +194,28 @@ export default function UsersPage() {
             paginatedUsers.map((u) => (
               <tr key={u.id} className="border-t dark:border-gray-700">
                 <td className="px-4 py-2 text-center">{u.id}</td>
-              <td className="px-4 py-2">{u.nama}</td>
-              <td className="px-4 py-2 text">{u.email}</td>
-              <td className="px-4 py-2 text-center">
-                {u.members?.[0]?.team?.nama_tim || "-"}
-              </td>
-              <td className="px-4 py-2 capitalize text-center">{u.role}</td>
-              <td className="px-4 py-2 space-x-2 text-center">
-                <button
-                  onClick={() => openEdit(u)}
-                  className="p-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
-                >
-                  <Pencil size={16} />
-                </button>
-                <button
-                  onClick={() => deleteUser(u.id)}
-                  className="p-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </td>
-            </tr>
-          ))
+                <td className="px-4 py-2">{u.nama}</td>
+                <td className="px-4 py-2 text">{u.email}</td>
+                <td className="px-4 py-2 text-center">
+                  {u.members?.[0]?.team?.nama_tim || "-"}
+                </td>
+                <td className="px-4 py-2 capitalize text-center">{u.role}</td>
+                <td className="px-4 py-2 space-x-2 text-center">
+                  <button
+                    onClick={() => openEdit(u)}
+                    className="p-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                  >
+                    <Pencil size={16} />
+                  </button>
+                  <button
+                    onClick={() => deleteUser(u.id)}
+                    className="p-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </td>
+              </tr>
+            ))
           )}
         </tbody>
       </table>
@@ -228,7 +230,7 @@ export default function UsersPage() {
             }}
             className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
           >
-            {[5, 10, 15, 20, 25].map((n) => (
+            {[5, 10, 25].map((n) => (
               <option
                 key={n}
                 value={n}
