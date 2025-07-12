@@ -78,6 +78,7 @@ export default function UsersPage() {
       Swal.fire("Dihapus", "Pengguna berhasil dihapus", "success");
     } catch (err) {
       console.error("Gagal menghapus pengguna", err);
+      Swal.fire("Error", "Gagal menghapus pengguna", "error");
     }
   };
 
