@@ -40,6 +40,7 @@ model MasterKegiatan {
   id            Int     @id @default(autoincrement())
   teamId        Int
   nama_kegiatan String
+  deskripsi     String?
   team          Team    @relation(fields: [teamId], references: [id])
   penugasan     Penugasan[]
 }
