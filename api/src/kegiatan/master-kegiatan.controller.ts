@@ -23,7 +23,8 @@ export class MasterKegiatanController {
 
   @Post()
   create(@Body() body: any, @Req() req: Request) {
-    return this.masterService.create(body, (req.user as any).userId);
+    const u = req.user as any;
+    return this.masterService.create(body, u.userId, u.role);
   }
 
   @Get()
@@ -43,11 +44,13 @@ export class MasterKegiatanController {
     @Body() body: any,
     @Req() req: Request,
   ) {
-    return this.masterService.update(id, body, (req.user as any).userId);
+    const u = req.user as any;
+    return this.masterService.update(id, body, u.userId, u.role);
   }
 
   @Delete(":id")
   remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
-    return this.masterService.remove(id, (req.user as any).userId);
+    const u = req.user as any;
+    return this.masterService.remove(id, u.userId, u.role);
   }
 }
