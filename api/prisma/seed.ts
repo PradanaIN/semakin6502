@@ -3,9 +3,44 @@ import { hashPassword } from "../src/common/hash";
 
 const prisma = new PrismaClient();
 
-async function main() {
-  const hash = hashPassword;
+const rawUsers = [
+  { nama: "Yuda Agus Irianto", email: "yuda@bps.go.id", username: "yuda", password: "password", team: "Pimpinan", role: "Pimpinan" },
+  { nama: "Warsidi", email: "warsidi2@bps.go.id", username: "warsidi2", password: "password", team: "Sosial", role: "Anggota Tim" },
+  { nama: "Muhamadsyah", email: "muhamadsyah@bps.go.id", username: "muhamadsyah", password: "password", team: "Neraca", role: "Anggota Tim" },
+  { nama: "Dwi Prasetyono", email: "dwipras@bps.go.id", username: "dwipras", password: "password", team: "Produksi", role: "Ketua Tim" },
+  { nama: "Tiara Kusuma Widianingrum", email: "tiara.kusuma@bps.go.id", username: "tiara.kusuma", password: "password", team: "Sosial", role: "Ketua Tim" },
+  { nama: "Idhamsyah", email: "idhamsyah@bps.go.id", username: "idhamsyah", password: "password", team: "Umum", role: "Anggota Tim" },
+  { nama: "Mohammad Agusti Rahman", email: "agusti.rahman@bps.go.id", username: "agusti.rahman", password: "password", team: "Distribusi", role: "Ketua Tim" },
+  { nama: "Okta Wahyu Nugraha", email: "okta.nugraha@bps.go.id", username: "okta.nugraha", password: "password", team: "Umum", role: "Anggota Tim" },
+  { nama: "Rosetina Fini Alsera", email: "finialsera@bps.go.id", username: "finialsera", password: "password", team: "Umum", role: "Anggota Tim" },
+  { nama: "Shafa", email: "sha.fa@bps.go.id", username: "sha.fa", password: "password", team: "Umum", role: "Anggota Tim" },
+  { nama: "Ari Susilowati", email: "arisusilo@bps.go.id", username: "arisusilo", password: "password", team: "Umum", role: "Ketua Tim" },
+  { nama: "Rifki Maulana", email: "rifki.maulana@bps.go.id", username: "rifki.maulana", password: "password", team: "Neraca", role: "Ketua Tim" },
+  { nama: "Sega Purwa Wika", email: "sega.wika@bps.go.id", username: "sega.wika", password: "password", team: "Distribusi", role: "Anggota Tim" },
+  { nama: "Alphin Pratama Husada", email: "alphin.pratama@bps.go.id", username: "alphin.pratama", password: "password", team: "Produksi", role: "Anggota Tim" },
+  { nama: "Bambang Luhat", email: "bambang_luhat@bps.go.id", username: "bambang_luhat", password: "password", team: "Produksi", role: "Anggota Tim" },
+  { nama: "Fachri Izzudin Lazuardi", email: "fachri.lazuardi@bps.go.id", username: "fachri.lazuardi", password: "password", team: "IPDS", role: "Ketua Tim" },
+  { nama: "Andi Nurdiansyah", email: "andi.nurdiansyah@bps.go.id", username: "andi.nurdiansyah", password: "password", team: "Sosial", role: "Anggota Tim" },
+  { nama: "Afnita Rahma Auliya Putri", email: "afnita.rahma@bps.go.id", username: "afnita.rahma", password: "password", team: "IPDS", role: "Anggota Tim" },
+  { nama: "Anissa Nurullya Fernanda", email: "anissa.nurullya@bps.go.id", username: "anissa.nurullya", password: "password", team: "Neraca", role: "Anggota Tim" },
+  { nama: "Febri Fatika Sari", email: "febri.fatika@bps.go.id", username: "febri.fatika", password: "password", team: "Distribusi", role: "Anggota Tim" },
+  { nama: "Marini Safa Aziza", email: "marinisafa@bps.go.id", username: "marinisafa", password: "password", team: "Sosial", role: "Anggota Tim" },
+  { nama: "Najwa Fairus Samaya", email: "najwa.fairus@bps.go.id", username: "najwa.fairus", password: "password", team: "Neraca", role: "Anggota Tim" },
+  { nama: "Fiqah Rochmah Ningtyas Duana Putri", email: "fiqah.putri@bps.go.id", username: "fiqah.putri", password: "password", team: "Produksi", role: "Anggota Tim" },
+  { nama: "Lia Aulia Hayati", email: "liaauliahayati@bps.go.id", username: "liaauliahayati", password: "password", team: "Produksi", role: "Anggota Tim" },
+  { nama: "Mardiana", email: "mar.diana@bps.go.id", username: "mar.diana", password: "password", team: "Distribusi", role: "Anggota Tim" },
+  { nama: "Novanni Indi Pradana", email: "novanniindipradana@bps.go.id", username: "novanniindipradana", password: "password", team: "IPDS", role: "Anggota Tim" },
+  { nama: "Elly Astutik", email: "elly.astutik@bps.go.id", username: "elly.astutik", password: "password", team: "Umum", role: "Anggota Tim" },
+  { nama: "Ayu Pinta Gabina Siregar", email: "ayu.pinta@bps.go.id", username: "ayu.pinta", password: "password", team: "Umum", role: "Anggota Tim" },
+];
 
+const roleMap: Record<string, string> = {
+  "Pimpinan": "pimpinan",
+  "Ketua Tim": "ketua",
+  "Anggota Tim": "anggota",
+};
+
+async function main() {
   await prisma.role.createMany({
     data: [
       { name: "admin" },
@@ -16,205 +51,52 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // Buat user satu per satu agar dapat userId
-  const admin = await prisma.user.create({
-    data: {
+  await prisma.user.upsert({
+    where: { email: "admin@bps.go.id" },
+    update: {},
+    create: {
       nama: "Admin Utama",
       email: "admin@bps.go.id",
-      password: await hash("password"),
+      username: "admin",
+      password: await hashPassword("password"),
       role: "admin",
     },
   });
 
-  const pimpinan = await prisma.user.upsert({
-    where: { email: "pimpinan@bps.go.id" },
-    update: {},
-    create: {
-      nama: "Pimpinan BPS",
-      email: "pimpinan@bps.go.id",
-      password: await hash("password"),
-      role: "pimpinan",
-    },
-  });
-
-  const ketuaSosial = await prisma.user.upsert({
-    where: { email: "ketua.sosial@bps.go.id" },
-    update: {},
-    create: {
-      nama: "Ketua Tim Sosial",
-      email: "ketua.sosial@bps.go.id",
-      password: await hash("password"),
-      role: "ketua",
-    },
-  });
-
-  const ketuaIpds = await prisma.user.upsert({
-    where: { email: "ketua.ipds@bps.go.id" },
-    update: {},
-    create: {
-      nama: "Ketua Tim IPDS",
-      email: "ketua.ipds@bps.go.id",
-      password: await hash("password"),
-      role: "ketua",
-    },
-  });
-
-  const anggotaA = await prisma.user.upsert({
-    where: { email: "anggota.a@bps.go.id" },
-    update: {},
-    create: {
-      nama: "Anggota A",
-      email: "anggota.a@bps.go.id",
-      password: await hash("password"),
-      role: "anggota",
-    },
-  });
-
-  const anggotaB = await prisma.user.upsert({
-    where: { email: "anggota.b@bps.go.id" },
-    update: {},
-    create: {
-      nama: "Anggota B",
-      email: "anggota.b@bps.go.id",
-      password: await hash("password"),
-      role: "anggota",
-    },
-  });
-
-  // Teams
+  const teamNames = Array.from(new Set(rawUsers.map((u) => u.team)));
   await prisma.team.createMany({
-    data: [
-      { nama_tim: "Pimpinan" },
-      { nama_tim: "Umum" },
-      { nama_tim: "Sosial" },
-      { nama_tim: "Neraca" },
-      { nama_tim: "Produksi" },
-      { nama_tim: "Distribusi" },
-      { nama_tim: "IPDS" },
-      { nama_tim: "Humas" },
-    ],
+    data: teamNames.map((n) => ({ nama_tim: n })),
     skipDuplicates: true,
   });
 
-  const sosial = await prisma.team.create({ data: { nama_tim: "Sosial" } });
-  const ipds = await prisma.team.create({ data: { nama_tim: "IPDS" } });
+  const teams = await prisma.team.findMany({ where: { nama_tim: { in: teamNames } } });
+  const teamMap = new Map(teams.map((t) => [t.nama_tim, t.id]));
 
-  await prisma.member.createMany({
-    data: [
-      { userId: ketuaSosial.id, teamId: sosial!.id, is_leader: true },
-      { userId: ketuaIpds.id, teamId: ipds!.id, is_leader: true },
-      { userId: anggotaA.id, teamId: sosial!.id, is_leader: false },
-      { userId: anggotaB.id, teamId: ipds!.id, is_leader: false },
-    ],
-  });
+  for (const u of rawUsers) {
+    const role = roleMap[u.role] || "anggota";
+    const user = await prisma.user.upsert({
+      where: { email: u.email },
+      update: {},
+      create: {
+        nama: u.nama,
+        email: u.email,
+        username: u.username,
+        password: await hashPassword(u.password),
+        role,
+      },
+    });
 
-  const kegiatanSosial1 = await prisma.masterKegiatan.create({
-    data: {
-      teamId: sosial.id,
-      nama_kegiatan: "Pendataan Sosial Ekonomi",
-      deskripsi: "Pendataan lapangan seputar sosial ekonomi",
-    },
-  });
-  const kegiatanSosial2 = await prisma.masterKegiatan.create({
-    data: {
-      teamId: sosial.id,
-      nama_kegiatan: "Pengolahan Data Survei",
-      deskripsi: "Pengolahan dan analisis data survei",
-    },
-  });
-  const kegiatanIpds1 = await prisma.masterKegiatan.create({
-    data: {
-      teamId: ipds.id,
-      nama_kegiatan: "Pemetaan Digital IPDS",
-      deskripsi: "Pemetaan peta digital untuk keperluan IPDS",
-    },
-  });
-  const kegiatanIpds2 = await prisma.masterKegiatan.create({
-    data: {
-      teamId: ipds.id,
-      nama_kegiatan: "Pemeliharaan Sistem Statistik",
-      deskripsi: "Perawatan sistem statistik",
-    },
-  });
-
-  // Penugasan
-  const tugasA = await prisma.penugasan.create({
-    data: {
-      kegiatanId: kegiatanSosial1.id,
-      pegawaiId: anggotaA.id,
-      minggu: 1,
-      bulan: "Juni",
-      tahun: 2025,
-    },
-  });
-  const tugasB = await prisma.penugasan.create({
-    data: {
-      kegiatanId: kegiatanSosial2.id,
-      pegawaiId: anggotaA.id,
-      minggu: 1,
-      bulan: "Juni",
-      tahun: 2025,
-    },
-  });
-  const tugasC = await prisma.penugasan.create({
-    data: {
-      kegiatanId: kegiatanIpds1.id,
-      pegawaiId: anggotaB.id,
-      minggu: 1,
-      bulan: "Juni",
-      tahun: 2025,
-    },
-  });
-
-  // Laporan Harian
-  await prisma.laporanHarian.createMany({
-    data: [
-      {
-        penugasanId: tugasA.id,
-        tanggal: new Date("2025-06-02"),
-        status: "Selesai Dikerjakan",
-        bukti_link: "http://link.com/bukti1",
-        catatan: "Tuntas",
-        pegawaiId: anggotaA.id,
-      },
-      {
-        penugasanId: tugasB.id,
-        tanggal: new Date("2025-06-02"),
-        status: "Sedang Dikerjakan",
-        bukti_link: "http://link.com/bukti2",
-        catatan: "",
-        pegawaiId: anggotaA.id,
-      },
-      {
-        penugasanId: tugasC.id,
-        tanggal: new Date("2025-06-03"),
-        status: "Belum Dikerjakan",
-        bukti_link: null,
-        catatan: "",
-        pegawaiId: anggotaB.id,
-      },
-    ],
-  });
-
-  // Kegiatan Tambahan
-  await prisma.kegiatanTambahan.createMany({
-    data: [
-      {
-        nama: "Penyusunan Laporan Internal",
-        tanggal: new Date("2025-06-04"),
-        status: "Selesai Dikerjakan",
-        bukti_link: "http://link.com/bukti3",
-        userId: anggotaA.id,
-      },
-      {
-        nama: "Pelatihan Statistik",
-        tanggal: new Date("2025-06-04"),
-        status: "Sedang Dikerjakan",
-        bukti_link: null,
-        userId: anggotaB.id,
-      },
-    ],
-  });
+    const teamId = teamMap.get(u.team);
+    if (teamId) {
+      await prisma.member.create({
+        data: {
+          userId: user.id,
+          teamId,
+          is_leader: role !== "anggota",
+        },
+      });
+    }
+  }
 }
 
 main()
