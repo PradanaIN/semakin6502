@@ -9,19 +9,17 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
 
   links.push({ to: "/", label: "Dashboard" });
 
-  if (user?.role === "admin" || user?.role === "pimpinan") {
+  if (["admin", "pimpinan"].includes(user?.role)) {
     links.push({ to: "/users", label: "Kelola Pengguna" });
     links.push({ to: "/teams", label: "Kelola Tim" });
   }
 
-  if (user?.role === "ketua" || user?.role === "admin") {
+  if (["ketua", "admin"].includes(user?.role)) {
     links.push({ to: "/master-kegiatan", label: "Master Kegiatan" });
-    if (user?.role === "ketua") {
-      links.push({ to: "/penugasan", label: "Penugasan Mingguan" });
-    }
+    links.push({ to: "/penugasan", label: "Penugasan Mingguan" });
   }
 
-  if (user?.role === "anggota" || user?.role === "ketua") {
+  if (["anggota", "ketua", "admin"].includes(user?.role)) {
     links.push({ to: "/laporan-harian", label: "Laporan Harian" });
     links.push({ to: "/kegiatan-tambahan", label: "Kegiatan Tambahan" });
   }
