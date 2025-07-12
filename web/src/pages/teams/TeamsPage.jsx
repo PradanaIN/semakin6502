@@ -97,7 +97,6 @@ export default function TeamsPage() {
     );
   }
 
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
