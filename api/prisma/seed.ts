@@ -45,7 +45,7 @@ async function main() {
       nama: "Ketua Tim Sosial",
       email: "ketua.sosial@bps.go.id",
       password: await hash("password"),
-      role: "pegawai",
+      role: "ketua",
     },
   });
 
@@ -56,7 +56,7 @@ async function main() {
       nama: "Ketua Tim IPDS",
       email: "ketua.ipds@bps.go.id",
       password: await hash("password"),
-      role: "pegawai",
+      role: "ketua",
     },
   });
 
@@ -67,7 +67,7 @@ async function main() {
       nama: "Anggota A",
       email: "anggota.a@bps.go.id",
       password: await hash("password"),
-      role: "pegawai",
+      role: "anggota",
     },
   });
 
@@ -78,13 +78,27 @@ async function main() {
       nama: "Anggota B",
       email: "anggota.b@bps.go.id",
       password: await hash("password"),
-      role: "pegawai",
+      role: "anggota",
     },
   });
 
   // Teams
-  const sosial = await prisma.team.create({ data: { nama_tim: "Sosial" } });
-  const ipds = await prisma.team.create({ data: { nama_tim: "IPDS" } });
+  await prisma.team.createMany({
+    data: [
+      { nama_tim: "Pimpinan" },
+      { nama_tim: "Umum" },
+      { nama_tim: "Sosial" },
+      { nama_tim: "Neraca" },
+      { nama_tim: "Produksi" },
+      { nama_tim: "Distribusi" },
+      { nama_tim: "IPDS" },
+      { nama_tim: "Humas" },
+    ],
+    skipDuplicates: true,
+  });
+
+  const sosial = await prisma.team.findFirst({ where: { nama_tim: "Sosial" } });
+  const ipds = await prisma.team.findFirst({ where: { nama_tim: "IPDS" } });
 
   // Members
   await prisma.member.createMany({
