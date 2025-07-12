@@ -37,8 +37,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted px-4">
-      <div className="bg-white dark:bg-zinc-900 shadow-xl rounded-2xl w-full max-w-md p-8 space-y-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-200 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 p-4">
+      <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md shadow-xl rounded-2xl ring-1 ring-zinc-200 dark:ring-zinc-800 w-full max-w-md p-8 space-y-6">
         <h1 className="text-2xl font-bold text-center text-zinc-800 dark:text-white">
           SEMAKIN 6502
         </h1>
@@ -46,7 +46,13 @@ export default function LoginPage() {
           Masuk untuk melanjutkan
         </p>
 
-        <div className="space-y-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLogin();
+          }}
+          className="space-y-4"
+        >
           <div>
             <label className="block text-sm text-zinc-700 dark:text-zinc-300 mb-1">
               Email atau Username <span className="text-red-500">*</span>
@@ -87,13 +93,13 @@ export default function LoginPage() {
           )}
 
           <button
-            onClick={handleLogin}
+            type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition duration-200"
           >
             Login
           </button>
           <p className="text-xs text-zinc-500 mt-1">* wajib diisi</p>
-        </div>
+        </form>
 
         <p className="text-xs text-zinc-400 text-center">
           &copy; 2025 Badan Pusat Statistik — Bulungan
