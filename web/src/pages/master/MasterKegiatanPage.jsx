@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useAuth } from "../auth/useAuth";
@@ -15,12 +15,8 @@ export default function MasterKegiatanPage() {
   const [filterTeam, setFilterTeam] = useState("");
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    fetchItems();
-    fetchTeams();
-  }, [page, filterTeam, search]);
 
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
     try {
       const res = await axios.get("/master-kegiatan", {
         params: {
@@ -34,16 +30,21 @@ export default function MasterKegiatanPage() {
     } catch (err) {
       console.error("Gagal mengambil master kegiatan", err);
     }
-  };
+  }, [page, filterTeam, search]);
 
-  const fetchTeams = async () => {
+  const fetchTeams = useCallback(async () => {
     try {
       const res = await axios.get("/teams");
       setTeams(res.data);
     } catch (err) {
       console.error("Gagal mengambil tim", err);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchItems();
+    fetchTeams();
+  }, [fetchItems, fetchTeams]);
 
   const openCreate = () => {
     setEditing(null);
