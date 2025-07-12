@@ -2,6 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../auth/useAuth";
 import { useState, useEffect, useRef } from "react";
+import Swal from "sweetalert2";
 import {
   FaBell,
   FaMoon,
@@ -25,16 +26,27 @@ export default function Layout() {
     { id: 2, text: "Penugasan baru tersedia", read: false },
     { id: 3, text: "Tim Anda telah diperbarui", read: false },
   ]);
-  const [darkMode, setDarkMode] = useState(() =>
-    document.documentElement.classList.contains("dark")
-  );
+  const [darkMode, setDarkMode] = useState(() => {
+    const stored = localStorage.getItem("theme");
+    if (stored) return stored === "dark";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  });
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
 
   const profileRef = useRef();
   const notifRef = useRef();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const r = await Swal.fire({
+      title: "Logout?",
+      text: "Anda yakin ingin logout?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Logout",
+      cancelButtonText: "Batal",
+    });
+    if (!r.isConfirmed) return;
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setToken(null);
