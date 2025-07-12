@@ -99,16 +99,32 @@ async function main() {
 
   // Master Kegiatan
   const kegiatanSosial1 = await prisma.masterKegiatan.create({
-    data: { teamId: sosial.id, nama_kegiatan: "Pendataan Sosial Ekonomi" },
+    data: {
+      teamId: sosial.id,
+      nama_kegiatan: "Pendataan Sosial Ekonomi",
+      deskripsi: "Pendataan lapangan seputar sosial ekonomi",
+    },
   });
   const kegiatanSosial2 = await prisma.masterKegiatan.create({
-    data: { teamId: sosial.id, nama_kegiatan: "Pengolahan Data Survei" },
+    data: {
+      teamId: sosial.id,
+      nama_kegiatan: "Pengolahan Data Survei",
+      deskripsi: "Pengolahan dan analisis data survei",
+    },
   });
   const kegiatanIpds1 = await prisma.masterKegiatan.create({
-    data: { teamId: ipds.id, nama_kegiatan: "Pemetaan Digital IPDS" },
+    data: {
+      teamId: ipds.id,
+      nama_kegiatan: "Pemetaan Digital IPDS",
+      deskripsi: "Pemetaan peta digital untuk keperluan IPDS",
+    },
   });
   const kegiatanIpds2 = await prisma.masterKegiatan.create({
-    data: { teamId: ipds.id, nama_kegiatan: "Pemeliharaan Sistem Statistik" },
+    data: {
+      teamId: ipds.id,
+      nama_kegiatan: "Pemeliharaan Sistem Statistik",
+      deskripsi: "Perawatan sistem statistik",
+    },
   });
 
   // Penugasan
