@@ -49,7 +49,7 @@ export default function LoginPage() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm text-zinc-700 dark:text-zinc-300 mb-1">
-              Email
+              Email <span className="text-red-500">*</span>
             </label>
             <input
               type="email"
@@ -62,7 +62,7 @@ export default function LoginPage() {
 
           <div>
             <label className="block text-sm text-zinc-700 dark:text-zinc-300 mb-1">
-              Password
+              Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <input
@@ -92,6 +92,7 @@ export default function LoginPage() {
           >
             Login
           </button>
+          <p className="text-xs text-zinc-500 mt-1">* wajib diisi</p>
         </div>
 
         <p className="text-xs text-zinc-400 text-center">

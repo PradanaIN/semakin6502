@@ -242,7 +242,9 @@ export default function UsersPage() {
             </h2>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm mb-1">Nama</label>
+                <label className="block text-sm mb-1">
+                  Nama <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   value={form.nama}
@@ -251,7 +253,9 @@ export default function UsersPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Email</label>
+                <label className="block text-sm mb-1">
+                  Email <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="email"
                   value={form.email}
@@ -260,7 +264,9 @@ export default function UsersPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Password</label>
+                <label className="block text-sm mb-1">
+                  Password <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="password"
                   value={form.password}
@@ -269,7 +275,9 @@ export default function UsersPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Role</label>
+                <label className="block text-sm mb-1">
+                  Role <span className="text-red-500">*</span>
+                </label>
                 <select
                   value={form.role}
                   onChange={(e) => setForm({ ...form, role: e.target.value })}
@@ -305,6 +313,7 @@ export default function UsersPage() {
               >
                 Simpan
               </button>
+              <p className="text-xs text-gray-500 ml-2 self-center">* wajib diisi</p>
             </div>
           </div>
         </div>
