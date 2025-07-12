@@ -13,6 +13,7 @@ model User {
   nama      String
   username  String             @unique
   email     String             @unique
+  username  String             @unique
   password  String
   role      String
   members   Member[]
