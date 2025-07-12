@@ -8,6 +8,7 @@ export default function MasterKegiatanPage() {
   const [items, setItems] = useState([]);
   const [teams, setTeams] = useState([]);
   const [form, setForm] = useState({ teamId: "", nama_kegiatan: "" });
+  const [editing, setEditing] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
@@ -34,14 +35,26 @@ export default function MasterKegiatanPage() {
   };
 
   const openCreate = () => {
+    setEditing(null);
     setForm({ teamId: "", nama_kegiatan: "" });
+    setShowForm(true);
+  };
+
+  const openEdit = (item) => {
+    setEditing(item);
+    setForm({ teamId: item.teamId, nama_kegiatan: item.nama_kegiatan });
     setShowForm(true);
   };
 
   const saveItem = async () => {
     try {
-      await axios.post("/master-kegiatan", form);
+      if (editing) {
+        await axios.put(`/master-kegiatan/${editing.id}`, form);
+      } else {
+        await axios.post("/master-kegiatan", form);
+      }
       setShowForm(false);
+      setEditing(null);
       fetchItems();
       Swal.fire("Berhasil", "Kegiatan disimpan", "success");
     } catch (err) {
@@ -49,7 +62,24 @@ export default function MasterKegiatanPage() {
     }
   };
 
-  if (user?.role !== "ketua") {
+  const deleteItem = async (item) => {
+    const r = await Swal.fire({
+      title: "Hapus kegiatan ini?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Hapus",
+    });
+    if (!r.isConfirmed) return;
+    try {
+      await axios.delete(`/master-kegiatan/${item.id}`);
+      fetchItems();
+      Swal.fire("Dihapus", "Kegiatan berhasil dihapus", "success");
+    } catch (err) {
+      console.error("Gagal menghapus kegiatan", err);
+    }
+  };
+
+  if (!["ketua", "admin"].includes(user?.role)) {
     return (
       <div className="p-6 text-center">Anda tidak memiliki akses ke halaman ini.</div>
     );
@@ -73,6 +103,7 @@ export default function MasterKegiatanPage() {
             <th className="px-4 py-2">ID</th>
             <th className="px-4 py-2">Tim</th>
             <th className="px-4 py-2">Nama Kegiatan</th>
+            <th className="px-4 py-2">Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -81,6 +112,20 @@ export default function MasterKegiatanPage() {
               <td className="px-4 py-2">{item.id}</td>
               <td className="px-4 py-2">{item.team?.nama_tim || item.teamId}</td>
               <td className="px-4 py-2">{item.nama_kegiatan}</td>
+              <td className="px-4 py-2 space-x-2">
+                <button
+                  onClick={() => openEdit(item)}
+                  className="px-3 py-1 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => deleteItem(item)}
+                  className="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                >
+                  Hapus
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -89,7 +134,9 @@ export default function MasterKegiatanPage() {
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
-            <h2 className="text-xl font-semibold mb-2">Tambah Kegiatan</h2>
+            <h2 className="text-xl font-semibold mb-2">
+              {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}
+            </h2>
             <div className="space-y-2">
               <div>
                 <label className="block text-sm mb-1">Tim</label>
@@ -118,7 +165,10 @@ export default function MasterKegiatanPage() {
             </div>
             <div className="flex justify-end space-x-2 pt-2">
               <button
-                onClick={() => setShowForm(false)}
+                onClick={() => {
+                  setShowForm(false);
+                  setEditing(null);
+                }}n
                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
               >
                 Batal
