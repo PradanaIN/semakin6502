@@ -8,12 +8,7 @@ import { PrismaService } from "../prisma.service";
 @Injectable()
 export class PenugasanService {
   constructor(private prisma: PrismaService) {}
-
-  findAll(
-    role: string,
-    userId: number,
-    filter: { bulan?: string; tahun?: number }
-  ) {
+  findAll(role: string, userId: number, filter: { bulan?: string; tahun?: number }) {
     const opts: any = {
       include: {
         kegiatan: { include: { team: true } },
@@ -53,7 +48,7 @@ export class PenugasanService {
         kegiatanId: data.kegiatanId,
         pegawaiId: data.pegawaiId,
         minggu: data.minggu,
-        bulan: data.bulan,
+        bulan: String(data.bulan),
         tahun: data.tahun,
         deskripsi: data.deskripsi,
         status: data.status || "Belum",
@@ -80,12 +75,69 @@ export class PenugasanService {
       kegiatanId: data.kegiatanId,
       pegawaiId: pid,
       minggu: data.minggu,
-      bulan: data.bulan,
+      bulan: String(data.bulan),
       tahun: data.tahun,
       deskripsi: data.deskripsi,
       status: data.status || "Belum",
     }));
     await this.prisma.penugasan.createMany({ data: rows });
     return { count: rows.length };
+  }
+
+  async findOne(id: number, role: string, userId: number) {
+    return this.prisma.penugasan.findFirst({
+      where: {
+        id,
+        ...(role !== "admin" && {
+          kegiatan: {
+            team: { members: { some: { userId, is_leader: true } } },
+          },
+        }),
+      },
+      include: { kegiatan: { include: { team: true } }, pegawai: true },
+    });
+  }
+
+  async update(id: number, data: any, userId: number, role: string) {
+    const existing = await this.prisma.penugasan.findUnique({
+      where: { id },
+      include: { kegiatan: true },
+    });
+    if (!existing) throw new BadRequestException("not found");
+    if (role !== "admin") {
+      const leader = await this.prisma.member.findFirst({
+        where: { teamId: existing.kegiatan.teamId, userId, is_leader: true },
+      });
+      if (!leader) throw new ForbiddenException("bukan ketua tim kegiatan ini");
+    }
+    return this.prisma.penugasan.update({
+      where: { id },
+      data: {
+        kegiatanId: data.kegiatanId,
+        pegawaiId: data.pegawaiId,
+        minggu: data.minggu,
+        bulan: String(data.bulan),
+        tahun: data.tahun,
+        deskripsi: data.deskripsi,
+        status: data.status,
+      },
+      include: { kegiatan: { include: { team: true } }, pegawai: true },
+    });
+  }
+
+  async remove(id: number, userId: number, role: string) {
+    const existing = await this.prisma.penugasan.findUnique({
+      where: { id },
+      include: { kegiatan: true },
+    });
+    if (!existing) throw new BadRequestException("not found");
+    if (role !== "admin") {
+      const leader = await this.prisma.member.findFirst({
+        where: { teamId: existing.kegiatan.teamId, userId, is_leader: true },
+      });
+      if (!leader) throw new ForbiddenException("bukan ketua tim kegiatan ini");
+    }
+    await this.prisma.penugasan.delete({ where: { id } });
+    return { success: true };
   }
 }

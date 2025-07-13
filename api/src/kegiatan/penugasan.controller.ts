@@ -1,4 +1,16 @@
-import { Controller, Post, Get, Body, UseGuards, Req, Query } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  UseGuards,
+  Req,
+  Query,
+  Param,
+  ParseIntPipe,
+  Put,
+  Delete,
+} from "@nestjs/common";
 import { Request } from "express";
 import { PenugasanService } from "./penugasan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
@@ -35,5 +47,27 @@ export class PenugasanController {
     if (bulan) filter.bulan = bulan;
     if (tahun) filter.tahun = parseInt(tahun, 10);
     return this.penugasanService.findAll(u.role, u.userId, filter);
+  }
+
+  @Get(":id")
+  detail(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+    const u = req.user as any;
+    return this.penugasanService.findOne(id, u.role, u.userId);
+  }
+
+  @Put(":id")
+  update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() body: AssignPenugasanDto,
+    @Req() req: Request,
+  ) {
+    const u = req.user as any;
+    return this.penugasanService.update(id, body, u.userId, u.role);
+  }
+
+  @Delete(":id")
+  remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+    const u = req.user as any;
+    return this.penugasanService.remove(id, u.userId, u.role);
   }
 }

@@ -1,22 +1,20 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Plus, Search } from "lucide-react";
+import { Plus, Search, Filter as FilterIcon, Eye } from "lucide-react";
 import Select from "react-select";
 import { useAuth } from "../auth/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
-  valueContainer: (base) => ({
-    ...base,
-    maxHeight: "100px",
-    overflowY: "auto",
-  }),
+  valueContainer: (base) => ({ ...base, maxHeight: "100px", overflowY: "auto" }),
   menuPortal: (base) => ({ ...base, zIndex: 9999 }),
 };
 
 export default function PenugasanPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [penugasan, setPenugasan] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
   const [users, setUsers] = useState([]);
@@ -35,8 +33,8 @@ export default function PenugasanPage() {
   const [filterTahun, setFilterTahun] = useState(new Date().getFullYear());
 
   const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
+      try {
+        setLoading(true);
       const [pRes, tRes, uRes] = await Promise.all([
         axios.get(
           `/penugasan?bulan=${filterBulan || ""}&tahun=${filterTahun || ""}`
@@ -84,11 +82,7 @@ export default function PenugasanPage() {
 
   const save = async () => {
     if (!form.kegiatanId || form.pegawaiIds.length === 0) {
-      Swal.fire(
-        "Lengkapi data",
-        "Kegiatan dan pegawai wajib dipilih",
-        "warning"
-      );
+      Swal.fire("Lengkapi data", "Kegiatan dan pegawai wajib dipilih", "warning");
       return;
     }
     try {
@@ -125,17 +119,25 @@ export default function PenugasanPage() {
   });
 
   if (!["ketua", "admin"].includes(user?.role)) {
-    return (
-      <div className="p-6 text-center">
-        Anda tidak memiliki akses ke halaman ini.
-      </div>
-    );
+    return <div className="p-6 text-center">Anda tidak memiliki akses ke halaman ini.</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
         <div className="flex items-center gap-2 flex-wrap">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search size={16} className="text-gray-400 dark:text-gray-300" />
+            </div>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Cari penugasan..."
+              className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
           <select
             value={filterBulan}
             onChange={(e) => setFilterBulan(e.target.value)}
@@ -143,9 +145,7 @@ export default function PenugasanPage() {
           >
             <option value="">Bulan</option>
             {months.map((m, i) => (
-              <option key={i + 1} value={i + 1}>
-                {m}
-              </option>
+              <option key={i + 1} value={i + 1}>{m}</option>
             ))}
           </select>
           <input
@@ -159,7 +159,7 @@ export default function PenugasanPage() {
             onClick={fetchData}
             className="px-3 py-[4px] bg-gray-200 dark:bg-gray-700 rounded"
           >
-            Terapkan
+            <FilterIcon size={16} />
           </button>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -213,10 +213,7 @@ export default function PenugasanPage() {
               const k = kegiatan.find((k) => k.id === p.kegiatanId);
               const peg = users.find((u) => u.id === p.pegawaiId);
               return (
-                <tr
-                  key={p.id}
-                  className="border-t dark:border-gray-700 text-center"
-                >
+                <tr key={p.id} className="border-t dark:border-gray-700 text-center">
                   <td className="px-2 py-2">{idx + 1}</td>
                   <td className="px-4 py-2">{k?.nama_kegiatan || "-"}</td>
                   <td className="px-4 py-2">{k?.team?.nama_tim || "-"}</td>
@@ -224,8 +221,11 @@ export default function PenugasanPage() {
                   <td className="px-4 py-2">{p.minggu}</td>
                   <td className="px-4 py-2">{p.status}</td>
                   <td className="px-2 py-2">
-                    <button className="text-blue-600 hover:underline text-sm">
-                      Detail
+                    <button
+                      onClick={() => navigate(`/penugasan/${p.id}`)}
+                      className="text-blue-600 hover:underline text-sm"
+                    >
+                      <Eye size={16} />
                     </button>
                   </td>
                 </tr>
@@ -249,24 +249,16 @@ export default function PenugasanPage() {
                   className="mb-1"
                   styles={selectStyles}
                   menuPortalTarget={document.body}
-                  options={kegiatan.map((k) => ({
-                    value: k.id,
-                    label: k.nama_kegiatan,
-                  }))}
+                  options={kegiatan.map((k) => ({ value: k.id, label: k.nama_kegiatan }))}
                   value={
                     form.kegiatanId
                       ? {
                           value: form.kegiatanId,
-                          label: kegiatan.find((k) => k.id === form.kegiatanId)
-                            ?.nama_kegiatan,
-                        }
+                          label: kegiatan.find((k) => k.id === form.kegiatanId)?.nama_kegiatan,           }
                       : null
                   }
                   onChange={(o) =>
-                    setForm({
-                      ...form,
-                      kegiatanId: o ? parseInt(o.value, 10) : "",
-                    })
+                    setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })
                   }
                   placeholder="Pilih kegiatan..."
                   isSearchable
@@ -297,9 +289,7 @@ export default function PenugasanPage() {
                   onChange={(vals) =>
                     setForm({
                       ...form,
-                      pegawaiIds: vals
-                        ? vals.map((v) => parseInt(v.value, 10))
-                        : [],
+                      pegawaiIds: vals ? vals.map((v) => parseInt(v.value, 10)) : [],
                     })
                   }
                   placeholder="Pilih pegawai..."
@@ -310,9 +300,7 @@ export default function PenugasanPage() {
                   onClick={() =>
                     setForm({
                       ...form,
-                      pegawaiIds: users
-                        .filter((u) => u.role !== "admin")
-                        .map((u) => u.id),
+                      pegawaiIds: users.filter((u) => u.role !== "admin").map((u) => u.id),
                     })
                   }
                   className="mt-1 px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded"
@@ -324,9 +312,7 @@ export default function PenugasanPage() {
                 <label className="block text-sm mb-1">Deskripsi</label>
                 <textarea
                   value={form.deskripsi}
-                  onChange={(e) =>
-                    setForm({ ...form, deskripsi: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
@@ -338,9 +324,7 @@ export default function PenugasanPage() {
                     value={form.minggu}
                     min="1"
                     max="5"
-                    onChange={(e) =>
-                      setForm({ ...form, minggu: parseInt(e.target.value, 10) })
-                    }
+                    onChange={(e) => setForm({ ...form, minggu: parseInt(e.target.value, 10) })}
                     className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                   />
                 </div>
@@ -348,9 +332,7 @@ export default function PenugasanPage() {
                   <label className="block text-sm mb-1">Bulan</label>
                   <select
                     value={form.bulan}
-                    onChange={(e) =>
-                      setForm({ ...form, bulan: parseInt(e.target.value, 10) })
-                    }
+                    onChange={(e) => setForm({ ...form, bulan: parseInt(e.target.value, 10) })}
                     className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                   >
                     {months.map((m, i) => (
@@ -365,9 +347,7 @@ export default function PenugasanPage() {
                   <input
                     type="number"
                     value={form.tahun}
-                    onChange={(e) =>
-                      setForm({ ...form, tahun: parseInt(e.target.value, 10) })
-                    }
+                    onChange={(e) => setForm({ ...form, tahun: parseInt(e.target.value, 10) })}
                     className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                   />
                 </div>
@@ -389,10 +369,7 @@ export default function PenugasanPage() {
               >
                 Batal
               </button>
-              <button
-                onClick={save}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-              >
+              <button onClick={save} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
                 Simpan
               </button>
             </div>
