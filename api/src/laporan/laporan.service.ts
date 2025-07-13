@@ -17,7 +17,16 @@ export class LaporanService {
     if (!pen) throw new BadRequestException("Penugasan tidak ditemukan");
     if (pen.pegawaiId !== data.pegawaiId)
       throw new ForbiddenException("bukan penugasan anda");
-    return this.prisma.laporanHarian.create({ data });
+    return this.prisma.laporanHarian.create({
+      data: {
+        penugasanId: data.penugasanId,
+        pegawaiId: data.pegawaiId,
+        tanggal: new Date(data.tanggal),
+        status: data.status,
+        bukti_link: data.bukti_link || undefined,
+        catatan: data.catatan || undefined,
+      },
+    });
   }
 
   getByTanggal(tanggal: string) {

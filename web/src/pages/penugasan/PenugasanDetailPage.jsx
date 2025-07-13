@@ -393,9 +393,7 @@ export default function PenugasanDetailPage() {
             <h3 className="text-lg font-semibold">Tambah Laporan Harian</h3>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm mb-1">
-                  Tanggal <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-sm mb-1">Tanggal<span className="text-red-500">*</span></label>
                 <input
                   type="date"
                   value={laporanForm.tanggal}
@@ -406,9 +404,7 @@ export default function PenugasanDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">
-                  Status <span className="text-red-500">*</span>
-                </label>
+                <label className="block text-sm mb-1">Status<span className="text-red-500">*</span></label>
                 <select
                   value={laporanForm.status}
                   onChange={(e) =>
