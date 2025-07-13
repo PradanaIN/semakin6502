@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Search } from "lucide-react";
 import Swal from "sweetalert2";
 import Pagination from "../../components/Pagination";
 
@@ -9,6 +9,7 @@ export default function LaporanHarianPage() {
   const [loading, setLoading] = useState(true);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
     id: null,
@@ -77,36 +78,62 @@ export default function LaporanHarianPage() {
     fetchData();
   }, []);
 
-  const paginated = laporan.slice(
+  const filtered = laporan.filter(
+    (l) =>
+      l.tanggal.includes(search) ||
+      l.status.toLowerCase().includes(search.toLowerCase()) ||
+      (l.catatan || "").toLowerCase().includes(search.toLowerCase())
+  );
+  const paginated = filtered.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
-  const totalPages = Math.ceil(laporan.length / pageSize) || 1;
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-6">
       {loading ? (
         <div>Memuat...</div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm border border-gray-300 dark:border-gray-700">
+        <>
+          <div className="flex flex-wrap justify-between items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search size={16} className="text-gray-400 dark:text-gray-300" />
+                </div>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  placeholder="Cari laporan..."
+                  className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+          <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
             <thead>
-              <tr className="bg-gray-200 dark:bg-gray-700">
-                <th className="px-3 py-2 border">No</th>
-                <th className="px-3 py-2 border">Tanggal</th>
-                <th className="px-3 py-2 border">Status</th>
-                <th className="px-3 py-2 border">Bukti</th>
-                <th className="px-3 py-2 border">Catatan</th>
-                <th className="px-3 py-2 border">Aksi</th>
+              <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
+                <th className="px-4 py-2">No</th>
+                <th className="px-4 py-2">Tanggal</th>
+                <th className="px-4 py-2">Status</th>
+                <th className="px-4 py-2">Bukti</th>
+                <th className="px-4 py-2">Catatan</th>
+                <th className="px-4 py-2">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {paginated.map((item, idx) => (
-                <tr key={item.id} className="border-t text-center">
-                  <td className="px-3 py-1 border">{(currentPage - 1) * pageSize + idx + 1}</td>
-                  <td className="px-3 py-1 border">{item.tanggal.slice(0, 10)}</td>
-                  <td className="px-3 py-1 border">{item.status}</td>
-                  <td className="px-3 py-1 border">
+                <tr key={item.id} className="border-t dark:border-gray-700 text-center">
+                  <td className="px-4 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
+                  <td className="px-4 py-2">{item.tanggal.slice(0, 10)}</td>
+                  <td className="px-4 py-2">{item.status}</td>
+                  <td className="px-4 py-2">
                     {item.bukti_link ? (
                       <a
                         href={item.bukti_link}
@@ -120,8 +147,8 @@ export default function LaporanHarianPage() {
                       "-"
                     )}
                   </td>
-                  <td className="px-3 py-1 border">{item.catatan || "-"}</td>
-                  <td className="px-3 py-1 border space-x-1">
+                  <td className="px-4 py-2">{item.catatan || "-"}</td>
+                  <td className="px-4 py-2 space-x-1">
                     <button
                       onClick={() => openEdit(item)}
                       className="p-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
@@ -163,13 +190,14 @@ export default function LaporanHarianPage() {
                 ))}
               </select>
             </div>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </div>
+        </div>
+        </>
       )}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
