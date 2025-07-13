@@ -88,8 +88,28 @@ export default function LaporanHarianPage() {
       {loading ? (
         <div>Memuat...</div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm border border-gray-300 dark:border-gray-700">
+        <>
+          <div className="flex flex-wrap justify-between items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search size={16} className="text-gray-400 dark:text-gray-300" />
+                </div>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  placeholder="Cari laporan..."
+                  className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+          <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
             <thead>
               <tr className="bg-gray-200 dark:bg-gray-700">
                 <th className="px-3 py-2 border">No</th>
@@ -163,11 +183,75 @@ export default function LaporanHarianPage() {
                 ))}
               </select>
             </div>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+        </div>
+        </>
+      )}
+      {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
+            <h3 className="text-lg font-semibold">Edit Laporan Harian</h3>
+            <div className="space-y-2">
+              <div>
+                <label className="block text-sm mb-1">Tanggal<span className="text-red-500">*</span></label>
+                <input
+                  type="date"
+                  value={form.tanggal}
+                  onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                />
+              </div>
+              <div>
+                <label className="block text-sm mb-1">Status<span className="text-red-500">*</span></label>
+                <select
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                >
+                  <option value="Belum">Belum</option>
+                  <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
+                  <option value="Selesai Dikerjakan">Selesai Dikerjakan</option>
+                </select>
+              </div>
+              {form.status === "Selesai Dikerjakan" && (
+                <div>
+                  <label className="block text-sm mb-1">Link Bukti</label>
+                  <input
+                    type="text"
+                    value={form.bukti_link}
+                    onChange={(e) => setForm({ ...form, bukti_link: e.target.value })}
+                    className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                  />
+                </div>
+              )}
+              <div>
+                <label className="block text-sm mb-1">Catatan</label>
+                <textarea
+                  value={form.catatan}
+                  onChange={(e) => setForm({ ...form, catatan: e.target.value })}
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end space-x-2 pt-2">
+              <button
+                onClick={() => setShowForm(false)}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
+              >
+                Batal
+              </button>
+              <button
+                onClick={saveForm}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+              >
+                Simpan
+              </button>
+            </div>
           </div>
         </div>
       )}

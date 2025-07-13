@@ -478,7 +478,9 @@ export default function PenugasanDetailPage() {
               </div>
               {laporanForm.status === "Selesai Dikerjakan" && (
                 <div>
-                  <label className="block text-sm mb-1">Link Bukti</label>
+                  <label className="block text-sm mb-1">
+                    Link Bukti <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="text"
                     value={laporanForm.bukti_link}
