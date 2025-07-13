@@ -39,12 +39,23 @@ export default function PenugasanPage() {
   const fetchData = useCallback(async () => {
       try {
         setLoading(true);
+      const penugasanReq = axios.get(
+        `/penugasan?bulan=${filterBulan || ""}&tahun=${filterTahun || ""}`
+      );
+      const teamsReq = axios.get("/teams");
+
+      let usersReq;
+      if (canManage) {
+        usersReq = axios.get("/users");
+      } else {
+        // anggota hanya membutuhkan datanya sendiri untuk menampilkan nama
+        usersReq = Promise.resolve({ data: [user] });
+      }
+
       const [pRes, tRes, uRes] = await Promise.all([
-        axios.get(
-          `/penugasan?bulan=${filterBulan || ""}&tahun=${filterTahun || ""}`
-        ),
-        axios.get("/teams"),
-        axios.get("/users"),
+        penugasanReq,
+        teamsReq,
+        usersReq,
       ]);
 
       let kRes;
