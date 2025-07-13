@@ -14,6 +14,7 @@ export class PenugasanService {
     userId: number,
     filter: { bulan?: string; tahun?: number }
   ) {
+    role = role?.toLowerCase?.() || role;
     const opts: any = {
       include: {
         kegiatan: { include: { team: true } },
@@ -49,6 +50,7 @@ export class PenugasanService {
   }
 
   async assign(data: any, userId: number, role: string) {
+    role = role?.toLowerCase?.() || role;
     const master = await this.prisma.masterKegiatan.findUnique({
       where: { id: data.kegiatanId },
     });
@@ -77,6 +79,7 @@ export class PenugasanService {
   }
 
   async assignBulk(data: any, userId: number, role: string) {
+    role = role?.toLowerCase?.() || role;
     const master = await this.prisma.masterKegiatan.findUnique({
       where: { id: data.kegiatanId },
     });
@@ -105,6 +108,7 @@ export class PenugasanService {
   }
 
   async findOne(id: number, role: string, userId: number) {
+    role = role?.toLowerCase?.() || role;
     const where: any = { id };
 
     if (role === "admin" || role === "pimpinan") {
@@ -129,6 +133,7 @@ export class PenugasanService {
   }
 
   async update(id: number, data: any, userId: number, role: string) {
+    role = role?.toLowerCase?.() || role;
     const existing = await this.prisma.penugasan.findUnique({
       where: { id },
       include: { kegiatan: true },
@@ -156,6 +161,7 @@ export class PenugasanService {
   }
 
   async remove(id: number, userId: number, role: string) {
+    role = role?.toLowerCase?.() || role;
     const existing = await this.prisma.penugasan.findUnique({
       where: { id },
       include: { kegiatan: true },
