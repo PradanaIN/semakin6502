@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./assets/styles/index.css";
 import { AuthProvider } from "./pages/auth/useAuth.jsx";
+import { ThemeProvider } from "./theme/useTheme.jsx";
 import { BrowserRouter } from "react-router-dom";
 import axios from "axios";
 
@@ -23,7 +24,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <App />
+        <ThemeProvider>
+          <App />
+        </ThemeProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
