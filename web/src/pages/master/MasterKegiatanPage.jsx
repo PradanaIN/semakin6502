@@ -123,8 +123,8 @@ export default function MasterKegiatanPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-end">
-        <div className="flex items-end space-x-2">
+      <div className="flex flex-wrap justify-between items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <div>
             <select
               value={filterTeam}
@@ -159,20 +159,6 @@ export default function MasterKegiatanPage() {
             />
           </div>
 
-          <div>
-            <select
-              value={perPage}
-              onChange={(e) => {
-                setPage(1);
-                setPerPage(parseInt(e.target.value, 10));
-              }}
-              className="border px-2 py-1 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-            </select>
-          </div>
         </div>
 
         <div>
@@ -242,24 +228,52 @@ export default function MasterKegiatanPage() {
         </tbody>
       </table>
 
-      <div className="flex justify-end space-x-2 mt-2">
-        <button
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
-          disabled={page === 1}
-          className="px-3 py-1 border rounded disabled:opacity-50"
-        >
-          Prev
-        </button>
-        <span className="px-2 py-1">
-          Page {page} / {lastPage}
-        </span>
-        <button
-          onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
-          disabled={page >= lastPage}
-          className="px-3 py-1 border rounded disabled:opacity-50"
-        >
-          Next
-        </button>
+      <div className="flex items-center justify-between mt-4">
+        <div className="space-x-2">
+          <select
+            value={perPage}
+            onChange={(e) => {
+              setPage(1);
+              setPerPage(parseInt(e.target.value, 10));
+            }}
+            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
+          >
+            {[5, 10, 25].map((n) => (
+              <option key={n} value={n} className="text-gray-900 dark:text-gray-200">
+                {n}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="space-x-1">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          >
+            Prev
+          </button>
+          {Array.from({ length: lastPage || 1 }, (_, i) => i + 1).map((n) => (
+            <button
+              key={n}
+              onClick={() => setPage(n)}
+              className={`px-3 py-1 rounded-full ${
+                page === n
+                  ? "bg-blue-600 text-white"
+                  : "border bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+              }`}
+            >
+              {n}
+            </button>
+          ))}
+          <button
+            onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
+            disabled={page >= lastPage}
+            className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       {showForm && (

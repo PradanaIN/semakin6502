@@ -70,12 +70,6 @@ export default function LaporanHarianPage() {
             className="pl-10 pr-3 py-1 border rounded bg-white dark:bg-gray-700 dark:text-gray-200"
           />
         </div>
-        <button
-          onClick={fetchData}
-          className="h-9 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
-        >
-          <Search size={16} />
-        </button>
       </div>
       {loading ? (
         <div>Memuat...</div>
