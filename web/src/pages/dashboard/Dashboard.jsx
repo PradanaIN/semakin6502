@@ -1,5 +1,6 @@
 
 import MonitoringTabs from "../../components/dashboard/MonitoringTabs";
+import StatsSummary from "../../components/dashboard/StatsSummary";
 import { useAuth } from "../auth/useAuth";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -8,7 +9,7 @@ const Dashboard = () => {
   const { user } = useAuth();
   const [dailyData, setDailyData] = useState([]);
   const [weeklyData, setWeeklyData] = useState(null);
-  const [monthlyData, setMonthlyData] = useState([]);
+  const [monthlyProgress, setMonthlyProgress] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -19,7 +20,7 @@ const Dashboard = () => {
       const startOfWeek = new Date(today);
       startOfWeek.setDate(today.getDate() - today.getDay() + 1);
       const minggu = startOfWeek.toISOString().split("T")[0];
-      const bulan = today.toISOString().slice(0, 7);
+      const year = today.getFullYear();
 
       try {
         const filters = {};
@@ -30,15 +31,33 @@ const Dashboard = () => {
           filters.teamId = user.teamId;
         }
 
-        const [dailyRes, weeklyRes, monthlyRes] = await Promise.all([
+        const months = Array.from({ length: 12 }, (_, i) => i + 1);
+
+        const progressPromise = Promise.all(
+          months.map((m) =>
+            axios
+              .get("/penugasan", { params: { bulan: m, tahun: year } })
+              .then((res) => {
+                const rows = res.data || [];
+                const selesai = rows.filter((r) =>
+                  String(r.status).toLowerCase().includes("selesai")
+                ).length;
+                const total = rows.length;
+                const persen = total ? Math.round((selesai / total) * 100) : 0;
+                return { bulan: m, persen };
+              })
+          )
+        );
+
+        const [dailyRes, weeklyRes, progress] = await Promise.all([
           axios.get("/monitoring/harian", { params: { tanggal, ...filters } }),
           axios.get("/monitoring/mingguan", { params: { minggu, ...filters } }),
-          axios.get("/monitoring/bulanan", { params: { bulan, ...filters } }),
+          progressPromise,
         ]);
 
         setDailyData(dailyRes.data);
         setWeeklyData(weeklyRes.data);
-        setMonthlyData(monthlyRes.data);
+        setMonthlyProgress(progress);
       } catch (error) {
         if (error?.response && [401, 403].includes(error.response.status)) {
           setErrorMsg("Anda tidak memiliki akses untuk melihat monitoring.");
@@ -76,10 +95,12 @@ const Dashboard = () => {
         Selamat datang, {user?.nama || "Pengguna"} 👋
       </h1>
 
+      <StatsSummary weeklyData={weeklyData} />
+
       <MonitoringTabs
         dailyData={dailyData}
         weeklyData={weeklyData}
-        monthlyData={monthlyData}
+        monthlyProgress={monthlyProgress}
       />
 
       <div className="bg-green-50 dark:bg-green-900 p-6 rounded-xl shadow text-center">
