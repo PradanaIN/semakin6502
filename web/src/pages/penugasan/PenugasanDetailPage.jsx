@@ -4,6 +4,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import Select from "react-select";
 import { Pencil, Trash2 } from "lucide-react";
+import { useAuth } from "../auth/useAuth";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -13,6 +14,8 @@ const selectStyles = {
 export default function PenugasanDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const canManage = ["admin", "ketua", "pimpinan"].includes(user?.role);
   const [item, setItem] = useState(null);
   const [kegiatan, setKegiatan] = useState([]);
   const [users, setUsers] = useState([]);
@@ -71,7 +74,9 @@ export default function PenugasanDetailPage() {
 
   useEffect(() => {
     fetchDetail();
-    axios.get(`/laporan-harian/penugasan/${id}`).then((r) => setLaporan(r.data));
+    axios
+      .get(`/laporan-harian/penugasan/${id}`)
+      .then((r) => setLaporan(r.data));
     axios.get("/master-kegiatan").then((r) => {
       const kData = r.data.data || r.data;
       const sorted = [...kData].sort((a, b) =>
@@ -79,11 +84,16 @@ export default function PenugasanDetailPage() {
       );
       setKegiatan(sorted);
     });
-    axios.get("/users").then((r) => {
-      const sorted = [...r.data].sort((a, b) => a.nama.localeCompare(b.nama));
-      setUsers(sorted);
-    });
-  }, [id]);
+
+    if (canManage) {
+      axios.get("/users").then((r) => {
+        const sorted = [...r.data].sort((a, b) => a.nama.localeCompare(b.nama));
+        setUsers(sorted);
+      });
+    } else if (user) {
+      setUsers([user]);
+    }
+  }, [id, canManage, user]);
 
   const save = async () => {
     try {
