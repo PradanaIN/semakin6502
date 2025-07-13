@@ -48,14 +48,33 @@ const Dashboard = () => {
           )
         );
 
-        const [dailyRes, weeklyRes, progress] = await Promise.all([
+        const penugasanReq = axios.get("/penugasan", {
+          params: { bulan: today.getMonth() + 1, tahun: year },
+        });
+
+        const [dailyRes, weeklyRes, progress, penRes] = await Promise.all([
           axios.get("/monitoring/harian", { params: { tanggal, ...filters } }),
           axios.get("/monitoring/mingguan", { params: { minggu, ...filters } }),
           progressPromise,
+          penugasanReq,
         ]);
 
+        const mingguKe = Math.ceil(today.getDate() / 7);
+        const weekAssignments = (penRes.data || []).filter(
+          (p) => parseInt(p.minggu, 10) === mingguKe
+        );
+        const selesaiCount = weekAssignments.filter((p) =>
+          String(p.status).toLowerCase().includes("selesai")
+        ).length;
+
+        const weeklyDataFixed = {
+          ...weeklyRes.data,
+          totalTugas: weekAssignments.length,
+          totalSelesai: selesaiCount,
+        };
+
         setDailyData(dailyRes.data);
-        setWeeklyData(weeklyRes.data);
+        setWeeklyData(weeklyDataFixed);
         setMonthlyProgress(progress);
       } catch (error) {
         if (error?.response && [401, 403].includes(error.response.status)) {

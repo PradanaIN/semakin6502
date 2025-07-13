@@ -135,9 +135,7 @@ export default function PenugasanPage() {
   ];
 
   const filtered = penugasan.filter((p) => {
-    const k = kegiatan.find((k) => k.id === p.kegiatanId);
-    const peg = users.find((u) => u.id === p.pegawaiId);
-    const text = `${k?.nama_kegiatan || ""} ${peg?.nama || ""}`.toLowerCase();
+    const text = `${p.kegiatan?.nama_kegiatan || ""} ${p.pegawai?.nama || ""}`.toLowerCase();
     return text.includes(search.toLowerCase());
   });
   const paginated = filtered.slice(
@@ -233,15 +231,12 @@ export default function PenugasanPage() {
               </td>
             </tr>
           ) : (
-            paginated.map((p, idx) => {
-              const k = kegiatan.find((k) => k.id === p.kegiatanId);
-              const peg = users.find((u) => u.id === p.pegawaiId);
-              return (
+            paginated.map((p, idx) => (
                 <tr key={p.id} className="border-t dark:border-gray-700 text-center">
                   <td className="px-2 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
-                  <td className="px-4 py-2">{k?.nama_kegiatan || "-"}</td>
-                  <td className="px-4 py-2">{k?.team?.nama_tim || "-"}</td>
-                  <td className="px-4 py-2">{peg?.nama || "-"}</td>
+                  <td className="px-4 py-2">{p.kegiatan?.nama_kegiatan || "-"}</td>
+                  <td className="px-4 py-2">{p.kegiatan?.team?.nama_tim || "-"}</td>
+                  <td className="px-4 py-2">{p.pegawai?.nama || "-"}</td>
                   <td className="px-4 py-2">{p.minggu}</td>
                   <td className="px-4 py-2">{p.status}</td>
                   <td className="px-2 py-2">
@@ -253,8 +248,7 @@ export default function PenugasanPage() {
                     </button>
                   </td>
                 </tr>
-              );
-            })
+              ))
           )}
         </tbody>
       </table>
