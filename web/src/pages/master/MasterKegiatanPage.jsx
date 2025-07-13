@@ -3,6 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { Pencil, Plus, Trash2, Search } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
+import Pagination from "../../components/Pagination";
 
 export default function MasterKegiatanPage() {
   const { user } = useAuth();
@@ -21,6 +22,7 @@ export default function MasterKegiatanPage() {
   const [perPage, setPerPage] = useState(10);
   const [filterTeam, setFilterTeam] = useState("");
   const [search, setSearch] = useState("");
+  const totalPages = lastPage || 1;
   const fetchItems = useCallback(async () => {
     try {
       setLoading(true);
@@ -245,35 +247,7 @@ export default function MasterKegiatanPage() {
             ))}
           </select>
         </div>
-        <div className="space-x-1">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-          >
-            Prev
-          </button>
-          {Array.from({ length: lastPage || 1 }, (_, i) => i + 1).map((n) => (
-            <button
-              key={n}
-              onClick={() => setPage(n)}
-              className={`px-3 py-1 rounded-full ${
-                page === n
-                  ? "bg-blue-600 text-white"
-                  : "border bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-              }`}
-            >
-              {n}
-            </button>
-          ))}
-          <button
-            onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
-            disabled={page >= lastPage}
-            className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-          >
-            Next
-          </button>
-        </div>
+        <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
 
       {showForm && (
