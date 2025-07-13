@@ -2,32 +2,48 @@ const WeeklyOverview = ({ data }) => {
   if (!data) return null;
 
   return (
-    <div>
-      <div className="mb-4">
-        <h2 className="text-xl font-semibold text-purple-600 mb-1">
+    <div className="space-y-4">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+        <h2 className="text-xl font-semibold text-blue-600 mb-1">
           Progress Mingguan
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-300">
-          {data.minggu} Bulan {data.bulan} ({data.tanggal})
+          Minggu {data.minggu} Bulan {data.bulan}
         </p>
-        <p className="text-sm font-semibold text-purple-700 dark:text-purple-300 mt-2">
-          Total Progress: {data.totalProgress} ({data.totalSelesai}/
-          {data.totalTugas})
-        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">{data.tanggal}</p>
+        <div className="mt-2">
+          <div className="flex justify-between text-sm font-medium">
+            <span className="text-blue-700 dark:text-blue-300">
+              {data.totalProgress}% selesai
+            </span>
+            <span className="text-gray-600 dark:text-gray-300">
+              ({data.totalSelesai}/{data.totalTugas})
+            </span>
+          </div>
+          <div className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-full mt-1">
+            <div
+              className="h-2 bg-blue-500 rounded-full"
+              style={{ width: `${data.totalProgress}%` }}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="space-y-3">
         {data.detail?.map((day, index) => (
-          <div key={index}>
+          <div
+            key={index}
+            className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow"
+          >
             <div className="flex justify-between text-sm">
               <span>
-                {day.hari} ({day.tanggal})
+                {day.hari}, {day.tanggal}
               </span>
               <span>
                 {day.selesai}/{day.total} &nbsp; {day.persen}%
               </span>
             </div>
-            <div className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-full">
+            <div className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-full mt-1">
               <div
                 className="h-2 bg-blue-500 rounded-full"
                 style={{ width: `${day.persen}%` }}
