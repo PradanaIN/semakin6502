@@ -7,7 +7,11 @@ import { useAuth } from "../auth/useAuth";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
-  valueContainer: (base) => ({ ...base, maxHeight: "100px", overflowY: "auto" }),
+  valueContainer: (base) => ({
+    ...base,
+    maxHeight: "100px",
+    overflowY: "auto",
+  }),
   menuPortal: (base) => ({ ...base, zIndex: 9999 }),
 };
 
@@ -31,8 +35,8 @@ export default function PenugasanPage() {
   const [filterTahun, setFilterTahun] = useState(new Date().getFullYear());
 
   const fetchData = useCallback(async () => {
-      try {
-        setLoading(true);
+    try {
+      setLoading(true);
       const [pRes, tRes, uRes] = await Promise.all([
         axios.get(
           `/penugasan?bulan=${filterBulan || ""}&tahun=${filterTahun || ""}`
@@ -132,18 +136,6 @@ export default function PenugasanPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={16} className="text-gray-400 dark:text-gray-300" />
-            </div>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari penugasan..."
-              className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
           <select
             value={filterBulan}
             onChange={(e) => setFilterBulan(e.target.value)}
@@ -151,7 +143,9 @@ export default function PenugasanPage() {
           >
             <option value="">Bulan</option>
             {months.map((m, i) => (
-              <option key={i + 1} value={i + 1}>{m}</option>
+              <option key={i + 1} value={i + 1}>
+                {m}
+              </option>
             ))}
           </select>
           <input
@@ -167,6 +161,18 @@ export default function PenugasanPage() {
           >
             Terapkan
           </button>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search size={16} className="text-gray-400 dark:text-gray-300" />
+            </div>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Cari penugasan..."
+              className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
         </div>
         <button
           onClick={openCreate}
@@ -207,7 +213,10 @@ export default function PenugasanPage() {
               const k = kegiatan.find((k) => k.id === p.kegiatanId);
               const peg = users.find((u) => u.id === p.pegawaiId);
               return (
-                <tr key={p.id} className="border-t dark:border-gray-700 text-center">
+                <tr
+                  key={p.id}
+                  className="border-t dark:border-gray-700 text-center"
+                >
                   <td className="px-2 py-2">{idx + 1}</td>
                   <td className="px-4 py-2">{k?.nama_kegiatan || "-"}</td>
                   <td className="px-4 py-2">{k?.team?.nama_tim || "-"}</td>
@@ -215,7 +224,9 @@ export default function PenugasanPage() {
                   <td className="px-4 py-2">{p.minggu}</td>
                   <td className="px-4 py-2">{p.status}</td>
                   <td className="px-2 py-2">
-                    <button className="text-blue-600 hover:underline text-sm">Detail</button>
+                    <button className="text-blue-600 hover:underline text-sm">
+                      Detail
+                    </button>
                   </td>
                 </tr>
               );
@@ -238,7 +249,10 @@ export default function PenugasanPage() {
                   className="mb-1"
                   styles={selectStyles}
                   menuPortalTarget={document.body}
-                  options={kegiatan.map((k) => ({ value: k.id, label: k.nama_kegiatan }))}
+                  options={kegiatan.map((k) => ({
+                    value: k.id,
+                    label: k.nama_kegiatan,
+                  }))}
                   value={
                     form.kegiatanId
                       ? {
@@ -310,7 +324,9 @@ export default function PenugasanPage() {
                 <label className="block text-sm mb-1">Deskripsi</label>
                 <textarea
                   value={form.deskripsi}
-                  onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, deskripsi: e.target.value })
+                  }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
