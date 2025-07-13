@@ -11,6 +11,20 @@ export class LaporanService {
   getByTanggal(tanggal: string) {
     return this.prisma.laporanHarian.findMany({
       where: { tanggal: new Date(tanggal) },
+      include: {
+        pegawai: true,
+        penugasan: { include: { kegiatan: true } },
+      },
+    });
+  }
+
+  getByPenugasan(penugasanId: number) {
+    return this.prisma.laporanHarian.findMany({
+      where: { penugasanId },
+      include: {
+        pegawai: true,
+        penugasan: { include: { kegiatan: true } },
+      },
     });
   }
 }
