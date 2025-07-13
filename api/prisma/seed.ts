@@ -430,6 +430,38 @@ async function main() {
     }
     await prisma.penugasan.createMany({ data: rows });
   }
+
+  // seed laporan harian based on penugasan
+  const penugasans = await prisma.penugasan.findMany();
+  if (penugasans.length) {
+    const statuses = [
+      "Belum Dikerjakan",
+      "Sedang Dikerjakan",
+      "Selesai Dikerjakan",
+    ];
+    const today = new Date();
+    const dates = [0, 1, 2].map((d) => {
+      const t = new Date(today);
+      t.setDate(today.getDate() - d);
+      return t;
+    });
+
+    const reports = [] as any[];
+    for (const p of penugasans) {
+      for (const dt of dates) {
+        reports.push({
+          penugasanId: p.id,
+          pegawaiId: p.pegawaiId,
+          tanggal: dt,
+          status: statuses[Math.floor(Math.random() * statuses.length)],
+        });
+      }
+    }
+
+    if (reports.length) {
+      await prisma.laporanHarian.createMany({ data: reports, skipDuplicates: true });
+    }
+  }
 }
 
 main()
