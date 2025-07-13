@@ -119,7 +119,10 @@ export default function PenugasanDetailPage() {
 
   const saveLaporan = async () => {
     try {
-      await axios.post("/laporan-harian", { ...laporanForm, penugasanId: id });
+      await axios.post("/laporan-harian", {
+        ...laporanForm,
+        penugasanId: parseInt(id, 10),
+      });
       setShowLaporanForm(false);
       const r = await axios.get(`/laporan-harian/penugasan/${id}`);
       setLaporan(r.data);
@@ -154,7 +157,7 @@ export default function PenugasanDetailPage() {
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Detail Penugasan</h2>
-        {!editing && (
+        {canManage && !editing && (
           <div className="space-x-2">
             <button
               onClick={() => setEditing(true)}
@@ -386,7 +389,7 @@ export default function PenugasanDetailPage() {
             <h3 className="text-lg font-semibold">Tambah Laporan Harian</h3>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm mb-1">Tanggal</label>
+                <label className="block text-sm mb-1">Tanggal<span className="text-red-500">*</span></label>
                 <input
                   type="date"
                   value={laporanForm.tanggal}
@@ -397,7 +400,7 @@ export default function PenugasanDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Status</label>
+                <label className="block text-sm mb-1">Status<span className="text-red-500">*</span></label>
                 <select
                   value={laporanForm.status}
                   onChange={(e) =>
