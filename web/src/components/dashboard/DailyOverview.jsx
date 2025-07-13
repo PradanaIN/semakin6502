@@ -6,21 +6,28 @@ const DailyOverview = ({ data = [] }) => {
         Kalender Aktivitas Harian
       </h2>
       <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-        {data.map((day, index) => (
-          <div
-            key={index}
-            className={`p-3 rounded-lg text-center text-sm font-medium border ${
-              day.adaKegiatan
-                ? "bg-green-200 border-green-500"
-                : "bg-gray-100 dark:bg-gray-700"
-            }`}
-          >
-            <div>{day.tanggal}</div>
-            {day.adaKegiatan && (
-              <div className="text-green-700 text-xs mt-1">✔</div>
-            )}
-          </div>
-        ))}
+        {data.map((day, index) => {
+          const dayName = new Date(day.tanggal).toLocaleDateString("id-ID", {
+            weekday: "short",
+          });
+          return (
+            <div
+              key={index}
+              className={`p-3 rounded-lg text-center text-sm font-medium border ${
+                day.adaKegiatan
+                  ? "bg-green-200 border-green-500"
+                  : "bg-gray-100 dark:bg-gray-700"
+              }`}
+            >
+              <div>
+                {dayName}, {day.tanggal}
+              </div>
+              {day.adaKegiatan && (
+                <div className="text-green-700 text-xs mt-1">✔</div>
+              )}
+            </div>
+          );
+        })}
       </div>
       <p className="text-xs text-gray-500 mt-2">
         <span className="text-green-600">✔</span> menandakan ada laporan

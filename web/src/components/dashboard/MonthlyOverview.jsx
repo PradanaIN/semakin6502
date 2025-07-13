@@ -16,8 +16,8 @@ const MonthlyOverview = ({ data = [] }) => {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-3 text-indigo-600">
-        Aktivitas Bulanan
+      <h2 className="text-lg font-semibold mb-3 text-blue-600">
+        Capaian Kinerja Bulanan
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {data.map((item, index) => (
@@ -31,7 +31,7 @@ const MonthlyOverview = ({ data = [] }) => {
             </div>
             <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full mt-1">
               <div
-                className="h-2 bg-indigo-500 rounded-full"
+                className="h-2 bg-blue-500 rounded-full"
                 style={{ width: `${item.persen}%` }}
               />
             </div>
