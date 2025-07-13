@@ -31,6 +31,8 @@ export default function PenugasanPage() {
   const [search, setSearch] = useState("");
   const [filterBulan, setFilterBulan] = useState("");
   const [filterTahun, setFilterTahun] = useState(new Date().getFullYear());
+  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const fetchData = useCallback(async () => {
       try {
@@ -125,6 +127,10 @@ export default function PenugasanPage() {
     const text = `${k?.nama_kegiatan || ""} ${peg?.nama || ""}`.toLowerCase();
     return text.includes(search.toLowerCase());
   });
+  const paginated = filtered.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   if (!["ketua", "admin"].includes(user?.role)) {
     return <div className="p-6 text-center">Anda tidak memiliki akses ke halaman ini.</div>;
@@ -141,14 +147,20 @@ export default function PenugasanPage() {
             <input
               type="text"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
               placeholder="Cari penugasan..."
               className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
           <select
             value={filterBulan}
-            onChange={(e) => setFilterBulan(e.target.value)}
+            onChange={(e) => {
+              setFilterBulan(e.target.value);
+              setCurrentPage(1);
+            }}
             className="border rounded px-2 py-[4px] bg-white dark:bg-gray-700 dark:text-gray-200"
           >
             <option value="">Bulan</option>
@@ -159,7 +171,10 @@ export default function PenugasanPage() {
           <input
             type="number"
             value={filterTahun}
-            onChange={(e) => setFilterTahun(parseInt(e.target.value, 10))}
+            onChange={(e) => {
+              setFilterTahun(parseInt(e.target.value, 10));
+              setCurrentPage(1);
+            }}
             className="w-20 border rounded px-2 py-[4px] bg-white dark:bg-gray-700 dark:text-gray-200"
           />
           <button
@@ -205,12 +220,12 @@ export default function PenugasanPage() {
               </td>
             </tr>
           ) : (
-            filtered.map((p, idx) => {
+            paginated.map((p, idx) => {
               const k = kegiatan.find((k) => k.id === p.kegiatanId);
               const peg = users.find((u) => u.id === p.pegawaiId);
               return (
                 <tr key={p.id} className="border-t dark:border-gray-700 text-center">
-                  <td className="px-2 py-2">{idx + 1}</td>
+                  <td className="px-2 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
                   <td className="px-4 py-2">{k?.nama_kegiatan || "-"}</td>
                   <td className="px-4 py-2">{k?.team?.nama_tim || "-"}</td>
                   <td className="px-4 py-2">{peg?.nama || "-"}</td>
@@ -230,6 +245,56 @@ export default function PenugasanPage() {
           )}
         </tbody>
       </table>
+
+      <div className="flex items-center justify-between mt-4">
+        <div className="space-x-2">
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(parseInt(e.target.value, 10));
+              setCurrentPage(1);
+            }}
+            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
+          >
+            {[5, 10, 25].map((n) => (
+              <option key={n} value={n} className="text-gray-900 dark:text-gray-200">
+                {n}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="space-x-1">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          >
+            Prev
+          </button>
+          {Array.from({ length: Math.ceil(filtered.length / pageSize) || 1 }, (_, i) => i + 1).map((n) => (
+            <button
+              key={n}
+              onClick={() => setCurrentPage(n)}
+              className={`px-3 py-1 rounded-full ${
+                currentPage === n
+                  ? "bg-blue-600 text-white"
+                  : "border bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+              }`}
+            >
+              {n}
+            </button>
+          ))}
+          <button
+            onClick={() =>
+              setCurrentPage((p) => Math.min(Math.ceil(filtered.length / pageSize), p + 1))
+            }
+            disabled={currentPage >= Math.ceil(filtered.length / pageSize)}
+            className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+          >
+            Next
+          </button>
+        </div>
+      </div>
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
