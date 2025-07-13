@@ -6,6 +6,8 @@ import { useAuth } from "../pages/auth/useAuth";
 import UsersPage from "../pages/users/UsersPage";
 import TeamsPage from "../pages/teams/TeamsPage";
 import MasterKegiatanPage from "../pages/master/MasterKegiatanPage";
+import PenugasanPage from "../pages/penugasan/PenugasanPage";
+import PenugasanDetailPage from "../pages/penugasan/PenugasanDetailPage";
 
 function PrivateRoute({ children }) {
   const { token, user } = useAuth();
@@ -39,6 +41,8 @@ export default function AppRoutes() {
         <Route path="users" element={<UsersPage />} />
         <Route path="teams" element={<TeamsPage />} />
         <Route path="master-kegiatan" element={<MasterKegiatanPage />} />
+        <Route path="penugasan" element={<PenugasanPage />} />
+        <Route path="penugasan/:id" element={<PenugasanDetailPage />} />
         {/* Tambahkan rute lainnya nanti di sini */}
       </Route>
     </Routes>
