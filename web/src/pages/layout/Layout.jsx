@@ -182,12 +182,28 @@ export default function Layout() {
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex items-center space-x-2 text-sm focus:outline-none"
               >
-                <FaUserCircle className="text-2xl" />
+                {user?.role === "admin" ? (
+                  <FaUserCircle className="text-2xl" />
+                ) : (
+                  <img
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      user?.nama ?? "User"
+                    )}`}
+                    alt={user?.nama ?? "User"}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                )}
                 <div className="hidden md:block text-left">
-                  <div className="font-semibold">{user?.name}</div>
-                  <div className="text-xs capitalize text-gray-500 dark:text-gray-300">
-                    {user?.role}
-                  </div>
+                  {user?.role === "admin" ? (
+                    <div className="font-semibold">Admin</div>
+                  ) : (
+                    <>
+                      <div className="font-semibold">{user?.nama}</div>
+                      <div className="text-xs capitalize text-gray-500 dark:text-gray-300">
+                        {user?.role}
+                      </div>
+                    </>
+                  )}
                 </div>
               </button>
               {showProfileMenu && (
