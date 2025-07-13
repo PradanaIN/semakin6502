@@ -19,4 +19,3 @@ export class AssignPenugasanBulkDto {
 
   @IsString()
   deskripsi?: string;
-}
