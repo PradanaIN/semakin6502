@@ -5,7 +5,7 @@ const DailyOverview = ({ data = [] }) => {
       <h2 className="text-lg font-semibold mb-3 text-blue-600">
         Kalender Aktivitas Harian
       </h2>
-      <div className="grid grid-cols-7 gap-2">
+      <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
         {data.map((day, index) => (
           <div
             key={index}
@@ -22,6 +22,9 @@ const DailyOverview = ({ data = [] }) => {
           </div>
         ))}
       </div>
+      <p className="text-xs text-gray-500 mt-2">
+        <span className="text-green-600">✔</span> menandakan ada laporan
+      </p>
     </div>
   );
 };

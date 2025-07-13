@@ -2,17 +2,16 @@ const WeeklyOverview = ({ data }) => {
   if (!data) return null;
 
   return (
-    <div>
-      <div className="mb-4">
+    <div className="space-y-4">
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
         <h2 className="text-xl font-semibold text-purple-600 mb-1">
           Progress Mingguan
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-300">
           {data.minggu} Bulan {data.bulan} ({data.tanggal})
         </p>
-        <p className="text-sm font-semibold text-purple-700 dark:text-purple-300 mt-2">
-          Total Progress: {data.totalProgress} ({data.totalSelesai}/
-          {data.totalTugas})
+        <p className="text-lg font-semibold text-purple-700 dark:text-purple-300 mt-2">
+          {data.totalProgress}% selesai ({data.totalSelesai}/{data.totalTugas})
         </p>
       </div>
 
