@@ -33,9 +33,11 @@ const DailyOverview = ({ data = [] }) => {
     if (day.adaKegiatan) {
       return "bg-green-200 border-green-400 dark:bg-green-700 dark:border-green-500";
     }
+
     if (isWeekend(day.tanggal) || isHoliday(day.tanggal)) {
       return "bg-blue-200 border-blue-400 dark:bg-blue-700 dark:border-blue-500";
     }
+
     if (day.tanggal < today) {
       return "bg-yellow-200 border-yellow-400 dark:bg-yellow-700 dark:border-yellow-500";
     }
@@ -51,7 +53,9 @@ const DailyOverview = ({ data = [] }) => {
           const dayName = new Date(day.tanggal).toLocaleDateString("id-ID", {
             weekday: "short",
           });
+
           const weekend = isWeekend(day.tanggal) || isHoliday(day.tanggal);
+
           return (
             <div
               key={index}
@@ -85,6 +89,9 @@ const DailyOverview = ({ data = [] }) => {
           hari libur/weekend
         </div>
       </div>
+      <p className="text-xs text-gray-500 mt-2">
+        <span className="text-green-600">✔</span> menandakan ada laporan
+      </p>
     </div>
   );
 };
