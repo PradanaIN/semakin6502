@@ -218,11 +218,15 @@ export default function PenugasanDetailPage() {
               classNamePrefix="react-select"
               styles={selectStyles}
               menuPortalTarget={document.body}
-              options={kegiatan.map((k) => ({ value: k.id, label: k.nama_kegiatan }))}
+              options={kegiatan.map((k) => ({
+                value: k.id,
+                label: k.nama_kegiatan,
+              }))}
               value={{
                 value: form.kegiatanId,
                 label:
-                  kegiatan.find((k) => k.id === form.kegiatanId)?.nama_kegiatan || "",
+                  kegiatan.find((k) => k.id === form.kegiatanId)
+                    ?.nama_kegiatan || "",
               }}
               onChange={(o) =>
                 setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })
@@ -415,7 +419,9 @@ export default function PenugasanDetailPage() {
               </div>
               {laporanForm.status === "Selesai Dikerjakan" && (
                 <div>
-                  <label className="block text-sm mb-1">Link Bukti</label>
+                  <label className="block text-sm mb-1">
+                    Link Bukti <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="text"
                     value={laporanForm.bukti_link}
