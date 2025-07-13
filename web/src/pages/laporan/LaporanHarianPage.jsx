@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Search } from "lucide-react";
+import Pagination from "../../components/Pagination";
 
 export default function LaporanHarianPage() {
   const today = new Date().toISOString().split("T")[0];
@@ -39,6 +40,7 @@ export default function LaporanHarianPage() {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
   return (
     <div className="p-6 space-y-4">
@@ -70,12 +72,6 @@ export default function LaporanHarianPage() {
             className="pl-10 pr-3 py-1 border rounded bg-white dark:bg-gray-700 dark:text-gray-200"
           />
         </div>
-        <button
-          onClick={fetchData}
-          className="h-9 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
-        >
-          <Search size={16} />
-        </button>
       </div>
       {loading ? (
         <div>Memuat...</div>
@@ -145,37 +141,11 @@ export default function LaporanHarianPage() {
                 ))}
               </select>
             </div>
-            <div className="space-x-1">
-              <button
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-              >
-                Prev
-              </button>
-              {Array.from({ length: Math.ceil(filtered.length / pageSize) || 1 }, (_, i) => i + 1).map((n) => (
-                <button
-                  key={n}
-                  onClick={() => setCurrentPage(n)}
-                  className={`px-3 py-1 rounded-full ${
-                    currentPage === n
-                      ? "bg-blue-600 text-white"
-                      : "border bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-                  }`}
-                >
-                  {n}
-                </button>
-              ))}
-              <button
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(Math.ceil(filtered.length / pageSize), p + 1))
-                }
-                disabled={currentPage >= Math.ceil(filtered.length / pageSize)}
-                className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-              >
-                Next
-              </button>
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           </div>
         </div>
       )}

@@ -51,6 +51,9 @@ const DailyOverview = ({ data = [] }) => {
           belum lapor (terlewat)
         </div>
       </div>
+      <p className="text-xs text-gray-500 mt-2">
+        <span className="text-green-600">✔</span> menandakan ada laporan
+      </p>
     </div>
   );
 };
