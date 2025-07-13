@@ -10,8 +10,8 @@ export class AssignPenugasanDto {
   @IsInt()
   minggu!: number;
 
-  @IsString()
-  bulan!: string;
+  @IsInt()
+  bulan!: number;
 
   @IsInt()
   tahun!: number;
