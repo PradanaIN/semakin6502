@@ -409,6 +409,27 @@ async function main() {
       });
     }
   }
+
+  // seed some penugasan
+  const allMasters = await prisma.masterKegiatan.findMany();
+  const allUsers = await prisma.user.findMany({ where: { role: { not: "admin" } } });
+  if (allMasters.length && allUsers.length) {
+    const rows = [] as any[];
+    for (let i = 0; i < Math.min(10, allMasters.length); i++) {
+      const k = allMasters[i];
+      const u = allUsers[i % allUsers.length];
+      rows.push({
+        kegiatanId: k.id,
+        pegawaiId: u.id,
+        minggu: ((i % 4) + 1),
+        bulan: String(new Date().getMonth() + 1),
+        tahun: new Date().getFullYear(),
+        deskripsi: `Tugas ${k.nama_kegiatan}`,
+        status: "Belum",
+      });
+    }
+    await prisma.penugasan.createMany({ data: rows });
+  }
 }
 
 main()
