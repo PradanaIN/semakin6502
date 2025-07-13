@@ -4,23 +4,63 @@ import { PrismaService } from "../prisma.service";
 @Injectable()
 export class PenugasanService {
   constructor(private prisma: PrismaService) {}
-  findAll() {
-    return this.prisma.penugasan.findMany();
+
+  findAll(role: string, userId: number) {
+    if (role === "admin") {
+      return this.prisma.penugasan.findMany();
+    }
+    return this.prisma.penugasan.findMany({
+      where: {
+        kegiatan: {
+          team: {
+            members: { some: { userId, is_leader: true } },
+          },
+        },
+      },
+    });
   }
 
-  async assign(data: any, userId: number) {
+  async assign(data: any, userId: number, role: string) {
     const master = await this.prisma.masterKegiatan.findUnique({
       where: { id: data.kegiatanId },
     });
     if (!master) {
       throw new BadRequestException("master kegiatan tidak ditemukan");
     }
-    const leader = await this.prisma.member.findFirst({
-      where: { teamId: master.teamId, userId, is_leader: true },
-    });
-    if (!leader) {
-      throw new ForbiddenException("bukan ketua tim kegiatan ini");
+    if (role !== "admin") {
+      const leader = await this.prisma.member.findFirst({
+        where: { teamId: master.teamId, userId, is_leader: true },
+      });
+      if (!leader) {
+        throw new ForbiddenException("bukan ketua tim kegiatan ini");
+      }
     }
     return this.prisma.penugasan.create({ data });
+  }
+
+  async assignBulk(data: any, userId: number, role: string) {
+    const master = await this.prisma.masterKegiatan.findUnique({
+      where: { id: data.kegiatanId },
+    });
+    if (!master) {
+      throw new BadRequestException("master kegiatan tidak ditemukan");
+    }
+    if (role !== "admin") {
+      const leader = await this.prisma.member.findFirst({
+        where: { teamId: master.teamId, userId, is_leader: true },
+      });
+      if (!leader) {
+        throw new ForbiddenException("bukan ketua tim kegiatan ini");
+      }
+    }
+    const rows = data.pegawaiIds.map((pid: number) => ({
+      kegiatanId: data.kegiatanId,
+      pegawaiId: pid,
+      minggu: data.minggu,
+      bulan: data.bulan,
+      tahun: data.tahun,
+    }));
+    await this.prisma.penugasan.createMany({ data: rows });
+    return { count: rows.length };
   }
 }
