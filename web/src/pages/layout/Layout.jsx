@@ -200,7 +200,18 @@ export default function Layout() {
                     <>
                       <div className="font-semibold">{user?.nama}</div>
                       <div className="text-xs capitalize text-gray-500 dark:text-gray-300">
-                        {user?.role}
+                        {user?.role === "pimpinan"
+                          ? "Pimpinan"
+                          : `${
+                              user?.role === "ketua" ? "Ketua Tim" : "Anggota Tim"
+                            } ${
+                              user?.team ||
+                              user?.teamName ||
+                              user?.team_name ||
+                              user?.nama_tim ||
+                              user?.members?.[0]?.team?.nama_tim ||
+                              ""
+                            }`}
                       </div>
                     </>
                   )}
