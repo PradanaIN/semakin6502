@@ -193,7 +193,7 @@ export default function TeamsPage() {
                 value={n}
                 className="text-gray-900 dark:text-gray-200"
               >
-                {n} / halaman
+                {n}
               </option>
             ))}
           </select>
