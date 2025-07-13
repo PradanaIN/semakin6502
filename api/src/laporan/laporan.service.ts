@@ -30,4 +30,11 @@ export class LaporanService {
       orderBy: { tanggal: "asc" },
     });
   }
+
+  getByPenugasan(penugasanId: number) {
+    return this.prisma.laporanHarian.findMany({
+      where: { penugasanId },
+      orderBy: { tanggal: "asc" },
+    });
+  }
 }

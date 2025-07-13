@@ -141,19 +141,11 @@ export default function PenugasanDetailPage() {
   if (!item) return <div className="p-6">Memuat...</div>;
 
   return (
-    <div className="p-6 space-y-4">
-      {!editing ? (
-        <div className="space-y-2">
-          <h2 className="text-xl font-semibold">Detail Penugasan</h2>
-          <p>Kegiatan: {item.kegiatan?.nama_kegiatan}</p>
-          <p>Tim: {item.kegiatan?.team?.nama_tim}</p>
-          <p>Pegawai: {item.pegawai?.nama}</p>
-          <p>Minggu: {item.minggu}</p>
-          <p>Bulan: {item.bulan}</p>
-          <p>Tahun: {item.tahun}</p>
-          <p>Deskripsi: {item.deskripsi || "-"}</p>
-          <p>Status: {item.status}</p>
-          <div className="space-x-2 pt-2">
+    <div className="p-6 space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold">Detail Penugasan</h2>
+        {!editing && (
+          <div className="space-x-2">
             <button
               onClick={() => setEditing(true)}
               className="p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
@@ -167,9 +159,45 @@ export default function PenugasanDetailPage() {
               <Trash2 size={16} />
             </button>
           </div>
+        )}
+      </div>
+      {!editing ? (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+          <div>
+            <div className="text-sm text-gray-500">Kegiatan</div>
+            <div className="font-medium">{item.kegiatan?.nama_kegiatan}</div>
+          </div>
+          <div>
+            <div className="text-sm text-gray-500">Tim</div>
+            <div className="font-medium">{item.kegiatan?.team?.nama_tim}</div>
+          </div>
+          <div>
+            <div className="text-sm text-gray-500">Pegawai</div>
+            <div className="font-medium">{item.pegawai?.nama}</div>
+          </div>
+          <div>
+            <div className="text-sm text-gray-500">Minggu</div>
+            <div className="font-medium">{item.minggu}</div>
+          </div>
+          <div>
+            <div className="text-sm text-gray-500">Bulan</div>
+            <div className="font-medium">{item.bulan}</div>
+          </div>
+          <div>
+            <div className="text-sm text-gray-500">Tahun</div>
+            <div className="font-medium">{item.tahun}</div>
+          </div>
+          <div className="sm:col-span-2 lg:col-span-3">
+            <div className="text-sm text-gray-500">Deskripsi</div>
+            <div className="font-medium">{item.deskripsi || "-"}</div>
+          </div>
+          <div>
+            <div className="text-sm text-gray-500">Status</div>
+            <div className="font-medium">{item.status}</div>
+          </div>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <h2 className="text-xl font-semibold">Edit Penugasan</h2>
           <div>
             <label className="block text-sm mb-1">Kegiatan</label>
@@ -274,7 +302,7 @@ export default function PenugasanDetailPage() {
           </div>
         </div>
       )}
-      <div className="space-y-2">
+      <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Laporan Harian</h3>
           <button
@@ -284,7 +312,7 @@ export default function PenugasanDetailPage() {
             Tambah
           </button>
         </div>
-        <table className="min-w-full bg-white dark:bg-gray-800 rounded shadow">
+        <table className="min-w-full">
           <thead>
             <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm">
               <th className="px-2 py-1">Tanggal</th>
@@ -307,7 +335,19 @@ export default function PenugasanDetailPage() {
                   className="border-t dark:border-gray-700 text-center"
                 >
                   <td className="px-2 py-1">{l.tanggal.slice(0, 10)}</td>
-                  <td className="px-2 py-1">{l.status}</td>
+                  <td className="px-2 py-1">
+                    <span
+                      className={`px-2 py-0.5 rounded text-xs font-medium ${
+                        l.status === "Selesai Dikerjakan"
+                          ? "bg-green-100 text-green-800"
+                          : l.status === "Sedang Dikerjakan"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
+                      {l.status}
+                    </span>
+                  </td>
                   <td className="px-2 py-1">
                     {l.bukti_link ? (
                       <a
