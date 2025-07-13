@@ -1,10 +1,11 @@
-import { Controller, Post, Get, Body, UseGuards, Req } from "@nestjs/common";
+import { Controller, Post, Get, Body, UseGuards, Req, Query } from "@nestjs/common";
 import { Request } from "express";
 import { PenugasanService } from "./penugasan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/guards/roles.decorator";
 import { AssignPenugasanDto } from "./dto/assign-penugasan.dto";
+import { AssignPenugasanBulkDto } from "./dto/assign-penugasan-bulk.dto";
 
 @Controller("penugasan")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -13,11 +14,26 @@ export class PenugasanController {
 
   @Post()
   assign(@Body() body: AssignPenugasanDto, @Req() req: Request) {
-    return this.penugasanService.assign(body, (req.user as any).userId);
+    const u = req.user as any;
+    return this.penugasanService.assign(body, u.userId, u.role);
+  }
+
+  @Post("bulk")
+  assignBulk(@Body() body: AssignPenugasanBulkDto, @Req() req: Request) {
+    const u = req.user as any;
+    return this.penugasanService.assignBulk(body, u.userId, u.role);
   }
 
   @Get()
-  findAll() {
-    return this.penugasanService.findAll();
+  findAll(
+    @Req() req: Request,
+    @Query("bulan") bulan?: string,
+    @Query("tahun") tahun?: string,
+  ) {
+    const u = req.user as any;
+    const filter: any = {};
+    if (bulan) filter.bulan = bulan;
+    if (tahun) filter.tahun = parseInt(tahun, 10);
+    return this.penugasanService.findAll(u.role, u.userId, filter);
   }
 }

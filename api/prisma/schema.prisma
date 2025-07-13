@@ -53,6 +53,8 @@ model Penugasan {
   minggu      Int
   bulan       String
   tahun       Int
+  deskripsi   String?
+  status      String   @default("Belum")
   kegiatan    MasterKegiatan @relation(fields: [kegiatanId], references: [id])
   pegawai     User    @relation(name: "PenugasanUser", fields: [pegawaiId], references: [id])
   laporan     LaporanHarian[]

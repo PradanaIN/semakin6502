@@ -5,27 +5,29 @@ import { PrismaService } from "../prisma.service";
 export class TeamsService {
   constructor(private prisma: PrismaService) {}
   findAll() {
-    return this.prisma.team.findMany({ include: { members: true } });
+    return this.prisma.team.findMany({
+      include: { members: { include: { user: true } } },
+    });
   }
 
   findByLeader(userId: number) {
     return this.prisma.team.findMany({
       where: { members: { some: { userId, is_leader: true } } },
-      include: { members: true },
+      include: { members: { include: { user: true } } },
     });
   }
 
   findByMember(userId: number) {
     return this.prisma.team.findMany({
       where: { members: { some: { userId } } },
-      include: { members: true },
+      include: { members: { include: { user: true } } },
     });
   }
 
   findOne(id: number) {
     return this.prisma.team.findUnique({
       where: { id },
-      include: { members: true },
+      include: { members: { include: { user: true } } },
     });
   }
 
