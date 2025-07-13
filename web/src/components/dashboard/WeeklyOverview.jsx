@@ -1,6 +1,16 @@
 const WeeklyOverview = ({ data }) => {
   if (!data) return null;
 
+  const formatDate = (iso) => {
+    const [y, m, d] = iso.split("-");
+    return `${d}-${m}-${y}`;
+  };
+
+  const rangeText = data.tanggal
+    .split(" - ")
+    .map(formatDate)
+    .join(" - ");
+
   return (
     <div className="space-y-4">
       <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
@@ -10,7 +20,7 @@ const WeeklyOverview = ({ data }) => {
         <p className="text-sm text-gray-600 dark:text-gray-300">
           Minggu {data.minggu} Bulan {data.bulan}
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">{data.tanggal}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">{rangeText}</p>
         <div className="mt-2">
           <div className="flex justify-between text-sm font-medium">
             <span className="text-blue-700 dark:text-blue-300">
@@ -37,7 +47,7 @@ const WeeklyOverview = ({ data }) => {
           >
             <div className="flex justify-between text-sm">
               <span>
-                {day.hari}, {day.tanggal}
+                {day.hari}, {formatDate(day.tanggal)}
               </span>
               <span>
                 {day.selesai}/{day.total} &nbsp; {day.persen}%
