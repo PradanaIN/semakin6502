@@ -5,6 +5,7 @@ import { Plus, Search, Filter as FilterIcon, Eye } from "lucide-react";
 import Select from "react-select";
 import { useAuth } from "../auth/useAuth";
 import { useNavigate } from "react-router-dom";
+import Pagination from "../../components/Pagination";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -131,6 +132,7 @@ export default function PenugasanPage() {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
   if (!["ketua", "admin"].includes(user?.role)) {
     return <div className="p-6 text-center">Anda tidak memiliki akses ke halaman ini.</div>;
@@ -263,37 +265,11 @@ export default function PenugasanPage() {
             ))}
           </select>
         </div>
-        <div className="space-x-1">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-          >
-            Prev
-          </button>
-          {Array.from({ length: Math.ceil(filtered.length / pageSize) || 1 }, (_, i) => i + 1).map((n) => (
-            <button
-              key={n}
-              onClick={() => setCurrentPage(n)}
-              className={`px-3 py-1 rounded-full ${
-                currentPage === n
-                  ? "bg-blue-600 text-white"
-                  : "border bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-              }`}
-            >
-              {n}
-            </button>
-          ))}
-          <button
-            onClick={() =>
-              setCurrentPage((p) => Math.min(Math.ceil(filtered.length / pageSize), p + 1))
-            }
-            disabled={currentPage >= Math.ceil(filtered.length / pageSize)}
-            className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-          >
-            Next
-          </button>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
       {showForm && (
