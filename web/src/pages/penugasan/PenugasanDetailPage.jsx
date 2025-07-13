@@ -218,11 +218,15 @@ export default function PenugasanDetailPage() {
               classNamePrefix="react-select"
               styles={selectStyles}
               menuPortalTarget={document.body}
-              options={kegiatan.map((k) => ({ value: k.id, label: k.nama_kegiatan }))}
+              options={kegiatan.map((k) => ({
+                value: k.id,
+                label: k.nama_kegiatan,
+              }))}
               value={{
                 value: form.kegiatanId,
                 label:
-                  kegiatan.find((k) => k.id === form.kegiatanId)?.nama_kegiatan || "",
+                  kegiatan.find((k) => k.id === form.kegiatanId)
+                    ?.nama_kegiatan || "",
               }}
               onChange={(o) =>
                 setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })
@@ -389,7 +393,9 @@ export default function PenugasanDetailPage() {
             <h3 className="text-lg font-semibold">Tambah Laporan Harian</h3>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm mb-1">Tanggal<span className="text-red-500">*</span></label>
+                <label className="block text-sm mb-1">
+                  Tanggal <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="date"
                   value={laporanForm.tanggal}
@@ -400,7 +406,9 @@ export default function PenugasanDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Status<span className="text-red-500">*</span></label>
+                <label className="block text-sm mb-1">
+                  Status <span className="text-red-500">*</span>
+                </label>
                 <select
                   value={laporanForm.status}
                   onChange={(e) =>
@@ -415,7 +423,9 @@ export default function PenugasanDetailPage() {
               </div>
               {laporanForm.status === "Selesai Dikerjakan" && (
                 <div>
-                  <label className="block text-sm mb-1">Link Bukti</label>
+                  <label className="block text-sm mb-1">
+                    Link Bukti <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="text"
                     value={laporanForm.bukti_link}
