@@ -3,6 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { Pencil, Plus, Trash2, Search } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
+import Pagination from "../../components/Pagination";
 
 export default function MasterKegiatanPage() {
   const { user } = useAuth();
@@ -21,6 +22,7 @@ export default function MasterKegiatanPage() {
   const [perPage, setPerPage] = useState(10);
   const [filterTeam, setFilterTeam] = useState("");
   const [search, setSearch] = useState("");
+  const totalPages = lastPage || 1;
   const fetchItems = useCallback(async () => {
     try {
       setLoading(true);
@@ -123,8 +125,8 @@ export default function MasterKegiatanPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-end">
-        <div className="flex items-end space-x-2">
+      <div className="flex flex-wrap justify-between items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <div>
             <select
               value={filterTeam}
@@ -159,20 +161,6 @@ export default function MasterKegiatanPage() {
             />
           </div>
 
-          <div>
-            <select
-              value={perPage}
-              onChange={(e) => {
-                setPage(1);
-                setPerPage(parseInt(e.target.value, 10));
-              }}
-              className="border px-2 py-1 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
-            >
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-            </select>
-          </div>
         </div>
 
         <div>
@@ -242,24 +230,24 @@ export default function MasterKegiatanPage() {
         </tbody>
       </table>
 
-      <div className="flex justify-end space-x-2 mt-2">
-        <button
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
-          disabled={page === 1}
-          className="px-3 py-1 border rounded disabled:opacity-50"
-        >
-          Prev
-        </button>
-        <span className="px-2 py-1">
-          Page {page} / {lastPage}
-        </span>
-        <button
-          onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
-          disabled={page >= lastPage}
-          className="px-3 py-1 border rounded disabled:opacity-50"
-        >
-          Next
-        </button>
+      <div className="flex items-center justify-between mt-4">
+        <div className="space-x-2">
+          <select
+            value={perPage}
+            onChange={(e) => {
+              setPage(1);
+              setPerPage(parseInt(e.target.value, 10));
+            }}
+            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
+          >
+            {[5, 10, 25].map((n) => (
+              <option key={n} value={n} className="text-gray-900 dark:text-gray-200">
+                {n}
+              </option>
+            ))}
+          </select>
+        </div>
+        <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
 
       {showForm && (

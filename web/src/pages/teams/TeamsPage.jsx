@@ -3,6 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { Pencil, Plus, Trash2, Search } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
+import Pagination from "../../components/Pagination";
 
 export default function TeamsPage() {
   const { user } = useAuth();
@@ -88,6 +89,7 @@ export default function TeamsPage() {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
   if (user?.role !== "admin") {
     return (
@@ -193,47 +195,16 @@ export default function TeamsPage() {
                 value={n}
                 className="text-gray-900 dark:text-gray-200"
               >
-                {n} / halaman
+                {n}
               </option>
             ))}
           </select>
         </div>
-        <div className="space-x-1">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-          >
-            Prev
-          </button>
-          {Array.from(
-            { length: Math.ceil(filtered.length / pageSize) || 1 },
-            (_, i) => i + 1
-          ).map((n) => (
-            <button
-              key={n}
-              onClick={() => setCurrentPage(n)}
-              className={`px-3 py-1 rounded-full ${
-                currentPage === n
-                  ? "bg-blue-600 text-white"
-                  : "border bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-              }`}
-            >
-              {n}
-            </button>
-          ))}
-          <button
-            onClick={() =>
-              setCurrentPage((p) =>
-                Math.min(Math.ceil(filtered.length / pageSize), p + 1)
-              )
-            }
-            disabled={currentPage >= Math.ceil(filtered.length / pageSize)}
-            className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-          >
-            Next
-          </button>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
       {showForm && (
