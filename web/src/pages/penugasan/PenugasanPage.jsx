@@ -68,7 +68,11 @@ export default function PenugasanPage() {
 
   const save = async () => {
     if (!form.kegiatanId || form.pegawaiIds.length === 0) {
-      Swal.fire("Lengkapi data", "Kegiatan dan pegawai wajib dipilih", "warning");
+      Swal.fire(
+        "Lengkapi data",
+        "Kegiatan dan pegawai wajib dipilih",
+        "warning"
+      );
       return;
     }
     try {
@@ -105,7 +109,11 @@ export default function PenugasanPage() {
   });
 
   if (!["ketua", "admin"].includes(user?.role)) {
-    return <div className="p-6 text-center">Anda tidak memiliki akses ke halaman ini.</div>;
+    return (
+      <div className="p-6 text-center">
+        Anda tidak memiliki akses ke halaman ini.
+      </div>
+    );
   }
 
   return (
@@ -162,7 +170,10 @@ export default function PenugasanPage() {
               const k = kegiatan.find((k) => k.id === p.kegiatanId);
               const peg = users.find((u) => u.id === p.pegawaiId);
               return (
-                <tr key={p.id} className="border-t dark:border-gray-700 text-center">
+                <tr
+                  key={p.id}
+                  className="border-t dark:border-gray-700 text-center"
+                >
                   <td className="px-4 py-2">{k?.nama_kegiatan || "-"}</td>
                   <td className="px-4 py-2">{peg?.nama || "-"}</td>
                   <td className="px-4 py-2">{p.minggu}</td>
@@ -187,17 +198,24 @@ export default function PenugasanPage() {
                 <Select
                   classNamePrefix="react-select"
                   className="mb-1"
-                  options={kegiatan.map((k) => ({ value: k.id, label: k.nama_kegiatan }))}
+                  options={kegiatan.map((k) => ({
+                    value: k.id,
+                    label: k.nama_kegiatan,
+                  }))}
                   value={
                     form.kegiatanId
                       ? {
                           value: form.kegiatanId,
-                          label: kegiatan.find((k) => k.id === form.kegiatanId)?.nama_kegiatan,
+                          label: kegiatan.find((k) => k.id === form.kegiatanId)
+                            ?.nama_kegiatan,
                         }
                       : null
                   }
                   onChange={(o) =>
-                    setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })
+                    setForm({
+                      ...form,
+                      kegiatanId: o ? parseInt(o.value, 10) : "",
+                    })
                   }
                   placeholder="Pilih kegiatan..."
                   isSearchable
@@ -215,7 +233,9 @@ export default function PenugasanPage() {
                     .filter((u) => u.role !== "admin")
                     .map((u) => ({
                       value: u.id,
-                      label: `${u.members?.[0]?.team?.nama_tim || "-"} - ${u.nama}`,
+                      label: `${u.members?.[0]?.team?.nama_tim || "-"} - ${
+                        u.nama
+                      }`,
                     }))}
                   value={form.pegawaiIds
                     .map((id) => {
@@ -223,7 +243,9 @@ export default function PenugasanPage() {
                       return u
                         ? {
                             value: u.id,
-                            label: `${u.members?.[0]?.team?.nama_tim || "-"} - ${u.nama}`,
+                            label: `${
+                              u.members?.[0]?.team?.nama_tim || "-"
+                            } - ${u.nama}`,
                           }
                         : null;
                     })
@@ -231,7 +253,9 @@ export default function PenugasanPage() {
                   onChange={(vals) =>
                     setForm({
                       ...form,
-                      pegawaiIds: vals ? vals.map((v) => parseInt(v.value, 10)) : [],
+                      pegawaiIds: vals
+                        ? vals.map((v) => parseInt(v.value, 10))
+                        : [],
                     })
                   }
                   placeholder="Pilih pegawai..."
@@ -242,7 +266,9 @@ export default function PenugasanPage() {
                   onClick={() =>
                     setForm({
                       ...form,
-                      pegawaiIds: users.filter((u) => u.role !== "admin").map((u) => u.id),
+                      pegawaiIds: users
+                        .filter((u) => u.role !== "admin")
+                        .map((u) => u.id),
                     })
                   }
                   className="mt-1 px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded"
@@ -258,7 +284,9 @@ export default function PenugasanPage() {
                     value={form.minggu}
                     min="1"
                     max="5"
-                    onChange={(e) => setForm({ ...form, minggu: parseInt(e.target.value, 10) })}
+                    onChange={(e) =>
+                      setForm({ ...form, minggu: parseInt(e.target.value, 10) })
+                    }
                     className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                   />
                 </div>
@@ -266,7 +294,9 @@ export default function PenugasanPage() {
                   <label className="block text-sm mb-1">Bulan</label>
                   <select
                     value={form.bulan}
-                    onChange={(e) => setForm({ ...form, bulan: parseInt(e.target.value, 10) })}
+                    onChange={(e) =>
+                      setForm({ ...form, bulan: parseInt(e.target.value, 10) })
+                    }
                     className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                   >
                     {months.map((m, i) => (
@@ -281,17 +311,25 @@ export default function PenugasanPage() {
                   <input
                     type="number"
                     value={form.tahun}
-                    onChange={(e) => setForm({ ...form, tahun: parseInt(e.target.value, 10) })}
+                    onChange={(e) =>
+                      setForm({ ...form, tahun: parseInt(e.target.value, 10) })
+                    }
                     className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                   />
                 </div>
               </div>
             </div>
             <div className="flex justify-end space-x-2 pt-2">
-              <button onClick={() => setShowForm(false)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded">
+              <button
+                onClick={() => setShowForm(false)}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
+              >
                 Batal
               </button>
-              <button onClick={save} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
+              <button
+                onClick={save}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+              >
                 Simpan
               </button>
             </div>
