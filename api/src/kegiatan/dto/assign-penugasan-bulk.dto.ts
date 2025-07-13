@@ -16,4 +16,6 @@ export class AssignPenugasanBulkDto {
 
   @IsInt()
   tahun!: number;
-}
+
+  @IsString()
+  deskripsi?: string;

@@ -15,4 +15,7 @@ export class AssignPenugasanDto {
 
   @IsInt()
   tahun!: number;
+
+  @IsString()
+  deskripsi?: string;
 }

@@ -5,6 +5,12 @@ import { Plus, Search } from "lucide-react";
 import Select from "react-select";
 import { useAuth } from "../auth/useAuth";
 
+const selectStyles = {
+  option: (base) => ({ ...base, color: "#000" }),
+  valueContainer: (base) => ({ ...base, maxHeight: "100px", overflowY: "auto" }),
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+};
+
 export default function PenugasanPage() {
   const { user } = useAuth();
   const [penugasan, setPenugasan] = useState([]);
@@ -15,16 +21,22 @@ export default function PenugasanPage() {
   const [form, setForm] = useState({
     kegiatanId: "",
     pegawaiIds: [],
+    deskripsi: "",
     minggu: 1,
     bulan: new Date().getMonth() + 1,
     tahun: new Date().getFullYear(),
   });
   const [search, setSearch] = useState("");
+  const [filterBulan, setFilterBulan] = useState("");
+  const [filterTahun, setFilterTahun] = useState(new Date().getFullYear());
+
   const fetchData = useCallback(async () => {
-    try {
-      setLoading(true);
+      try {
+        setLoading(true);
       const [pRes, tRes, uRes] = await Promise.all([
-        axios.get("/penugasan"),
+        axios.get(
+          `/penugasan?bulan=${filterBulan || ""}&tahun=${filterTahun || ""}`
+        ),
         axios.get("/teams"),
         axios.get("/users"),
       ]);
@@ -49,8 +61,7 @@ export default function PenugasanPage() {
     } finally {
       setLoading(false);
     }
-  }, [user?.role]);
-
+  }, [user?.role, filterBulan, filterTahun]);
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -59,6 +70,7 @@ export default function PenugasanPage() {
     setForm({
       kegiatanId: "",
       pegawaiIds: [],
+      deskripsi: "",
       minggu: 1,
       bulan: new Date().getMonth() + 1,
       tahun: new Date().getFullYear(),
@@ -124,6 +136,29 @@ export default function PenugasanPage() {
               className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
+          <select
+            value={filterBulan}
+            onChange={(e) => setFilterBulan(e.target.value)}
+            className="border rounded px-2 py-[4px] bg-white dark:bg-gray-700 dark:text-gray-200"
+          >
+            <option value="">Bulan</option>
+            {months.map((m, i) => (
+              <option key={i + 1} value={i + 1}>{m}</option>
+            ))}
+          </select>
+          <input
+            type="number"
+            value={filterTahun}
+            onChange={(e) => setFilterTahun(parseInt(e.target.value, 10))}
+            className="w-20 border rounded px-2 py-[4px] bg-white dark:bg-gray-700 dark:text-gray-200"
+          />
+          <button
+            type="button"
+            onClick={fetchData}
+            className="px-3 py-[4px] bg-gray-200 dark:bg-gray-700 rounded"
+          >
+            Terapkan
+          </button>
         </div>
         <button
           onClick={openCreate}
@@ -137,37 +172,43 @@ export default function PenugasanPage() {
       <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
+            <th className="px-2 py-2">No</th>
             <th className="px-4 py-2">Kegiatan</th>
+            <th className="px-4 py-2">Tim</th>
             <th className="px-4 py-2">Pegawai</th>
             <th className="px-4 py-2">Minggu</th>
-            <th className="px-4 py-2">Bulan</th>
-            <th className="px-4 py-2">Tahun</th>
+            <th className="px-4 py-2">Status</th>
+            <th className="px-2 py-2">Aksi</th>
           </tr>
         </thead>
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="5" className="py-4 text-center">
+              <td colSpan="7" className="py-4 text-center">
                 Memuat data...
               </td>
             </tr>
           ) : filtered.length === 0 ? (
             <tr>
-              <td colSpan="5" className="py-4 text-center">
+              <td colSpan="7" className="py-4 text-center">
                 Data tidak ditemukan
               </td>
             </tr>
           ) : (
-            filtered.map((p) => {
+            filtered.map((p, idx) => {
               const k = kegiatan.find((k) => k.id === p.kegiatanId);
               const peg = users.find((u) => u.id === p.pegawaiId);
               return (
                 <tr key={p.id} className="border-t dark:border-gray-700 text-center">
+                  <td className="px-2 py-2">{idx + 1}</td>
                   <td className="px-4 py-2">{k?.nama_kegiatan || "-"}</td>
+                  <td className="px-4 py-2">{k?.team?.nama_tim || "-"}</td>
                   <td className="px-4 py-2">{peg?.nama || "-"}</td>
                   <td className="px-4 py-2">{p.minggu}</td>
-                  <td className="px-4 py-2">{p.bulan}</td>
-                  <td className="px-4 py-2">{p.tahun}</td>
+                  <td className="px-4 py-2">{p.status}</td>
+                  <td className="px-2 py-2">
+                    <button className="text-blue-600 hover:underline text-sm">Detail</button>
+                  </td>
                 </tr>
               );
             })
@@ -187,6 +228,8 @@ export default function PenugasanPage() {
                 <Select
                   classNamePrefix="react-select"
                   className="mb-1"
+                  styles={selectStyles}
+                  menuPortalTarget={document.body}
                   options={kegiatan.map((k) => ({ value: k.id, label: k.nama_kegiatan }))}
                   value={
                     form.kegiatanId
@@ -211,21 +254,18 @@ export default function PenugasanPage() {
                   isMulti
                   classNamePrefix="react-select"
                   className="mb-1"
+                  styles={selectStyles}
+                  menuPortalTarget={document.body}
                   options={users
                     .filter((u) => u.role !== "admin")
                     .map((u) => ({
                       value: u.id,
-                      label: `${u.members?.[0]?.team?.nama_tim || "-"} - ${u.nama}`,
+                      label: `${u.nama}`,
                     }))}
                   value={form.pegawaiIds
                     .map((id) => {
                       const u = users.find((x) => x.id === id);
-                      return u
-                        ? {
-                            value: u.id,
-                            label: `${u.members?.[0]?.team?.nama_tim || "-"} - ${u.nama}`,
-                          }
-                        : null;
+                      return u ? { value: u.id, label: u.nama } : null;
                     })
                     .filter(Boolean)}
                   onChange={(vals) =>
@@ -249,6 +289,14 @@ export default function PenugasanPage() {
                 >
                   Pilih Semua
                 </button>
+              </div>
+              <div>
+                <label className="block text-sm mb-1">Deskripsi</label>
+                <textarea
+                  value={form.deskripsi}
+                  onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                />
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div>
@@ -288,7 +336,19 @@ export default function PenugasanPage() {
               </div>
             </div>
             <div className="flex justify-end space-x-2 pt-2">
-              <button onClick={() => setShowForm(false)} className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded">
+              <button
+                onClick={() => {
+                  Swal.fire({
+                    text: "Batalkan penambahan penugasan?",
+                    showCancelButton: true,
+                    confirmButtonText: "Ya",
+                    cancelButtonText: "Tidak",
+                  }).then((r) => {
+                    if (r.isConfirmed) setShowForm(false);
+                  });
+                }}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
+              >
                 Batal
               </button>
               <button onClick={save} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
