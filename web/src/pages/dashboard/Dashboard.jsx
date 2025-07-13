@@ -1,5 +1,6 @@
 
 import MonitoringTabs from "../../components/dashboard/MonitoringTabs";
+import StatsSummary from "../../components/dashboard/StatsSummary";
 import { useAuth } from "../auth/useAuth";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -75,6 +76,8 @@ const Dashboard = () => {
       <h1 className="text-3xl font-bold">
         Selamat datang, {user?.nama || "Pengguna"} 👋
       </h1>
+
+      <StatsSummary weeklyData={weeklyData} monthlyData={monthlyData} />
 
       <MonitoringTabs
         dailyData={dailyData}
