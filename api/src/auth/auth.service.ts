@@ -12,6 +12,7 @@ export class AuthService {
       where: {
         OR: [{ email: identifier }, { username: identifier }],
       },
+      include: { members: { include: { team: true } } },
     });
     if (!user) throw new UnauthorizedException("User tidak ditemukan");
 
@@ -19,9 +20,16 @@ export class AuthService {
     if (!isMatch) throw new UnauthorizedException("Password salah");
 
     const payload = { sub: user.id, role: user.role };
+    const member = user.members?.[0];
+    const sanitized = {
+      ...user,
+      teamId: member?.teamId,
+      teamName: member?.team?.nama_tim,
+    } as any;
+    delete (sanitized as any).password;
     return {
       access_token: this.jwtService.sign(payload),
-      user,
+      user: sanitized,
     };
   }
 }
