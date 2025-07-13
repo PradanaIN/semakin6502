@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Pencil, Trash2, Search } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import Swal from "sweetalert2";
 import Pagination from "../../components/Pagination";
 
@@ -9,7 +9,6 @@ export default function LaporanHarianPage() {
   const [loading, setLoading] = useState(true);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
     id: null,
@@ -78,20 +77,14 @@ export default function LaporanHarianPage() {
     fetchData();
   }, []);
 
-  const filtered = laporan.filter(
-    (l) =>
-      l.tanggal.includes(search) ||
-      l.status.toLowerCase().includes(search.toLowerCase()) ||
-      (l.catatan || "").toLowerCase().includes(search.toLowerCase())
-  );
-  const paginated = filtered.slice(
+  const paginated = laporan.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
-  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
+  const totalPages = Math.ceil(laporan.length / pageSize) || 1;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-4">
       {loading ? (
         <div>Memuat...</div>
       ) : (
@@ -118,22 +111,22 @@ export default function LaporanHarianPage() {
           <div className="overflow-x-auto">
           <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
             <thead>
-              <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-                <th className="px-4 py-2">No</th>
-                <th className="px-4 py-2">Tanggal</th>
-                <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Bukti</th>
-                <th className="px-4 py-2">Catatan</th>
-                <th className="px-4 py-2">Aksi</th>
+              <tr className="bg-gray-200 dark:bg-gray-700">
+                <th className="px-3 py-2 border">No</th>
+                <th className="px-3 py-2 border">Tanggal</th>
+                <th className="px-3 py-2 border">Status</th>
+                <th className="px-3 py-2 border">Bukti</th>
+                <th className="px-3 py-2 border">Catatan</th>
+                <th className="px-3 py-2 border">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {paginated.map((item, idx) => (
-                <tr key={item.id} className="border-t dark:border-gray-700 text-center">
-                  <td className="px-4 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
-                  <td className="px-4 py-2">{item.tanggal.slice(0, 10)}</td>
-                  <td className="px-4 py-2">{item.status}</td>
-                  <td className="px-4 py-2">
+                <tr key={item.id} className="border-t text-center">
+                  <td className="px-3 py-1 border">{(currentPage - 1) * pageSize + idx + 1}</td>
+                  <td className="px-3 py-1 border">{item.tanggal.slice(0, 10)}</td>
+                  <td className="px-3 py-1 border">{item.status}</td>
+                  <td className="px-3 py-1 border">
                     {item.bukti_link ? (
                       <a
                         href={item.bukti_link}
@@ -147,8 +140,8 @@ export default function LaporanHarianPage() {
                       "-"
                     )}
                   </td>
-                  <td className="px-4 py-2">{item.catatan || "-"}</td>
-                  <td className="px-4 py-2 space-x-1">
+                  <td className="px-3 py-1 border">{item.catatan || "-"}</td>
+                  <td className="px-3 py-1 border space-x-1">
                     <button
                       onClick={() => openEdit(item)}
                       className="p-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
@@ -198,6 +191,69 @@ export default function LaporanHarianPage() {
         </div>
         </div>
         </>
+      )}
+      {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
+            <h3 className="text-lg font-semibold">Edit Laporan Harian</h3>
+            <div className="space-y-2">
+              <div>
+                <label className="block text-sm mb-1">Tanggal<span className="text-red-500">*</span></label>
+                <input
+                  type="date"
+                  value={form.tanggal}
+                  onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                />
+              </div>
+              <div>
+                <label className="block text-sm mb-1">Status<span className="text-red-500">*</span></label>
+                <select
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                >
+                  <option value="Belum">Belum</option>
+                  <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
+                  <option value="Selesai Dikerjakan">Selesai Dikerjakan</option>
+                </select>
+              </div>
+              {form.status === "Selesai Dikerjakan" && (
+                <div>
+                  <label className="block text-sm mb-1">Link Bukti</label>
+                  <input
+                    type="text"
+                    value={form.bukti_link}
+                    onChange={(e) => setForm({ ...form, bukti_link: e.target.value })}
+                    className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                  />
+                </div>
+              )}
+              <div>
+                <label className="block text-sm mb-1">Catatan</label>
+                <textarea
+                  value={form.catatan}
+                  onChange={(e) => setForm({ ...form, catatan: e.target.value })}
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end space-x-2 pt-2">
+              <button
+                onClick={() => setShowForm(false)}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
+              >
+                Batal
+              </button>
+              <button
+                onClick={saveForm}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+              >
+                Simpan
+              </button>
+            </div>
+          </div>
+        </div>
       )}
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
