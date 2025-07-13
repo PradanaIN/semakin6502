@@ -6,6 +6,8 @@ import {
   Query,
   UseGuards,
   Req,
+  Param,
+  ParseIntPipe,
 } from "@nestjs/common";
 import { Request } from "express";
 import { LaporanService } from "./laporan.service";
@@ -26,5 +28,10 @@ export class LaporanController {
   @Get()
   getByTanggal(@Query("tanggal") tanggal: string) {
     return this.laporanService.getByTanggal(tanggal);
+  }
+
+  @Get('penugasan/:id')
+  getByPenugasan(@Param('id', ParseIntPipe) id: number) {
+    return this.laporanService.getByPenugasan(id);
   }
 }

@@ -26,6 +26,14 @@ export default function PenugasanDetailPage() {
     status: "Belum",
   });
   const [editing, setEditing] = useState(false);
+  const [laporan, setLaporan] = useState([]);
+  const [showLaporanForm, setShowLaporanForm] = useState(false);
+  const [laporanForm, setLaporanForm] = useState({
+    tanggal: new Date().toISOString().slice(0, 10),
+    status: "Belum", // Belum, Sedang Dikerjakan, Selesai Dikerjakan
+    bukti_link: "",
+    catatan: "",
+  });
 
   const months = [
     "Januari",
@@ -63,6 +71,7 @@ export default function PenugasanDetailPage() {
 
   useEffect(() => {
     fetchDetail();
+    axios.get(`/laporan-harian/penugasan/${id}`).then((r) => setLaporan(r.data));
     axios.get("/master-kegiatan").then((r) => {
       const kData = r.data.data || r.data;
       const sorted = [...kData].sort((a, b) =>
@@ -88,6 +97,29 @@ export default function PenugasanDetailPage() {
     }
   };
 
+  const openLaporan = () => {
+    setLaporanForm({
+      tanggal: new Date().toISOString().slice(0, 10),
+      status: "Belum",
+      bukti_link: "",
+      catatan: "",
+    });
+    setShowLaporanForm(true);
+  };
+
+  const saveLaporan = async () => {
+    try {
+      await axios.post("/laporan-harian", { ...laporanForm, penugasanId: id });
+      setShowLaporanForm(false);
+      const r = await axios.get(`/laporan-harian/penugasan/${id}`);
+      setLaporan(r.data);
+      Swal.fire("Berhasil", "Laporan ditambah", "success");
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Gagal menambah laporan", "error");
+    }
+  };
+
   const remove = async () => {
     const r = await Swal.fire({
       title: "Hapus penugasan ini?",
@@ -109,19 +141,11 @@ export default function PenugasanDetailPage() {
   if (!item) return <div className="p-6">Memuat...</div>;
 
   return (
-    <div className="p-6 space-y-4">
-      {!editing ? (
-        <div className="space-y-2">
-          <h2 className="text-xl font-semibold">Detail Penugasan</h2>
-          <p>Kegiatan: {item.kegiatan?.nama_kegiatan}</p>
-          <p>Tim: {item.kegiatan?.team?.nama_tim}</p>
-          <p>Pegawai: {item.pegawai?.nama}</p>
-          <p>Minggu: {item.minggu}</p>
-          <p>Bulan: {item.bulan}</p>
-          <p>Tahun: {item.tahun}</p>
-          <p>Deskripsi: {item.deskripsi || "-"}</p>
-          <p>Status: {item.status}</p>
-          <div className="space-x-2 pt-2">
+    <div className="p-6 space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold">Detail Penugasan</h2>
+        {!editing && (
+          <div className="space-x-2">
             <button
               onClick={() => setEditing(true)}
               className="p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
@@ -135,9 +159,45 @@ export default function PenugasanDetailPage() {
               <Trash2 size={16} />
             </button>
           </div>
+        )}
+      </div>
+      {!editing ? (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+          <div>
+            <div className="text-sm text-gray-500">Kegiatan</div>
+            <div className="font-medium">{item.kegiatan?.nama_kegiatan}</div>
+          </div>
+          <div>
+            <div className="text-sm text-gray-500">Tim</div>
+            <div className="font-medium">{item.kegiatan?.team?.nama_tim}</div>
+          </div>
+          <div>
+            <div className="text-sm text-gray-500">Pegawai</div>
+            <div className="font-medium">{item.pegawai?.nama}</div>
+          </div>
+          <div>
+            <div className="text-sm text-gray-500">Minggu</div>
+            <div className="font-medium">{item.minggu}</div>
+          </div>
+          <div>
+            <div className="text-sm text-gray-500">Bulan</div>
+            <div className="font-medium">{item.bulan}</div>
+          </div>
+          <div>
+            <div className="text-sm text-gray-500">Tahun</div>
+            <div className="font-medium">{item.tahun}</div>
+          </div>
+          <div className="sm:col-span-2 lg:col-span-3">
+            <div className="text-sm text-gray-500">Deskripsi</div>
+            <div className="font-medium">{item.deskripsi || "-"}</div>
+          </div>
+          <div>
+            <div className="text-sm text-gray-500">Status</div>
+            <div className="font-medium">{item.status}</div>
+          </div>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <h2 className="text-xl font-semibold">Edit Penugasan</h2>
           <div>
             <label className="block text-sm mb-1">Kegiatan</label>
@@ -239,6 +299,148 @@ export default function PenugasanDetailPage() {
             >
               Simpan
             </button>
+          </div>
+        </div>
+      )}
+      <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold">Laporan Harian</h3>
+          <button
+            onClick={openLaporan}
+            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
+          >
+            Tambah
+          </button>
+        </div>
+        <table className="min-w-full">
+          <thead>
+            <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm">
+              <th className="px-2 py-1">Tanggal</th>
+              <th className="px-2 py-1">Status</th>
+              <th className="px-2 py-1">Bukti</th>
+              <th className="px-2 py-1">Catatan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {laporan.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="py-2 text-center">
+                  Belum ada laporan
+                </td>
+              </tr>
+            ) : (
+              laporan.map((l) => (
+                <tr
+                  key={l.id}
+                  className="border-t dark:border-gray-700 text-center"
+                >
+                  <td className="px-2 py-1">{l.tanggal.slice(0, 10)}</td>
+                  <td className="px-2 py-1">
+                    <span
+                      className={`px-2 py-0.5 rounded text-xs font-medium ${
+                        l.status === "Selesai Dikerjakan"
+                          ? "bg-green-100 text-green-800"
+                          : l.status === "Sedang Dikerjakan"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
+                      {l.status}
+                    </span>
+                  </td>
+                  <td className="px-2 py-1">
+                    {l.bukti_link ? (
+                      <a
+                        href={l.bukti_link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-600 underline"
+                      >
+                        Link
+                      </a>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td className="px-2 py-1">{l.catatan || "-"}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {showLaporanForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
+            <h3 className="text-lg font-semibold">Tambah Laporan Harian</h3>
+            <div className="space-y-2">
+              <div>
+                <label className="block text-sm mb-1">Tanggal</label>
+                <input
+                  type="date"
+                  value={laporanForm.tanggal}
+                  onChange={(e) =>
+                    setLaporanForm({ ...laporanForm, tanggal: e.target.value })
+                  }
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                />
+              </div>
+              <div>
+                <label className="block text-sm mb-1">Status</label>
+                <select
+                  value={laporanForm.status}
+                  onChange={(e) =>
+                    setLaporanForm({ ...laporanForm, status: e.target.value })
+                  }
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                >
+                  <option value="Belum">Belum</option>
+                  <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
+                  <option value="Selesai Dikerjakan">Selesai Dikerjakan</option>
+                </select>
+              </div>
+              {laporanForm.status === "Selesai Dikerjakan" && (
+                <div>
+                  <label className="block text-sm mb-1">Link Bukti</label>
+                  <input
+                    type="text"
+                    value={laporanForm.bukti_link}
+                    onChange={(e) =>
+                      setLaporanForm({
+                        ...laporanForm,
+                        bukti_link: e.target.value,
+                      })
+                    }
+                    className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                  />
+                </div>
+              )}
+              <div>
+                <label className="block text-sm mb-1">Catatan</label>
+                <textarea
+                  value={laporanForm.catatan}
+                  onChange={(e) =>
+                    setLaporanForm({ ...laporanForm, catatan: e.target.value })
+                  }
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end space-x-2 pt-2">
+              <button
+                onClick={() => setShowLaporanForm(false)}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
+              >
+                Batal
+              </button>
+              <button
+                onClick={saveLaporan}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+              >
+                Simpan
+              </button>
+            </div>
           </div>
         </div>
       )}
