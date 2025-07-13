@@ -30,8 +30,8 @@ export class LaporanController {
     return this.laporanService.getByTanggal(tanggal);
   }
 
-  @Get('penugasan/:id')
-  getByPenugasan(@Param('id', ParseIntPipe) id: number) {
+  @Get("penugasan/:id")
+  getByPenugasan(@Param("id", ParseIntPipe) id: number) {
     return this.laporanService.getByPenugasan(id);
   }
 }

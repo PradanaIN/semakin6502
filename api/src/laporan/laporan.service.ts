@@ -23,4 +23,14 @@ export class LaporanService {
       },
     });
   }
+
+  getByPenugasan(penugasanId: number) {
+    return this.prisma.laporanHarian.findMany({
+      where: { penugasanId },
+      include: {
+        pegawai: true,
+        penugasan: { include: { kegiatan: true } },
+      },
+    });
+  }
 }
