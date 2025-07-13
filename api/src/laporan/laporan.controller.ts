@@ -8,8 +8,11 @@ import {
   Req,
   Param,
   ParseIntPipe,
+  Put,
+  Delete,
+  Res,
 } from "@nestjs/common";
-import { Request } from "express";
+import { Request, Response } from "express";
 import { LaporanService } from "./laporan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { SubmitLaporanDto } from "./dto/submit-laporan.dto";
@@ -33,5 +36,51 @@ export class LaporanController {
   @Get("penugasan/:id")
   getByPenugasan(@Param("id", ParseIntPipe) id: number) {
     return this.laporanService.getByPenugasan(id);
+  }
+
+  @Get("mine")
+  myReports(@Req() req: Request) {
+    const userId = (req.user as any).userId;
+    return this.laporanService.getByUser(userId);
+  }
+
+  @Get("mine/export")
+  async export(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query("format") format = "xlsx",
+  ) {
+    const userId = (req.user as any).userId;
+    const buf = await this.laporanService.export(userId, format);
+    if (format === "pdf") {
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", "attachment; filename=laporan.pdf");
+    } else {
+      res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      );
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=laporan.xlsx",
+      );
+    }
+    res.send(buf);
+  }
+
+  @Put(":id")
+  update(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() body: SubmitLaporanDto,
+    @Req() req: Request,
+  ) {
+    const userId = (req.user as any).userId;
+    return this.laporanService.update(id, body, userId);
+  }
+
+  @Delete(":id")
+  remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+    const userId = (req.user as any).userId;
+    return this.laporanService.remove(id, userId);
   }
 }
