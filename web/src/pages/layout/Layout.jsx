@@ -56,7 +56,6 @@ export default function Layout() {
     setNotifCount(0);
   };
 
-
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
@@ -200,7 +199,7 @@ export default function Layout() {
                     <>
                       <div className="font-semibold">{user?.nama}</div>
                       <div className="text-xs capitalize text-gray-500 dark:text-gray-300">
-                        {user?.role}
+                        {user?.role} 
                       </div>
                     </>
                   )}
