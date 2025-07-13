@@ -1,10 +1,13 @@
-import { Injectable, ForbiddenException, BadRequestException } from "@nestjs/common";
+import {
+  Injectable,
+  ForbiddenException,
+  BadRequestException,
+} from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class PenugasanService {
   constructor(private prisma: PrismaService) {}
-
   findAll(role: string, userId: number, filter: { bulan?: string; tahun?: number }) {
     const opts: any = {
       include: {

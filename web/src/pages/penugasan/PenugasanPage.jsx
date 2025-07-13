@@ -71,7 +71,6 @@ export default function PenugasanPage() {
       setLoading(false);
     }
   }, [user?.role, filterBulan, filterTahun]);
-
   useEffect(() => {
     fetchData();
   }, [fetchData]);

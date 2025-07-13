@@ -43,7 +43,6 @@ export default function AppRoutes() {
         <Route path="master-kegiatan" element={<MasterKegiatanPage />} />
         <Route path="penugasan" element={<PenugasanPage />} />
         <Route path="penugasan/:id" element={<PenugasanDetailPage />} />
-        {/* Tambahkan rute lainnya nanti di sini */}
       </Route>
     </Routes>
   );

@@ -1,7 +1,8 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../auth/useAuth";
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useTheme } from "../../theme/useTheme.jsx";
 import Swal from "sweetalert2";
 import {
   FaBell,
@@ -26,11 +27,7 @@ export default function Layout() {
     { id: 2, text: "Penugasan baru tersedia", read: false },
     { id: 3, text: "Tim Anda telah diperbarui", read: false },
   ]);
-  const [darkMode, setDarkMode] = useState(() => {
-    const stored = localStorage.getItem("theme");
-    if (stored) return stored === "dark";
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
+  const { theme, toggleTheme } = useTheme();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
 
@@ -59,11 +56,6 @@ export default function Layout() {
     setNotifCount(0);
   };
 
-  useLayoutEffect(() => {
-    const html = document.documentElement;
-    html.classList.toggle("dark", darkMode);
-    localStorage.setItem("theme", darkMode ? "dark" : "light");
-  }, [darkMode]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -175,8 +167,8 @@ export default function Layout() {
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={darkMode}
-                  onChange={(e) => setDarkMode(e.target.checked)}
+                  checked={theme === "dark"}
+                  onChange={toggleTheme}
                   className="sr-only peer"
                 />
                 <div className="relative w-11 h-6 bg-gray-200 dark:bg-gray-700 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full" />
@@ -190,12 +182,28 @@ export default function Layout() {
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex items-center space-x-2 text-sm focus:outline-none"
               >
-                <FaUserCircle className="text-2xl" />
+                {user?.role === "admin" ? (
+                  <FaUserCircle className="text-2xl" />
+                ) : (
+                  <img
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      user?.nama ?? "User"
+                    )}`}
+                    alt={user?.nama ?? "User"}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                )}
                 <div className="hidden md:block text-left">
-                  <div className="font-semibold">{user?.name}</div>
-                  <div className="text-xs capitalize text-gray-500 dark:text-gray-300">
-                    {user?.role}
-                  </div>
+                  {user?.role === "admin" ? (
+                    <div className="font-semibold">Admin</div>
+                  ) : (
+                    <>
+                      <div className="font-semibold">{user?.nama}</div>
+                      <div className="text-xs capitalize text-gray-500 dark:text-gray-300">
+                        {user?.role}
+                      </div>
+                    </>
+                  )}
                 </div>
               </button>
               {showProfileMenu && (
