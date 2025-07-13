@@ -20,7 +20,6 @@ export default function PenugasanPage() {
     tahun: new Date().getFullYear(),
   });
   const [search, setSearch] = useState("");
-
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
