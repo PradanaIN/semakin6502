@@ -3,20 +3,20 @@ import DailyOverview from "./DailyOverview";
 import WeeklyOverview from "./WeeklyOverview";
 import MonthlyOverview from "./MonthlyOverview";
 
-const MonitoringTabs = ({ dailyData, weeklyData, monthlyData }) => {
+const MonitoringTabs = ({ dailyData, weeklyData, monthlyProgress }) => {
   const [tab, setTab] = useState("harian");
 
   const renderContent = () => {
-    switch (tab) {
-      case "harian":
-        return <DailyOverview data={dailyData} />;
-      case "mingguan":
-        return <WeeklyOverview data={weeklyData} />;
-      case "bulanan":
-        return <MonthlyOverview data={monthlyData} />;
-      default:
-        return null;
-    }
+      switch (tab) {
+        case "harian":
+          return <DailyOverview data={dailyData} />;
+        case "mingguan":
+          return <WeeklyOverview data={weeklyData} />;
+        case "bulanan":
+          return <MonthlyOverview data={monthlyProgress} />;
+        default:
+          return null;
+      }
   };
 
   return (
