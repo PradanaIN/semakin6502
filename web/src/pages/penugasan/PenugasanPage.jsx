@@ -2,12 +2,12 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { Plus, Search } from "lucide-react";
+import Select from "react-select";
 import { useAuth } from "../auth/useAuth";
 
 export default function PenugasanPage() {
   const { user } = useAuth();
   const [penugasan, setPenugasan] = useState([]);
-  const [teams, setTeams] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,9 +20,6 @@ export default function PenugasanPage() {
     tahun: new Date().getFullYear(),
   });
   const [search, setSearch] = useState("");
-  const [userSearch, setUserSearch] = useState("");
-  const [kegiatanSearch, setKegiatanSearch] = useState("");
-
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
@@ -45,7 +42,6 @@ export default function PenugasanPage() {
       }
 
       setPenugasan(pRes.data);
-      setTeams(tRes.data);
       setUsers(uRes.data);
       setKegiatan(kRes.data.data || kRes.data);
     } catch (err) {
@@ -76,9 +72,7 @@ export default function PenugasanPage() {
       return;
     }
     try {
-      for (const id of form.pegawaiIds) {
-        await axios.post("/penugasan", { ...form, pegawaiId: id });
-      }
+      await axios.post("/penugasan/bulk", form);
       setShowForm(false);
       fetchData();
       Swal.fire("Berhasil", "Penugasan ditambah", "success");
@@ -187,62 +181,74 @@ export default function PenugasanPage() {
             <h2 className="text-xl font-semibold mb-2">Tambah Penugasan</h2>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm mb-1">Kegiatan <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  value={kegiatanSearch}
-                  onChange={(e) => setKegiatanSearch(e.target.value)}
-                  placeholder="Cari kegiatan..."
-                  className="w-full border rounded px-3 py-1 mb-1 bg-white dark:bg-gray-700"
+                <label className="block text-sm mb-1">
+                  Kegiatan <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  classNamePrefix="react-select"
+                  className="mb-1"
+                  options={kegiatan.map((k) => ({ value: k.id, label: k.nama_kegiatan }))}
+                  value={
+                    form.kegiatanId
+                      ? {
+                          value: form.kegiatanId,
+                          label: kegiatan.find((k) => k.id === form.kegiatanId)?.nama_kegiatan,
+                        }
+                      : null
+                  }
+                  onChange={(o) =>
+                    setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })
+                  }
+                  placeholder="Pilih kegiatan..."
+                  isSearchable
                 />
-                <select
-                  value={form.kegiatanId}
-                  onChange={(e) => setForm({ ...form, kegiatanId: parseInt(e.target.value, 10) })}
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                >
-                  <option value="">Pilih kegiatan</option>
-                  {kegiatan
-                    .filter((k) => k.nama_kegiatan.toLowerCase().includes(kegiatanSearch.toLowerCase()))
-                    .map((k) => (
-                      <option key={k.id} value={k.id}>
-                        {k.nama_kegiatan}
-                      </option>
-                    ))}
-                </select>
               </div>
               <div>
-                <label className="block text-sm mb-1">Pegawai <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  value={userSearch}
-                  onChange={(e) => setUserSearch(e.target.value)}
-                  placeholder="Cari pegawai..."
-                  className="w-full border rounded px-3 py-1 mb-1 bg-white dark:bg-gray-700"
-                />
-                <select
-                  multiple
-                  value={form.pegawaiIds.map(String)}
-                  onChange={(e) =>
+                <label className="block text-sm mb-1">
+                  Pegawai <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  isMulti
+                  classNamePrefix="react-select"
+                  className="mb-1"
+                  options={users
+                    .filter((u) => u.role !== "admin")
+                    .map((u) => ({
+                      value: u.id,
+                      label: `${u.members?.[0]?.team?.nama_tim || "-"} - ${u.nama}`,
+                    }))}
+                  value={form.pegawaiIds
+                    .map((id) => {
+                      const u = users.find((x) => x.id === id);
+                      return u
+                        ? {
+                            value: u.id,
+                            label: `${u.members?.[0]?.team?.nama_tim || "-"} - ${u.nama}`,
+                          }
+                        : null;
+                    })
+                    .filter(Boolean)}
+                  onChange={(vals) =>
                     setForm({
                       ...form,
-                      pegawaiIds: Array.from(e.target.selectedOptions).map((o) => parseInt(o.value, 10)),
+                      pegawaiIds: vals ? vals.map((v) => parseInt(v.value, 10)) : [],
                     })
                   }
-                  size="5"
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                  placeholder="Pilih pegawai..."
+                  isSearchable
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    setForm({
+                      ...form,
+                      pegawaiIds: users.filter((u) => u.role !== "admin").map((u) => u.id),
+                    })
+                  }
+                  className="mt-1 px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded"
                 >
-                  {users
-                    .filter((u) =>
-                      `${u.nama} ${u.members?.[0]?.team?.nama_tim || ""}`
-                        .toLowerCase()
-                        .includes(userSearch.toLowerCase())
-                    )
-                    .map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {(u.members?.[0]?.team?.nama_tim || "-") + " - " + u.nama}
-                      </option>
-                    ))}
-                </select>
+                  Pilih Semua
+                </button>
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div>
