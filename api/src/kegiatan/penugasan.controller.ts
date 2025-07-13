@@ -13,11 +13,13 @@ export class PenugasanController {
 
   @Post()
   assign(@Body() body: AssignPenugasanDto, @Req() req: Request) {
-    return this.penugasanService.assign(body, (req.user as any).userId);
+    const u = req.user as any;
+    return this.penugasanService.assign(body, u.userId, u.role);
   }
 
   @Get()
-  findAll() {
-    return this.penugasanService.findAll();
+  findAll(@Req() req: Request) {
+    const u = req.user as any;
+    return this.penugasanService.findAll(u.role, u.userId);
   }
 }

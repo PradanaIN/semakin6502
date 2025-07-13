@@ -9,34 +9,51 @@ export default function PenugasanPage() {
   const [penugasan, setPenugasan] = useState([]);
   const [teams, setTeams] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
     kegiatanId: "",
-    pegawaiId: "",
+    pegawaiIds: [],
     minggu: 1,
     bulan: new Date().getMonth() + 1,
     tahun: new Date().getFullYear(),
   });
   const [search, setSearch] = useState("");
+  const [userSearch, setUserSearch] = useState("");
+  const [kegiatanSearch, setKegiatanSearch] = useState("");
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const [pRes, tRes, kRes] = await Promise.all([
+      const [pRes, tRes, uRes] = await Promise.all([
         axios.get("/penugasan"),
         axios.get("/teams"),
-        axios.get("/master-kegiatan"),
+        axios.get("/users"),
       ]);
+
+      let kRes;
+      if (user?.role === "admin") {
+        kRes = await axios.get("/master-kegiatan");
+      } else {
+        const tId = tRes.data[0]?.id;
+        if (tId) {
+          kRes = await axios.get(`/master-kegiatan?team=${tId}`);
+        } else {
+          kRes = { data: { data: [] } };
+        }
+      }
+
       setPenugasan(pRes.data);
       setTeams(tRes.data);
+      setUsers(uRes.data);
       setKegiatan(kRes.data.data || kRes.data);
     } catch (err) {
       console.error("Gagal mengambil data penugasan", err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.role]);
 
   useEffect(() => {
     fetchData();
@@ -45,7 +62,7 @@ export default function PenugasanPage() {
   const openCreate = () => {
     setForm({
       kegiatanId: "",
-      pegawaiId: "",
+      pegawaiIds: [],
       minggu: 1,
       bulan: new Date().getMonth() + 1,
       tahun: new Date().getFullYear(),
@@ -54,12 +71,14 @@ export default function PenugasanPage() {
   };
 
   const save = async () => {
-    if (!form.kegiatanId || !form.pegawaiId) {
+    if (!form.kegiatanId || form.pegawaiIds.length === 0) {
       Swal.fire("Lengkapi data", "Kegiatan dan pegawai wajib dipilih", "warning");
       return;
     }
     try {
-      await axios.post("/penugasan", form);
+      for (const id of form.pegawaiIds) {
+        await axios.post("/penugasan", { ...form, pegawaiId: id });
+      }
       setShowForm(false);
       fetchData();
       Swal.fire("Berhasil", "Penugasan ditambah", "success");
@@ -86,9 +105,7 @@ export default function PenugasanPage() {
 
   const filtered = penugasan.filter((p) => {
     const k = kegiatan.find((k) => k.id === p.kegiatanId);
-    const peg = teams
-      .flatMap((t) => t.members.map((m) => m.user))
-      .find((u) => u.id === p.pegawaiId);
+    const peg = users.find((u) => u.id === p.pegawaiId);
     const text = `${k?.nama_kegiatan || ""} ${peg?.nama || ""}`.toLowerCase();
     return text.includes(search.toLowerCase());
   });
@@ -149,9 +166,7 @@ export default function PenugasanPage() {
           ) : (
             filtered.map((p) => {
               const k = kegiatan.find((k) => k.id === p.kegiatanId);
-              const peg = teams
-                .flatMap((t) => t.members.map((m) => m.user))
-                .find((u) => u.id === p.pegawaiId);
+              const peg = users.find((u) => u.id === p.pegawaiId);
               return (
                 <tr key={p.id} className="border-t dark:border-gray-700 text-center">
                   <td className="px-4 py-2">{k?.nama_kegiatan || "-"}</td>
@@ -173,34 +188,60 @@ export default function PenugasanPage() {
             <div className="space-y-2">
               <div>
                 <label className="block text-sm mb-1">Kegiatan <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={kegiatanSearch}
+                  onChange={(e) => setKegiatanSearch(e.target.value)}
+                  placeholder="Cari kegiatan..."
+                  className="w-full border rounded px-3 py-1 mb-1 bg-white dark:bg-gray-700"
+                />
                 <select
                   value={form.kegiatanId}
                   onChange={(e) => setForm({ ...form, kegiatanId: parseInt(e.target.value, 10) })}
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 >
                   <option value="">Pilih kegiatan</option>
-                  {kegiatan.map((k) => (
-                    <option key={k.id} value={k.id}>
-                      {k.nama_kegiatan}
-                    </option>
-                  ))}
+                  {kegiatan
+                    .filter((k) => k.nama_kegiatan.toLowerCase().includes(kegiatanSearch.toLowerCase()))
+                    .map((k) => (
+                      <option key={k.id} value={k.id}>
+                        {k.nama_kegiatan}
+                      </option>
+                    ))}
                 </select>
               </div>
               <div>
                 <label className="block text-sm mb-1">Pegawai <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={userSearch}
+                  onChange={(e) => setUserSearch(e.target.value)}
+                  placeholder="Cari pegawai..."
+                  className="w-full border rounded px-3 py-1 mb-1 bg-white dark:bg-gray-700"
+                />
                 <select
-                  value={form.pegawaiId}
-                  onChange={(e) => setForm({ ...form, pegawaiId: parseInt(e.target.value, 10) })}
+                  multiple
+                  value={form.pegawaiIds.map(String)}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      pegawaiIds: Array.from(e.target.selectedOptions).map((o) => parseInt(o.value, 10)),
+                    })
+                  }
+                  size="5"
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 >
-                  <option value="">Pilih pegawai</option>
-                  {teams.flatMap((t) =>
-                    t.members.map((m) => (
-                      <option key={m.user.id} value={m.user.id}>
-                        {t.nama_tim} - {m.user.nama}
+                  {users
+                    .filter((u) =>
+                      `${u.nama} ${u.members?.[0]?.team?.nama_tim || ""}`
+                        .toLowerCase()
+                        .includes(userSearch.toLowerCase())
+                    )
+                    .map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {(u.members?.[0]?.team?.nama_tim || "-") + " - " + u.nama}
                       </option>
-                    ))
-                  )}
+                    ))}
                 </select>
               </div>
               <div className="grid grid-cols-3 gap-2">
