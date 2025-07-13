@@ -78,6 +78,9 @@ model KegiatanTambahan {
   tanggal  DateTime
   status   String
   bukti_link String?
+  deskripsi String?
+  tanggal_selesai DateTime?
+  tanggal_selesai_akhir DateTime?
   userId   Int
   user     User     @relation(fields: [userId], references: [id])
 }
