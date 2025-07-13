@@ -56,8 +56,15 @@ export default function PenugasanPage() {
       }
 
       setPenugasan(pRes.data);
-      setUsers(uRes.data);
-      setKegiatan(kRes.data.data || kRes.data);
+      const sortedUsers = [...uRes.data].sort((a, b) =>
+        a.nama.localeCompare(b.nama)
+      );
+      setUsers(sortedUsers);
+      const kData = kRes.data.data || kRes.data;
+      const sortedKegiatan = [...kData].sort((a, b) =>
+        a.nama_kegiatan.localeCompare(b.nama_kegiatan)
+      );
+      setKegiatan(sortedKegiatan);
     } catch (err) {
       console.error("Gagal mengambil data penugasan", err);
     } finally {
@@ -161,18 +168,6 @@ export default function PenugasanPage() {
           >
             <FilterIcon size={16} />
           </button>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={16} className="text-gray-400 dark:text-gray-300" />
-            </div>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari penugasan..."
-              className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
         </div>
         <button
           onClick={openCreate}
@@ -254,7 +249,8 @@ export default function PenugasanPage() {
                     form.kegiatanId
                       ? {
                           value: form.kegiatanId,
-                          label: kegiatan.find((k) => k.id === form.kegiatanId)?.nama_kegiatan,           }
+                          label: kegiatan.find((k) => k.id === form.kegiatanId)?.nama_kegiatan,
+                        }
                       : null
                   }
                   onChange={(o) =>
@@ -276,10 +272,7 @@ export default function PenugasanPage() {
                   menuPortalTarget={document.body}
                   options={users
                     .filter((u) => u.role !== "admin")
-                    .map((u) => ({
-                      value: u.id,
-                      label: `${u.nama}`,
-                    }))}
+                    .map((u) => ({ value: u.id, label: `${u.nama}` }))}
                   value={form.pegawaiIds
                     .map((id) => {
                       const u = users.find((x) => x.id === id);
