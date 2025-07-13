@@ -60,8 +60,15 @@ export default function PenugasanPage() {
       }
 
       setPenugasan(pRes.data);
-      setUsers(uRes.data);
-      setKegiatan(kRes.data.data || kRes.data);
+      const sortedUsers = [...uRes.data].sort((a, b) =>
+        a.nama.localeCompare(b.nama)
+      );
+      setUsers(sortedUsers);
+      const kData = kRes.data.data || kRes.data;
+      const sortedKegiatan = [...kData].sort((a, b) =>
+        a.nama_kegiatan.localeCompare(b.nama_kegiatan)
+      );
+      setKegiatan(sortedKegiatan);
     } catch (err) {
       console.error("Gagal mengambil data penugasan", err);
     } finally {
@@ -262,8 +269,7 @@ export default function PenugasanPage() {
                     form.kegiatanId
                       ? {
                           value: form.kegiatanId,
-                          label: kegiatan.find((k) => k.id === form.kegiatanId)
-                            ?.nama_kegiatan,
+                          label: kegiatan.find((k) => k.id === form.kegiatanId)?.nama_kegiatan,
                         }
                       : null
                   }
@@ -289,10 +295,7 @@ export default function PenugasanPage() {
                   menuPortalTarget={document.body}
                   options={users
                     .filter((u) => u.role !== "admin")
-                    .map((u) => ({
-                      value: u.id,
-                      label: `${u.nama}`,
-                    }))}
+                    .map((u) => ({ value: u.id, label: `${u.nama}` }))}
                   value={form.pegawaiIds
                     .map((id) => {
                       const u = users.find((x) => x.id === id);

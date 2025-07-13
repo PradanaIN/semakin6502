@@ -63,8 +63,17 @@ export default function PenugasanDetailPage() {
 
   useEffect(() => {
     fetchDetail();
-    axios.get("/master-kegiatan").then((r) => setKegiatan(r.data.data || r.data));
-    axios.get("/users").then((r) => setUsers(r.data));
+    axios.get("/master-kegiatan").then((r) => {
+      const kData = r.data.data || r.data;
+      const sorted = [...kData].sort((a, b) =>
+        a.nama_kegiatan.localeCompare(b.nama_kegiatan)
+      );
+      setKegiatan(sorted);
+    });
+    axios.get("/users").then((r) => {
+      const sorted = [...r.data].sort((a, b) => a.nama.localeCompare(b.nama));
+      setUsers(sorted);
+    });
   }, [id]);
 
   const save = async () => {
