@@ -5,28 +5,23 @@ import { useAuth } from "../auth/useAuth";
 export default function Sidebar({ mobileOpen, setMobileOpen }) {
   const { user } = useAuth();
 
-  const links = [];
-
-  links.push({ to: "/", label: "Dashboard" });
-
-  if (["admin", "pimpinan"].includes(user?.role)) {
-    links.push({ to: "/users", label: "Kelola Pengguna" });
-    links.push({ to: "/teams", label: "Kelola Tim" });
-  }
-
-  if (["ketua", "admin"].includes(user?.role)) {
-    links.push({ to: "/master-kegiatan", label: "Master Kegiatan" });
-    links.push({ to: "/penugasan", label: "Penugasan Mingguan" });
-  }
-
-  if (["anggota", "ketua", "admin"].includes(user?.role)) {
-    links.push({ to: "/laporan-harian", label: "Laporan Harian" });
-    links.push({ to: "/kegiatan-tambahan", label: "Kegiatan Tambahan" });
-  }
-
-  if (["admin", "pimpinan", "ketua"].includes(user?.role)) {
-    links.push({ to: "/monitoring", label: "Monitoring Kinerja" });
-  }
+  const links = [
+    { to: "/", label: "Dashboard", show: true },
+    { to: "/penugasan", label: "Penugasan Mingguan", show: true },
+    { to: "/laporan-harian", label: "Laporan Harian", show: true },
+    { to: "/kegiatan-tambahan", label: "Kegiatan Tambahan", show: true },
+    {
+      to: "/master-kegiatan",
+      label: "Master Kegiatan",
+      show: ["admin", "ketua"].includes(user?.role),
+    },
+    {
+      to: "/users",
+      label: "Kelola Pengguna",
+      show: user?.role === "admin",
+    },
+    { to: "/teams", label: "Kelola Tim", show: user?.role === "admin" },
+  ];
 
   return (
     <aside className="h-full w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 p-4 shadow-md overflow-y-auto flex flex-col">
@@ -34,7 +29,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
         SEMAKIN 6502
       </div>
       <nav className="space-y-2">
-        {links.map((link) => (
+        {links.filter((l) => l.show).map((link) => (
           <NavLink
             key={link.to}
             to={link.to}

@@ -15,6 +15,7 @@ const selectStyles = {
 
 export default function PenugasanPage() {
   const { user } = useAuth();
+  const canManage = ["admin", "ketua", "pimpinan"].includes(user?.role);
   const navigate = useNavigate();
   const [penugasan, setPenugasan] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
@@ -134,9 +135,6 @@ export default function PenugasanPage() {
   );
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
-  if (!["ketua", "admin"].includes(user?.role)) {
-    return <div className="p-6 text-center">Anda tidak memiliki akses ke halaman ini.</div>;
-  }
 
   return (
     <div className="space-y-6">
@@ -187,13 +185,15 @@ export default function PenugasanPage() {
             <FilterIcon size={16} />
           </button>
         </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-        >
-          <Plus size={16} />
-          <span className="hidden sm:inline">Tambah Penugasan</span>
-        </button>
+        {canManage && (
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+          >
+            <Plus size={16} />
+            <span className="hidden sm:inline">Tambah Penugasan</span>
+          </button>
+        )}
       </div>
 
       <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
@@ -272,7 +272,7 @@ export default function PenugasanPage() {
         />
       </div>
 
-      {showForm && (
+      {canManage && showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
             <h2 className="text-xl font-semibold mb-2">Tambah Penugasan</h2>
