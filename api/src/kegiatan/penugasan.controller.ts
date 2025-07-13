@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, UseGuards, Req } from "@nestjs/common";
+import { Controller, Post, Get, Body, UseGuards, Req, Query } from "@nestjs/common";
 import { Request } from "express";
 import { PenugasanService } from "./penugasan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
@@ -25,8 +25,15 @@ export class PenugasanController {
   }
 
   @Get()
-  findAll(@Req() req: Request) {
+  findAll(
+    @Req() req: Request,
+    @Query("bulan") bulan?: string,
+    @Query("tahun") tahun?: string,
+  ) {
     const u = req.user as any;
-    return this.penugasanService.findAll(u.role, u.userId);
+    const filter: any = {};
+    if (bulan) filter.bulan = bulan;
+    if (tahun) filter.tahun = parseInt(tahun, 10);
+    return this.penugasanService.findAll(u.role, u.userId, filter);
   }
 }
