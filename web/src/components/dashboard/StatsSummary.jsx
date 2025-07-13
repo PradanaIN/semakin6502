@@ -1,37 +1,42 @@
 import React from "react";
 
-const StatsSummary = ({ weeklyData, monthlyData }) => {
-  if (!weeklyData || !monthlyData) return null;
+const StatsSummary = ({ weeklyData }) => {
+  if (!weeklyData) return null;
 
-  const totalTasks = weeklyData.totalTugas || 0;
-  const completed = weeklyData.totalSelesai || 0;
-  const pending = Math.max(totalTasks - completed, 0);
-  const activeMonths = monthlyData.filter((m) => m.adaAktivitas).length;
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const today = weeklyData.detail?.find((d) => d.tanggal === todayStr) || {};
+
+  const tugasHariIni = today.selesai || 0;
+  const tugasMingguIni = weeklyData.totalTugas || 0;
+  const selesai = weeklyData.totalSelesai || 0;
+  const belumSelesai = Math.max(tugasMingguIni - selesai, 0);
+
+  const statStyle = "p-4 rounded-lg shadow text-center";
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <div className="p-4 bg-blue-50 dark:bg-blue-900 rounded-lg shadow text-center">
-        <p className="text-sm text-gray-600 dark:text-gray-300">Tugas Minggu Ini</p>
+      <div className={`${statStyle} bg-blue-50 dark:bg-blue-900`}>
+        <p className="text-sm text-gray-600 dark:text-gray-300">Tugas Hari Ini</p>
         <p className="text-2xl font-bold text-blue-600 dark:text-blue-200">
-          {totalTasks}
+          {tugasHariIni}
         </p>
       </div>
-      <div className="p-4 bg-green-50 dark:bg-green-900 rounded-lg shadow text-center">
-        <p className="text-sm text-gray-600 dark:text-gray-300">Selesai</p>
-        <p className="text-2xl font-bold text-green-600 dark:text-green-200">
-          {completed}
+      <div className={`${statStyle} bg-indigo-50 dark:bg-indigo-900`}>
+        <p className="text-sm text-gray-600 dark:text-gray-300">Tugas Minggu Ini</p>
+        <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-200">
+          {tugasMingguIni}
         </p>
       </div>
-      <div className="p-4 bg-yellow-50 dark:bg-yellow-900 rounded-lg shadow text-center">
+      <div className={`${statStyle} bg-yellow-50 dark:bg-yellow-900`}>
         <p className="text-sm text-gray-600 dark:text-gray-300">Belum Selesai</p>
         <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-200">
-          {pending}
+          {belumSelesai}
         </p>
       </div>
-      <div className="p-4 bg-purple-50 dark:bg-purple-900 rounded-lg shadow text-center">
-        <p className="text-sm text-gray-600 dark:text-gray-300">Bulan Aktif</p>
-        <p className="text-2xl font-bold text-purple-600 dark:text-purple-200">
-          {activeMonths}
+      <div className={`${statStyle} bg-green-50 dark:bg-green-900`}>
+        <p className="text-sm text-gray-600 dark:text-gray-300">Selesai</p>
+        <p className="text-2xl font-bold text-green-600 dark:text-green-200">
+          {selesai}
         </p>
       </div>
     </div>
