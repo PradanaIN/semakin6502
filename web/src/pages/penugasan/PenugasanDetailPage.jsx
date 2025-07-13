@@ -32,6 +32,7 @@ export default function PenugasanDetailPage() {
   const [laporan, setLaporan] = useState([]);
   const [showLaporanForm, setShowLaporanForm] = useState(false);
   const [laporanForm, setLaporanForm] = useState({
+    id: null,
     tanggal: new Date().toISOString().slice(0, 10),
     status: "Belum", // Belum, Sedang Dikerjakan, Selesai Dikerjakan
     bukti_link: "",
@@ -80,7 +81,7 @@ export default function PenugasanDetailPage() {
     axios.get("/master-kegiatan").then((r) => {
       const kData = r.data.data || r.data;
       const sorted = [...kData].sort((a, b) =>
-        a.nama_kegiatan.localeCompare(b.nama_kegiatan)
+        a.nama_kegiatan.localeCompare(b.nama_kegiatan),
       );
       setKegiatan(sorted);
     });
@@ -109,6 +110,7 @@ export default function PenugasanDetailPage() {
 
   const openLaporan = () => {
     setLaporanForm({
+      id: null,
       tanggal: new Date().toISOString().slice(0, 10),
       status: "Belum",
       bukti_link: "",
@@ -119,17 +121,51 @@ export default function PenugasanDetailPage() {
 
   const saveLaporan = async () => {
     try {
-      await axios.post("/laporan-harian", {
-        ...laporanForm,
-        penugasanId: parseInt(id, 10),
-      });
+      if (laporanForm.id) {
+        await axios.put(`/laporan-harian/${laporanForm.id}`, laporanForm);
+      } else {
+        await axios.post("/laporan-harian", {
+          ...laporanForm,
+          penugasanId: parseInt(id, 10),
+        });
+      }
       setShowLaporanForm(false);
       const r = await axios.get(`/laporan-harian/penugasan/${id}`);
       setLaporan(r.data);
-      Swal.fire("Berhasil", "Laporan ditambah", "success");
+      Swal.fire("Berhasil", "Laporan disimpan", "success");
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Gagal menambah laporan", "error");
+      Swal.fire("Error", "Gagal menyimpan laporan", "error");
+    }
+  };
+
+  const editLaporan = (item) => {
+    setLaporanForm({
+      id: item.id,
+      tanggal: item.tanggal.slice(0, 10),
+      status: item.status,
+      bukti_link: item.bukti_link || "",
+      catatan: item.catatan || "",
+    });
+    setShowLaporanForm(true);
+  };
+
+  const deleteLaporan = async (laporanId) => {
+    const r = await Swal.fire({
+      title: "Hapus laporan ini?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Hapus",
+    });
+    if (!r.isConfirmed) return;
+    try {
+      await axios.delete(`/laporan-harian/${laporanId}`);
+      const res = await axios.get(`/laporan-harian/penugasan/${id}`);
+      setLaporan(res.data);
+      Swal.fire("Dihapus", "Laporan dihapus", "success");
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Gagal menghapus laporan", "error");
     }
   };
 
@@ -332,25 +368,28 @@ export default function PenugasanDetailPage() {
         <table className="min-w-full">
           <thead>
             <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm">
+              <th className="px-2 py-1">No</th>
               <th className="px-2 py-1">Tanggal</th>
               <th className="px-2 py-1">Status</th>
               <th className="px-2 py-1">Bukti</th>
               <th className="px-2 py-1">Catatan</th>
+              <th className="px-2 py-1">Aksi</th>
             </tr>
           </thead>
           <tbody>
             {laporan.length === 0 ? (
               <tr>
-                <td colSpan="4" className="py-2 text-center">
+                <td colSpan="6" className="py-2 text-center">
                   Belum ada laporan
                 </td>
               </tr>
             ) : (
-              laporan.map((l) => (
+              laporan.map((l, idx) => (
                 <tr
                   key={l.id}
                   className="border-t dark:border-gray-700 text-center"
                 >
+                  <td className="px-2 py-1">{idx + 1}</td>
                   <td className="px-2 py-1">{l.tanggal.slice(0, 10)}</td>
                   <td className="px-2 py-1">
                     <span
@@ -358,8 +397,8 @@ export default function PenugasanDetailPage() {
                         l.status === "Selesai Dikerjakan"
                           ? "bg-green-100 text-green-800"
                           : l.status === "Sedang Dikerjakan"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-gray-100 text-gray-800"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-gray-100 text-gray-800"
                       }`}
                     >
                       {l.status}
@@ -380,6 +419,20 @@ export default function PenugasanDetailPage() {
                     )}
                   </td>
                   <td className="px-2 py-1">{l.catatan || "-"}</td>
+                  <td className="px-2 py-1 space-x-1">
+                    <button
+                      onClick={() => editLaporan(l)}
+                      className="p-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                    >
+                      <Pencil size={14} />
+                    </button>
+                    <button
+                      onClick={() => deleteLaporan(l.id)}
+                      className="p-1 bg-red-600 hover:bg-red-700 text-white rounded"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </td>
                 </tr>
               ))
             )}
@@ -390,10 +443,14 @@ export default function PenugasanDetailPage() {
       {showLaporanForm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
-            <h3 className="text-lg font-semibold">Tambah Laporan Harian</h3>
+            <h3 className="text-lg font-semibold">
+              {laporanForm.id ? "Edit" : "Tambah"} Laporan Harian
+            </h3>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm mb-1">Tanggal<span className="text-red-500">*</span></label>
+                <label className="block text-sm mb-1">
+                  Tanggal<span className="text-red-500">*</span>
+                </label>
                 <input
                   type="date"
                   value={laporanForm.tanggal}
@@ -404,7 +461,9 @@ export default function PenugasanDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Status<span className="text-red-500">*</span></label>
+                <label className="block text-sm mb-1">
+                  Status<span className="text-red-500">*</span>
+                </label>
                 <select
                   value={laporanForm.status}
                   onChange={(e) =>
