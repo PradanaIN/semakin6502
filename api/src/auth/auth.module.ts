@@ -6,10 +6,16 @@ import { AuthController } from "./auth.controller";
 import { PrismaService } from "../prisma.service"; // ⬅ Import manual
 import { JwtStrategy } from "./jwt.strategy";
 
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
+  // Fail fast when JWT_SECRET is missing
+  throw new Error("JWT_SECRET environment variable is required");
+}
+
 @Module({
   imports: [
     JwtModule.register({
-      secret: process.env.JWT_SECRET || "supersecretjwtkey",
+      secret: jwtSecret,
       signOptions: { expiresIn: process.env.JWT_EXPIRES_IN || "1d" },
     }),
   ],
