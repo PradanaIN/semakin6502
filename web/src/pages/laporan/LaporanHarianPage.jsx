@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Pencil, Trash2 } from "lucide-react";
 import Swal from "sweetalert2";
+import confirmAlert from "../utils/confirmAlert";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
@@ -65,10 +66,9 @@ export default function LaporanHarianPage() {
   };
 
   const remove = async (id) => {
-    const r = await Swal.fire({
+    const r = await confirmAlert({
       title: "Hapus laporan ini?",
       icon: "warning",
-      showCancelButton: true,
       confirmButtonText: "Hapus",
     });
     if (!r.isConfirmed) return;

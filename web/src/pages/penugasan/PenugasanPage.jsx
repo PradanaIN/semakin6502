@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import confirmAlert from "../utils/confirmAlert";
 import { Plus, Filter as FilterIcon, Eye } from "lucide-react";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
@@ -395,15 +396,13 @@ export default function PenugasanPage() {
             <div className="flex justify-end space-x-2 pt-2">
               <Button
                 variant="secondary"
-                onClick={() => {
-                  Swal.fire({
+                onClick={async () => {
+                  const r = await confirmAlert({
                     text: "Batalkan penambahan penugasan?",
-                    showCancelButton: true,
                     confirmButtonText: "Ya",
                     cancelButtonText: "Tidak",
-                  }).then((r) => {
-                    if (r.isConfirmed) setShowForm(false);
                   });
+                  if (r.isConfirmed) setShowForm(false);
                 }}
               >
                 Batal

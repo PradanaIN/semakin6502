@@ -1,4 +1,5 @@
 import Swal from "sweetalert2";
+import confirmAlert from "./confirmAlert.js";
 
 const baseOptions = {
   heightAuto: false,
@@ -21,13 +22,10 @@ export const showError = (title, text = "") => showAlert(title, text, "error");
 export const showWarning = (title, text = "") => showAlert(title, text, "warning");
 
 export const confirmDelete = (title = "Hapus item ini?") =>
-  Swal.fire({
+  confirmAlert({
     title,
     icon: "warning",
-    showCancelButton: true,
     confirmButtonText: "Hapus",
-    cancelButtonText: "Batal",
-    ...baseOptions,
   });
 
 export default {
