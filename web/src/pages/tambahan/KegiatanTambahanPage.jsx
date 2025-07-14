@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { STATUS } from "../../utils/status";
 import Modal from "../../components/ui/Modal";
+import StatusBadge from "../../components/ui/StatusBadge";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -156,7 +157,9 @@ export default function KegiatanTambahanPage() {
                 <td className="px-4 py-2">{item.nama}</td>
                 <td className="px-4 py-2">{item.kegiatan.team?.nama_tim || '-'}</td>
                 <td className="px-4 py-2">{item.tanggal.slice(0,10)}</td>
-                <td className="px-4 py-2">{item.status}</td>
+                <td className="px-4 py-2">
+                  <StatusBadge status={item.status} />
+                </td>
                 <td className="px-4 py-2 space-x-2">
                   <button
                     onClick={() => openDetail(item.id)}

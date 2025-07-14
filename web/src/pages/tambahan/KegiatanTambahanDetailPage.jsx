@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { Pencil, Trash2 } from "lucide-react";
 import Select from "react-select";
 import { STATUS } from "../../utils/status";
+import StatusBadge from "../../components/ui/StatusBadge";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -154,7 +155,9 @@ export default function KegiatanTambahanDetailPage() {
           </div>
           <div>
             <div className="text-sm text-gray-500">Status</div>
-            <div className="font-medium">{item.status}</div>
+            <div className="font-medium">
+              <StatusBadge status={item.status} />
+            </div>
           </div>
           {item.tanggal_selesai && (
             <div>
