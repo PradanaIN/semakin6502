@@ -12,13 +12,13 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
+import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
 import { STATUS } from "../../utils/status";
 import Modal from "../../components/ui/Modal";
 import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
-import months from "../../utils/months";
 import Pagination from "../../components/Pagination";
 
 
@@ -157,23 +157,11 @@ export default function KegiatanTambahanPage() {
           placeholder="Cari kegiatan..."
           ariaLabel="Cari kegiatan"
         />
-        <select
-          value={filterBulan}
-          onChange={(e) => setFilterBulan(e.target.value)}
-          className="border rounded px-2 py-[4px] bg-white dark:bg-gray-700 dark:text-gray-200"
-        >
-          <option value="">Bulan</option>
-          {months.map((m, i) => (
-            <option key={i + 1} value={i + 1}>
-              {m}
-            </option>
-          ))}
-        </select>
-        <input
-          type="number"
-          value={filterTahun}
-          onChange={(e) => setFilterTahun(parseInt(e.target.value, 10))}
-          className="form-input w-24"
+        <MonthYearPicker
+          month={filterBulan}
+          year={filterTahun}
+          onMonthChange={setFilterBulan}
+          onYearChange={setFilterTahun}
         />
       </div>
 
