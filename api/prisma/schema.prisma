@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -22,54 +21,56 @@ model User {
 }
 
 model Team {
-  id       Int      @id @default(autoincrement())
-  nama_tim String
-  members  Member[]
-  masterKegiatan MasterKegiatan[]
+  id               Int                @id @default(autoincrement())
+  nama_tim         String
+  members          Member[]
+  masterKegiatan   MasterKegiatan[]
+  KegiatanTambahan KegiatanTambahan[]
 }
 
 model Member {
-  id        Int    @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   userId    Int
   teamId    Int
   is_leader Boolean
-  user      User   @relation(fields: [userId], references: [id])
-  team      Team   @relation(fields: [teamId], references: [id])
+  user      User    @relation(fields: [userId], references: [id])
+  team      Team    @relation(fields: [teamId], references: [id])
 }
 
 model MasterKegiatan {
-  id            Int     @id @default(autoincrement())
-  teamId        Int
-  nama_kegiatan String
-  deskripsi     String?
-  team          Team    @relation(fields: [teamId], references: [id])
-  penugasan     Penugasan[]
+  id               Int                @id @default(autoincrement())
+  teamId           Int
+  nama_kegiatan    String
+  deskripsi        String?
+  team             Team               @relation(fields: [teamId], references: [id])
+  penugasan        Penugasan[]
+  KegiatanTambahan KegiatanTambahan[]
 }
 
 model Penugasan {
-  id          Int      @id @default(autoincrement())
-  kegiatanId  Int
-  pegawaiId   Int
-  minggu      Int
-  bulan       String
-  tahun       Int
-  deskripsi   String?
-  status      String   @default("Belum")
-  kegiatan    MasterKegiatan @relation(fields: [kegiatanId], references: [id])
-  pegawai     User    @relation(name: "PenugasanUser", fields: [pegawaiId], references: [id])
-  laporan     LaporanHarian[]
+  id         Int             @id @default(autoincrement())
+  kegiatanId Int
+  pegawaiId  Int
+  minggu     Int
+  bulan      String
+  tahun      Int
+  deskripsi  String?
+  status     String          @default("Belum")
+  kegiatan   MasterKegiatan  @relation(fields: [kegiatanId], references: [id])
+  pegawai    User            @relation(name: "PenugasanUser", fields: [pegawaiId], references: [id])
+  laporan    LaporanHarian[]
 }
 
 model LaporanHarian {
-  id         Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   penugasanId Int
-  tanggal    DateTime
-  status     String
-  bukti_link String?
-  catatan    String?
-  pegawaiId  Int
-  penugasan  Penugasan @relation(fields: [penugasanId], references: [id])
-  pegawai    User      @relation(fields: [pegawaiId], references: [id])
+  tanggal     DateTime
+  status      String
+  bukti_link  String?
+  catatan     String?
+  pegawaiId   Int
+  penugasan   Penugasan @relation(fields: [penugasanId], references: [id])
+  pegawai     User      @relation(fields: [pegawaiId], references: [id])
 }
 
 model KegiatanTambahan {

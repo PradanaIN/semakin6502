@@ -3,20 +3,43 @@ import DailyOverview from "./DailyOverview";
 import WeeklyOverview from "./WeeklyOverview";
 import MonthlyOverview from "./MonthlyOverview";
 
-const MonitoringTabs = ({ dailyData, weeklyData, monthlyProgress }) => {
+const MonitoringTabs = ({
+  dailyData,
+  weeklyList = [],
+  weekIndex = 0,
+  onWeekChange,
+  monthlyData,
+}) => {
   const [tab, setTab] = useState("harian");
 
   const renderContent = () => {
-      switch (tab) {
-        case "harian":
-          return <DailyOverview data={dailyData} />;
-        case "mingguan":
-          return <WeeklyOverview data={weeklyData} />;
-        case "bulanan":
-          return <MonthlyOverview data={monthlyProgress} />;
-        default:
-          return null;
-      }
+    switch (tab) {
+      case "harian":
+        return <DailyOverview data={dailyData} />;
+      case "mingguan":
+        return (
+          <div className="space-y-3">
+            {weeklyList.length > 1 && (
+              <select
+                className="border rounded-md px-2 py-1 bg-gray-100 dark:bg-gray-700"
+                value={weekIndex}
+                onChange={(e) => onWeekChange?.(parseInt(e.target.value, 10))}
+              >
+                {weeklyList.map((w, i) => (
+                  <option key={i} value={i}>
+                    Minggu {w.minggu}
+                  </option>
+                ))}
+              </select>
+            )}
+            <WeeklyOverview data={weeklyList[weekIndex]} />
+          </div>
+        );
+      case "bulanan":
+        return <MonthlyOverview data={monthlyProgress} />;
+      default:
+        return null;
+    }
   };
 
   return (

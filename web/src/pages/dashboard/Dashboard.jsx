@@ -7,8 +7,9 @@ import React, { useEffect, useState } from "react";
 const Dashboard = () => {
   const { user } = useAuth();
   const [dailyData, setDailyData] = useState([]);
-  const [weeklyData, setWeeklyData] = useState(null);
-  const [monthlyProgress, setMonthlyProgress] = useState([]);
+  const [weeklyList, setWeeklyList] = useState([]);
+  const [weekIndex, setWeekIndex] = useState(0);
+  const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -16,10 +17,27 @@ const Dashboard = () => {
     const fetchAllData = async () => {
       const today = new Date();
       const tanggal = today.toISOString().split("T")[0];
-      const startOfWeek = new Date(today);
-      startOfWeek.setDate(today.getDate() - today.getDay() + 1);
-      const minggu = startOfWeek.toISOString().split("T")[0];
       const year = today.getFullYear();
+      const month = today.getMonth();
+
+      // determine start dates for each week in the month
+      const firstOfMonth = new Date(year, month, 1);
+      const firstMonday = new Date(firstOfMonth);
+      firstMonday.setDate(firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7));
+      const weekStarts = [];
+      for (let i = 0; i < 6; i++) {
+        const d = new Date(firstMonday);
+        d.setDate(firstMonday.getDate() + i * 7);
+        if (i > 0 && d.getMonth() !== month && d.getDate() > 7) break;
+        weekStarts.push(d);
+      }
+
+      let currentIndex = 0;
+      weekStarts.forEach((w, idx) => {
+        const end = new Date(w);
+        end.setDate(w.getDate() + 6);
+        if (today >= w && today <= end) currentIndex = idx;
+      });
 
       try {
         const filters = {};
@@ -30,33 +48,38 @@ const Dashboard = () => {
           filters.teamId = user.teamId;
         }
 
-        const months = Array.from({ length: 12 }, (_, i) => i + 1);
-
-        const progressPromise = Promise.all(
-          months.map((m) =>
-            axios
-              .get("/penugasan", { params: { bulan: m, tahun: year } })
-              .then((res) => {
-                const rows = res.data || [];
-                const selesai = rows.filter((r) =>
-                  String(r.status).toLowerCase().includes("selesai")
-                ).length;
-                const total = rows.length;
-                const persen = total ? Math.round((selesai / total) * 100) : 0;
-                return { bulan: m, persen };
-              })
-          )
+        const weeklyPromises = weekStarts.map((d) =>
+          axios
+            .get("/monitoring/mingguan", {
+              params: { minggu: d.toISOString().split("T")[0], ...filters },
+            })
+            .then((res) => res.data)
         );
 
-        const [dailyRes, weeklyRes, progress] = await Promise.all([
+        const [dailyRes, weeklyArray, monthlyRes] = await Promise.all([
           axios.get("/monitoring/harian", { params: { tanggal, ...filters } }),
-          axios.get("/monitoring/mingguan", { params: { minggu, ...filters } }),
-          progressPromise,
+          Promise.all(weeklyPromises),
+          axios.get("/monitoring/bulanan", { params: { bulan: String(year), ...filters } }),
         ]);
 
+        const mingguKe = Math.ceil(today.getDate() / 7);
+        const weekAssignments = (penRes.data || []).filter(
+          (p) => parseInt(p.minggu, 10) === mingguKe
+        );
+        const selesaiCount = weekAssignments.filter((p) =>
+          String(p.status).toLowerCase().includes("selesai")
+        ).length;
+
+        const weeklyDataFixed = {
+          ...weeklyRes.data,
+          totalTugas: weekAssignments.length,
+          totalSelesai: selesaiCount,
+        };
+
         setDailyData(dailyRes.data);
-        setWeeklyData(weeklyRes.data);
-        setMonthlyProgress(progress);
+        setWeeklyList(weeklyArray);
+        setWeekIndex(currentIndex);
+        setMonthlyData(monthlyRes.data);
       } catch (error) {
         if (error?.response && [401, 403].includes(error.response.status)) {
           setErrorMsg("Anda tidak memiliki akses untuk melihat monitoring.");
@@ -94,12 +117,14 @@ const Dashboard = () => {
         Selamat datang, {user?.nama || "Pengguna"}! 👋
       </h1>
 
-      <StatsSummary weeklyData={weeklyData} />
+      <StatsSummary weeklyData={weeklyList[weekIndex]} />
 
       <MonitoringTabs
         dailyData={dailyData}
-        weeklyData={weeklyData}
-        monthlyProgress={monthlyProgress}
+        weeklyList={weeklyList}
+        weekIndex={weekIndex}
+        onWeekChange={setWeekIndex}
+        monthlyData={monthlyData}
       />
 
       <div className="bg-green-50 dark:bg-green-900 p-6 rounded-xl shadow text-center">

@@ -8,6 +8,7 @@ export class TambahanService {
     const master = await this.prisma.masterKegiatan.findUnique({
       where: { id: data.kegiatanId },
     });
+    
     if (!master) throw new BadRequestException('master kegiatan tidak ditemukan');
     return this.prisma.kegiatanTambahan.create({
       data: {

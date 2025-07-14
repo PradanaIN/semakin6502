@@ -23,18 +23,16 @@ const MonthlyOverview = ({ data = [] }) => {
         {data.map((item, index) => (
           <div
             key={index}
-            className="p-3 rounded-lg text-center bg-white dark:bg-gray-800 shadow"
+            className={`p-3 rounded-lg text-center font-medium ${
+              item.adaAktivitas
+                ? "bg-blue-50 dark:bg-blue-900"
+                : "bg-gray-100 dark:bg-gray-700"
+            }`}
           >
-            <div className="font-semibold mb-1">{monthNames[item.bulan - 1]}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">
-              {item.persen}% selesai
-            </div>
-            <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full mt-1">
-              <div
-                className="h-2 bg-blue-500 rounded-full"
-                style={{ width: `${item.persen}%` }}
-              />
-            </div>
+            <div>{item.tanggal}</div>
+            {item.adaAktivitas && (
+              <div className="text-blue-600 dark:text-blue-300 text-sm mt-1">✔</div>
+            )}
           </div>
         ))}
       </div>
