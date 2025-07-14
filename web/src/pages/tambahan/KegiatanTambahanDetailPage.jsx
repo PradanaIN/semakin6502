@@ -1,8 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Swal from "sweetalert2";
-import confirmAlert from "../utils/confirmAlert";
+import {
+  showSuccess,
+  showError,
+  confirmDelete,
+} from "../../utils/alerts";
 import { Pencil, Trash2 } from "lucide-react";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
@@ -47,7 +50,7 @@ export default function KegiatanTambahanDetailPage() {
       });
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Gagal mengambil data", "error");
+      showError("Error", "Gagal mengambil data");
     }
   }, [id]);
 
@@ -62,12 +65,12 @@ export default function KegiatanTambahanDetailPage() {
         if (payload[k] === "") delete payload[k];
       });
       await axios.put(`/kegiatan-tambahan/${id}`, payload);
-      Swal.fire("Berhasil", "Kegiatan diperbarui", "success");
+      showSuccess("Berhasil", "Kegiatan diperbarui");
       setEditing(false);
       fetchDetail();
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Gagal menyimpan", "error");
+      showError("Error", "Gagal menyimpan");
     }
   };
 
@@ -78,7 +81,7 @@ export default function KegiatanTambahanDetailPage() {
         if (payload[k] === "") delete payload[k];
       });
       await axios.put(`/kegiatan-tambahan/${id}`, payload);
-      Swal.fire("Berhasil", "Laporan ditambah", "success");
+      showSuccess("Berhasil", "Laporan ditambah");
       setLaporanForm({
         tanggal_selesai: "",
         tanggal_selesai_akhir: "",
@@ -88,24 +91,20 @@ export default function KegiatanTambahanDetailPage() {
       fetchDetail();
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Gagal menambah laporan", "error");
+      showError("Error", "Gagal menambah laporan");
     }
   };
 
   const remove = async () => {
-    const r = await confirmAlert({
-      title: "Hapus kegiatan ini?",
-      icon: "warning",
-      confirmButtonText: "Hapus",
-    });
+    const r = await confirmDelete("Hapus kegiatan ini?");
     if (!r.isConfirmed) return;
     try {
       await axios.delete(`/kegiatan-tambahan/${id}`);
-      Swal.fire("Dihapus", "Kegiatan dihapus", "success");
+      showSuccess("Dihapus", "Kegiatan dihapus");
       navigate(-1);
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Gagal menghapus", "error");
+      showError("Error", "Gagal menghapus");
     }
   };
 

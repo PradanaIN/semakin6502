@@ -1,7 +1,11 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
-import Swal from "sweetalert2";
-import confirmAlert from "../utils/confirmAlert";
+import {
+  showSuccess,
+  showError,
+  showWarning,
+  confirmCancel,
+} from "../../utils/alerts";
 import { Plus, Filter as FilterIcon, Eye } from "lucide-react";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
@@ -110,17 +114,17 @@ export default function PenugasanPage() {
 
   const save = async () => {
     if (!form.kegiatanId || form.pegawaiIds.length === 0) {
-      Swal.fire("Lengkapi data", "Kegiatan dan pegawai wajib dipilih", "warning");
+      showWarning("Lengkapi data", "Kegiatan dan pegawai wajib dipilih");
       return;
     }
     try {
       await axios.post("/penugasan/bulk", form);
       setShowForm(false);
       fetchData();
-      Swal.fire("Berhasil", "Penugasan ditambah", "success");
+      showSuccess("Berhasil", "Penugasan ditambah");
     } catch (err) {
       console.error("Gagal menyimpan penugasan", err);
-      Swal.fire("Error", "Gagal menyimpan penugasan", "error");
+      showError("Error", "Gagal menyimpan penugasan");
     }
   };
 
@@ -399,11 +403,9 @@ export default function PenugasanPage() {
               <Button
                 variant="secondary"
                 onClick={async () => {
-                  const r = await confirmAlert({
-                    text: "Batalkan penambahan penugasan?",
-                    confirmButtonText: "Ya",
-                    cancelButtonText: "Tidak",
-                  });
+                  const r = await confirmCancel(
+                    "Batalkan penambahan penugasan?",
+                  );
                   if (r.isConfirmed) setShowForm(false);
                 }}
               >

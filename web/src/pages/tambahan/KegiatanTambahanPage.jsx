@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Swal from "sweetalert2";
-import confirmAlert from "../utils/confirmAlert";
+import {
+  showSuccess,
+  showError,
+  confirmDelete,
+} from "../../utils/alerts";
 import { Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import Table from "../../components/ui/Table";
 import { useNavigate } from "react-router-dom";
@@ -85,27 +88,23 @@ export default function KegiatanTambahanPage() {
       setShowForm(false);
       setEditing(null);
       fetchData();
-      Swal.fire("Berhasil", "Data disimpan", "success");
+      showSuccess("Berhasil", "Data disimpan");
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Gagal menyimpan", "error");
+      showError("Error", "Gagal menyimpan");
     }
   };
 
   const remove = async (item) => {
-    const r = await confirmAlert({
-      title: "Hapus kegiatan ini?",
-      icon: "warning",
-      confirmButtonText: "Hapus",
-    });
+    const r = await confirmDelete("Hapus kegiatan ini?");
     if (!r.isConfirmed) return;
     try {
       await axios.delete(`/kegiatan-tambahan/${item.id}`);
       fetchData();
-      Swal.fire("Dihapus", "Kegiatan dihapus", "success");
+      showSuccess("Dihapus", "Kegiatan dihapus");
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Gagal menghapus", "error");
+      showError("Error", "Gagal menghapus");
     }
   };
 

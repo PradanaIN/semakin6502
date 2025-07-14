@@ -1,7 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import Swal from "sweetalert2";
-import confirmAlert from "../../utils/confirmAlert";
+import {
+  showSuccess,
+  showError,
+  showWarning,
+  confirmDelete,
+  confirmCancel,
+} from "../../utils/alerts";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
@@ -76,7 +81,7 @@ export default function UsersPage() {
       (!editingUser && !form.password) ||
       !form.role
     ) {
-      Swal.fire("Lengkapi data", "Semua field wajib diisi", "warning");
+      showWarning("Lengkapi data", "Semua field wajib diisi");
       return;
     }
     try {
@@ -87,27 +92,23 @@ export default function UsersPage() {
       }
       setShowForm(false);
       fetchUsers();
-      Swal.fire("Berhasil", "Pengguna disimpan", "success");
+      showSuccess("Berhasil", "Pengguna disimpan");
     } catch (err) {
       console.error("Gagal menyimpan pengguna", err);
-      Swal.fire("Error", "Gagal menyimpan pengguna", "error");
+      showError("Error", "Gagal menyimpan pengguna");
     }
   };
 
   const deleteUser = useCallback(async (id) => {
-    const result = await confirmAlert({
-      title: "Hapus pengguna ini?",
-      icon: "warning",
-      confirmButtonText: "Hapus",
-    });
+    const result = await confirmDelete("Hapus pengguna ini?");
     if (!result.isConfirmed) return;
     try {
       await axios.delete(`/users/${id}`);
       fetchUsers();
-      await Swal.fire("Dihapus", "Pengguna berhasil dihapus", "success");
+      showSuccess("Dihapus", "Pengguna berhasil dihapus");
     } catch (err) {
       console.error("Gagal menghapus pengguna", err);
-      Swal.fire("Error", "Gagal menghapus pengguna", "error");
+      showError("Error", "Gagal menghapus pengguna");
     }
   }, []);
 
@@ -322,10 +323,7 @@ export default function UsersPage() {
               <Button
                 variant="secondary"
                 onClick={async () => {
-                  const r = await confirmAlert({
-                    title: "Batalkan perubahan?",
-                    icon: "question",
-                  });
+                  const r = await confirmCancel("Batalkan perubahan?");
                   if (r.isConfirmed) setShowForm(false);
                 }}
               >
