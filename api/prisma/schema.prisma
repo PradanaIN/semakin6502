@@ -82,7 +82,11 @@ model KegiatanTambahan {
   tanggal_selesai DateTime?
   tanggal_selesai_akhir DateTime?
   userId   Int
+  kegiatanId Int
+  teamId Int
   user     User     @relation(fields: [userId], references: [id])
+  kegiatan MasterKegiatan @relation(fields: [kegiatanId], references: [id])
+  team     Team  @relation(fields: [teamId], references: [id])
 }
 
 model Role {

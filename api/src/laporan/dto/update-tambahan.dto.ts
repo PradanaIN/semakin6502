@@ -2,8 +2,8 @@ import { IsDateString, IsInt, IsOptional, IsString } from "class-validator";
 
 export class UpdateTambahanDto {
   @IsOptional()
-  @IsString()
-  nama?: string;
+  @IsInt()
+  kegiatanId?: number;
 
   @IsOptional()
   @IsDateString()
@@ -28,8 +28,4 @@ export class UpdateTambahanDto {
   @IsOptional()
   @IsDateString()
   tanggal_selesai_akhir?: string;
-
-  @IsOptional()
-  @IsInt()
-  userId?: number;
 }

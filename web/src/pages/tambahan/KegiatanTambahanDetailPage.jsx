@@ -3,12 +3,19 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { Pencil, Trash2 } from "lucide-react";
+import Select from "react-select";
+
+const selectStyles = {
+  option: (base) => ({ ...base, color: "#000" }),
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+};
 
 export default function KegiatanTambahanDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
   const [editing, setEditing] = useState(false);
+  const [kegiatan, setKegiatan] = useState([]);
   const [laporanForm, setLaporanForm] = useState({
     tanggal_selesai: "",
     tanggal_selesai_akhir: "",
@@ -16,7 +23,7 @@ export default function KegiatanTambahanDetailPage() {
     status: "Selesai Dikerjakan",
   });
   const [form, setForm] = useState({
-    nama: "",
+    kegiatanId: "",
     tanggal: "",
     status: "Belum",
     deskripsi: "",
@@ -24,13 +31,17 @@ export default function KegiatanTambahanDetailPage() {
 
   const fetchDetail = async () => {
     try {
-      const res = await axios.get(`/kegiatan-tambahan/${id}`);
-      setItem(res.data);
+      const [dRes, kRes] = await Promise.all([
+        axios.get(`/kegiatan-tambahan/${id}`),
+        axios.get("/master-kegiatan?limit=1000"),
+      ]);
+      setItem(dRes.data);
+      setKegiatan(kRes.data.data || kRes.data);
       setForm({
-        nama: res.data.nama,
-        tanggal: res.data.tanggal.slice(0, 10),
-        status: res.data.status,
-        deskripsi: res.data.deskripsi || "",
+        kegiatanId: dRes.data.kegiatanId,
+        tanggal: dRes.data.tanggal.slice(0, 10),
+        status: dRes.data.status,
+        deskripsi: dRes.data.deskripsi || "",
       });
     } catch (err) {
       console.error(err);
@@ -119,6 +130,10 @@ export default function KegiatanTambahanDetailPage() {
             <div className="font-medium">{item.nama}</div>
           </div>
           <div>
+            <div className="text-sm text-gray-500">Tim</div>
+            <div className="font-medium">{item.kegiatan.team?.nama_tim || "-"}</div>
+          </div>
+          <div>
             <div className="text-sm text-gray-500">Tanggal</div>
             <div className="font-medium">{item.tanggal.slice(0, 10)}</div>
           </div>
@@ -157,13 +172,25 @@ export default function KegiatanTambahanDetailPage() {
       ) : (
         <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <div>
-            <label className="block text-sm mb-1">Nama</label>
-            <input
-              type="text"
-              value={form.nama}
-              onChange={(e) => setForm({ ...form, nama: e.target.value })}
-              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+            <label className="block text-sm mb-1">Kegiatan</label>
+            <Select
+              classNamePrefix="react-select"
+              styles={selectStyles}
+              menuPortalTarget={document.body}
+              options={kegiatan.map((k) => ({ value: k.id, label: k.nama_kegiatan }))}
+              value={
+                form.kegiatanId
+                  ? { value: form.kegiatanId, label: kegiatan.find((k) => k.id === form.kegiatanId)?.nama_kegiatan }
+                  : null
+              }
+              onChange={(o) => setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })}
+              placeholder="Pilih kegiatan..."
             />
+            {form.kegiatanId && (
+              <p className="text-sm mt-1 text-gray-600 dark:text-gray-300">
+                Tim: {kegiatan.find((k) => k.id === form.kegiatanId)?.team?.nama_tim || "-"}
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-sm mb-1">Tanggal</label>
