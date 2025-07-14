@@ -21,7 +21,7 @@ export default function UsersPage() {
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [roleFilter, _setRoleFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
 
   useEffect(() => {
     fetchUsers();
@@ -143,7 +143,7 @@ export default function UsersPage() {
               className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-black dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
-          {/* <select
+          <select
             value={roleFilter}
             onChange={(e) => {
               setRoleFilter(e.target.value);
@@ -157,7 +157,7 @@ export default function UsersPage() {
                 {r.name}
               </option>
             ))}
-          </select> */}
+          </select>
         </div>
         <button
           onClick={openCreate}
