@@ -10,7 +10,6 @@ import {
   UserCog,
 } from "lucide-react";
 
-// eslint-disable-next-line no-unused-vars
 export default function Sidebar({ mobileOpen, setMobileOpen }) {
   const { user } = useAuth();
 
