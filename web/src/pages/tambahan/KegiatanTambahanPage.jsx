@@ -119,12 +119,9 @@ export default function KegiatanTambahanPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-semibold">Kegiatan Tambahan</h1>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-        >
+        <Button onClick={openCreate} className="flex items-center gap-2">
           <Plus size={16} /> Tambah
-        </button>
+        </Button>
       </div>
 
       <Table>
@@ -162,27 +159,29 @@ export default function KegiatanTambahanPage() {
                   <StatusBadge status={item.status} />
                 </td>
                 <td className="px-4 py-2 space-x-2">
-                  <button
+                  <Button
                     onClick={() => openDetail(item.id)}
-                    className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                    icon
                     aria-label="Detail"
                   >
                     <Eye size={16} />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => openEdit(item)}
-                    className="p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                    variant="warning"
+                    icon
                     aria-label="Edit"
                   >
                     <Pencil size={16} />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => remove(item)}
-                    className="p-2 bg-red-600 hover:bg-red-700 text-white rounded"
+                    variant="danger"
+                    icon
                     aria-label="Hapus"
                   >
                     <Trash2 size={16} />
-                  </button>
+                  </Button>
                 </td>
               </tr>
           ))

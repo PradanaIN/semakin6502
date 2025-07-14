@@ -188,20 +188,22 @@ export default function PenugasanDetailPage() {
         <h2 className="text-xl font-semibold">Detail Penugasan</h2>
         {canManage && !editing && (
           <div className="space-x-2">
-            <button
+            <Button
               onClick={() => setEditing(true)}
-              className="p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+              variant="warning"
+              icon
               aria-label="Edit"
             >
               <Pencil size={16} />
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={remove}
-              className="p-2 bg-red-600 hover:bg-red-700 text-white rounded"
+              variant="danger"
+              icon
               aria-label="Hapus"
             >
               <Trash2 size={16} />
-            </button>
+            </Button>
           </div>
         )}
       </div>
@@ -353,12 +355,9 @@ export default function PenugasanDetailPage() {
       <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Laporan Harian</h3>
-          <button
-            onClick={openLaporan}
-            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
-          >
+          <Button onClick={openLaporan} className="px-3 py-1">
             Tambah
-          </button>
+          </Button>
         </div>
         <Table className="min-w-full">
           <thead>
@@ -405,20 +404,22 @@ export default function PenugasanDetailPage() {
                   </td>
                   <td className="px-2 py-1">{l.catatan || "-"}</td>
                   <td className="px-2 py-1 space-x-1">
-                    <button
+                    <Button
                       onClick={() => editLaporan(l)}
-                      className="p-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                      variant="warning"
+                      icon
                       aria-label="Edit"
                     >
                       <Pencil size={14} />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => deleteLaporan(l.id)}
-                      className="p-1 bg-red-600 hover:bg-red-700 text-white rounded"
+                      variant="danger"
+                      icon
                       aria-label="Hapus"
                     >
                       <Trash2 size={14} />
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))

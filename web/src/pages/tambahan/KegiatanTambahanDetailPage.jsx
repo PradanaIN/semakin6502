@@ -119,20 +119,22 @@ export default function KegiatanTambahanDetailPage() {
         <h2 className="text-xl font-semibold">Detail Kegiatan Tambahan</h2>
         {!editing && (
           <div className="space-x-2">
-            <button
+            <Button
               onClick={() => setEditing(true)}
-              className="p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+              variant="warning"
+              icon
               aria-label="Edit"
             >
               <Pencil size={16} />
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={remove}
-              className="p-2 bg-red-600 hover:bg-red-700 text-white rounded"
+              variant="danger"
+              icon
               aria-label="Hapus"
             >
               <Trash2 size={16} />
-            </button>
+            </Button>
           </div>
         )}
       </div>
