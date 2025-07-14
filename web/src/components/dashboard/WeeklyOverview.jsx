@@ -6,10 +6,7 @@ const WeeklyOverview = ({ data }) => {
     return `${d}-${m}-${y}`;
   };
 
-  const rangeText = data.tanggal
-    .split(" - ")
-    .map(formatDate)
-    .join(" - ");
+  const rangeText = data.tanggal.split(" - ").map(formatDate).join(" - ");
 
   return (
     <div className="space-y-4">
@@ -17,17 +14,14 @@ const WeeklyOverview = ({ data }) => {
         <h2 className="text-xl font-semibold text-blue-600 mb-1">
           Progress Mingguan
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-300">
-          Minggu {data.minggu} Bulan {data.bulan}
-        </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">{rangeText}</p>
         <div className="mt-2">
           <div className="flex justify-between text-sm font-medium">
             <span className="text-blue-700 dark:text-blue-300">
-              {data.totalProgress}% selesai
+              {rangeText}
             </span>
             <span className="text-gray-600 dark:text-gray-300">
-              ({data.totalSelesai}/{data.totalTugas})
+              {data.totalProgress}% selesai ({data.totalSelesai}/
+              {data.totalTugas})
             </span>
           </div>
           <div className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-full mt-1">
@@ -43,26 +37,26 @@ const WeeklyOverview = ({ data }) => {
         {data.detail
           ?.filter((d, idx) => idx < 5 || d.total > 0)
           .map((day, index) => (
-          <div
-            key={index}
-            className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow"
-          >
-            <div className="flex justify-between text-sm">
-              <span>
-                {day.hari}, {formatDate(day.tanggal)}
-              </span>
-              <span>
-                {day.selesai}/{day.total} &nbsp; {day.persen}%
-              </span>
+            <div
+              key={index}
+              className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow"
+            >
+              <div className="flex justify-between text-sm">
+                <span>
+                  {day.hari}, {formatDate(day.tanggal)}
+                </span>
+                <span>
+                  {day.selesai}/{day.total} &nbsp; {day.persen}%
+                </span>
+              </div>
+              <div className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-full mt-1">
+                <div
+                  className="h-2 bg-blue-500 rounded-full"
+                  style={{ width: `${day.persen}%` }}
+                />
+              </div>
             </div>
-            <div className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-full mt-1">
-              <div
-                className="h-2 bg-blue-500 rounded-full"
-                style={{ width: `${day.persen}%` }}
-              />
-            </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
