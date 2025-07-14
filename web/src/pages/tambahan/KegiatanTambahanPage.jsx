@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { Plus, Eye, Pencil, Trash2 } from "lucide-react";
+import Table from "../../components/ui/Table";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { STATUS } from "../../utils/status";
+import Modal from "../../components/ui/Modal";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -123,7 +125,7 @@ export default function KegiatanTambahanPage() {
         </button>
       </div>
 
-      <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
+      <Table>
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
             <th className="px-4 py-2">No</th>
@@ -176,23 +178,27 @@ export default function KegiatanTambahanPage() {
                   </button>
                 </td>
               </tr>
-            ))
+          ))
           )}
         </tbody>
-      </table>
+      </Table>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
-            <h2 className="text-xl font-semibold mb-2">
-              {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}
-            </h2>
-            <div className="space-y-2">
-              <div>
-                <label className="block text-sm mb-1">Kegiatan</label>
-                <Select
-                  classNamePrefix="react-select"
-                  styles={selectStyles}
+        <Modal
+          onClose={() => {
+            setShowForm(false);
+            setEditing(null);
+          }}
+        >
+          <h2 className="text-xl font-semibold mb-2">
+            {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}
+          </h2>
+          <div className="space-y-2">
+            <div>
+              <label className="block text-sm mb-1">Kegiatan</label>
+              <Select
+                classNamePrefix="react-select"
+                styles={selectStyles}
                   menuPortalTarget={document.body}
                   options={kegiatan.map((k) => ({ value: k.id, label: k.nama_kegiatan }))}
                   value={
@@ -258,7 +264,7 @@ export default function KegiatanTambahanPage() {
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

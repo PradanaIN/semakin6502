@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Pencil, Plus, Trash2, Search } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
+import Modal from "../../components/ui/Modal";
+import Table from "../../components/ui/Table";
+import SearchInput from "../../components/SearchInput";
 import { ROLES } from "../../utils/roles";
 
 export default function UsersPage() {
@@ -129,22 +132,15 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={16} className="text-gray-400 dark:text-gray-300" />
-            </div>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder="Cari pengguna..."
-              className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-black dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-          <select
+        <SearchInput
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setCurrentPage(1);
+          }}
+          placeholder="Cari pengguna..."
+        />
+        <select
             value={roleFilter}
             onChange={(e) => {
               setRoleFilter(e.target.value);
@@ -169,7 +165,7 @@ export default function UsersPage() {
         </button>
       </div>
 
-      <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
+      <Table>
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
             <th className="px-4 py-2">No</th>
@@ -221,7 +217,7 @@ export default function UsersPage() {
           ))
           )}
         </tbody>
-      </table>
+      </Table>
 
       <div className="flex items-center justify-between mt-4">
         <div className="space-x-2">
@@ -252,17 +248,20 @@ export default function UsersPage() {
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
-            <h2 className="text-xl font-semibold mb-2">
-              {editingUser ? "Edit Pengguna" : "Tambah Pengguna"}
-            </h2>
-            <div className="space-y-2">
-              <div>
-                <label className="block text-sm mb-1">
-                  Nama <span className="text-red-500">*</span>
-                </label>
-                <input
+        <Modal
+          onClose={() => {
+            setShowForm(false);
+          }}
+        >
+          <h2 className="text-xl font-semibold mb-2">
+            {editingUser ? "Edit Pengguna" : "Tambah Pengguna"}
+          </h2>
+          <div className="space-y-2">
+            <div>
+              <label className="block text-sm mb-1">
+                Nama <span className="text-red-500">*</span>
+              </label>
+              <input
                   type="text"
                   value={form.nama}
                   onChange={(e) => setForm({ ...form, nama: e.target.value })}
@@ -337,7 +336,7 @@ export default function UsersPage() {
               </p>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

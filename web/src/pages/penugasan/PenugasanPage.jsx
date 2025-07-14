@@ -1,14 +1,17 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Plus, Search, Filter as FilterIcon, Eye } from "lucide-react";
+import { Plus, Filter as FilterIcon, Eye } from "lucide-react";
 import Select from "react-select";
 import StatusBadge from "../../components/ui/StatusBadge";
 import { useAuth } from "../auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Pagination";
+import Modal from "../../components/ui/Modal";
+import Table from "../../components/ui/Table";
 import { ROLES } from "../../utils/roles";
 import months from "../../utils/months";
+import SearchInput from "../../components/SearchInput";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -145,21 +148,14 @@ export default function PenugasanPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={16} className="text-gray-400 dark:text-gray-300" />
-            </div>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder="Cari penugasan..."
-              className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
+          <SearchInput
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+            placeholder="Cari penugasan..."
+          />
           <select
             value={filterBulan}
             onChange={(e) => {
@@ -201,7 +197,7 @@ export default function PenugasanPage() {
         )}
       </div>
 
-      <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
+      <Table>
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
             <th className="px-2 py-2">No</th>
@@ -249,7 +245,7 @@ export default function PenugasanPage() {
               ))
           )}
         </tbody>
-      </table>
+      </Table>
 
       <div className="flex items-center justify-between mt-4">
         <div className="space-x-2">
@@ -276,14 +272,17 @@ export default function PenugasanPage() {
       </div>
 
       {canManage && showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
-            <h2 className="text-xl font-semibold mb-2">Tambah Penugasan</h2>
-            <div className="space-y-2">
-              <div>
-                <label className="block text-sm mb-1">
-                  Kegiatan <span className="text-red-500">*</span>
-                </label>
+        <Modal
+          onClose={() => {
+            setShowForm(false);
+          }}
+        >
+          <h2 className="text-xl font-semibold mb-2">Tambah Penugasan</h2>
+          <div className="space-y-2">
+            <div>
+              <label className="block text-sm mb-1">
+                Kegiatan <span className="text-red-500">*</span>
+              </label>
                 <Select
                   classNamePrefix="react-select"
                   className="mb-1"
@@ -412,7 +411,7 @@ export default function PenugasanPage() {
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );
