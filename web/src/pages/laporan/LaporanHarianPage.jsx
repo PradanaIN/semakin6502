@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Pencil, Trash2, Search } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import Swal from "sweetalert2";
 import Pagination from "../../components/Pagination";
 import Table from "../../components/ui/Table";
 import { STATUS } from "../../utils/status";
+import SearchInput from "../../components/SearchInput";
 
 export default function LaporanHarianPage() {
   const [laporan, setLaporan] = useState([]);
@@ -113,21 +114,14 @@ export default function LaporanHarianPage() {
             className="border rounded px-3 py-1 bg-white dark:bg-gray-700"
           />
         </div>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search size={16} className="text-gray-400 dark:text-gray-300" />
-          </div>
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setCurrentPage(1);
-            }}
-            placeholder="Cari..."
-            className="pl-10 pr-3 py-1 border rounded bg-white dark:bg-gray-700 dark:text-gray-200"
-          />
-        </div>
+        <SearchInput
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setCurrentPage(1);
+          }}
+          placeholder="Cari..."
+        />
       </div>
       {loading ? (
         <div>Memuat...</div>
@@ -135,24 +129,14 @@ export default function LaporanHarianPage() {
         <>
           <div className="flex flex-wrap justify-between items-center gap-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search
-                    size={16}
-                    className="text-gray-400 dark:text-gray-300"
-                  />
-                </div>
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                  placeholder="Cari laporan..."
-                  className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
+              <SearchInput
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setCurrentPage(1);
+                }}
+                placeholder="Cari laporan..."
+              />
             </div>
           </div>
           <div className="overflow-x-auto">

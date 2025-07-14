@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Plus, Search, Filter as FilterIcon, Eye } from "lucide-react";
+import { Plus, Filter as FilterIcon, Eye } from "lucide-react";
 import Select from "react-select";
 import { useAuth } from "../auth/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ import Pagination from "../../components/Pagination";
 import Table from "../../components/ui/Table";
 import { ROLES } from "../../utils/roles";
 import months from "../../utils/months";
+import SearchInput from "../../components/SearchInput";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -145,21 +146,14 @@ export default function PenugasanPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={16} className="text-gray-400 dark:text-gray-300" />
-            </div>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder="Cari penugasan..."
-              className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
+          <SearchInput
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+            placeholder="Cari penugasan..."
+          />
           <select
             value={filterBulan}
             onChange={(e) => {
