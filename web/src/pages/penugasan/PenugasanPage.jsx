@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import confirmAlert from "../utils/confirmAlert";
 import { Plus, Filter as FilterIcon, Eye } from "lucide-react";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
@@ -11,6 +12,7 @@ import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
 import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import { ROLES } from "../../utils/roles";
 import months from "../../utils/months";
 import SearchInput from "../../components/SearchInput";
@@ -152,6 +154,7 @@ export default function PenugasanPage() {
               setCurrentPage(1);
             }}
             placeholder="Cari penugasan..."
+            ariaLabel="Cari penugasan"
           />
           <select
             value={filterBulan}
@@ -356,7 +359,7 @@ export default function PenugasanPage() {
               <div className="grid grid-cols-3 gap-2">
                 <div>
                   <label htmlFor="minggu" className="block text-sm mb-1">Minggu</label>
-                  <input
+                  <Input
                     id="minggu"
                     type="number"
                     value={form.minggu}
@@ -383,7 +386,7 @@ export default function PenugasanPage() {
                 </div>
                 <div>
                   <label htmlFor="tahun" className="block text-sm mb-1">Tahun</label>
-                  <input
+                  <Input
                     id="tahun"
                     type="number"
                     value={form.tahun}
@@ -395,15 +398,13 @@ export default function PenugasanPage() {
             <div className="flex justify-end space-x-2 pt-2">
               <Button
                 variant="secondary"
-                onClick={() => {
-                  Swal.fire({
+                onClick={async () => {
+                  const r = await confirmAlert({
                     text: "Batalkan penambahan penugasan?",
-                    showCancelButton: true,
                     confirmButtonText: "Ya",
                     cancelButtonText: "Tidak",
-                  }).then((r) => {
-                    if (r.isConfirmed) setShowForm(false);
                   });
+                  if (r.isConfirmed) setShowForm(false);
                 }}
               >
                 Batal

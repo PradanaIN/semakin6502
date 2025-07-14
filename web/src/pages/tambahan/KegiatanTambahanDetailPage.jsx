@@ -2,12 +2,14 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import confirmAlert from "../utils/confirmAlert";
 import { Pencil, Trash2 } from "lucide-react";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
 import { STATUS } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 
 
 export default function KegiatanTambahanDetailPage() {
@@ -91,10 +93,9 @@ export default function KegiatanTambahanDetailPage() {
   };
 
   const remove = async () => {
-    const r = await Swal.fire({
+    const r = await confirmAlert({
       title: "Hapus kegiatan ini?",
       icon: "warning",
-      showCancelButton: true,
       confirmButtonText: "Hapus",
     });
     if (!r.isConfirmed) return;
@@ -209,7 +210,7 @@ export default function KegiatanTambahanDetailPage() {
           </div>
           <div>
             <label htmlFor="tanggal" className="block text-sm mb-1">Tanggal</label>
-            <input
+            <Input
               id="tanggal"
               type="date"
               value={form.tanggal}
@@ -256,7 +257,7 @@ export default function KegiatanTambahanDetailPage() {
         <div className="space-y-2">
           <div>
             <label htmlFor="tanggalMulai" className="block text-sm mb-1">Tanggal Mulai</label>
-            <input
+            <Input
               id="tanggalMulai"
               type="date"
               value={laporanForm.tanggal_selesai}
@@ -268,7 +269,7 @@ export default function KegiatanTambahanDetailPage() {
           </div>
           <div>
             <label htmlFor="tanggalAkhir" className="block text-sm mb-1">Tanggal Akhir</label>
-            <input
+            <Input
               id="tanggalAkhir"
               type="date"
               value={laporanForm.tanggal_selesai_akhir}
@@ -280,7 +281,7 @@ export default function KegiatanTambahanDetailPage() {
           </div>
           <div>
             <label htmlFor="buktiLink" className="block text-sm mb-1">Link Bukti</label>
-            <input
+            <Input
               id="buktiLink"
               type="text"
               value={laporanForm.bukti_link}

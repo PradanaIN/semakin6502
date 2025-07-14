@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Pencil, Trash2 } from "lucide-react";
 import Swal from "sweetalert2";
+import confirmAlert from "../utils/confirmAlert";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
 import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import { STATUS } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
@@ -65,10 +67,9 @@ export default function LaporanHarianPage() {
   };
 
   const remove = async (id) => {
-    const r = await Swal.fire({
+    const r = await confirmAlert({
       title: "Hapus laporan ini?",
       icon: "warning",
-      showCancelButton: true,
       confirmButtonText: "Hapus",
     });
     if (!r.isConfirmed) return;
@@ -125,6 +126,7 @@ export default function LaporanHarianPage() {
             setCurrentPage(1);
           }}
           placeholder="Cari..."
+          ariaLabel="Cari"
         />
       </div>
       {loading ? (
@@ -140,6 +142,7 @@ export default function LaporanHarianPage() {
                   setCurrentPage(1);
                 }}
                 placeholder="Cari laporan..."
+                ariaLabel="Cari laporan"
               />
             </div>
           </div>
@@ -246,7 +249,7 @@ export default function LaporanHarianPage() {
                 <label htmlFor="tanggal" className="block text-sm mb-1">
                   Tanggal<span className="text-red-500">*</span>
                 </label>
-                <input
+                <Input
                   id="tanggal"
                   type="date"
                   value={form.tanggal}
@@ -278,7 +281,7 @@ export default function LaporanHarianPage() {
               {form.status === STATUS.SELESAI_DIKERJAKAN && (
                 <div>
                   <label htmlFor="bukti_link" className="block text-sm mb-1">Link Bukti</label>
-                  <input
+                  <Input
                     id="bukti_link"
                     type="text"
                     value={form.bukti_link}

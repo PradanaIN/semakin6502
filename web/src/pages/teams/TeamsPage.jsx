@@ -1,12 +1,14 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import confirmAlert from "../utils/confirmAlert";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
 import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import { ROLES } from "../../utils/roles";
 import SearchInput from "../../components/SearchInput";
 
@@ -70,10 +72,9 @@ export default function TeamsPage() {
   };
 
   const deleteTeam = useCallback(async (id) => {
-    const r = await Swal.fire({
+    const r = await confirmAlert({
       title: "Hapus tim ini?",
       icon: "warning",
-      showCancelButton: true,
       confirmButtonText: "Hapus",
     });
     if (!r.isConfirmed) return;
@@ -115,6 +116,7 @@ export default function TeamsPage() {
               setCurrentPage(1);
             }}
             placeholder="Cari tim..."
+            ariaLabel="Cari tim"
           />
         </div>
         <Button onClick={openCreate} className="add-button">
@@ -218,7 +220,7 @@ export default function TeamsPage() {
           <div className="space-y-2">
             <div>
               <label htmlFor="namaTim" className="block text-sm mb-1">Nama Tim</label>
-              <input
+              <Input
                 id="namaTim"
                 type="text"
                 value={form.nama_tim}
@@ -233,11 +235,9 @@ export default function TeamsPage() {
               <Button
                 variant="secondary"
                 onClick={async () => {
-                  const r = await Swal.fire({
+                  const r = await confirmAlert({
                     title: "Batalkan perubahan?",
                     icon: "question",
-                    showCancelButton: true,
-                    confirmButtonText: "Ya",
                   });
                   if (r.isConfirmed) setShowForm(false);
                 }}

@@ -1,12 +1,14 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import confirmAlert from "../../utils/confirmAlert";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
 import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import SearchInput from "../../components/SearchInput";
 import Spinner from "../../components/Spinner";
 import { ROLES } from "../../utils/roles";
@@ -93,10 +95,9 @@ export default function UsersPage() {
   };
 
   const deleteUser = useCallback(async (id) => {
-    const result = await Swal.fire({
+    const result = await confirmAlert({
       title: "Hapus pengguna ini?",
       icon: "warning",
-      showCancelButton: true,
       confirmButtonText: "Hapus",
     });
     if (!result.isConfirmed) return;
@@ -141,6 +142,7 @@ export default function UsersPage() {
             setCurrentPage(1);
           }}
           placeholder="Cari pengguna..."
+          ariaLabel="Cari pengguna"
         />
         <select
             value={roleFilter}
@@ -264,7 +266,7 @@ export default function UsersPage() {
               <label htmlFor="nama" className="block text-sm mb-1">
                 Nama <span className="text-red-500">*</span>
               </label>
-              <input
+              <Input
                 id="nama"
                 type="text"
                 value={form.nama}
@@ -276,7 +278,7 @@ export default function UsersPage() {
               <label htmlFor="email" className="block text-sm mb-1">
                 Email <span className="text-red-500">*</span>
               </label>
-              <input
+              <Input
                 id="email"
                 type="email"
                 value={form.email}
@@ -288,7 +290,7 @@ export default function UsersPage() {
               <label htmlFor="password" className="block text-sm mb-1">
                 Password <span className="text-red-500">*</span>
               </label>
-              <input
+              <Input
                 id="password"
                 type="password"
                 value={form.password}
@@ -320,11 +322,9 @@ export default function UsersPage() {
               <Button
                 variant="secondary"
                 onClick={async () => {
-                  const r = await Swal.fire({
+                  const r = await confirmAlert({
                     title: "Batalkan perubahan?",
                     icon: "question",
-                    showCancelButton: true,
-                    confirmButtonText: "Ya",
                   });
                   if (r.isConfirmed) setShowForm(false);
                 }}
