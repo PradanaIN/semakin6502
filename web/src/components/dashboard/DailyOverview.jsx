@@ -10,15 +10,14 @@ const DailyOverview = ({ data = [] }) => {
 
   const HOLIDAYS = [
     "2025-01-01",
-    "2025-01-29",
-    "2025-03-31",
+    "2025-02-10",
+    "2025-03-28",
+    "2025-03-29",
     "2025-05-01",
-    "2025-05-29",
-    "2025-06-02",
-    "2025-07-17",
+    "2025-05-02",
     "2025-08-17",
-    "2025-09-29",
     "2025-12-25",
+    "2025-12-26",
   ];
 
   const isWeekend = (iso) => {
@@ -33,11 +32,9 @@ const DailyOverview = ({ data = [] }) => {
     if (day.adaKegiatan) {
       return "bg-green-200 border-green-400 dark:bg-green-700 dark:border-green-500";
     }
-
     if (isWeekend(day.tanggal) || isHoliday(day.tanggal)) {
       return "bg-blue-200 border-blue-400 dark:bg-blue-700 dark:border-blue-500";
     }
-
     if (day.tanggal < today) {
       return "bg-yellow-200 border-yellow-400 dark:bg-yellow-700 dark:border-yellow-500";
     }
@@ -53,9 +50,7 @@ const DailyOverview = ({ data = [] }) => {
           const dayName = new Date(day.tanggal).toLocaleDateString("id-ID", {
             weekday: "short",
           });
-
           const weekend = isWeekend(day.tanggal) || isHoliday(day.tanggal);
-
           return (
             <div
               key={index}
@@ -68,7 +63,7 @@ const DailyOverview = ({ data = [] }) => {
               </div>
               {weekend && (
                 <div className="text-xs text-blue-600 dark:text-blue-300 mt-1">
-                  Libur
+                  {isHoliday(day.tanggal) ? "Hari Libur" : "Akhir Pekan"}
                 </div>
               )}
             </div>
@@ -78,20 +73,17 @@ const DailyOverview = ({ data = [] }) => {
       <div className="text-xs text-gray-500 mt-2 space-y-1">
         <div>
           <span className="inline-block w-3 h-3 bg-green-400 rounded-sm mr-1"></span>
-          ada laporan
+          Ada Laporan
         </div>
         <div>
           <span className="inline-block w-3 h-3 bg-yellow-400 rounded-sm mr-1"></span>
-          belum lapor (terlewat)
+          Tidak Ada Laporan
         </div>
         <div>
           <span className="inline-block w-3 h-3 bg-blue-400 rounded-sm mr-1"></span>
-          hari libur/weekend
+          Hari Libur/Akhir Pekan
         </div>
       </div>
-      <p className="text-xs text-gray-500 mt-2">
-        <span className="text-green-600">✔</span> menandakan ada laporan
-      </p>
     </div>
   );
 };
