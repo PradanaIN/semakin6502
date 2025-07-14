@@ -1,7 +1,7 @@
 import { Search } from "lucide-react";
 import styles from "./SearchInput.module.css";
 
-export default function SearchInput({ value, onChange, placeholder }) {
+export default function SearchInput({ value, onChange, placeholder, ariaLabel }) {
   return (
     <div className={styles.wrapper}>
       <div className={styles.icon}>
@@ -12,6 +12,7 @@ export default function SearchInput({ value, onChange, placeholder }) {
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        aria-label={ariaLabel}
         className={styles.input}
       />
     </div>

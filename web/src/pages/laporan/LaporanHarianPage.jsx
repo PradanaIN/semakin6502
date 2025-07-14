@@ -125,6 +125,7 @@ export default function LaporanHarianPage() {
             setCurrentPage(1);
           }}
           placeholder="Cari..."
+          ariaLabel="Cari"
         />
       </div>
       {loading ? (
@@ -140,6 +141,7 @@ export default function LaporanHarianPage() {
                   setCurrentPage(1);
                 }}
                 placeholder="Cari laporan..."
+                ariaLabel="Cari laporan"
               />
             </div>
           </div>

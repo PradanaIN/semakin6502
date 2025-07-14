@@ -115,6 +115,7 @@ export default function TeamsPage() {
               setCurrentPage(1);
             }}
             placeholder="Cari tim..."
+            ariaLabel="Cari tim"
           />
         </div>
         <Button onClick={openCreate} className="add-button">

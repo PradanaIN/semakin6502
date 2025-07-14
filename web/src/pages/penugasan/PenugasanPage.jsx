@@ -152,6 +152,7 @@ export default function PenugasanPage() {
               setCurrentPage(1);
             }}
             placeholder="Cari penugasan..."
+            ariaLabel="Cari penugasan"
           />
           <select
             value={filterBulan}

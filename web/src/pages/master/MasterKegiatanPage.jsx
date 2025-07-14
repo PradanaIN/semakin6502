@@ -151,14 +151,15 @@ export default function MasterKegiatanPage() {
           </div>
 
           <div className="flex-1 max-w-sm">
-            <SearchInput
-              value={search}
-              onChange={(e) => {
-                setPage(1);
-                setSearch(e.target.value);
-              }}
-              placeholder="Cari kegiatan..."
-            />
+          <SearchInput
+            value={search}
+            onChange={(e) => {
+              setPage(1);
+              setSearch(e.target.value);
+            }}
+            placeholder="Cari kegiatan..."
+            ariaLabel="Cari kegiatan"
+          />
           </div>
 
         </div>

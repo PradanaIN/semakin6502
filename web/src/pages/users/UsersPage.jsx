@@ -141,6 +141,7 @@ export default function UsersPage() {
             setCurrentPage(1);
           }}
           placeholder="Cari pengguna..."
+          ariaLabel="Cari pengguna"
         />
         <select
             value={roleFilter}
