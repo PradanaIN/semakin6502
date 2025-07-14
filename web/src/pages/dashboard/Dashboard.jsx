@@ -60,7 +60,7 @@ const Dashboard = () => {
         const [dailyRes, weeklyArray, monthlyRes] = await Promise.all([
           axios.get("/monitoring/harian", { params: { tanggal, ...filters } }),
           Promise.all(weeklyPromises),
-          axios.get("/monitoring/bulanan", { params: { bulan: String(year), ...filters } }),
+          axios.get("/monitoring/bulanan", { params: { year: String(year), ...filters } }),
         ]);
 
         setDailyData(dailyRes.data);

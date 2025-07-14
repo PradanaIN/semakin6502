@@ -1,4 +1,4 @@
-import { Injectable, ForbiddenException } from "@nestjs/common";
+import { Injectable, ForbiddenException, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { ROLES } from "../common/roles.constants";
 import { CreateMasterKegiatanDto } from "./dto/create-master-kegiatan.dto";
