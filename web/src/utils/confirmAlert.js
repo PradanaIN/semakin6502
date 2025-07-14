@@ -3,6 +3,8 @@ import Swal from "sweetalert2";
 const baseOptions = {
   heightAuto: false,
   width: 400,
+  confirmButtonColor: "#2563eb",
+  cancelButtonColor: "#d1d5db",
 };
 
 /**
