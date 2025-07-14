@@ -47,8 +47,6 @@ export default function AppRoutes() {
         <Route path="master-kegiatan" element={<MasterKegiatanPage />} />
         <Route path="tugas-mingguan" element={<PenugasanPage />} />
         <Route path="tugas-mingguan/:id" element={<PenugasanDetailPage />} />
-        <Route path="tugas-tambahan" element={<KegiatanTambahanPage />} />
-        <Route path="tugas-tambahan/:id" element={<KegiatanTambahanDetailPage />} />
         <Route path="laporan-harian" element={<LaporanHarianPage />} />
         <Route path="kegiatan-tambahan" element={<KegiatanTambahanPage />} />
         <Route path="kegiatan-tambahan/:id" element={<KegiatanTambahanDetailPage />} />

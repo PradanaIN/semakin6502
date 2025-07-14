@@ -17,7 +17,7 @@ export default function Sidebar({ setMobileOpen }) {
   const mainLinks = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: true },
     { to: "/tugas-mingguan", label: "Tugas Mingguan", icon: ClipboardList, show: true },
-    { to: "/tugas-tambahan", label: "Tugas Tambahan", icon: FilePlus, show: true },
+    { to: "/kegiatan-tambahan", label: "Tugas Tambahan", icon: FilePlus, show: true },
     { to: "/laporan-harian", label: "Laporan Harian", icon: FileText, show: true },
   ];
 
