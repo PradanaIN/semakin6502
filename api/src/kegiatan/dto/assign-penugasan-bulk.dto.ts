@@ -1,4 +1,4 @@
-import { IsInt, IsString, IsArray, ArrayNotEmpty } from "class-validator";
+import { IsInt, IsString, IsArray, ArrayNotEmpty, IsOptional } from "class-validator";
 
 export class AssignPenugasanBulkDto {
   @IsInt()
@@ -19,4 +19,8 @@ export class AssignPenugasanBulkDto {
 
   @IsString()
   deskripsi?: string;
+
+  @IsOptional()
+  @IsString()
+  status?: string;
 }
