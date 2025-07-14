@@ -134,41 +134,25 @@ export class MonitoringService {
     const yr = parseInt(year, 10);
     if (isNaN(yr)) throw new BadRequestException("year tidak valid");
 
-    const start = new Date(yr, 0, 1);
-    const end = new Date(yr, 11, 31);
+    const where: any = { tahun: yr };
+    if (userId) where.pegawaiId = userId;
+    if (teamId) where.kegiatan = { teamId };
 
-    const harianWhere: any = { tanggal: { gte: start, lte: end } };
-    if (userId) harianWhere.pegawaiId = userId;
-    if (teamId)
-      harianWhere.penugasan = {
-        kegiatan: { teamId },
-      };
-
-    const harian = await this.prisma.laporanHarian.findMany({
-      where: harianWhere,
-      select: { tanggal: true },
+    const tugas = await this.prisma.penugasan.findMany({
+      where,
+      select: { bulan: true, status: true },
     });
 
-    const tambahanWhere: any = { tanggal: { gte: start, lte: end } };
-    if (userId) tambahanWhere.userId = userId;
-    if (teamId)
-      tambahanWhere.user = {
-        members: { some: { teamId } },
-      };
-
-    const tambahan = await this.prisma.kegiatanTambahan.findMany({
-      where: tambahanWhere,
-      select: { tanggal: true },
+    return MONTHS.map((bulan, idx) => {
+      const key = String(idx + 1);
+      const bulanTasks = tugas.filter((t: any) => t.bulan === key);
+      const total = bulanTasks.length;
+      const selesai = bulanTasks.filter(
+        (t: any) => t.status === STATUS.SELESAI_DIKERJAKAN,
+      ).length;
+      const persen = total ? Math.round((selesai / total) * 100) : 0;
+      return { bulan, persen };
     });
-
-    const monthsWithActivity = new Set(
-      [...harian, ...tambahan].map((r) => r.tanggal.getMonth()),
-    );
-
-    return MONTHS.map((name, idx) => ({
-      tanggal: name,
-      adaAktivitas: monthsWithActivity.has(idx),
-    }));
   }
 }
 
