@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
+import Table from "../../components/ui/Table";
 import SearchInput from "../../components/SearchInput";
 import { ROLES } from "../../utils/roles";
 
@@ -163,7 +164,7 @@ export default function UsersPage() {
         </button>
       </div>
 
-      <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
+      <Table>
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
             <th className="px-4 py-2">No</th>
@@ -215,7 +216,7 @@ export default function UsersPage() {
           ))
           )}
         </tbody>
-      </table>
+      </Table>
 
       <div className="flex items-center justify-between mt-4">
         <div className="space-x-2">
