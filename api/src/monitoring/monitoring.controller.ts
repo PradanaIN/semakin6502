@@ -12,6 +12,7 @@ import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { PrismaService } from "../prisma.service";
 import { Request } from "express";
+import { ROLES } from "../common/roles.constants";
 
 @Controller("monitoring")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -36,7 +37,7 @@ export class MonitoringController {
     let tId = teamId ? parseInt(teamId, 10) : undefined;
     let uId = userId ? parseInt(userId, 10) : undefined;
 
-    if (role !== "admin" && role !== "pimpinan") {
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
       const uid = user.userId;
       if (tId) {
         const member = await this.prisma.member.findFirst({
@@ -71,7 +72,7 @@ export class MonitoringController {
     let tId = teamId ? parseInt(teamId, 10) : undefined;
     let uId = userId ? parseInt(userId, 10) : undefined;
 
-    if (role !== "admin" && role !== "pimpinan") {
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
       const uid = user.userId;
       if (tId) {
         const member = await this.prisma.member.findFirst({
@@ -106,7 +107,7 @@ export class MonitoringController {
     let tId = teamId ? parseInt(teamId, 10) : undefined;
     let uId = userId ? parseInt(userId, 10) : undefined;
 
-    if (role !== "admin" && role !== "pimpinan") {
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
       const uid = user.userId;
       if (tId) {
         const member = await this.prisma.member.findFirst({

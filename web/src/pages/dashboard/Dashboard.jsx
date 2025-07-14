@@ -3,6 +3,7 @@ import StatsSummary from "../../components/dashboard/StatsSummary";
 import { useAuth } from "../auth/useAuth";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { ROLES } from "../../utils/roles";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -41,10 +42,10 @@ const Dashboard = () => {
 
       try {
         const filters = {};
-        if (user?.role === "anggota") {
+        if (user?.role === ROLES.ANGGOTA) {
           filters.userId = user.id;
         }
-        if (user?.role === "ketua" && user?.teamId) {
+        if (user?.role === ROLES.KETUA && user?.teamId) {
           filters.teamId = user.teamId;
         }
 

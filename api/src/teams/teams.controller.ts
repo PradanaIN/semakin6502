@@ -15,6 +15,7 @@ import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/guards/roles.decorator";
 import { Request } from "express";
+import { ROLES } from "../common/roles.constants";
 
 @Controller("teams")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -24,38 +25,38 @@ export class TeamsController {
   @Get()
   findAll(@Req() req: Request) {
     const { user } = req as any;
-    if (user.role === "admin") {
+    if (user.role === ROLES.ADMIN) {
       return this.teamsService.findAll();
     }
     return this.teamsService.findByLeader(user.userId);
   }
 
   @Get(":id")
-  @Roles("admin")
+  @Roles(ROLES.ADMIN)
   findOne(@Param("id", ParseIntPipe) id: number) {
     return this.teamsService.findOne(id);
   }
 
   @Post()
-  @Roles("admin")
+  @Roles(ROLES.ADMIN)
   create(@Body() body: any) {
     return this.teamsService.create(body);
   }
 
   @Put(":id")
-  @Roles("admin")
+  @Roles(ROLES.ADMIN)
   update(@Param("id", ParseIntPipe) id: number, @Body() body: any) {
     return this.teamsService.update(id, body);
   }
 
   @Delete(":id")
-  @Roles("admin")
+  @Roles(ROLES.ADMIN)
   remove(@Param("id", ParseIntPipe) id: number) {
     return this.teamsService.remove(id);
   }
 
   @Post(":id/members")
-  @Roles("admin")
+  @Roles(ROLES.ADMIN)
   addMember(@Param("id", ParseIntPipe) teamId: number, @Body() member: any) {
     return this.teamsService.addMember(teamId, member);
   }

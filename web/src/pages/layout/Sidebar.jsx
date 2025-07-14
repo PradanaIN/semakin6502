@@ -9,8 +9,9 @@ import {
   Users,
   UserCog,
 } from "lucide-react";
+import { ROLES } from "../../utils/roles";
 
-export default function Sidebar({ mobileOpen, setMobileOpen }) {
+export default function Sidebar({ setMobileOpen }) {
   const { user } = useAuth();
 
   const mainLinks = [
@@ -25,10 +26,10 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
       to: "/master-kegiatan",
       label: "Master Kegiatan",
       icon: List,
-      show: ["admin", "ketua"].includes(user?.role),
+      show: [ROLES.ADMIN, ROLES.KETUA].includes(user?.role),
     },
-    { to: "/users", label: "Kelola Pengguna", icon: Users, show: user?.role === "admin" },
-    { to: "/teams", label: "Kelola Tim", icon: UserCog, show: user?.role === "admin" },
+    { to: "/users", label: "Kelola Pengguna", icon: Users, show: user?.role === ROLES.ADMIN },
+    { to: "/teams", label: "Kelola Tim", icon: UserCog, show: user?.role === ROLES.ADMIN },
   ];
 
   const renderLink = (link) => {

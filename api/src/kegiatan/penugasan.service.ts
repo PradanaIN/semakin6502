@@ -4,6 +4,7 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
+import { ROLES } from "../common/roles.constants";
 
 @Injectable()
 export class PenugasanService {
@@ -26,9 +27,9 @@ export class PenugasanService {
     if (filter.bulan) opts.where.bulan = filter.bulan;
     if (filter.tahun) opts.where.tahun = filter.tahun;
 
-    if (role === "admin" || role === "pimpinan") {
+    if (role === ROLES.ADMIN || role === ROLES.PIMPINAN) {
       // admins and top management can see all assignments
-    } else if (role === "ketua") {
+    } else if (role === ROLES.KETUA) {
       // team leaders can see assignments in their teams as well as tasks
       // assigned specifically to them
       opts.where.OR = [
@@ -57,7 +58,7 @@ export class PenugasanService {
     if (!master) {
       throw new BadRequestException("master kegiatan tidak ditemukan");
     }
-    if (role !== "admin") {
+    if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
         where: { teamId: master.teamId, userId, is_leader: true },
       });
@@ -86,7 +87,7 @@ export class PenugasanService {
     if (!master) {
       throw new BadRequestException("master kegiatan tidak ditemukan");
     }
-    if (role !== "admin") {
+    if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
         where: { teamId: master.teamId, userId, is_leader: true },
       });
@@ -111,9 +112,9 @@ export class PenugasanService {
     role = role?.toLowerCase?.() || role;
     const where: any = { id };
 
-    if (role === "admin" || role === "pimpinan") {
+    if (role === ROLES.ADMIN || role === ROLES.PIMPINAN) {
       // no additional restrictions
-    } else if (role === "ketua") {
+    } else if (role === ROLES.KETUA) {
       where.OR = [
         {
           kegiatan: {
@@ -139,7 +140,7 @@ export class PenugasanService {
       include: { kegiatan: true },
     });
     if (!existing) throw new BadRequestException("not found");
-    if (role !== "admin") {
+    if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
         where: { teamId: existing.kegiatan.teamId, userId, is_leader: true },
       });
@@ -167,7 +168,7 @@ export class PenugasanService {
       include: { kegiatan: true },
     });
     if (!existing) throw new BadRequestException("not found");
-    if (role !== "admin") {
+    if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
         where: { teamId: existing.kegiatan.teamId, userId, is_leader: true },
       });
