@@ -53,7 +53,7 @@ npm install
 Buat file `.env` dan isi (nilai `JWT_SECRET` wajib diisi, server akan gagal start jika kosong):
 ```
 DATABASE_URL="mysql://root:password@localhost:3306/semakin_6502"
-JWT_SECRET="supersecretjwtkey"
+JWT_SECRET="your_jwt_secret_here"  # wajib diisi
 ```
 Jika `JWT_SECRET` tidak diatur, aplikasi akan langsung keluar dengan error.
 
