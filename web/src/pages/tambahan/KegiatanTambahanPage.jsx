@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { Plus, Eye, Pencil, Trash2 } from "lucide-react";
+import Table from "../../components/ui/Table";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { STATUS } from "../../utils/status";
@@ -124,7 +125,7 @@ export default function KegiatanTambahanPage() {
         </button>
       </div>
 
-      <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
+      <Table>
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
             <th className="px-4 py-2">No</th>
@@ -177,10 +178,10 @@ export default function KegiatanTambahanPage() {
                   </button>
                 </td>
               </tr>
-            ))
+          ))
           )}
         </tbody>
-      </table>
+      </Table>
 
       {showForm && (
         <Modal

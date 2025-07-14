@@ -1,11 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Pencil, Plus, Trash2, Search } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
+import Table from "../../components/ui/Table";
 import { ROLES } from "../../utils/roles";
+import SearchInput from "../../components/SearchInput";
 
 export default function MasterKegiatanPage() {
   const { user } = useAuth();
@@ -147,18 +149,13 @@ export default function MasterKegiatanPage() {
             </select>
           </div>
 
-          <div className="relative flex-1 max-w-sm">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={16} className="text-gray-400 dark:text-gray-300" />
-            </div>
-            <input
-              type="text"
+          <div className="flex-1 max-w-sm">
+            <SearchInput
               value={search}
               onChange={(e) => {
                 setPage(1);
                 setSearch(e.target.value);
               }}
-              className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="Cari kegiatan..."
             />
           </div>
@@ -177,7 +174,7 @@ export default function MasterKegiatanPage() {
 
       </div>
 
-      <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
+      <Table>
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
             <th className="px-4 py-2">No</th>
@@ -230,7 +227,7 @@ export default function MasterKegiatanPage() {
           ))
           )}
         </tbody>
-      </table>
+      </Table>
 
       <div className="flex items-center justify-between mt-4">
         <div className="space-x-2">

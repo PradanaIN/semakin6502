@@ -2,12 +2,14 @@ import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "./useAuth";
 import { Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ identifier: "", password: "" });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { setToken, setUser } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
@@ -23,7 +25,7 @@ export default function LoginPage() {
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
       setError("");
-      window.location.href = "/dashboard";
+      navigate("/dashboard");
     } catch (err) {
       console.error("Login failed:", err?.response?.data || err.message);
       setError("Login gagal. Periksa data login Anda.");
