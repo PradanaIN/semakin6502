@@ -182,14 +182,14 @@ export default function PenugasanPage() {
           <button
             type="button"
             onClick={fetchData}
-            className="px-3 py-[4px] bg-gray-200 dark:bg-gray-700 rounded"
+            className="icon-button bg-gray-200 dark:bg-gray-700"
             aria-label="Filter"
           >
             <FilterIcon size={16} />
           </button>
         </div>
         {canManage && (
-          <Button onClick={openCreate} className="flex items-center gap-2">
+          <Button onClick={openCreate} className="add-button">
             <Plus size={16} />
             <span className="hidden sm:inline">Tambah Penugasan</span>
           </Button>

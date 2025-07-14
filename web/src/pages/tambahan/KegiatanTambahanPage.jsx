@@ -119,7 +119,7 @@ export default function KegiatanTambahanPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-xl font-semibold">Kegiatan Tambahan</h1>
-        <Button onClick={openCreate} className="flex items-center gap-2">
+        <Button onClick={openCreate} className="add-button">
           <Plus size={16} /> Tambah
         </Button>
       </div>
