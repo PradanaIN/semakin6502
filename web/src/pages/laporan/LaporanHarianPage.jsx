@@ -117,7 +117,7 @@ export default function LaporanHarianPage() {
               setTanggal(e.target.value);
               setCurrentPage(1);
             }}
-            className="border rounded px-3 py-1 bg-white dark:bg-gray-700"
+            className="form-input"
           />
         </div>
         <SearchInput
@@ -301,7 +301,7 @@ export default function LaporanHarianPage() {
                   onChange={(e) =>
                     setForm({ ...form, catatan: e.target.value })
                   }
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                  className="form-input"
                 />
               </div>
             </div>

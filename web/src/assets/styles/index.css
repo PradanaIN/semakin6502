@@ -10,4 +10,8 @@
   .add-button {
     @apply flex items-center gap-2;
   }
+
+  .form-input {
+    @apply w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200;
+  }
 }

@@ -182,7 +182,7 @@ export default function PenugasanPage() {
               setFilterTahun(parseInt(e.target.value, 10));
               setCurrentPage(1);
             }}
-            className="w-20 border rounded px-2 py-[4px] bg-white dark:bg-gray-700 dark:text-gray-200"
+            className="form-input"
           />
           <button
             type="button"
@@ -359,7 +359,7 @@ export default function PenugasanPage() {
                 id="deskripsi"
                 value={form.deskripsi}
                 onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                className="form-input"
               />
               </div>
               <div className="grid grid-cols-3 gap-2">

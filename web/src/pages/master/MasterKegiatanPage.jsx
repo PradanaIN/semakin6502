@@ -310,7 +310,7 @@ export default function MasterKegiatanPage() {
                 onChange={(e) =>
                   setForm({ ...form, deskripsi: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                className="form-input"
               />
               </div>
             <div className="flex justify-end space-x-2 pt-2">

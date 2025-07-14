@@ -223,7 +223,7 @@ export default function KegiatanTambahanDetailPage() {
               id="deskripsi"
               value={form.deskripsi}
               onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
-              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              className="form-input"
             />
           </div>
           <div>
