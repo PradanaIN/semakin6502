@@ -164,13 +164,10 @@ export default function MasterKegiatanPage() {
         </div>
 
         <div>
-          <button
-            onClick={openCreate}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-          >
+          <Button onClick={openCreate} className="flex items-center gap-2">
             <Plus size={16} />
             <span className="hidden sm:inline">Tambah Kegiatan</span>
-          </button>
+          </Button>
         </div>
 
       </div>
@@ -211,20 +208,22 @@ export default function MasterKegiatanPage() {
                 {!item.deskripsi ? "-" : item.deskripsi}
               </th>
               <td className="px-4 py-2 space-x-2">
-                <button
+                <Button
                   onClick={() => openEdit(item)}
-                  className="p-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                  variant="warning"
+                  icon
                   aria-label="Edit"
                 >
                   <Pencil size={16} />
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => deleteItem(item)}
-                  className="p-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                  variant="danger"
+                  icon
                   aria-label="Hapus"
                 >
                   <Trash2 size={16} />
-                </button>
+                </Button>
               </td>
             </tr>
           ))

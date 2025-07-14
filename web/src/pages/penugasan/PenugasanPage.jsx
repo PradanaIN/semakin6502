@@ -189,13 +189,10 @@ export default function PenugasanPage() {
           </button>
         </div>
         {canManage && (
-          <button
-            onClick={openCreate}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-          >
+          <Button onClick={openCreate} className="flex items-center gap-2">
             <Plus size={16} />
             <span className="hidden sm:inline">Tambah Penugasan</span>
-          </button>
+          </Button>
         )}
       </div>
 
@@ -236,13 +233,14 @@ export default function PenugasanPage() {
                     <StatusBadge status={p.status} />
                   </td>
                   <td className="px-2 py-2">
-                    <button
+                    <Button
                       onClick={() => navigate(`/tugas-mingguan/${p.id}`)}
-                      className="text-blue-600 hover:underline text-sm"
+                      variant="icon"
+                      icon
                       aria-label="Detail"
                     >
                       <Eye size={16} />
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))

@@ -157,13 +157,10 @@ export default function UsersPage() {
             ))}
           </select>
         </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-        >
+        <Button onClick={openCreate} className="flex items-center gap-2">
           <Plus size={16} />
           <span className="hidden sm:inline">Tambah Pengguna</span>
-        </button>
+        </Button>
       </div>
 
       <Table>
@@ -201,20 +198,22 @@ export default function UsersPage() {
               </td>
               <td className="px-4 py-2 capitalize text-center">{u.role}</td>
               <td className="px-4 py-2 space-x-2 text-center">
-                <button
+                <Button
                   onClick={() => openEdit(u)}
-                  className="p-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                  variant="warning"
+                  icon
                   aria-label="Edit"
                 >
                   <Pencil size={16} />
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => deleteUser(u.id)}
-                  className="p-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                  variant="danger"
+                  icon
                   aria-label="Hapus"
                 >
                   <Trash2 size={16} />
-                </button>
+                </Button>
               </td>
             </tr>
           ))
