@@ -251,7 +251,6 @@ export default function KegiatanTambahanPage() {
                   </option>
                 </select>
               </div>
-            </div>
             <div className="flex justify-end space-x-2 pt-2">
               <button
                 onClick={() => {
