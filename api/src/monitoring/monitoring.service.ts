@@ -1,10 +1,9 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class MonitoringService {
+  constructor(private readonly prisma: PrismaService) {}
   async harian(tanggal: string, teamId?: number, userId?: number) {
     const base = new Date(tanggal);
     if (isNaN(base.getTime()))
@@ -20,22 +19,24 @@ export class MonitoringService {
     if (userId) where.pegawaiId = userId;
     if (teamId)
       where.penugasan = {
-        kegiatan: { teamId }
+        kegiatan: { teamId },
       };
 
-    const records = await prisma.laporanHarian.findMany({
+    const records = await this.prisma.laporanHarian.findMany({
       where,
       select: { tanggal: true },
     });
 
     const exists = new Set(
-      records.map((r: { tanggal: Date }) => r.tanggal.toISOString().slice(0, 10))
+      records.map((r: { tanggal: Date }) =>
+        r.tanggal.toISOString().slice(0, 10),
+      ),
     );
 
     const result = [] as { tanggal: string; adaKegiatan: boolean }[];
     for (let d = 1; d <= end.getDate(); d++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
-        d
+        d,
       ).padStart(2, "0")}`;
       result.push({ tanggal: dateStr, adaKegiatan: exists.has(dateStr) });
     }
@@ -57,7 +58,7 @@ export class MonitoringService {
         kegiatan: { teamId },
       };
 
-    const records = await prisma.laporanHarian.findMany({
+    const records = await this.prisma.laporanHarian.findMany({
       where,
       select: { tanggal: true, status: true },
     });
@@ -140,7 +141,7 @@ export class MonitoringService {
         kegiatan: { teamId },
       };
 
-    const harian = await prisma.laporanHarian.findMany({
+    const harian = await this.prisma.laporanHarian.findMany({
       where: harianWhere,
       select: { tanggal: true },
     });
@@ -152,13 +153,13 @@ export class MonitoringService {
         members: { some: { teamId } },
       };
 
-    const tambahan = await prisma.kegiatanTambahan.findMany({
+    const tambahan = await this.prisma.kegiatanTambahan.findMany({
       where: tambahanWhere,
       select: { tanggal: true },
     });
 
     const monthsWithActivity = new Set(
-      [...harian, ...tambahan].map((r) => r.tanggal.getMonth())
+      [...harian, ...tambahan].map((r) => r.tanggal.getMonth()),
     );
 
     const monthNames = [
