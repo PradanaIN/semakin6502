@@ -23,10 +23,11 @@ import { ROLES } from "../../utils/roles";
 import months from "../../utils/months";
 import SearchInput from "../../components/SearchInput";
 
-
 export default function PenugasanPage() {
   const { user } = useAuth();
-  const canManage = [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role);
+  const canManage = [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(
+    user?.role
+  );
   const navigate = useNavigate();
   const [penugasan, setPenugasan] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
@@ -48,8 +49,8 @@ export default function PenugasanPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const fetchData = useCallback(async () => {
-      try {
-        setLoading(true);
+    try {
+      setLoading(true);
       const penugasanReq = axios.get(
         `/penugasan?bulan=${filterBulan || ""}&tahun=${filterTahun || ""}`
       );
@@ -130,24 +131,20 @@ export default function PenugasanPage() {
     }
   };
 
-
   const filtered = useMemo(() => {
     return penugasan.filter((p) => {
-      const text = `${p.kegiatan?.nama_kegiatan || ""} ${p.pegawai?.nama || ""}`.toLowerCase();
+      const text = `${p.kegiatan?.nama_kegiatan || ""} ${
+        p.pegawai?.nama || ""
+      }`.toLowerCase();
       return text.includes(search.toLowerCase());
     });
   }, [penugasan, search]);
 
   const paginated = useMemo(
-    () =>
-      filtered.slice(
-        (currentPage - 1) * pageSize,
-        currentPage * pageSize
-      ),
+    () => filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize),
     [filtered, currentPage, pageSize]
   );
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
-
 
   return (
     <div className="space-y-6">
@@ -172,7 +169,9 @@ export default function PenugasanPage() {
           >
             <option value="">Bulan</option>
             {months.map((m, i) => (
-              <option key={i + 1} value={i + 1}>{m}</option>
+              <option key={i + 1} value={i + 1}>
+                {m}
+              </option>
             ))}
           </select>
           <input
@@ -182,7 +181,7 @@ export default function PenugasanPage() {
               setFilterTahun(parseInt(e.target.value, 10));
               setCurrentPage(1);
             }}
-            className="form-input w-24"
+            className="form-input w-24 px-2 py-[4px]"
           />
           <button
             type="button"
@@ -228,27 +227,36 @@ export default function PenugasanPage() {
             </tr>
           ) : (
             paginated.map((p, idx) => (
-                <tr key={p.id} className="border-t dark:border-gray-700 text-center">
-                  <td className="px-1 py-1 sm:px-2 sm:py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
-                  <td className={tableStyles.cell}>{p.kegiatan?.nama_kegiatan || "-"}</td>
-                  <td className={tableStyles.cell}>{p.kegiatan?.team?.nama_tim || "-"}</td>
-                  <td className={tableStyles.cell}>{p.pegawai?.nama || "-"}</td>
-                  <td className={tableStyles.cell}>{p.minggu}</td>
-                  <td className={tableStyles.cell}>
-                    <StatusBadge status={p.status} />
-                  </td>
-                  <td className="px-1 py-1 sm:px-2 sm:py-2">
-                    <Button
-                      onClick={() => navigate(`/tugas-mingguan/${p.id}`)}
-                      variant="icon"
-                      icon
-                      aria-label="Detail"
-                    >
-                      <Eye size={16} />
-                    </Button>
-                  </td>
-                </tr>
-              ))
+              <tr
+                key={p.id}
+                className="border-t dark:border-gray-700 text-center"
+              >
+                <td className="px-1 py-1 sm:px-2 sm:py-2">
+                  {(currentPage - 1) * pageSize + idx + 1}
+                </td>
+                <td className={tableStyles.cell}>
+                  {p.kegiatan?.nama_kegiatan || "-"}
+                </td>
+                <td className={tableStyles.cell}>
+                  {p.kegiatan?.team?.nama_tim || "-"}
+                </td>
+                <td className={tableStyles.cell}>{p.pegawai?.nama || "-"}</td>
+                <td className={tableStyles.cell}>{p.minggu}</td>
+                <td className={tableStyles.cell}>
+                  <StatusBadge status={p.status} />
+                </td>
+                <td className="px-1 py-1 sm:px-2 sm:py-2">
+                  <Button
+                    onClick={() => navigate(`/tugas-mingguan/${p.id}`)}
+                    variant="icon"
+                    icon
+                    aria-label="Detail"
+                  >
+                    <Eye size={16} />
+                  </Button>
+                </td>
+              </tr>
+            ))
           )}
         </tbody>
       </Table>
@@ -264,7 +272,11 @@ export default function PenugasanPage() {
             className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
           >
             {[5, 10, 25].map((n) => (
-              <option key={n} value={n} className="text-gray-900 dark:text-gray-200">
+              <option
+                key={n}
+                value={n}
+                className="text-gray-900 dark:text-gray-200"
+              >
                 {n}
               </option>
             ))}
@@ -284,34 +296,43 @@ export default function PenugasanPage() {
           }}
           titleId="penugasan-form-title"
         >
-          <h2 id="penugasan-form-title" className="text-xl font-semibold mb-2">Tambah Penugasan</h2>
+          <h2 id="penugasan-form-title" className="text-xl font-semibold mb-2">
+            Tambah Penugasan
+          </h2>
           <div className="space-y-2">
             <div>
               <Label htmlFor="kegiatanId">
                 Kegiatan <span className="text-red-500">*</span>
               </Label>
-                <Select
-                  inputId="kegiatanId"
-                  classNamePrefix="react-select"
-                  className="mb-1"
-                  styles={selectStyles}
-                  menuPortalTarget={document.body}
-                  options={kegiatan.map((k) => ({ value: k.id, label: k.nama_kegiatan }))}
-                  value={
-                    form.kegiatanId
-                      ? {
-                          value: form.kegiatanId,
-                          label: kegiatan.find((k) => k.id === form.kegiatanId)?.nama_kegiatan,
-                        }
-                      : null
-                  }
-                  onChange={(o) =>
-                    setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })
-                  }
-                  placeholder="Pilih kegiatan..."
-                  isSearchable
-                />
-              </div>
+              <Select
+                inputId="kegiatanId"
+                classNamePrefix="react-select"
+                className="mb-1"
+                styles={selectStyles}
+                menuPortalTarget={document.body}
+                options={kegiatan.map((k) => ({
+                  value: k.id,
+                  label: k.nama_kegiatan,
+                }))}
+                value={
+                  form.kegiatanId
+                    ? {
+                        value: form.kegiatanId,
+                        label: kegiatan.find((k) => k.id === form.kegiatanId)
+                          ?.nama_kegiatan,
+                      }
+                    : null
+                }
+                onChange={(o) =>
+                  setForm({
+                    ...form,
+                    kegiatanId: o ? parseInt(o.value, 10) : "",
+                  })
+                }
+                placeholder="Pilih kegiatan..."
+                isSearchable
+              />
+            </div>
             <div>
               <Label htmlFor="pegawaiIds">
                 Pegawai <span className="text-red-500">*</span>
@@ -326,88 +347,100 @@ export default function PenugasanPage() {
                 options={users
                   .filter((u) => u.role !== ROLES.ADMIN)
                   .map((u) => ({ value: u.id, label: `${u.nama}` }))}
-                  value={form.pegawaiIds
-                    .map((id) => {
-                      const u = users.find((x) => x.id === id);
-                      return u ? { value: u.id, label: u.nama } : null;
-                    })
-                    .filter(Boolean)}
-                  onChange={(vals) =>
-                    setForm({
-                      ...form,
-                      pegawaiIds: vals ? vals.map((v) => parseInt(v.value, 10)) : [],
-                    })
-                  }
-                  placeholder="Pilih pegawai..."
-                  isSearchable
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setForm({
-                      ...form,
-                      pegawaiIds: users.filter((u) => u.role !== ROLES.ADMIN).map((u) => u.id),
-                    })
-                  }
-                  className="mt-1 px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded"
-                >
-                  Pilih Semua
-                </button>
-              </div>
+                value={form.pegawaiIds
+                  .map((id) => {
+                    const u = users.find((x) => x.id === id);
+                    return u ? { value: u.id, label: u.nama } : null;
+                  })
+                  .filter(Boolean)}
+                onChange={(vals) =>
+                  setForm({
+                    ...form,
+                    pegawaiIds: vals
+                      ? vals.map((v) => parseInt(v.value, 10))
+                      : [],
+                  })
+                }
+                placeholder="Pilih pegawai..."
+                isSearchable
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  setForm({
+                    ...form,
+                    pegawaiIds: users
+                      .filter((u) => u.role !== ROLES.ADMIN)
+                      .map((u) => u.id),
+                  })
+                }
+                className="mt-1 px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded"
+              >
+                Pilih Semua
+              </button>
+            </div>
             <div>
               <Label htmlFor="deskripsi">Deskripsi</Label>
               <textarea
                 id="deskripsi"
                 value={form.deskripsi}
-                onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, deskripsi: e.target.value })
+                }
                 className="form-input"
               />
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <Label htmlFor="minggu">Minggu</Label>
+                <Input
+                  id="minggu"
+                  type="number"
+                  value={form.minggu}
+                  min="1"
+                  max="5"
+                  onChange={(e) =>
+                    setForm({ ...form, minggu: parseInt(e.target.value, 10) })
+                  }
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                />
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <Label htmlFor="minggu">Minggu</Label>
-                  <Input
-                    id="minggu"
-                    type="number"
-                    value={form.minggu}
-                    min="1"
-                    max="5"
-                    onChange={(e) => setForm({ ...form, minggu: parseInt(e.target.value, 10) })}
-                    className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="bulan">Bulan</Label>
-                  <select
-                    id="bulan"
-                    value={form.bulan}
-                    onChange={(e) => setForm({ ...form, bulan: parseInt(e.target.value, 10) })}
-                    className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                  >
-                    {months.map((m, i) => (
-                      <option key={i + 1} value={i + 1}>
-                        {m}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <Label htmlFor="tahun">Tahun</Label>
-                  <Input
-                    id="tahun"
-                    type="number"
-                    value={form.tahun}
-                    onChange={(e) => setForm({ ...form, tahun: parseInt(e.target.value, 10) })}
-                    className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                  />
-                </div>
+              <div>
+                <Label htmlFor="bulan">Bulan</Label>
+                <select
+                  id="bulan"
+                  value={form.bulan}
+                  onChange={(e) =>
+                    setForm({ ...form, bulan: parseInt(e.target.value, 10) })
+                  }
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                >
+                  {months.map((m, i) => (
+                    <option key={i + 1} value={i + 1}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
               </div>
+              <div>
+                <Label htmlFor="tahun">Tahun</Label>
+                <Input
+                  id="tahun"
+                  type="number"
+                  value={form.tahun}
+                  onChange={(e) =>
+                    setForm({ ...form, tahun: parseInt(e.target.value, 10) })
+                  }
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                />
+              </div>
+            </div>
             <div className="flex justify-end space-x-2 pt-2">
               <Button
                 variant="secondary"
                 onClick={async () => {
                   const r = await confirmCancel(
-                    "Batalkan penambahan penugasan?",
+                    "Batalkan penambahan penugasan?"
                   );
                   if (r.isConfirmed) setShowForm(false);
                 }}

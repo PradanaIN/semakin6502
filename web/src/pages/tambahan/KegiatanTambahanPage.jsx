@@ -1,10 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import {
-  showSuccess,
-  showError,
-  confirmDelete,
-} from "../../utils/alerts";
+import { showSuccess, showError, confirmDelete } from "../../utils/alerts";
 import { Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import Table from "../../components/ui/Table";
 import tableStyles from "../../components/ui/Table.module.css";
@@ -19,7 +15,6 @@ import Modal from "../../components/ui/Modal";
 import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
 import months from "../../utils/months";
-
 
 export default function KegiatanTambahanPage() {
   const [items, setItems] = useState([]);
@@ -121,13 +116,19 @@ export default function KegiatanTambahanPage() {
 
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
-      const text = `${item.nama} ${item.kegiatan?.team?.nama_tim || ""}`.toLowerCase();
+      const text = `${item.nama} ${
+        item.kegiatan?.team?.nama_tim || ""
+      }`.toLowerCase();
       const matchesSearch = text.includes(search.toLowerCase());
       const date = new Date(item.tanggal);
       const bulan = date.getMonth() + 1;
       const tahun = date.getFullYear();
-      const matchBulan = filterBulan ? bulan === parseInt(filterBulan, 10) : true;
-      const matchTahun = filterTahun ? tahun === parseInt(filterTahun, 10) : true;
+      const matchBulan = filterBulan
+        ? bulan === parseInt(filterBulan, 10)
+        : true;
+      const matchTahun = filterTahun
+        ? tahun === parseInt(filterTahun, 10)
+        : true;
       return matchesSearch && matchBulan && matchTahun;
     });
   }, [items, search, filterBulan, filterTahun]);
@@ -135,7 +136,6 @@ export default function KegiatanTambahanPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-xl font-semibold">Kegiatan Tambahan</h1>
         <Button onClick={openCreate} className="add-button">
           <Plus size={16} /> Tambah
         </Button>
@@ -194,11 +194,18 @@ export default function KegiatanTambahanPage() {
             </tr>
           ) : (
             filteredItems.map((item, idx) => (
-              <tr key={item.id} className="border-t dark:border-gray-700 text-center">
+              <tr
+                key={item.id}
+                className="border-t dark:border-gray-700 text-center"
+              >
                 <td className={tableStyles.cell}>{idx + 1}</td>
                 <td className={tableStyles.cell}>{item.nama}</td>
-                <td className={tableStyles.cell}>{item.kegiatan.team?.nama_tim || '-'}</td>
-                <td className={tableStyles.cell}>{item.tanggal.slice(0,10)}</td>
+                <td className={tableStyles.cell}>
+                  {item.kegiatan.team?.nama_tim || "-"}
+                </td>
+                <td className={tableStyles.cell}>
+                  {item.tanggal.slice(0, 10)}
+                </td>
                 <td className={tableStyles.cell}>
                   <StatusBadge status={item.status} />
                 </td>
@@ -228,7 +235,7 @@ export default function KegiatanTambahanPage() {
                   </Button>
                 </td>
               </tr>
-          ))
+            ))
           )}
         </tbody>
       </Table>
@@ -241,7 +248,10 @@ export default function KegiatanTambahanPage() {
           }}
           titleId="kegiatan-tambahan-modal-title"
         >
-          <h2 id="kegiatan-tambahan-modal-title" className="text-xl font-semibold mb-2">
+          <h2
+            id="kegiatan-tambahan-modal-title"
+            className="text-xl font-semibold mb-2"
+          >
             {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}
           </h2>
           <div className="space-y-2">
@@ -251,58 +261,74 @@ export default function KegiatanTambahanPage() {
                 inputId="kegiatan"
                 classNamePrefix="react-select"
                 styles={selectStyles}
-                  menuPortalTarget={document.body}
-                  options={kegiatan.map((k) => ({ value: k.id, label: k.nama_kegiatan }))}
-                  value={
-                    form.kegiatanId
-                      ? { value: form.kegiatanId, label: kegiatan.find((k) => k.id === form.kegiatanId)?.nama_kegiatan }
-                      : null
-                  }
-                  onChange={(o) => setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })}
-                  placeholder="Pilih kegiatan..."
-                />
-                {form.kegiatanId && (
-                  <p className="text-sm mt-1 text-gray-600 dark:text-gray-300">
-                    Tim: {kegiatan.find((k) => k.id === form.kegiatanId)?.team?.nama_tim || "-"}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="tanggal">Tanggal</Label>
-                <Input
-                  id="tanggal"
-                  type="date"
-                  value={form.tanggal}
-                  onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                />
-              </div>
-              <div>
-                <Label htmlFor="deskripsi">Deskripsi</Label>
-                <textarea
-                  id="deskripsi"
-                  value={form.deskripsi}
-                  onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
-                  className="form-input"
-                />
-              </div>
-              <div>
-                <Label htmlFor="status">Status</Label>
-                <select
-                  id="status"
-                  value={form.status}
-                  onChange={(e) => setForm({ ...form, status: e.target.value })}
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                >
-                  <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
-                  <option value={STATUS.SEDANG_DIKERJAKAN}>
-                    {STATUS.SEDANG_DIKERJAKAN}
-                  </option>
-                  <option value={STATUS.SELESAI_DIKERJAKAN}>
-                    {STATUS.SELESAI_DIKERJAKAN}
-                  </option>
-                </select>
-              </div>
+                menuPortalTarget={document.body}
+                options={kegiatan.map((k) => ({
+                  value: k.id,
+                  label: k.nama_kegiatan,
+                }))}
+                value={
+                  form.kegiatanId
+                    ? {
+                        value: form.kegiatanId,
+                        label: kegiatan.find((k) => k.id === form.kegiatanId)
+                          ?.nama_kegiatan,
+                      }
+                    : null
+                }
+                onChange={(o) =>
+                  setForm({
+                    ...form,
+                    kegiatanId: o ? parseInt(o.value, 10) : "",
+                  })
+                }
+                placeholder="Pilih kegiatan..."
+              />
+              {form.kegiatanId && (
+                <p className="text-sm mt-1 text-gray-600 dark:text-gray-300">
+                  Tim:{" "}
+                  {kegiatan.find((k) => k.id === form.kegiatanId)?.team
+                    ?.nama_tim || "-"}
+                </p>
+              )}
+            </div>
+            <div>
+              <Label htmlFor="tanggal">Tanggal</Label>
+              <Input
+                id="tanggal"
+                type="date"
+                value={form.tanggal}
+                onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              />
+            </div>
+            <div>
+              <Label htmlFor="deskripsi">Deskripsi</Label>
+              <textarea
+                id="deskripsi"
+                value={form.deskripsi}
+                onChange={(e) =>
+                  setForm({ ...form, deskripsi: e.target.value })
+                }
+                className="form-input"
+              />
+            </div>
+            <div>
+              <Label htmlFor="status">Status</Label>
+              <select
+                id="status"
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value })}
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              >
+                <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
+                <option value={STATUS.SEDANG_DIKERJAKAN}>
+                  {STATUS.SEDANG_DIKERJAKAN}
+                </option>
+                <option value={STATUS.SELESAI_DIKERJAKAN}>
+                  {STATUS.SELESAI_DIKERJAKAN}
+                </option>
+              </select>
+            </div>
             <div className="flex justify-end space-x-2 pt-2">
               <Button
                 variant="secondary"
