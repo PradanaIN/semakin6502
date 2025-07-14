@@ -1,0 +1,3 @@
+.label {
+  @apply block text-sm mb-1;
+}

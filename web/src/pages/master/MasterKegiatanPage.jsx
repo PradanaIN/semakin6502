@@ -12,8 +12,10 @@ import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
+import tableStyles from "../../components/ui/Table.module.css";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import Label from "../../components/ui/Label";
 import { ROLES } from "../../utils/roles";
 import SearchInput from "../../components/SearchInput";
 
@@ -176,12 +178,12 @@ export default function MasterKegiatanPage() {
 
       <Table>
         <thead>
-          <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-            <th className="px-2 py-1 sm:px-4 sm:py-2">No</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Tim</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Nama Kegiatan</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Deskripsi</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Aksi</th>
+          <tr className={tableStyles.headerRow}>
+            <th className={tableStyles.cell}>No</th>
+            <th className={tableStyles.cell}>Tim</th>
+            <th className={tableStyles.cell}>Nama Kegiatan</th>
+            <th className={tableStyles.cell}>Deskripsi</th>
+            <th className={tableStyles.cell}>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -203,15 +205,15 @@ export default function MasterKegiatanPage() {
               key={item.id}
               className="border-t dark:border-gray-700 text-center"
             >
-              <td className="px-2 py-1 sm:px-4 sm:py-2">{(page - 1) * perPage + idx + 1}</td>
-              <td className="px-2 py-1 sm:px-4 sm:py-2">
+              <td className={tableStyles.cell}>{(page - 1) * perPage + idx + 1}</td>
+              <td className={tableStyles.cell}>
                 {item.team?.nama_tim || item.teamId}
               </td>
-              <td className="px-2 py-1 sm:px-4 sm:py-2">{item.nama_kegiatan}</td>
-              <th className="px-2 py-1 sm:px-4 sm:py-2">
+              <td className={tableStyles.cell}>{item.nama_kegiatan}</td>
+              <th className={tableStyles.cell}>
                 {!item.deskripsi ? "-" : item.deskripsi}
               </th>
-              <td className="px-2 py-1 sm:px-4 sm:py-2 space-x-2">
+              <td className={`${tableStyles.cell} space-x-2`}>
                 <Button
                   onClick={() => openEdit(item)}
                   variant="warning"
@@ -267,9 +269,9 @@ export default function MasterKegiatanPage() {
           </h2>
           <div className="space-y-2">
             <div>
-              <label htmlFor="teamId" className="block text-sm mb-1">
+              <Label htmlFor="teamId">
                 Tim <span className="text-red-500">*</span>
-              </label>
+              </Label>
               <select
                 id="teamId"
                 value={form.teamId}
@@ -287,9 +289,9 @@ export default function MasterKegiatanPage() {
                 </select>
               </div>
             <div>
-              <label htmlFor="namaKegiatan" className="block text-sm mb-1">
+              <Label htmlFor="namaKegiatan">
                 Nama Kegiatan <span className="text-red-500">*</span>
-              </label>
+              </Label>
               <Input
                 id="namaKegiatan"
                 type="text"
@@ -301,7 +303,7 @@ export default function MasterKegiatanPage() {
               />
               </div>
             <div>
-              <label htmlFor="deskripsi" className="block text-sm mb-1">Deskripsi</label>
+              <Label htmlFor="deskripsi">Deskripsi</Label>
               <textarea
                 id="deskripsi"
                 value={form.deskripsi}

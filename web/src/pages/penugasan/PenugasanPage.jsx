@@ -15,8 +15,10 @@ import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
+import tableStyles from "../../components/ui/Table.module.css";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import Label from "../../components/ui/Label";
 import { ROLES } from "../../utils/roles";
 import months from "../../utils/months";
 import SearchInput from "../../components/SearchInput";
@@ -201,13 +203,13 @@ export default function PenugasanPage() {
 
       <Table>
         <thead>
-          <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
+          <tr className={tableStyles.headerRow}>
             <th className="px-1 py-1 sm:px-2 sm:py-2">No</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Kegiatan</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Tim</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Pegawai</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Minggu</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Status</th>
+            <th className={tableStyles.cell}>Kegiatan</th>
+            <th className={tableStyles.cell}>Tim</th>
+            <th className={tableStyles.cell}>Pegawai</th>
+            <th className={tableStyles.cell}>Minggu</th>
+            <th className={tableStyles.cell}>Status</th>
             <th className="px-1 py-1 sm:px-2 sm:py-2">Aksi</th>
           </tr>
         </thead>
@@ -228,11 +230,11 @@ export default function PenugasanPage() {
             paginated.map((p, idx) => (
                 <tr key={p.id} className="border-t dark:border-gray-700 text-center">
                   <td className="px-1 py-1 sm:px-2 sm:py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
-                  <td className="px-2 py-1 sm:px-4 sm:py-2">{p.kegiatan?.nama_kegiatan || "-"}</td>
-                  <td className="px-2 py-1 sm:px-4 sm:py-2">{p.kegiatan?.team?.nama_tim || "-"}</td>
-                  <td className="px-2 py-1 sm:px-4 sm:py-2">{p.pegawai?.nama || "-"}</td>
-                  <td className="px-2 py-1 sm:px-4 sm:py-2">{p.minggu}</td>
-                  <td className="px-2 py-1 sm:px-4 sm:py-2">
+                  <td className={tableStyles.cell}>{p.kegiatan?.nama_kegiatan || "-"}</td>
+                  <td className={tableStyles.cell}>{p.kegiatan?.team?.nama_tim || "-"}</td>
+                  <td className={tableStyles.cell}>{p.pegawai?.nama || "-"}</td>
+                  <td className={tableStyles.cell}>{p.minggu}</td>
+                  <td className={tableStyles.cell}>
                     <StatusBadge status={p.status} />
                   </td>
                   <td className="px-1 py-1 sm:px-2 sm:py-2">
@@ -284,9 +286,9 @@ export default function PenugasanPage() {
           <h2 className="text-xl font-semibold mb-2">Tambah Penugasan</h2>
           <div className="space-y-2">
             <div>
-              <label htmlFor="kegiatanId" className="block text-sm mb-1">
+              <Label htmlFor="kegiatanId">
                 Kegiatan <span className="text-red-500">*</span>
-              </label>
+              </Label>
                 <Select
                   inputId="kegiatanId"
                   classNamePrefix="react-select"
@@ -310,9 +312,9 @@ export default function PenugasanPage() {
                 />
               </div>
             <div>
-              <label htmlFor="pegawaiIds" className="block text-sm mb-1">
+              <Label htmlFor="pegawaiIds">
                 Pegawai <span className="text-red-500">*</span>
-              </label>
+              </Label>
               <Select
                 inputId="pegawaiIds"
                 isMulti
@@ -352,7 +354,7 @@ export default function PenugasanPage() {
                 </button>
               </div>
             <div>
-              <label htmlFor="deskripsi" className="block text-sm mb-1">Deskripsi</label>
+              <Label htmlFor="deskripsi">Deskripsi</Label>
               <textarea
                 id="deskripsi"
                 value={form.deskripsi}
@@ -362,7 +364,7 @@ export default function PenugasanPage() {
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label htmlFor="minggu" className="block text-sm mb-1">Minggu</label>
+                  <Label htmlFor="minggu">Minggu</Label>
                   <Input
                     id="minggu"
                     type="number"
@@ -374,7 +376,7 @@ export default function PenugasanPage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="bulan" className="block text-sm mb-1">Bulan</label>
+                  <Label htmlFor="bulan">Bulan</Label>
                   <select
                     id="bulan"
                     value={form.bulan}
@@ -389,7 +391,7 @@ export default function PenugasanPage() {
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="tahun" className="block text-sm mb-1">Tahun</label>
+                  <Label htmlFor="tahun">Tahun</Label>
                   <Input
                     id="tahun"
                     type="number"

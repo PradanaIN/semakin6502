@@ -9,8 +9,10 @@ import {
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
+import tableStyles from "../../components/ui/Table.module.css";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import Label from "../../components/ui/Label";
 import { STATUS } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
@@ -106,7 +108,7 @@ export default function LaporanHarianPage() {
     <div className="p-6 space-y-4">
       <div className="flex flex-wrap items-end gap-2">
         <div>
-          <label htmlFor="filterTanggal" className="block text-sm mb-1">Tanggal</label>
+          <Label htmlFor="filterTanggal">Tanggal</Label>
           <input
             id="filterTanggal"
             type="date"
@@ -148,24 +150,24 @@ export default function LaporanHarianPage() {
           <div className="overflow-x-auto">
           <Table>
             <thead>
-              <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-                <th className="px-2 py-1 sm:px-4 sm:py-2">No</th>
-                <th className="px-2 py-1 sm:px-4 sm:py-2">Tanggal</th>
-                <th className="px-2 py-1 sm:px-4 sm:py-2">Status</th>
-                <th className="px-2 py-1 sm:px-4 sm:py-2">Bukti</th>
-                <th className="px-2 py-1 sm:px-4 sm:py-2">Catatan</th>
-                <th className="px-2 py-1 sm:px-4 sm:py-2">Aksi</th>
+              <tr className={tableStyles.headerRow}>
+                <th className={tableStyles.cell}>No</th>
+                <th className={tableStyles.cell}>Tanggal</th>
+                <th className={tableStyles.cell}>Status</th>
+                <th className={tableStyles.cell}>Bukti</th>
+                <th className={tableStyles.cell}>Catatan</th>
+                <th className={tableStyles.cell}>Aksi</th>
               </tr>
             </thead>
             <tbody>
               {paginated.map((item, idx) => (
                 <tr key={item.id} className="border-t dark:border-gray-700 text-center">
-                  <td className="px-2 py-1 sm:px-4 sm:py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
-                  <td className="px-2 py-1 sm:px-4 sm:py-2">{item.tanggal.slice(0, 10)}</td>
-                  <td className="px-2 py-1 sm:px-4 sm:py-2">
+                  <td className={tableStyles.cell}>{(currentPage - 1) * pageSize + idx + 1}</td>
+                  <td className={tableStyles.cell}>{item.tanggal.slice(0, 10)}</td>
+                  <td className={tableStyles.cell}>
                     <StatusBadge status={item.status} />
                   </td>
-                  <td className="px-2 py-1 sm:px-4 sm:py-2">
+                  <td className={tableStyles.cell}>
                     {item.bukti_link ? (
                       <a
                         href={item.bukti_link}
@@ -179,8 +181,8 @@ export default function LaporanHarianPage() {
                       "-"
                     )}
                   </td>
-                  <td className="px-2 py-1 sm:px-4 sm:py-2">{item.catatan || "-"}</td>
-                  <td className="px-2 py-1 sm:px-4 sm:py-2 space-x-1">
+                  <td className={tableStyles.cell}>{item.catatan || "-"}</td>
+                  <td className={`${tableStyles.cell} space-x-1`}>
                     <Button
                       onClick={() => openEdit(item)}
                       variant="warning"
@@ -245,9 +247,9 @@ export default function LaporanHarianPage() {
             <h3 className="text-lg font-semibold">Edit Laporan Harian</h3>
             <div className="space-y-2">
               <div>
-                <label htmlFor="tanggal" className="block text-sm mb-1">
+                <Label htmlFor="tanggal">
                   Tanggal<span className="text-red-500">*</span>
-                </label>
+                </Label>
                 <Input
                   id="tanggal"
                   type="date"
@@ -259,9 +261,9 @@ export default function LaporanHarianPage() {
                 />
               </div>
               <div>
-                <label htmlFor="status" className="block text-sm mb-1">
+                <Label htmlFor="status">
                   Status<span className="text-red-500">*</span>
-                </label>
+                </Label>
                 <select
                   id="status"
                   value={form.status}
@@ -279,7 +281,7 @@ export default function LaporanHarianPage() {
               </div>
               {form.status === STATUS.SELESAI_DIKERJAKAN && (
                 <div>
-                  <label htmlFor="bukti_link" className="block text-sm mb-1">Link Bukti</label>
+                  <Label htmlFor="bukti_link">Link Bukti</Label>
                   <Input
                     id="bukti_link"
                     type="text"
@@ -292,7 +294,7 @@ export default function LaporanHarianPage() {
                 </div>
               )}
               <div>
-                <label htmlFor="catatan" className="block text-sm mb-1">Catatan</label>
+                <Label htmlFor="catatan">Catatan</Label>
                 <textarea
                   id="catatan"
                   value={form.catatan}

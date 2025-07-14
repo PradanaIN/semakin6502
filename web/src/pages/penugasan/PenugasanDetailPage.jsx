@@ -15,8 +15,10 @@ import { STATUS } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
+import tableStyles from "../../components/ui/Table.module.css";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import Label from "../../components/ui/Label";
 import months from "../../utils/months";
 
 
@@ -240,7 +242,7 @@ export default function PenugasanDetailPage() {
         <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <h2 className="text-xl font-semibold">Edit Penugasan</h2>
           <div>
-            <label htmlFor="kegiatan" className="block text-sm mb-1">Kegiatan</label>
+            <Label htmlFor="kegiatan">Kegiatan</Label>
             <Select
               inputId="kegiatan"
               classNamePrefix="react-select"
@@ -263,7 +265,7 @@ export default function PenugasanDetailPage() {
             />
           </div>
           <div>
-            <label htmlFor="pegawai" className="block text-sm mb-1">Pegawai</label>
+            <Label htmlFor="pegawai">Pegawai</Label>
             <Select
               inputId="pegawai"
               classNamePrefix="react-select"
@@ -283,7 +285,7 @@ export default function PenugasanDetailPage() {
             />
           </div>
           <div>
-            <label htmlFor="deskripsi" className="block text-sm mb-1">Deskripsi</label>
+            <Label htmlFor="deskripsi">Deskripsi</Label>
             <textarea
               id="deskripsi"
               value={form.deskripsi}
@@ -293,7 +295,7 @@ export default function PenugasanDetailPage() {
           </div>
           <div className="grid grid-cols-3 gap-2">
             <div>
-              <label htmlFor="minggu" className="block text-sm mb-1">Minggu</label>
+              <Label htmlFor="minggu">Minggu</Label>
               <Input
                 id="minggu"
                 type="number"
@@ -307,7 +309,7 @@ export default function PenugasanDetailPage() {
               />
             </div>
             <div>
-              <label htmlFor="bulan" className="block text-sm mb-1">Bulan</label>
+              <Label htmlFor="bulan">Bulan</Label>
               <select
                 id="bulan"
                 value={form.bulan}
@@ -324,7 +326,7 @@ export default function PenugasanDetailPage() {
               </select>
             </div>
             <div>
-              <label htmlFor="tahun" className="block text-sm mb-1">Tahun</label>
+              <Label htmlFor="tahun">Tahun</Label>
               <Input
                 id="tahun"
                 type="number"
@@ -353,13 +355,13 @@ export default function PenugasanDetailPage() {
         </div>
         <Table className="min-w-full">
           <thead>
-            <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm">
-              <th className="px-1 py-0.5 sm:px-2 sm:py-1">No</th>
-              <th className="px-1 py-0.5 sm:px-2 sm:py-1">Tanggal</th>
-              <th className="px-1 py-0.5 sm:px-2 sm:py-1">Status</th>
-              <th className="px-1 py-0.5 sm:px-2 sm:py-1">Bukti</th>
-              <th className="px-1 py-0.5 sm:px-2 sm:py-1">Catatan</th>
-              <th className="px-1 py-0.5 sm:px-2 sm:py-1">Aksi</th>
+            <tr className={`${tableStyles.headerRow} text-sm`}>
+              <th className={tableStyles.smallCell}>No</th>
+              <th className={tableStyles.smallCell}>Tanggal</th>
+              <th className={tableStyles.smallCell}>Status</th>
+              <th className={tableStyles.smallCell}>Bukti</th>
+              <th className={tableStyles.smallCell}>Catatan</th>
+              <th className={tableStyles.smallCell}>Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -375,12 +377,12 @@ export default function PenugasanDetailPage() {
                   key={l.id}
                   className="border-t dark:border-gray-700 text-center"
                 >
-                  <td className="px-1 py-0.5 sm:px-2 sm:py-1">{idx + 1}</td>
-                  <td className="px-1 py-0.5 sm:px-2 sm:py-1">{l.tanggal.slice(0, 10)}</td>
-                  <td className="px-1 py-0.5 sm:px-2 sm:py-1">
+                  <td className={tableStyles.smallCell}>{idx + 1}</td>
+                  <td className={tableStyles.smallCell}>{l.tanggal.slice(0, 10)}</td>
+                  <td className={tableStyles.smallCell}>
                     <StatusBadge status={l.status} />
                   </td>
-                  <td className="px-1 py-0.5 sm:px-2 sm:py-1">
+                  <td className={tableStyles.smallCell}>
                     {l.bukti_link ? (
                       <a
                         href={l.bukti_link}
@@ -394,8 +396,8 @@ export default function PenugasanDetailPage() {
                       "-"
                     )}
                   </td>
-                  <td className="px-1 py-0.5 sm:px-2 sm:py-1">{l.catatan || "-"}</td>
-                  <td className="px-1 py-0.5 sm:px-2 sm:py-1 space-x-1">
+                  <td className={tableStyles.smallCell}>{l.catatan || "-"}</td>
+                  <td className={`${tableStyles.smallCell} space-x-1`}>
                     <Button
                       onClick={() => editLaporan(l)}
                       variant="warning"
@@ -427,9 +429,9 @@ export default function PenugasanDetailPage() {
             </h3>
             <div className="space-y-2">
               <div>
-                <label htmlFor="laporanTanggal" className="block text-sm mb-1">
+                <Label htmlFor="laporanTanggal">
                   Tanggal<span className="text-red-500">*</span>
-                </label>
+                </Label>
                 <Input
                   id="laporanTanggal"
                   type="date"
@@ -441,9 +443,9 @@ export default function PenugasanDetailPage() {
                 />
               </div>
               <div>
-                <label htmlFor="laporanStatus" className="block text-sm mb-1">
+                <Label htmlFor="laporanStatus">
                   Status<span className="text-red-500">*</span>
-                </label>
+                </Label>
                 <select
                   id="laporanStatus"
                   value={laporanForm.status}
@@ -463,9 +465,9 @@ export default function PenugasanDetailPage() {
               </div>
               {laporanForm.status === STATUS.SELESAI_DIKERJAKAN && (
                 <div>
-                  <label htmlFor="buktiLink" className="block text-sm mb-1">
+                  <Label htmlFor="buktiLink">
                     Link Bukti <span className="text-red-500">*</span>
-                  </label>
+                  </Label>
                   <Input
                     id="buktiLink"
                     type="text"
@@ -481,7 +483,7 @@ export default function PenugasanDetailPage() {
                 </div>
               )}
               <div>
-                <label htmlFor="catatan" className="block text-sm mb-1">Catatan</label>
+                <Label htmlFor="catatan">Catatan</Label>
                 <textarea
                   id="catatan"
                   value={laporanForm.catatan}

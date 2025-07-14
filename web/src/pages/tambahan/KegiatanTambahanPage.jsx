@@ -7,9 +7,11 @@ import {
 } from "../../utils/alerts";
 import { Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import Table from "../../components/ui/Table";
+import tableStyles from "../../components/ui/Table.module.css";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import Label from "../../components/ui/Label";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
 import { STATUS } from "../../utils/status";
@@ -123,13 +125,13 @@ export default function KegiatanTambahanPage() {
 
       <Table>
         <thead>
-          <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-            <th className="px-2 py-1 sm:px-4 sm:py-2">No</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Nama</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Tim</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Tanggal</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Status</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Aksi</th>
+          <tr className={tableStyles.headerRow}>
+            <th className={tableStyles.cell}>No</th>
+            <th className={tableStyles.cell}>Nama</th>
+            <th className={tableStyles.cell}>Tim</th>
+            <th className={tableStyles.cell}>Tanggal</th>
+            <th className={tableStyles.cell}>Status</th>
+            <th className={tableStyles.cell}>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -148,14 +150,14 @@ export default function KegiatanTambahanPage() {
           ) : (
             items.map((item, idx) => (
               <tr key={item.id} className="border-t dark:border-gray-700 text-center">
-                <td className="px-2 py-1 sm:px-4 sm:py-2">{idx + 1}</td>
-                <td className="px-2 py-1 sm:px-4 sm:py-2">{item.nama}</td>
-                <td className="px-2 py-1 sm:px-4 sm:py-2">{item.kegiatan.team?.nama_tim || '-'}</td>
-                <td className="px-2 py-1 sm:px-4 sm:py-2">{item.tanggal.slice(0,10)}</td>
-                <td className="px-2 py-1 sm:px-4 sm:py-2">
+                <td className={tableStyles.cell}>{idx + 1}</td>
+                <td className={tableStyles.cell}>{item.nama}</td>
+                <td className={tableStyles.cell}>{item.kegiatan.team?.nama_tim || '-'}</td>
+                <td className={tableStyles.cell}>{item.tanggal.slice(0,10)}</td>
+                <td className={tableStyles.cell}>
                   <StatusBadge status={item.status} />
                 </td>
-                <td className="px-2 py-1 sm:px-4 sm:py-2 space-x-2">
+                <td className={`${tableStyles.cell} space-x-2`}>
                   <Button
                     onClick={() => openDetail(item.id)}
                     icon
@@ -198,7 +200,7 @@ export default function KegiatanTambahanPage() {
           </h2>
           <div className="space-y-2">
             <div>
-              <label htmlFor="kegiatan" className="block text-sm mb-1">Kegiatan</label>
+              <Label htmlFor="kegiatan">Kegiatan</Label>
               <Select
                 inputId="kegiatan"
                 classNamePrefix="react-select"
@@ -220,7 +222,7 @@ export default function KegiatanTambahanPage() {
                 )}
               </div>
               <div>
-                <label htmlFor="tanggal" className="block text-sm mb-1">Tanggal</label>
+                <Label htmlFor="tanggal">Tanggal</Label>
                 <Input
                   id="tanggal"
                   type="date"
@@ -230,7 +232,7 @@ export default function KegiatanTambahanPage() {
                 />
               </div>
               <div>
-                <label htmlFor="deskripsi" className="block text-sm mb-1">Deskripsi</label>
+                <Label htmlFor="deskripsi">Deskripsi</Label>
                 <textarea
                   id="deskripsi"
                   value={form.deskripsi}
@@ -239,7 +241,7 @@ export default function KegiatanTambahanPage() {
                 />
               </div>
               <div>
-                <label htmlFor="status" className="block text-sm mb-1">Status</label>
+                <Label htmlFor="status">Status</Label>
                 <select
                   id="status"
                   value={form.status}
