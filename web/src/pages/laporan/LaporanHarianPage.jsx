@@ -8,7 +8,7 @@ export default function LaporanHarianPage() {
   const [tanggal, setTanggal] = useState(today);
   const [laporan, setLaporan] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -34,7 +34,7 @@ export default function LaporanHarianPage() {
     const cat = l.catatan?.toLowerCase() || "";
     const stat = l.status.toLowerCase();
     const txt = `${peg} ${keg} ${cat} ${stat}`;
-    return txt.includes(search.toLowerCase());
+    return txt.includes(query.toLowerCase());
   });
   const paginated = filtered.slice(
     (currentPage - 1) * pageSize,
@@ -63,9 +63,9 @@ export default function LaporanHarianPage() {
           </div>
           <input
             type="text"
-            value={search}
+            value={query}
             onChange={(e) => {
-              setSearch(e.target.value);
+              setQuery(e.target.value);
               setCurrentPage(1);
             }}
             placeholder="Cari..."
