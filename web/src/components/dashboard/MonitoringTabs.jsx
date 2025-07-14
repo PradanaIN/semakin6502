@@ -3,11 +3,15 @@ import DailyOverview from "./DailyOverview";
 import WeeklyOverview from "./WeeklyOverview";
 import MonthlyOverview from "./MonthlyOverview";
 
+import months from "../../utils/months";
+
 const MonitoringTabs = ({
   dailyData,
   weeklyList = [],
   weekIndex = 0,
   onWeekChange,
+  monthIndex = 0,
+  onMonthChange,
   monthlyData,
 }) => {
   const [tab, setTab] = useState("harian");
@@ -19,19 +23,32 @@ const MonitoringTabs = ({
       case "mingguan":
         return (
           <div className="space-y-3">
-            {weeklyList.length > 1 && (
+            <div className="flex space-x-2">
               <select
                 className="border rounded-md px-2 py-1 bg-gray-100 dark:bg-gray-700"
-                value={weekIndex}
-                onChange={(e) => onWeekChange?.(parseInt(e.target.value, 10))}
+                value={monthIndex}
+                onChange={(e) => onMonthChange?.(parseInt(e.target.value, 10))}
               >
-                {weeklyList.map((w, i) => (
+                {months.map((m, i) => (
                   <option key={i} value={i}>
-                    Minggu {w.minggu}
+                    {m}
                   </option>
                 ))}
               </select>
-            )}
+              {weeklyList.length > 0 && (
+                <select
+                  className="border rounded-md px-2 py-1 bg-gray-100 dark:bg-gray-700"
+                  value={weekIndex}
+                  onChange={(e) => onWeekChange?.(parseInt(e.target.value, 10))}
+                >
+                  {weeklyList.map((w, i) => (
+                    <option key={i} value={i}>
+                      Minggu {w.minggu}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
             <WeeklyOverview data={weeklyList[weekIndex]} />
           </div>
         );
@@ -40,7 +57,16 @@ const MonitoringTabs = ({
       default:
         return null;
     }
-  }, [tab, dailyData, weeklyList, weekIndex, onWeekChange, monthlyData]);
+  }, [
+    tab,
+    dailyData,
+    weeklyList,
+    weekIndex,
+    onWeekChange,
+    monthIndex,
+    onMonthChange,
+    monthlyData,
+  ]);
 
   const handleTabClick = useCallback((t) => setTab(t), []);
 

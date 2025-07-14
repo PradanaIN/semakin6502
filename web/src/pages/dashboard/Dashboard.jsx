@@ -11,6 +11,7 @@ const Dashboard = () => {
   const [dailyData, setDailyData] = useState([]);
   const [weeklyList, setWeeklyList] = useState([]);
   const [weekIndex, setWeekIndex] = useState(0);
+  const [monthIndex, setMonthIndex] = useState(new Date().getMonth());
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
@@ -20,7 +21,7 @@ const Dashboard = () => {
       const today = new Date();
       const tanggal = today.toISOString().split("T")[0];
       const year = today.getFullYear();
-      const month = today.getMonth();
+      const month = monthIndex;
 
       // determine start dates for each week in the month
       const firstOfMonth = new Date(year, month, 1);
@@ -79,7 +80,7 @@ const Dashboard = () => {
     };
 
     fetchAllData();
-  }, [user?.id, user?.role, user?.teamId]);
+  }, [user?.id, user?.role, user?.teamId, monthIndex]);
 
   if (loading) {
     return (
@@ -112,6 +113,8 @@ const Dashboard = () => {
         weeklyList={weeklyList}
         weekIndex={weekIndex}
         onWeekChange={setWeekIndex}
+        monthIndex={monthIndex}
+        onMonthChange={setMonthIndex}
         monthlyData={monthlyData}
       />
 
