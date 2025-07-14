@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 
 @Injectable()
@@ -24,11 +24,13 @@ export class TeamsService {
     });
   }
 
-  findOne(id: number) {
-    return this.prisma.team.findUnique({
+  async findOne(id: number) {
+    const team = await this.prisma.team.findUnique({
       where: { id },
       include: { members: { include: { user: true } } },
     });
+    if (!team) throw new NotFoundException("not found");
+    return team;
   }
 
   create(data: any) {
