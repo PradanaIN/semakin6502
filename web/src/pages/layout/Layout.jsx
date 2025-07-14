@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../auth/useAuth";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useTheme } from "../../theme/useTheme.jsx";
 import Swal from "sweetalert2";
 import {
@@ -70,16 +70,16 @@ export default function Layout() {
   }, []);
 
   const displayedNotifications = notifications.slice(0, 5);
-  const getPageTitle = () => {
+  const getPageTitle = useCallback(() => {
     const slug = location.pathname.split("/")[1] || "dashboard";
     return slug
       .replaceAll("-", " ")
       .replace(/^\w/, (c) => c.toUpperCase());
-  };
+  }, [location.pathname]);
 
   useEffect(() => {
     document.title = `${getPageTitle()} - SEMAKIN 6502`;
-  }, [location]);
+  }, [getPageTitle]);
 
   return (
     <div className="h-screen overflow-hidden flex text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-900">

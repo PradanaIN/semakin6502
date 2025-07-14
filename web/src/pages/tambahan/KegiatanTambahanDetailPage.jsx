@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -29,7 +29,7 @@ export default function KegiatanTambahanDetailPage() {
     deskripsi: "",
   });
 
-  const fetchDetail = async () => {
+  const fetchDetail = useCallback(async () => {
     try {
       const [dRes, kRes] = await Promise.all([
         axios.get(`/kegiatan-tambahan/${id}`),
@@ -47,11 +47,11 @@ export default function KegiatanTambahanDetailPage() {
       console.error(err);
       Swal.fire("Error", "Gagal mengambil data", "error");
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchDetail();
-  }, [id]);
+  }, [fetchDetail]);
 
   const save = async () => {
     try {
