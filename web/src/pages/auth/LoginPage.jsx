@@ -11,12 +11,10 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      console.log("Trying login with", form);
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/auth/login`,
         form
       );
-      console.log("Login success:", res.data);
 
       setToken(res.data.access_token);
       setUser(res.data.user);
@@ -32,7 +30,6 @@ export default function LoginPage() {
 
       // hanya kosongkan password
       setForm((prev) => ({ ...prev, password: "" }));
-      console.log("After fail form:", form);
     }
   };
 
