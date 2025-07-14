@@ -4,6 +4,7 @@ import { useAuth } from "../auth/useAuth";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { ROLES } from "../../utils/roles";
+import Button from "../../components/ui/Button";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -118,9 +119,12 @@ const Dashboard = () => {
         <h2 className="text-xl font-semibold text-green-800 dark:text-white mb-3">
           Ayo lengkapi laporan harianmu!
         </h2>
-        <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg w-fit mx-auto">
+        <Button
+          variant="primary"
+          className="font-semibold w-fit mx-auto"
+        >
           Isi Laporan Sekarang
-        </button>
+        </Button>
       </div>
     </div>
   );
