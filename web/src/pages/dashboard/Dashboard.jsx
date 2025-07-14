@@ -62,20 +62,6 @@ const Dashboard = () => {
           axios.get("/monitoring/bulanan", { params: { bulan: String(year), ...filters } }),
         ]);
 
-        const mingguKe = Math.ceil(today.getDate() / 7);
-        const weekAssignments = (penRes.data || []).filter(
-          (p) => parseInt(p.minggu, 10) === mingguKe
-        );
-        const selesaiCount = weekAssignments.filter((p) =>
-          String(p.status).toLowerCase().includes("selesai")
-        ).length;
-
-        const weeklyDataFixed = {
-          ...weeklyRes.data,
-          totalTugas: weekAssignments.length,
-          totalSelesai: selesaiCount,
-        };
-
         setDailyData(dailyRes.data);
         setWeeklyList(weeklyArray);
         setWeekIndex(currentIndex);
