@@ -7,6 +7,7 @@ import {
   confirmDelete,
 } from "../../utils/alerts";
 import { Pencil, Plus, Trash2 } from "lucide-react";
+import Spinner from "../../components/Spinner";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
@@ -184,7 +185,9 @@ export default function MasterKegiatanPage() {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="5" className="py-4 text-center">Memuat data...</td>
+              <td colSpan="5" className="py-4 text-center">
+                <Spinner className="h-6 w-6 mx-auto" />
+              </td>
             </tr>
           ) : items.length === 0 ? (
             <tr>

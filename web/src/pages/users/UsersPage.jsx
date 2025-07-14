@@ -8,6 +8,7 @@ import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
 import Button from "../../components/ui/Button";
 import SearchInput from "../../components/SearchInput";
+import Spinner from "../../components/Spinner";
 import { ROLES } from "../../utils/roles";
 
 export default function UsersPage() {
@@ -178,7 +179,7 @@ export default function UsersPage() {
           {loading ? (
             <tr>
               <td colSpan="6" className="py-4 text-center">
-                Memuat data...
+                <Spinner className="h-6 w-6 mx-auto" />
               </td>
             </tr>
           ) : paginatedUsers.length === 0 ? (
