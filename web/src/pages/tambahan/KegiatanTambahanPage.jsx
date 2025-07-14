@@ -194,8 +194,9 @@ export default function KegiatanTambahanPage() {
             setShowForm(false);
             setEditing(null);
           }}
+          titleId="kegiatan-tambahan-modal-title"
         >
-          <h2 className="text-xl font-semibold mb-2">
+          <h2 id="kegiatan-tambahan-modal-title" className="text-xl font-semibold mb-2">
             {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}
           </h2>
           <div className="space-y-2">

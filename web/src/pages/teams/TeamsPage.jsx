@@ -216,8 +216,9 @@ export default function TeamsPage() {
           onClose={() => {
             setShowForm(false);
           }}
+          titleId="team-form-title"
         >
-          <h2 className="text-xl font-semibold mb-2">
+          <h2 id="team-form-title" className="text-xl font-semibold mb-2">
             {editingTeam ? "Edit Tim" : "Tambah Tim"}
           </h2>
           <div className="space-y-2">

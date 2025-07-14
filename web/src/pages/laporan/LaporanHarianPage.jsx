@@ -243,8 +243,9 @@ export default function LaporanHarianPage() {
             onClose={() => {
               setShowForm(false);
             }}
+            titleId="laporan-harian-form-title"
           >
-            <h3 className="text-lg font-semibold">Edit Laporan Harian</h3>
+            <h3 id="laporan-harian-form-title" className="text-lg font-semibold">Edit Laporan Harian</h3>
             <div className="space-y-2">
               <div>
                 <Label htmlFor="tanggal">
