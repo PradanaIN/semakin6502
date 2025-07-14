@@ -6,6 +6,7 @@ import Select from "react-select";
 import { useAuth } from "../auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Pagination";
+import Table from "../../components/ui/Table";
 import { ROLES } from "../../utils/roles";
 import months from "../../utils/months";
 
@@ -200,7 +201,7 @@ export default function PenugasanPage() {
         )}
       </div>
 
-      <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
+      <Table>
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
             <th className="px-2 py-2">No</th>
@@ -246,7 +247,7 @@ export default function PenugasanPage() {
               ))
           )}
         </tbody>
-      </table>
+      </Table>
 
       <div className="flex items-center justify-between mt-4">
         <div className="space-x-2">

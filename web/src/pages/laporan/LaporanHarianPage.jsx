@@ -3,6 +3,7 @@ import axios from "axios";
 import { Pencil, Trash2, Search } from "lucide-react";
 import Swal from "sweetalert2";
 import Pagination from "../../components/Pagination";
+import Table from "../../components/ui/Table";
 import { STATUS } from "../../utils/status";
 
 export default function LaporanHarianPage() {
@@ -155,7 +156,7 @@ export default function LaporanHarianPage() {
             </div>
           </div>
           <div className="overflow-x-auto">
-          <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
+          <Table>
             <thead>
               <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
                 <th className="px-4 py-2">No</th>
@@ -211,7 +212,7 @@ export default function LaporanHarianPage() {
                 </tr>
               )}
             </tbody>
-          </table>
+          </Table>
           <div className="flex items-center justify-between mt-2">
             <div className="space-x-2">
               <select
