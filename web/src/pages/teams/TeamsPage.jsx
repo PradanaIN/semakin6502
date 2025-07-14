@@ -6,6 +6,7 @@ import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
+import Button from "../../components/ui/Button";
 import { ROLES } from "../../utils/roles";
 import SearchInput from "../../components/SearchInput";
 
@@ -217,19 +218,21 @@ export default function TeamsPage() {
           </h2>
           <div className="space-y-2">
             <div>
-              <label className="block text-sm mb-1">Nama Tim</label>
+              <label htmlFor="namaTim" className="block text-sm mb-1">Nama Tim</label>
               <input
+                id="namaTim"
                 type="text"
                 value={form.nama_tim}
-                  onChange={(e) =>
-                    setForm({ ...form, nama_tim: e.target.value })
-                  }
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                />
-              </div>
+                onChange={(e) =>
+                  setForm({ ...form, nama_tim: e.target.value })
+                }
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              />
+            </div>
             </div>
             <div className="flex justify-end space-x-2 pt-2">
-              <button
+              <Button
+                variant="secondary"
                 onClick={async () => {
                   const r = await Swal.fire({
                     title: "Batalkan perubahan?",
@@ -239,16 +242,12 @@ export default function TeamsPage() {
                   });
                   if (r.isConfirmed) setShowForm(false);
                 }}
-                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
               >
                 Batal
-              </button>
-              <button
-                onClick={saveTeam}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-              >
+              </Button>
+              <Button onClick={saveTeam}>
                 Simpan
-              </button>
+              </Button>
             </div>
           </Modal>
       )}

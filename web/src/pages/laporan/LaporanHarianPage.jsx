@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
+import Button from "../../components/ui/Button";
 import { STATUS } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
@@ -105,8 +106,9 @@ export default function LaporanHarianPage() {
     <div className="p-6 space-y-4">
       <div className="flex flex-wrap items-end gap-2">
         <div>
-          <label className="block text-sm mb-1">Tanggal</label>
+          <label htmlFor="filterTanggal" className="block text-sm mb-1">Tanggal</label>
           <input
+            id="filterTanggal"
             type="date"
             value={tanggal}
             onChange={(e) => {
@@ -239,10 +241,11 @@ export default function LaporanHarianPage() {
             <h3 className="text-lg font-semibold">Edit Laporan Harian</h3>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm mb-1">
+                <label htmlFor="tanggal" className="block text-sm mb-1">
                   Tanggal<span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="tanggal"
                   type="date"
                   value={form.tanggal}
                   onChange={(e) =>
@@ -252,10 +255,11 @@ export default function LaporanHarianPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">
+                <label htmlFor="status" className="block text-sm mb-1">
                   Status<span className="text-red-500">*</span>
                 </label>
                 <select
+                  id="status"
                   value={form.status}
                   onChange={(e) => setForm({ ...form, status: e.target.value })}
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
@@ -271,8 +275,9 @@ export default function LaporanHarianPage() {
               </div>
               {form.status === STATUS.SELESAI_DIKERJAKAN && (
                 <div>
-                  <label className="block text-sm mb-1">Link Bukti</label>
+                  <label htmlFor="bukti_link" className="block text-sm mb-1">Link Bukti</label>
                   <input
+                    id="bukti_link"
                     type="text"
                     value={form.bukti_link}
                     onChange={(e) =>
@@ -283,8 +288,9 @@ export default function LaporanHarianPage() {
                 </div>
               )}
               <div>
-                <label className="block text-sm mb-1">Catatan</label>
+                <label htmlFor="catatan" className="block text-sm mb-1">Catatan</label>
                 <textarea
+                  id="catatan"
                   value={form.catatan}
                   onChange={(e) =>
                     setForm({ ...form, catatan: e.target.value })
@@ -294,18 +300,10 @@ export default function LaporanHarianPage() {
               </div>
             </div>
             <div className="flex justify-end space-x-2 pt-2">
-              <button
-                onClick={() => setShowForm(false)}
-                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
-              >
+              <Button variant="secondary" onClick={() => setShowForm(false)}>
                 Batal
-              </button>
-              <button
-                onClick={saveForm}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-              >
-                Simpan
-              </button>
+              </Button>
+              <Button onClick={saveForm}>Simpan</Button>
             </div>
           </Modal>
         )}

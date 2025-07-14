@@ -6,6 +6,7 @@ import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
+import Button from "../../components/ui/Button";
 import { ROLES } from "../../utils/roles";
 import SearchInput from "../../components/SearchInput";
 
@@ -263,16 +264,17 @@ export default function MasterKegiatanPage() {
           </h2>
           <div className="space-y-2">
             <div>
-              <label className="block text-sm mb-1">
+              <label htmlFor="teamId" className="block text-sm mb-1">
                 Tim <span className="text-red-500">*</span>
               </label>
               <select
-                  value={form.teamId}
-                  onChange={(e) =>
-                    setForm({ ...form, teamId: parseInt(e.target.value, 10) })
-                  }
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                >
+                id="teamId"
+                value={form.teamId}
+                onChange={(e) =>
+                  setForm({ ...form, teamId: parseInt(e.target.value, 10) })
+                }
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              >
                   <option value="">Pilih tim</option>
                   {teams.map((t) => (
                     <option key={t.id} value={t.id}>
@@ -281,45 +283,42 @@ export default function MasterKegiatanPage() {
                   ))}
                 </select>
               </div>
-              <div>
-                <label className="block text-sm mb-1">
-                  Nama Kegiatan <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={form.nama_kegiatan}
-                  onChange={(e) =>
-                    setForm({ ...form, nama_kegiatan: e.target.value })
-                  }
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                />
+            <div>
+              <label htmlFor="namaKegiatan" className="block text-sm mb-1">
+                Nama Kegiatan <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="namaKegiatan"
+                type="text"
+                value={form.nama_kegiatan}
+                onChange={(e) =>
+                  setForm({ ...form, nama_kegiatan: e.target.value })
+                }
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              />
               </div>
-              <div>
-                <label className="block text-sm mb-1">Deskripsi</label>
-                <textarea
-                  value={form.deskripsi}
-                  onChange={(e) =>
-                    setForm({ ...form, deskripsi: e.target.value })
-                  }
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                />
+            <div>
+              <label htmlFor="deskripsi" className="block text-sm mb-1">Deskripsi</label>
+              <textarea
+                id="deskripsi"
+                value={form.deskripsi}
+                onChange={(e) =>
+                  setForm({ ...form, deskripsi: e.target.value })
+                }
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              />
               </div>
             <div className="flex justify-end space-x-2 pt-2">
-              <button
+              <Button
+                variant="secondary"
                 onClick={() => {
                   setShowForm(false);
                   setEditing(null);
                 }}
-                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
               >
                 Batal
-              </button>
-              <button
-                onClick={saveItem}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-              >
-                Simpan
-              </button>
+              </Button>
+              <Button onClick={saveItem}>Simpan</Button>
               <p className="text-xs text-gray-500 ml-2 self-center">
                 * wajib diisi
               </p>

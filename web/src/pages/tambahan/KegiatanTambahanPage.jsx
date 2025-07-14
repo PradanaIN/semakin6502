@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import Table from "../../components/ui/Table";
 import { useNavigate } from "react-router-dom";
+import Button from "../../components/ui/Button";
 import Select from "react-select";
 import { STATUS } from "../../utils/status";
 import Modal from "../../components/ui/Modal";
@@ -201,8 +202,9 @@ export default function KegiatanTambahanPage() {
           </h2>
           <div className="space-y-2">
             <div>
-              <label className="block text-sm mb-1">Kegiatan</label>
+              <label htmlFor="kegiatan" className="block text-sm mb-1">Kegiatan</label>
               <Select
+                inputId="kegiatan"
                 classNamePrefix="react-select"
                 styles={selectStyles}
                   menuPortalTarget={document.body}
@@ -222,8 +224,9 @@ export default function KegiatanTambahanPage() {
                 )}
               </div>
               <div>
-                <label className="block text-sm mb-1">Tanggal</label>
+                <label htmlFor="tanggal" className="block text-sm mb-1">Tanggal</label>
                 <input
+                  id="tanggal"
                   type="date"
                   value={form.tanggal}
                   onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
@@ -231,16 +234,18 @@ export default function KegiatanTambahanPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Deskripsi</label>
+                <label htmlFor="deskripsi" className="block text-sm mb-1">Deskripsi</label>
                 <textarea
+                  id="deskripsi"
                   value={form.deskripsi}
                   onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Status</label>
+                <label htmlFor="status" className="block text-sm mb-1">Status</label>
                 <select
+                  id="status"
                   value={form.status}
                   onChange={(e) => setForm({ ...form, status: e.target.value })}
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
@@ -255,18 +260,16 @@ export default function KegiatanTambahanPage() {
                 </select>
               </div>
             <div className="flex justify-end space-x-2 pt-2">
-              <button
+              <Button
+                variant="secondary"
                 onClick={() => {
                   setShowForm(false);
                   setEditing(null);
                 }}
-                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
               >
                 Batal
-              </button>
-              <button onClick={save} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
-                Simpan
-              </button>
+              </Button>
+              <Button onClick={save}>Simpan</Button>
             </div>
           </div>
         </Modal>

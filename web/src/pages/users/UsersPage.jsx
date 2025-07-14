@@ -6,6 +6,7 @@ import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
+import Button from "../../components/ui/Button";
 import SearchInput from "../../components/SearchInput";
 import { ROLES } from "../../utils/roles";
 
@@ -260,49 +261,53 @@ export default function UsersPage() {
           </h2>
           <div className="space-y-2">
             <div>
-              <label className="block text-sm mb-1">
+              <label htmlFor="nama" className="block text-sm mb-1">
                 Nama <span className="text-red-500">*</span>
               </label>
               <input
-                  type="text"
-                  value={form.nama}
-                  onChange={(e) => setForm({ ...form, nama: e.target.value })}
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                />
-              </div>
-              <div>
-                <label className="block text-sm mb-1">
-                  Email <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                />
-              </div>
-              <div>
-                <label className="block text-sm mb-1">
-                  Password <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="password"
-                  value={form.password}
-                  onChange={(e) =>
-                    setForm({ ...form, password: e.target.value })
-                  }
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                />
-              </div>
-              <div>
-                <label className="block text-sm mb-1">
-                  Role <span className="text-red-500">*</span>
-                </label>
-                <select
-                  value={form.role}
-                  onChange={(e) => setForm({ ...form, role: e.target.value })}
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                >
+                id="nama"
+                type="text"
+                value={form.nama}
+                onChange={(e) => setForm({ ...form, nama: e.target.value })}
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-sm mb-1">
+                Email <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm mb-1">
+                Password <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={form.password}
+                onChange={(e) =>
+                  setForm({ ...form, password: e.target.value })
+                }
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              />
+            </div>
+            <div>
+              <label htmlFor="role" className="block text-sm mb-1">
+                Role <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="role"
+                value={form.role}
+                onChange={(e) => setForm({ ...form, role: e.target.value })}
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              >
                   <option value="">Pilih role</option>
                   {roles.map((r) => (
                     <option key={r.id} value={r.name}>
@@ -312,7 +317,8 @@ export default function UsersPage() {
                 </select>
               </div>
               <div className="flex justify-end space-x-2 pt-2">
-              <button
+              <Button
+                variant="secondary"
                 onClick={async () => {
                   const r = await Swal.fire({
                     title: "Batalkan perubahan?",
@@ -322,16 +328,12 @@ export default function UsersPage() {
                   });
                   if (r.isConfirmed) setShowForm(false);
                 }}
-                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
               >
                 Batal
-              </button>
-              <button
-                onClick={saveUser}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-              >
+              </Button>
+              <Button onClick={saveUser}>
                 Simpan
-              </button>
+              </Button>
               <p className="text-xs text-gray-500 ml-2 self-center">
                 * wajib diisi
               </p>

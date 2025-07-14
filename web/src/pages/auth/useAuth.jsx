@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useMemo } from "react";
 
 const AuthContext = createContext();
 
@@ -23,11 +23,12 @@ export function AuthProvider({ children }) {
     }
   }, [token, user]);
 
-  return (
-    <AuthContext.Provider value={{ token, setToken, user, setUser }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ token, setToken, user, setUser }),
+    [token, user]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

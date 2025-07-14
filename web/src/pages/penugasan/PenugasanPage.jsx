@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
+import Button from "../../components/ui/Button";
 import { ROLES } from "../../utils/roles";
 import months from "../../utils/months";
 import SearchInput from "../../components/SearchInput";
@@ -282,10 +283,11 @@ export default function PenugasanPage() {
           <h2 className="text-xl font-semibold mb-2">Tambah Penugasan</h2>
           <div className="space-y-2">
             <div>
-              <label className="block text-sm mb-1">
+              <label htmlFor="kegiatanId" className="block text-sm mb-1">
                 Kegiatan <span className="text-red-500">*</span>
               </label>
                 <Select
+                  inputId="kegiatanId"
                   classNamePrefix="react-select"
                   className="mb-1"
                   styles={selectStyles}
@@ -306,19 +308,20 @@ export default function PenugasanPage() {
                   isSearchable
                 />
               </div>
-              <div>
-                <label className="block text-sm mb-1">
-                  Pegawai <span className="text-red-500">*</span>
-                </label>
-                <Select
-                  isMulti
-                  classNamePrefix="react-select"
-                  className="mb-1"
-                  styles={selectStyles}
-                  menuPortalTarget={document.body}
-                  options={users
-                    .filter((u) => u.role !== ROLES.ADMIN)
-                    .map((u) => ({ value: u.id, label: `${u.nama}` }))}
+            <div>
+              <label htmlFor="pegawaiIds" className="block text-sm mb-1">
+                Pegawai <span className="text-red-500">*</span>
+              </label>
+              <Select
+                inputId="pegawaiIds"
+                isMulti
+                classNamePrefix="react-select"
+                className="mb-1"
+                styles={selectStyles}
+                menuPortalTarget={document.body}
+                options={users
+                  .filter((u) => u.role !== ROLES.ADMIN)
+                  .map((u) => ({ value: u.id, label: `${u.nama}` }))}
                   value={form.pegawaiIds
                     .map((id) => {
                       const u = users.find((x) => x.id === id);
@@ -347,18 +350,20 @@ export default function PenugasanPage() {
                   Pilih Semua
                 </button>
               </div>
-              <div>
-                <label className="block text-sm mb-1">Deskripsi</label>
-                <textarea
-                  value={form.deskripsi}
-                  onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                />
+            <div>
+              <label htmlFor="deskripsi" className="block text-sm mb-1">Deskripsi</label>
+              <textarea
+                id="deskripsi"
+                value={form.deskripsi}
+                onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              />
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block text-sm mb-1">Minggu</label>
+                  <label htmlFor="minggu" className="block text-sm mb-1">Minggu</label>
                   <input
+                    id="minggu"
                     type="number"
                     value={form.minggu}
                     min="1"
@@ -368,8 +373,9 @@ export default function PenugasanPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">Bulan</label>
+                  <label htmlFor="bulan" className="block text-sm mb-1">Bulan</label>
                   <select
+                    id="bulan"
                     value={form.bulan}
                     onChange={(e) => setForm({ ...form, bulan: parseInt(e.target.value, 10) })}
                     className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
@@ -382,8 +388,9 @@ export default function PenugasanPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm mb-1">Tahun</label>
+                  <label htmlFor="tahun" className="block text-sm mb-1">Tahun</label>
                   <input
+                    id="tahun"
                     type="number"
                     value={form.tahun}
                     onChange={(e) => setForm({ ...form, tahun: parseInt(e.target.value, 10) })}
@@ -392,7 +399,8 @@ export default function PenugasanPage() {
                 </div>
               </div>
             <div className="flex justify-end space-x-2 pt-2">
-              <button
+              <Button
+                variant="secondary"
                 onClick={() => {
                   Swal.fire({
                     text: "Batalkan penambahan penugasan?",
@@ -403,13 +411,10 @@ export default function PenugasanPage() {
                     if (r.isConfirmed) setShowForm(false);
                   });
                 }}
-                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
               >
                 Batal
-              </button>
-              <button onClick={save} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
-                Simpan
-              </button>
+              </Button>
+              <Button onClick={save}>Simpan</Button>
             </div>
           </div>
         </Modal>
