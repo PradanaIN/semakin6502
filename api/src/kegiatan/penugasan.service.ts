@@ -5,6 +5,8 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { ROLES } from "../common/roles.constants";
+import { AssignPenugasanDto } from "./dto/assign-penugasan.dto";
+import { AssignPenugasanBulkDto } from "./dto/assign-penugasan-bulk.dto";
 
 @Injectable()
 export class PenugasanService {
@@ -50,7 +52,7 @@ export class PenugasanService {
     return this.prisma.penugasan.findMany(opts);
   }
 
-  async assign(data: any, userId: number, role: string) {
+  async assign(data: AssignPenugasanDto, userId: number, role: string) {
     role = normalizeRole(role);
     const master = await this.prisma.masterKegiatan.findUnique({
       where: { id: data.kegiatanId },
@@ -79,7 +81,7 @@ export class PenugasanService {
     });
   }
 
-  async assignBulk(data: any, userId: number, role: string) {
+  async assignBulk(data: AssignPenugasanBulkDto, userId: number, role: string) {
     role = normalizeRole(role);
     const master = await this.prisma.masterKegiatan.findUnique({
       where: { id: data.kegiatanId },
@@ -133,7 +135,12 @@ export class PenugasanService {
     });
   }
 
-  async update(id: number, data: any, userId: number, role: string) {
+  async update(
+    id: number,
+    data: AssignPenugasanDto,
+    userId: number,
+    role: string,
+  ) {
     role = normalizeRole(role);
     const existing = await this.prisma.penugasan.findUnique({
       where: { id },
