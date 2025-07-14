@@ -1,6 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import Swal from "sweetalert2";
+import {
+  showSuccess,
+  showError,
+  showWarning,
+  confirmDelete,
+} from "../../utils/alerts";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
@@ -80,10 +85,9 @@ export default function MasterKegiatanPage() {
 
   const saveItem = async () => {
     if (!form.teamId || isNaN(form.teamId) || !form.nama_kegiatan) {
-      Swal.fire(
+      showWarning(
         "Lengkapi data",
         "Tim dan nama kegiatan wajib diisi",
-        "warning"
       );
       return;
     }
@@ -96,25 +100,20 @@ export default function MasterKegiatanPage() {
       setShowForm(false);
       setEditing(null);
       fetchItems();
-      Swal.fire("Berhasil", "Kegiatan disimpan", "success");
+      showSuccess("Berhasil", "Kegiatan disimpan");
     } catch (err) {
       console.error("Gagal menyimpan kegiatan", err);
-      Swal.fire("Error", "Gagal menyimpan kegiatan", "error");
+      showError("Error", "Gagal menyimpan kegiatan");
     }
   };
 
   const deleteItem = async (item) => {
-    const r = await Swal.fire({
-      title: "Hapus kegiatan ini?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Hapus",
-    });
+    const r = await confirmDelete("Hapus kegiatan ini?");
     if (!r.isConfirmed) return;
     try {
       await axios.delete(`/master-kegiatan/${item.id}`);
       fetchItems();
-      Swal.fire("Dihapus", "Kegiatan berhasil dihapus", "success");
+      showSuccess("Dihapus", "Kegiatan berhasil dihapus");
     } catch (err) {
       console.error("Gagal menghapus kegiatan", err);
     }

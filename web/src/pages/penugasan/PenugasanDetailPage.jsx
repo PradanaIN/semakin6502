@@ -1,7 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Swal from "sweetalert2";
+import {
+  showSuccess,
+  showError,
+  confirmDelete,
+} from "../../utils/alerts";
 import Select from "react-select";
 import { Pencil, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
@@ -62,7 +66,7 @@ export default function PenugasanDetailPage() {
       });
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Gagal mengambil data", "error");
+      showError("Error", "Gagal mengambil data");
     }
   }, [id]);
 
@@ -92,12 +96,12 @@ export default function PenugasanDetailPage() {
   const save = async () => {
     try {
       await axios.put(`/penugasan/${id}`, form);
-      Swal.fire("Berhasil", "Penugasan diperbarui", "success");
+      showSuccess("Berhasil", "Penugasan diperbarui");
       setEditing(false);
       fetchDetail();
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Gagal memperbarui", "error");
+      showError("Error", "Gagal memperbarui");
     }
   };
 
@@ -125,10 +129,10 @@ export default function PenugasanDetailPage() {
       setShowLaporanForm(false);
       const r = await axios.get(`/laporan-harian/penugasan/${id}`);
       setLaporan(r.data);
-      Swal.fire("Berhasil", "Laporan disimpan", "success");
+      showSuccess("Berhasil", "Laporan disimpan");
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Gagal menyimpan laporan", "error");
+      showError("Error", "Gagal menyimpan laporan");
     }
   };
 
@@ -144,39 +148,29 @@ export default function PenugasanDetailPage() {
   };
 
   const deleteLaporan = async (laporanId) => {
-    const r = await Swal.fire({
-      title: "Hapus laporan ini?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Hapus",
-    });
+    const r = await confirmDelete("Hapus laporan ini?");
     if (!r.isConfirmed) return;
     try {
       await axios.delete(`/laporan-harian/${laporanId}`);
       const res = await axios.get(`/laporan-harian/penugasan/${id}`);
       setLaporan(res.data);
-      Swal.fire("Dihapus", "Laporan dihapus", "success");
+      showSuccess("Dihapus", "Laporan dihapus");
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Gagal menghapus laporan", "error");
+      showError("Error", "Gagal menghapus laporan");
     }
   };
 
   const remove = async () => {
-    const r = await Swal.fire({
-      title: "Hapus penugasan ini?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Hapus",
-    });
+    const r = await confirmDelete("Hapus penugasan ini?");
     if (!r.isConfirmed) return;
     try {
       await axios.delete(`/penugasan/${id}`);
-      Swal.fire("Dihapus", "Penugasan dihapus", "success");
+      showSuccess("Dihapus", "Penugasan dihapus");
       navigate(-1);
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Gagal menghapus", "error");
+      showError("Error", "Gagal menghapus");
     }
   };
 
