@@ -4,8 +4,9 @@ const WeeklyOverview = ({ data }) => {
   if (!data) return null;
 
   const formatDate = (iso) => {
-    const [y, m, d] = iso.split("-");
-    return `${d}-${m}-${y}`;
+    const d = new Date(iso);
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
   };
 
   const [startIso, endIso] = data.tanggal.split(" - ");
@@ -49,7 +50,7 @@ const WeeklyOverview = ({ data }) => {
             >
               <div className="flex justify-between text-sm">
                 <span>
-                  {day.hari}, {formatDate(day.tanggal)}
+                  {day.hari} {formatDate(day.tanggal)}
                 </span>
                 <span>
                   {day.selesai}/{day.total} &nbsp; {day.persen}%
