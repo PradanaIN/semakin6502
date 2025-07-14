@@ -7,10 +7,11 @@ export default function Button({
   className = "",
   ...props
 }) {
+  const baseClasses =
+    "focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none";
   const base = icon
-    ? "icon-button"
-    :
-      "px-4 py-2 rounded focus-visible:outline-none transition focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2";
+    ? `icon-button ${baseClasses}`
+    : `px-4 py-2 rounded transition focus-visible:ring-offset-2 ${baseClasses}`;
   const variants = {
     primary: "bg-blue-600 hover:bg-blue-700 text-white",
     secondary:
