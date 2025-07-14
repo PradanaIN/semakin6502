@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import MONTHS from "../common/months";
+import { STATUS } from "../common/status.constants";
 
 @Injectable()
 export class MonitoringService {
@@ -69,7 +70,8 @@ export class MonitoringService {
       const dateStr = r.tanggal.toISOString().slice(0, 10);
       if (!perDay[dateStr]) perDay[dateStr] = { selesai: 0, total: 0 };
       perDay[dateStr].total += 1;
-      if (r.status === "Selesai Dikerjakan") perDay[dateStr].selesai += 1;
+      if (r.status === STATUS.SELESAI_DIKERJAKAN)
+        perDay[dateStr].selesai += 1;
     }
 
     const hari = [

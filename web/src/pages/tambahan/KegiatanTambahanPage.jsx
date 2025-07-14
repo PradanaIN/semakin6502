@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
+import { STATUS } from "../../utils/status";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -19,7 +20,7 @@ export default function KegiatanTambahanPage() {
   const [form, setForm] = useState({
     kegiatanId: "",
     tanggal: new Date().toISOString().slice(0, 10),
-    status: "Belum",
+    status: STATUS.BELUM,
     deskripsi: "",
   });
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ export default function KegiatanTambahanPage() {
     setForm({
       kegiatanId: "",
       tanggal: new Date().toISOString().slice(0, 10),
-      status: "Belum",
+      status: STATUS.BELUM,
       deskripsi: "",
     });
     setShowForm(true);
@@ -232,9 +233,13 @@ export default function KegiatanTambahanPage() {
                   onChange={(e) => setForm({ ...form, status: e.target.value })}
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 >
-                  <option value="Belum">Belum</option>
-                  <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
-                  <option value="Selesai Dikerjakan">Selesai Dikerjakan</option>
+                  <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
+                  <option value={STATUS.SEDANG_DIKERJAKAN}>
+                    {STATUS.SEDANG_DIKERJAKAN}
+                  </option>
+                  <option value={STATUS.SELESAI_DIKERJAKAN}>
+                    {STATUS.SELESAI_DIKERJAKAN}
+                  </option>
                 </select>
               </div>
             </div>

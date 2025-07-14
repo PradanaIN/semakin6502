@@ -6,6 +6,7 @@ import Select from "react-select";
 import { Pencil, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
+import { STATUS } from "../../utils/status";
 import months from "../../utils/months";
 
 const selectStyles = {
@@ -28,7 +29,7 @@ export default function PenugasanDetailPage() {
     minggu: 1,
     bulan: 1,
     tahun: new Date().getFullYear(),
-    status: "Belum",
+    status: STATUS.BELUM,
   });
   const [editing, setEditing] = useState(false);
   const [laporan, setLaporan] = useState([]);
@@ -36,7 +37,7 @@ export default function PenugasanDetailPage() {
   const [laporanForm, setLaporanForm] = useState({
     id: null,
     tanggal: new Date().toISOString().slice(0, 10),
-    status: "Belum", // Belum, Sedang Dikerjakan, Selesai Dikerjakan
+    status: STATUS.BELUM, // Belum, Sedang Dikerjakan, Selesai Dikerjakan
     bukti_link: "",
     catatan: "",
   });
@@ -100,7 +101,7 @@ export default function PenugasanDetailPage() {
     setLaporanForm({
       id: null,
       tanggal: new Date().toISOString().slice(0, 10),
-      status: "Belum",
+      status: STATUS.BELUM,
       bukti_link: "",
       catatan: "",
     });
@@ -382,9 +383,9 @@ export default function PenugasanDetailPage() {
                   <td className="px-2 py-1">
                     <span
                       className={`px-2 py-0.5 rounded text-xs font-medium ${
-                        l.status === "Selesai Dikerjakan"
+                        l.status === STATUS.SELESAI_DIKERJAKAN
                           ? "bg-green-100 text-green-800"
-                          : l.status === "Sedang Dikerjakan"
+                          : l.status === STATUS.SEDANG_DIKERJAKAN
                             ? "bg-yellow-100 text-yellow-800"
                             : "bg-gray-100 text-gray-800"
                       }`}
@@ -459,12 +460,16 @@ export default function PenugasanDetailPage() {
                   }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 >
-                  <option value="Belum">Belum</option>
-                  <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
-                  <option value="Selesai Dikerjakan">Selesai Dikerjakan</option>
+                  <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
+                  <option value={STATUS.SEDANG_DIKERJAKAN}>
+                    {STATUS.SEDANG_DIKERJAKAN}
+                  </option>
+                  <option value={STATUS.SELESAI_DIKERJAKAN}>
+                    {STATUS.SELESAI_DIKERJAKAN}
+                  </option>
                 </select>
               </div>
-              {laporanForm.status === "Selesai Dikerjakan" && (
+              {laporanForm.status === STATUS.SELESAI_DIKERJAKAN && (
                 <div>
                   <label className="block text-sm mb-1">
                     Link Bukti <span className="text-red-500">*</span>

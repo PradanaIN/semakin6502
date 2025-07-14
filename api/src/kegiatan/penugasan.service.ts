@@ -5,6 +5,7 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { ROLES } from "../common/roles.constants";
+import { STATUS } from "../common/status.constants";
 import { AssignPenugasanDto } from "./dto/assign-penugasan.dto";
 import { AssignPenugasanBulkDto } from "./dto/assign-penugasan-bulk.dto";
 
@@ -76,7 +77,7 @@ export class PenugasanService {
         bulan: String(data.bulan),
         tahun: data.tahun,
         deskripsi: data.deskripsi,
-        status: data.status || "Belum",
+        status: data.status || STATUS.BELUM,
       },
     });
   }
@@ -104,7 +105,7 @@ export class PenugasanService {
       bulan: String(data.bulan),
       tahun: data.tahun,
       deskripsi: data.deskripsi,
-      status: data.status || "Belum",
+      status: data.status || STATUS.BELUM,
     }));
     await this.prisma.penugasan.createMany({ data: rows });
     return { count: rows.length };
