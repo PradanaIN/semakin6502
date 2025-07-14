@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "./useAuth";
+import Button from "../../components/ui/Button";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -53,10 +54,11 @@ export default function LoginPage() {
           className="space-y-4"
         >
           <div>
-            <label className="block text-sm text-zinc-700 dark:text-zinc-300 mb-1">
+            <label htmlFor="identifier" className="block text-sm text-zinc-700 dark:text-zinc-300 mb-1">
               Email atau Username
             </label>
             <input
+              id="identifier"
               type="text"
               placeholder="Email atau Username"
               value={form.identifier ?? ""}
@@ -66,11 +68,12 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm text-zinc-700 dark:text-zinc-300 mb-1">
+            <label htmlFor="password" className="block text-sm text-zinc-700 dark:text-zinc-300 mb-1">
               Password
             </label>
             <div className="relative">
               <input
+                id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="********"
                 value={form.password ?? ""}
@@ -91,12 +94,9 @@ export default function LoginPage() {
             <div className="text-red-500 text-sm text-center">{error}</div>
           )}
 
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition duration-200"
-          >
+          <Button type="submit" className="w-full font-semibold">
             Login
-          </button>
+          </Button>
         </form>
 
         <p className="text-xs text-zinc-400 text-center">

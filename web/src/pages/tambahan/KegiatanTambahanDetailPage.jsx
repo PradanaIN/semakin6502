@@ -6,6 +6,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import Select from "react-select";
 import { STATUS } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
+import Button from "../../components/ui/Button";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -186,8 +187,9 @@ export default function KegiatanTambahanDetailPage() {
       ) : (
         <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <div>
-            <label className="block text-sm mb-1">Kegiatan</label>
+            <label htmlFor="kegiatan" className="block text-sm mb-1">Kegiatan</label>
             <Select
+              inputId="kegiatan"
               classNamePrefix="react-select"
               styles={selectStyles}
               menuPortalTarget={document.body}
@@ -207,8 +209,9 @@ export default function KegiatanTambahanDetailPage() {
             )}
           </div>
           <div>
-            <label className="block text-sm mb-1">Tanggal</label>
+            <label htmlFor="tanggal" className="block text-sm mb-1">Tanggal</label>
             <input
+              id="tanggal"
               type="date"
               value={form.tanggal}
               onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
@@ -216,16 +219,18 @@ export default function KegiatanTambahanDetailPage() {
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">Deskripsi</label>
+            <label htmlFor="deskripsi" className="block text-sm mb-1">Deskripsi</label>
             <textarea
+              id="deskripsi"
               value={form.deskripsi}
               onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">Status</label>
+            <label htmlFor="status" className="block text-sm mb-1">Status</label>
             <select
+              id="status"
               value={form.status}
               onChange={(e) => setForm({ ...form, status: e.target.value })}
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
@@ -240,18 +245,10 @@ export default function KegiatanTambahanDetailPage() {
             </select>
           </div>
           <div className="flex justify-end space-x-2 pt-2">
-            <button
-              onClick={() => setEditing(false)}
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
-            >
+            <Button variant="secondary" onClick={() => setEditing(false)}>
               Batal
-            </button>
-            <button
-              onClick={save}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-            >
-              Simpan
-            </button>
+            </Button>
+            <Button onClick={save}>Simpan</Button>
           </div>
         </div>
       )}
@@ -259,8 +256,9 @@ export default function KegiatanTambahanDetailPage() {
         <h3 className="text-lg font-semibold">Bukti / Laporan Selesai</h3>
         <div className="space-y-2">
           <div>
-            <label className="block text-sm mb-1">Tanggal Mulai</label>
+            <label htmlFor="tanggalMulai" className="block text-sm mb-1">Tanggal Mulai</label>
             <input
+              id="tanggalMulai"
               type="date"
               value={laporanForm.tanggal_selesai}
               onChange={(e) =>
@@ -270,8 +268,9 @@ export default function KegiatanTambahanDetailPage() {
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">Tanggal Akhir</label>
+            <label htmlFor="tanggalAkhir" className="block text-sm mb-1">Tanggal Akhir</label>
             <input
+              id="tanggalAkhir"
               type="date"
               value={laporanForm.tanggal_selesai_akhir}
               onChange={(e) =>
@@ -281,8 +280,9 @@ export default function KegiatanTambahanDetailPage() {
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">Link Bukti</label>
+            <label htmlFor="buktiLink" className="block text-sm mb-1">Link Bukti</label>
             <input
+              id="buktiLink"
               type="text"
               value={laporanForm.bukti_link}
               onChange={(e) =>
@@ -293,12 +293,7 @@ export default function KegiatanTambahanDetailPage() {
           </div>
         </div>
         <div className="flex justify-end pt-2">
-          <button
-            onClick={addLaporan}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-          >
-            Simpan Bukti
-          </button>
+          <Button onClick={addLaporan}>Simpan Bukti</Button>
         </div>
       </div>
     </div>

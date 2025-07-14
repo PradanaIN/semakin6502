@@ -10,6 +10,7 @@ import { STATUS } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
+import Button from "../../components/ui/Button";
 import months from "../../utils/months";
 
 const selectStyles = {
@@ -245,8 +246,9 @@ export default function PenugasanDetailPage() {
         <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <h2 className="text-xl font-semibold">Edit Penugasan</h2>
           <div>
-            <label className="block text-sm mb-1">Kegiatan</label>
+            <label htmlFor="kegiatan" className="block text-sm mb-1">Kegiatan</label>
             <Select
+              inputId="kegiatan"
               classNamePrefix="react-select"
               styles={selectStyles}
               menuPortalTarget={document.body}
@@ -267,8 +269,9 @@ export default function PenugasanDetailPage() {
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">Pegawai</label>
+            <label htmlFor="pegawai" className="block text-sm mb-1">Pegawai</label>
             <Select
+              inputId="pegawai"
               classNamePrefix="react-select"
               styles={selectStyles}
               menuPortalTarget={document.body}
@@ -286,8 +289,9 @@ export default function PenugasanDetailPage() {
             />
           </div>
           <div>
-            <label className="block text-sm mb-1">Deskripsi</label>
+            <label htmlFor="deskripsi" className="block text-sm mb-1">Deskripsi</label>
             <textarea
+              id="deskripsi"
               value={form.deskripsi}
               onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
@@ -295,8 +299,9 @@ export default function PenugasanDetailPage() {
           </div>
           <div className="grid grid-cols-3 gap-2">
             <div>
-              <label className="block text-sm mb-1">Minggu</label>
+              <label htmlFor="minggu" className="block text-sm mb-1">Minggu</label>
               <input
+                id="minggu"
                 type="number"
                 value={form.minggu}
                 min="1"
@@ -308,8 +313,9 @@ export default function PenugasanDetailPage() {
               />
             </div>
             <div>
-              <label className="block text-sm mb-1">Bulan</label>
+              <label htmlFor="bulan" className="block text-sm mb-1">Bulan</label>
               <select
+                id="bulan"
                 value={form.bulan}
                 onChange={(e) =>
                   setForm({ ...form, bulan: parseInt(e.target.value, 10) })
@@ -324,8 +330,9 @@ export default function PenugasanDetailPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm mb-1">Tahun</label>
+              <label htmlFor="tahun" className="block text-sm mb-1">Tahun</label>
               <input
+                id="tahun"
                 type="number"
                 value={form.tahun}
                 onChange={(e) =>
@@ -336,18 +343,10 @@ export default function PenugasanDetailPage() {
             </div>
           </div>
           <div className="flex justify-end space-x-2 pt-2">
-            <button
-              onClick={() => setEditing(false)}
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
-            >
+            <Button variant="secondary" onClick={() => setEditing(false)}>
               Batal
-            </button>
-            <button
-              onClick={save}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-            >
-              Simpan
-            </button>
+            </Button>
+            <Button onClick={save}>Simpan</Button>
           </div>
         </div>
       )}
@@ -435,10 +434,11 @@ export default function PenugasanDetailPage() {
             </h3>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm mb-1">
+                <label htmlFor="laporanTanggal" className="block text-sm mb-1">
                   Tanggal<span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="laporanTanggal"
                   type="date"
                   value={laporanForm.tanggal}
                   onChange={(e) =>
@@ -448,10 +448,11 @@ export default function PenugasanDetailPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">
+                <label htmlFor="laporanStatus" className="block text-sm mb-1">
                   Status<span className="text-red-500">*</span>
                 </label>
                 <select
+                  id="laporanStatus"
                   value={laporanForm.status}
                   onChange={(e) =>
                     setLaporanForm({ ...laporanForm, status: e.target.value })
@@ -469,10 +470,11 @@ export default function PenugasanDetailPage() {
               </div>
               {laporanForm.status === STATUS.SELESAI_DIKERJAKAN && (
                 <div>
-                  <label className="block text-sm mb-1">
+                  <label htmlFor="buktiLink" className="block text-sm mb-1">
                     Link Bukti <span className="text-red-500">*</span>
                   </label>
                   <input
+                    id="buktiLink"
                     type="text"
                     value={laporanForm.bukti_link}
                     onChange={(e) =>
@@ -486,8 +488,9 @@ export default function PenugasanDetailPage() {
                 </div>
               )}
               <div>
-                <label className="block text-sm mb-1">Catatan</label>
+                <label htmlFor="catatan" className="block text-sm mb-1">Catatan</label>
                 <textarea
+                  id="catatan"
                   value={laporanForm.catatan}
                   onChange={(e) =>
                     setLaporanForm({ ...laporanForm, catatan: e.target.value })
@@ -497,18 +500,10 @@ export default function PenugasanDetailPage() {
               </div>
             </div>
             <div className="flex justify-end space-x-2 pt-2">
-              <button
-                onClick={() => setShowLaporanForm(false)}
-                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded"
-              >
+              <Button variant="secondary" onClick={() => setShowLaporanForm(false)}>
                 Batal
-              </button>
-              <button
-                onClick={saveLaporan}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-              >
-                Simpan
-              </button>
+              </Button>
+              <Button onClick={saveLaporan}>Simpan</Button>
             </div>
         </Modal>
       )}
