@@ -1,3 +1,5 @@
+import months from "../../utils/months";
+
 const WeeklyOverview = ({ data }) => {
   if (!data) return null;
 
@@ -6,7 +8,11 @@ const WeeklyOverview = ({ data }) => {
     return `${d}-${m}-${y}`;
   };
 
-  const rangeText = data.tanggal.split(" - ").map(formatDate).join(" - ");
+  const [startIso, endIso] = data.tanggal.split(" - ");
+  const start = new Date(startIso);
+  const end = new Date(endIso);
+  const monthName = months[start.getMonth()];
+  const rangeText = `${start.getDate()} - ${end.getDate()} ${monthName} ${start.getFullYear()}`;
 
   return (
     <div className="space-y-4">
