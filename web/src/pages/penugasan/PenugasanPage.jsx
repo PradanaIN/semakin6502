@@ -6,6 +6,7 @@ import Select from "react-select";
 import { useAuth } from "../auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Pagination";
+import months from "../../utils/months";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -119,20 +120,6 @@ export default function PenugasanPage() {
     }
   };
 
-  const months = [
-    "Januari",
-    "Februari",
-    "Maret",
-    "April",
-    "Mei",
-    "Juni",
-    "Juli",
-    "Agustus",
-    "September",
-    "Oktober",
-    "November",
-    "Desember",
-  ];
 
   const filtered = penugasan.filter((p) => {
     const text = `${p.kegiatan?.nama_kegiatan || ""} ${p.pegawai?.nama || ""}`.toLowerCase();
