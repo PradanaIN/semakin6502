@@ -241,7 +241,7 @@ export default function PenugasanPage() {
                   <td className="px-4 py-2">{p.status}</td>
                   <td className="px-2 py-2">
                     <button
-                      onClick={() => navigate(`/penugasan/${p.id}`)}
+                      onClick={() => navigate(`/tugas-mingguan/${p.id}`)}
                       className="text-blue-600 hover:underline text-sm"
                     >
                       <Eye size={16} />

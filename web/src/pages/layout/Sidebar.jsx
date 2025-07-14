@@ -15,10 +15,10 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
   const { user } = useAuth();
 
   const mainLinks = [
-    { to: "/", label: "Dashboard", icon: LayoutDashboard, show: true },
-    { to: "/penugasan", label: "Penugasan Mingguan", icon: ClipboardList, show: true },
+    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: true },
+    { to: "/tugas-mingguan", label: "Tugas Mingguan", icon: ClipboardList, show: true },
+    { to: "/tugas-tambahan", label: "Tugas Tambahan", icon: FilePlus, show: true },
     { to: "/laporan-harian", label: "Laporan Harian", icon: FileText, show: true },
-    { to: "/kegiatan-tambahan", label: "Kegiatan Tambahan", icon: FilePlus, show: true },
   ];
 
   const manageLinks = [
