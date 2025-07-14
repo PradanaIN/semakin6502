@@ -1,4 +1,4 @@
-import { IsInt, IsString } from "class-validator";
+import { IsInt, IsString, IsOptional } from "class-validator";
 
 export class AssignPenugasanDto {
   @IsInt()
@@ -18,4 +18,8 @@ export class AssignPenugasanDto {
 
   @IsString()
   deskripsi?: string;
+
+  @IsOptional()
+  @IsString()
+  status?: string;
 }
