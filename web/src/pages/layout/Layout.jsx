@@ -107,7 +107,7 @@ export default function Layout() {
         <div className="flex items-center justify-between gap-2 p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex-shrink-0">
           <div className="flex items-center space-x-3">
             <button
-              className="md:hidden text-xl text-gray-700 dark:text-gray-100"
+              className="md:hidden text-xl text-gray-700 dark:text-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ring-blue-500"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
             >
@@ -123,7 +123,7 @@ export default function Layout() {
             <div className="relative" ref={notifRef}>
               <button
                 onClick={() => setShowNotifMenu(!showNotifMenu)}
-                className="relative"
+                className="relative focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ring-blue-500"
                 aria-label="Notifications"
               >
                 <FaBell className="text-xl cursor-pointer" />
@@ -185,7 +185,7 @@ export default function Layout() {
             <div className="relative" ref={profileRef}>
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center space-x-2 text-sm focus:outline-none"
+                className="flex items-center space-x-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ring-blue-500"
               >
                 {user?.role === ROLES.ADMIN ? (
                   <FaUserCircle className="text-2xl" />
