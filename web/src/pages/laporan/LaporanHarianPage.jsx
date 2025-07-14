@@ -24,7 +24,6 @@ export default function LaporanHarianPage() {
   const [tanggal, setTanggal] = useState(new Date().toISOString().slice(0, 10));
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
     id: null,
@@ -133,21 +132,8 @@ export default function LaporanHarianPage() {
       {loading ? (
         <div>Memuat...</div>
       ) : (
-        <>
-          <div className="flex flex-wrap justify-between items-center gap-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <SearchInput
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setCurrentPage(1);
-                }}
-                placeholder="Cari laporan..."
-                ariaLabel="Cari laporan"
-              />
-            </div>
-          </div>
-          <div className="overflow-x-auto">
+          <>
+            <div className="overflow-x-auto">
           <Table>
             <thead>
               <tr className={tableStyles.headerRow}>
