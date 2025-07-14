@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import Select from "react-select";
 import { Pencil, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
+import months from "../../utils/months";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -39,20 +40,6 @@ export default function PenugasanDetailPage() {
     catatan: "",
   });
 
-  const months = [
-    "Januari",
-    "Februari",
-    "Maret",
-    "April",
-    "Mei",
-    "Juni",
-    "Juli",
-    "Agustus",
-    "September",
-    "Oktober",
-    "November",
-    "Desember",
-  ];
 
   const fetchDetail = useCallback(async () => {
     try {
