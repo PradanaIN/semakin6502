@@ -21,58 +21,19 @@ const MonitoringTabs = ({
       case "harian":
         return <DailyOverview data={dailyData} />;
       case "mingguan":
-        return (
-          <div className="space-y-3">
-            <div className="flex space-x-2">
-              <select
-                className="border rounded-md px-2 py-1 bg-gray-100 dark:bg-gray-700"
-                value={monthIndex}
-                onChange={(e) => onMonthChange?.(parseInt(e.target.value, 10))}
-              >
-                {months.map((m, i) => (
-                  <option key={i} value={i}>
-                    {m}
-                  </option>
-                ))}
-              </select>
-              {weeklyList.length > 0 && (
-                <select
-                  className="border rounded-md px-2 py-1 bg-gray-100 dark:bg-gray-700"
-                  value={weekIndex}
-                  onChange={(e) => onWeekChange?.(parseInt(e.target.value, 10))}
-                >
-                  {weeklyList.map((w, i) => (
-                    <option key={i} value={i}>
-                      Minggu {w.minggu}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
-            <WeeklyOverview data={weeklyList[weekIndex]} />
-          </div>
-        );
+        return <WeeklyOverview data={weeklyList[weekIndex]} />;
       case "bulanan":
         return <MonthlyOverview data={monthlyData} />;
       default:
         return null;
     }
-  }, [
-    tab,
-    dailyData,
-    weeklyList,
-    weekIndex,
-    onWeekChange,
-    monthIndex,
-    onMonthChange,
-    monthlyData,
-  ]);
+  }, [tab, dailyData, weeklyList, weekIndex, monthlyData]);
 
   const handleTabClick = useCallback((t) => setTab(t), []);
 
   return (
     <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow">
-      <div className="flex space-x-3 mb-4" role="tablist">
+      <div className="flex flex-wrap items-center gap-2 mb-4" role="tablist">
         {["harian", "mingguan", "bulanan"].map((type) => (
           <button
             key={type}
@@ -88,6 +49,34 @@ const MonitoringTabs = ({
             {type.charAt(0).toUpperCase() + type.slice(1)}
           </button>
         ))}
+        {tab === "mingguan" && (
+          <>
+            <select
+              className="border rounded-md px-2 py-1 bg-gray-100 dark:bg-gray-700"
+              value={monthIndex}
+              onChange={(e) => onMonthChange?.(parseInt(e.target.value, 10))}
+            >
+              {months.map((m, i) => (
+                <option key={i} value={i}>
+                  {m}
+                </option>
+              ))}
+            </select>
+            {weeklyList.length > 0 && (
+              <select
+                className="border rounded-md px-2 py-1 bg-gray-100 dark:bg-gray-700"
+                value={weekIndex}
+                onChange={(e) => onWeekChange?.(parseInt(e.target.value, 10))}
+              >
+                {weeklyList.map((w, i) => (
+                  <option key={i} value={i}>
+                    Minggu {w.minggu}
+                  </option>
+                ))}
+              </select>
+            )}
+          </>
+        )}
       </div>
       <div>{renderContent()}</div>
     </div>
