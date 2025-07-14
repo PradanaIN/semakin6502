@@ -8,13 +8,15 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
+import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
 import { STATUS } from "../../utils/status";
 import Modal from "../../components/ui/Modal";
 import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
-import months from "../../utils/months";
+import Pagination from "../../components/Pagination";
+
 
 export default function KegiatanTambahanPage() {
   const [items, setItems] = useState([]);
@@ -31,6 +33,8 @@ export default function KegiatanTambahanPage() {
   const [search, setSearch] = useState("");
   const [filterBulan, setFilterBulan] = useState("");
   const [filterTahun, setFilterTahun] = useState(new Date().getFullYear());
+  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -133,6 +137,12 @@ export default function KegiatanTambahanPage() {
     });
   }, [items, search, filterBulan, filterTahun]);
 
+  const paginatedItems = filteredItems.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  const totalPages = Math.ceil(filteredItems.length / pageSize) || 1;
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -148,23 +158,11 @@ export default function KegiatanTambahanPage() {
           placeholder="Cari kegiatan..."
           ariaLabel="Cari kegiatan"
         />
-        <select
-          value={filterBulan}
-          onChange={(e) => setFilterBulan(e.target.value)}
-          className="border rounded px-2 py-[4px] bg-white dark:bg-gray-700 dark:text-gray-200"
-        >
-          <option value="">Bulan</option>
-          {months.map((m, i) => (
-            <option key={i + 1} value={i + 1}>
-              {m}
-            </option>
-          ))}
-        </select>
-        <input
-          type="number"
-          value={filterTahun}
-          onChange={(e) => setFilterTahun(parseInt(e.target.value, 10))}
-          className="form-input w-24"
+        <MonthYearPicker
+          month={filterBulan}
+          year={filterTahun}
+          onMonthChange={setFilterBulan}
+          onYearChange={setFilterTahun}
         />
       </div>
 
@@ -186,19 +184,16 @@ export default function KegiatanTambahanPage() {
                 Memuat data...
               </td>
             </tr>
-          ) : filteredItems.length === 0 ? (
+          ) : paginatedItems.length === 0 ? (
             <tr>
               <td colSpan="5" className="py-4 text-center">
                 Data tidak ditemukan
               </td>
             </tr>
           ) : (
-            filteredItems.map((item, idx) => (
-              <tr
-                key={item.id}
-                className="border-t dark:border-gray-700 text-center"
-              >
-                <td className={tableStyles.cell}>{idx + 1}</td>
+            paginatedItems.map((item, idx) => (
+              <tr key={item.id} className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}>
+                <td className={tableStyles.cell}>{(currentPage - 1) * pageSize + idx + 1}</td>
                 <td className={tableStyles.cell}>{item.nama}</td>
                 <td className={tableStyles.cell}>
                   {item.kegiatan.team?.nama_tim || "-"}
@@ -239,6 +234,26 @@ export default function KegiatanTambahanPage() {
           )}
         </tbody>
       </Table>
+
+      <div className="flex items-center justify-between mt-4">
+        <div className="space-x-2">
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(parseInt(e.target.value, 10));
+              setCurrentPage(1);
+            }}
+            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
+          >
+            {[5, 10, 25].map((n) => (
+              <option key={n} value={n} className="text-gray-900 dark:text-gray-200">
+                {n}
+              </option>
+            ))}
+          </select>
+        </div>
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+      </div>
 
       {showForm && (
         <Modal

@@ -19,6 +19,7 @@ import tableStyles from "../../components/ui/Table.module.css";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
+import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import { ROLES } from "../../utils/roles";
 import months from "../../utils/months";
 import SearchInput from "../../components/SearchInput";
@@ -159,29 +160,17 @@ export default function PenugasanPage() {
             placeholder="Cari penugasan..."
             ariaLabel="Cari penugasan"
           />
-          <select
-            value={filterBulan}
-            onChange={(e) => {
-              setFilterBulan(e.target.value);
+          <MonthYearPicker
+            month={filterBulan}
+            year={filterTahun}
+            onMonthChange={(val) => {
+              setFilterBulan(val);
               setCurrentPage(1);
             }}
-            className="border rounded px-2 py-[4px] bg-white dark:bg-gray-700 dark:text-gray-200"
-          >
-            <option value="">Bulan</option>
-            {months.map((m, i) => (
-              <option key={i + 1} value={i + 1}>
-                {m}
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            value={filterTahun}
-            onChange={(e) => {
-              setFilterTahun(parseInt(e.target.value, 10));
+            onYearChange={(val) => {
+              setFilterTahun(val);
               setCurrentPage(1);
             }}
-            className="form-input w-24 px-2 py-[4px]"
           />
           <button
             type="button"
@@ -226,37 +215,28 @@ export default function PenugasanPage() {
               </td>
             </tr>
           ) : (
-            paginated.map((p, idx) => (
-              <tr
-                key={p.id}
-                className="border-t dark:border-gray-700 text-center"
-              >
-                <td className="px-1 py-1 sm:px-2 sm:py-2">
-                  {(currentPage - 1) * pageSize + idx + 1}
-                </td>
-                <td className={tableStyles.cell}>
-                  {p.kegiatan?.nama_kegiatan || "-"}
-                </td>
-                <td className={tableStyles.cell}>
-                  {p.kegiatan?.team?.nama_tim || "-"}
-                </td>
-                <td className={tableStyles.cell}>{p.pegawai?.nama || "-"}</td>
-                <td className={tableStyles.cell}>{p.minggu}</td>
-                <td className={tableStyles.cell}>
-                  <StatusBadge status={p.status} />
-                </td>
-                <td className="px-1 py-1 sm:px-2 sm:py-2">
-                  <Button
-                    onClick={() => navigate(`/tugas-mingguan/${p.id}`)}
-                    variant="icon"
-                    icon
-                    aria-label="Detail"
-                  >
-                    <Eye size={16} />
-                  </Button>
-                </td>
-              </tr>
-            ))
+              paginated.map((p, idx) => (
+                  <tr key={p.id} className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}>
+                  <td className="px-1 py-1 sm:px-2 sm:py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
+                  <td className={tableStyles.cell}>{p.kegiatan?.nama_kegiatan || "-"}</td>
+                  <td className={tableStyles.cell}>{p.kegiatan?.team?.nama_tim || "-"}</td>
+                  <td className={tableStyles.cell}>{p.pegawai?.nama || "-"}</td>
+                  <td className={tableStyles.cell}>{p.minggu}</td>
+                  <td className={tableStyles.cell}>
+                    <StatusBadge status={p.status} />
+                  </td>
+                  <td className="px-1 py-1 sm:px-2 sm:py-2">
+                    <Button
+                      onClick={() => navigate(`/tugas-mingguan/${p.id}`)}
+                      variant="icon"
+                      icon
+                      aria-label="Detail"
+                    >
+                      <Eye size={16} />
+                    </Button>
+                  </td>
+                </tr>
+              ))
           )}
         </tbody>
       </Table>

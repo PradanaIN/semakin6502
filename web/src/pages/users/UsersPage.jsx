@@ -147,17 +147,17 @@ export default function UsersPage() {
           placeholder="Cari pengguna..."
           ariaLabel="Cari pengguna"
         />
-        <select
+          <select
             value={roleFilter}
             onChange={(e) => {
               setRoleFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="border rounded px-3 py-2 bg-white text-gray-900"
+            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
           >
-            <option value="">Semua Role</option>
+            <option value="" className="text-gray-900 dark:text-gray-200">Semua Role</option>
             {roles.map((r) => (
-              <option key={r.id} value={r.name} className="text-gray-900">
+              <option key={r.id} value={r.name} className="text-gray-900 dark:text-gray-200">
                 {r.name}
               </option>
             ))}
@@ -195,7 +195,7 @@ export default function UsersPage() {
             </tr>
           ) : (
             paginatedUsers.map((u, idx) => (
-              <tr key={u.id} className="border-t dark:border-gray-700">
+              <tr key={u.id} className={`${tableStyles.row} border-t dark:border-gray-700`}>
               <td className={`${tableStyles.cell} text-center`}>{(currentPage - 1) * pageSize + idx + 1}</td>
               <td className={tableStyles.cell}>{u.nama}</td>
               <td className={`${tableStyles.cell} text`}>{u.email}</td>

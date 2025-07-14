@@ -154,7 +154,7 @@ export default function TeamsPage() {
           paginated.map((t, idx) => (
             <tr
               key={t.id}
-              className="border-t dark:border-gray-700 text-center"
+              className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
             >
               <td className={tableStyles.cell}>{(currentPage - 1) * pageSize + idx + 1}</td>
               <td className={tableStyles.cell}>{t.nama_tim}</td>
