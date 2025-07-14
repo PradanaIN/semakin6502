@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Plus, Eye, Pencil, Trash2 } from "lucide-react";
+import { Plus, Eye, Pencil, Trash2, Search } from "lucide-react";
+import Pagination from "../../components/Pagination";
 import { useNavigate } from "react-router-dom";
 
 export default function KegiatanTambahanPage() {
@@ -15,6 +16,9 @@ export default function KegiatanTambahanPage() {
     status: "Belum",
     deskripsi: "",
   });
+  const [search, setSearch] = useState("");
+  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -92,13 +96,40 @@ export default function KegiatanTambahanPage() {
   };
 
   const openDetail = (id) => {
-    navigate(`/kegiatan-tambahan/${id}`);
+    navigate(`/tugas-tambahan/${id}`);
   };
+
+  const filtered = items.filter(
+    (i) =>
+      i.nama.toLowerCase().includes(search.toLowerCase()) ||
+      i.status.toLowerCase().includes(search.toLowerCase())
+  );
+  const paginated = filtered.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-xl font-semibold">Kegiatan Tambahan</h1>
+      <div className="flex flex-wrap justify-between items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search size={16} className="text-gray-400 dark:text-gray-300" />
+            </div>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Cari kegiatan..."
+              className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
+        </div>
         <button
           onClick={openCreate}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
@@ -124,16 +155,16 @@ export default function KegiatanTambahanPage() {
                 Memuat data...
               </td>
             </tr>
-          ) : items.length === 0 ? (
+          ) : filtered.length === 0 ? (
             <tr>
               <td colSpan="5" className="py-4 text-center">
                 Data tidak ditemukan
               </td>
             </tr>
           ) : (
-            items.map((item, idx) => (
+            paginated.map((item, idx) => (
               <tr key={item.id} className="border-t dark:border-gray-700 text-center">
-                <td className="px-4 py-2">{idx + 1}</td>
+                <td className="px-4 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
                 <td className="px-4 py-2">{item.nama}</td>
                 <td className="px-4 py-2">{item.tanggal.slice(0,10)}</td>
                 <td className="px-4 py-2">{item.status}</td>
@@ -162,6 +193,26 @@ export default function KegiatanTambahanPage() {
           )}
         </tbody>
       </table>
+
+      <div className="flex items-center justify-between mt-4">
+        <div className="space-x-2">
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(parseInt(e.target.value, 10));
+              setCurrentPage(1);
+            }}
+            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
+          >
+            {[5, 10, 25].map((n) => (
+              <option key={n} value={n} className="text-gray-900 dark:text-gray-200">
+                {n}
+              </option>
+            ))}
+          </select>
+        </div>
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+      </div>
 
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
