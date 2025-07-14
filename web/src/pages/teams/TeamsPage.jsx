@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
+import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
 import { ROLES } from "../../utils/roles";
 import SearchInput from "../../components/SearchInput";
@@ -204,17 +205,20 @@ export default function TeamsPage() {
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
-            <h2 className="text-xl font-semibold mb-2">
-              {editingTeam ? "Edit Tim" : "Tambah Tim"}
-            </h2>
-            <div className="space-y-2">
-              <div>
-                <label className="block text-sm mb-1">Nama Tim</label>
-                <input
-                  type="text"
-                  value={form.nama_tim}
+        <Modal
+          onClose={() => {
+            setShowForm(false);
+          }}
+        >
+          <h2 className="text-xl font-semibold mb-2">
+            {editingTeam ? "Edit Tim" : "Tambah Tim"}
+          </h2>
+          <div className="space-y-2">
+            <div>
+              <label className="block text-sm mb-1">Nama Tim</label>
+              <input
+                type="text"
+                value={form.nama_tim}
                   onChange={(e) =>
                     setForm({ ...form, nama_tim: e.target.value })
                   }
@@ -244,8 +248,7 @@ export default function TeamsPage() {
                 Simpan
               </button>
             </div>
-          </div>
-        </div>
+          </Modal>
       )}
     </div>
   );

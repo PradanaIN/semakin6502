@@ -3,6 +3,7 @@ import axios from "axios";
 import { Pencil, Trash2 } from "lucide-react";
 import Swal from "sweetalert2";
 import Pagination from "../../components/Pagination";
+import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
 import { STATUS } from "../../utils/status";
 import SearchInput from "../../components/SearchInput";
@@ -224,9 +225,12 @@ export default function LaporanHarianPage() {
         </div>
         </>
       )}
-      {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
+        {showForm && (
+          <Modal
+            onClose={() => {
+              setShowForm(false);
+            }}
+          >
             <h3 className="text-lg font-semibold">Edit Laporan Harian</h3>
             <div className="space-y-2">
               <div>
@@ -298,9 +302,8 @@ export default function LaporanHarianPage() {
                 Simpan
               </button>
             </div>
-          </div>
-        </div>
-      )}
+          </Modal>
+        )}
     </div>
   );
 }
