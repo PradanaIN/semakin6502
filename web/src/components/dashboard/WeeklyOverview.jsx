@@ -50,7 +50,7 @@ const WeeklyOverview = ({ data }) => {
             >
               <div className="flex justify-between text-sm">
                 <span>
-                  {day.hari} {formatDate(day.tanggal)}
+                  {day.hari}, {formatDate(day.tanggal)}
                 </span>
                 <span>
                   {day.selesai}/{day.total} &nbsp; {day.persen}%
