@@ -3,11 +3,11 @@ import { STATUS } from "../../utils/status";
 
 const colorMap = {
   [STATUS.BELUM]:
-    "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
+    "bg-gray-200 text-gray-900 dark:bg-gray-600 dark:text-gray-100",
   [STATUS.SEDANG_DIKERJAKAN]:
-    "bg-yellow-100 text-yellow-800 dark:bg-yellow-700 dark:text-yellow-200",
+    "bg-yellow-200 text-yellow-900 dark:bg-yellow-600 dark:text-yellow-100",
   [STATUS.SELESAI_DIKERJAKAN]:
-    "bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-200",
+    "bg-green-200 text-green-900 dark:bg-green-600 dark:text-green-100",
 };
 
 export default function StatusBadge({ status }) {
