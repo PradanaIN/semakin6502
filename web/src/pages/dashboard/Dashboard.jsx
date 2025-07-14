@@ -9,7 +9,7 @@ const Dashboard = () => {
   const [dailyData, setDailyData] = useState([]);
   const [weeklyList, setWeeklyList] = useState([]);
   const [weekIndex, setWeekIndex] = useState(0);
-  const [monthlyProgress, setMonthlyProgress] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -48,24 +48,6 @@ const Dashboard = () => {
           filters.teamId = user.teamId;
         }
 
-        const months = Array.from({ length: 12 }, (_, i) => i + 1);
-
-        const progressPromise = Promise.all(
-          months.map((m) =>
-            axios
-              .get("/penugasan", { params: { bulan: m, tahun: year } })
-              .then((res) => {
-                const rows = res.data || [];
-                const selesai = rows.filter((r) =>
-                  String(r.status).toLowerCase().includes("selesai")
-                ).length;
-                const total = rows.length;
-                const persen = total ? Math.round((selesai / total) * 100) : 0;
-                return { bulan: m, persen };
-              })
-          )
-        );
-
         const weeklyPromises = weekStarts.map((d) =>
           axios
             .get("/monitoring/mingguan", {
@@ -74,10 +56,10 @@ const Dashboard = () => {
             .then((res) => res.data)
         );
 
-        const [dailyRes, weeklyArray, progress] = await Promise.all([
+        const [dailyRes, weeklyArray, monthlyRes] = await Promise.all([
           axios.get("/monitoring/harian", { params: { tanggal, ...filters } }),
           Promise.all(weeklyPromises),
-          progressPromise,
+          axios.get("/monitoring/bulanan", { params: { bulan: String(year), ...filters } }),
         ]);
 
         const mingguKe = Math.ceil(today.getDate() / 7);
@@ -97,7 +79,7 @@ const Dashboard = () => {
         setDailyData(dailyRes.data);
         setWeeklyList(weeklyArray);
         setWeekIndex(currentIndex);
-        setMonthlyProgress(progress);
+        setMonthlyData(monthlyRes.data);
       } catch (error) {
         if (error?.response && [401, 403].includes(error.response.status)) {
           setErrorMsg("Anda tidak memiliki akses untuk melihat monitoring.");
@@ -142,7 +124,7 @@ const Dashboard = () => {
         weeklyList={weeklyList}
         weekIndex={weekIndex}
         onWeekChange={setWeekIndex}
-        monthlyProgress={monthlyProgress}
+        monthlyData={monthlyData}
       />
 
       <div className="bg-green-50 dark:bg-green-900 p-6 rounded-xl shadow text-center">

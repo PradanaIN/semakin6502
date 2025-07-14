@@ -8,7 +8,7 @@ const MonitoringTabs = ({
   weeklyList = [],
   weekIndex = 0,
   onWeekChange,
-  monthlyProgress,
+  monthlyData,
 }) => {
   const [tab, setTab] = useState("harian");
 
