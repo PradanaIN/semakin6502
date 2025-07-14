@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Search } from "lucide-react";
 import Swal from "sweetalert2";
 import Pagination from "../../components/Pagination";
 
@@ -93,7 +93,10 @@ export default function LaporanHarianPage() {
             <div className="flex items-center gap-2 flex-wrap">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search size={16} className="text-gray-400 dark:text-gray-300" />
+                  <Search
+                    size={16}
+                    className="text-gray-400 dark:text-gray-300"
+                  />
                 </div>
                 <input
                   type="text"
@@ -109,87 +112,98 @@ export default function LaporanHarianPage() {
             </div>
           </div>
           <div className="overflow-x-auto">
-          <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
-            <thead>
-              <tr className="bg-gray-200 dark:bg-gray-700">
-                <th className="px-3 py-2 border">No</th>
-                <th className="px-3 py-2 border">Tanggal</th>
-                <th className="px-3 py-2 border">Status</th>
-                <th className="px-3 py-2 border">Bukti</th>
-                <th className="px-3 py-2 border">Catatan</th>
-                <th className="px-3 py-2 border">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginated.map((item, idx) => (
-                <tr key={item.id} className="border-t text-center">
-                  <td className="px-3 py-1 border">{(currentPage - 1) * pageSize + idx + 1}</td>
-                  <td className="px-3 py-1 border">{item.tanggal.slice(0, 10)}</td>
-                  <td className="px-3 py-1 border">{item.status}</td>
-                  <td className="px-3 py-1 border">
-                    {item.bukti_link ? (
-                      <a
-                        href={item.bukti_link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 underline"
+            <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
+              <thead>
+                <tr className="bg-gray-200 dark:bg-gray-700">
+                  <th className="px-3 py-2 border">No</th>
+                  <th className="px-3 py-2 border">Tanggal</th>
+                  <th className="px-3 py-2 border">Status</th>
+                  <th className="px-3 py-2 border">Bukti</th>
+                  <th className="px-3 py-2 border">Catatan</th>
+                  <th className="px-3 py-2 border">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginated.map((item, idx) => (
+                  <tr key={item.id} className="border-t text-center">
+                    <td className="px-3 py-1 border">
+                      {(currentPage - 1) * pageSize + idx + 1}
+                    </td>
+                    <td className="px-3 py-1 border">
+                      {item.tanggal.slice(0, 10)}
+                    </td>
+                    <td className="px-3 py-1 border">{item.status}</td>
+                    <td className="px-3 py-1 border">
+                      {item.bukti_link ? (
+                        <a
+                          href={item.bukti_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline"
+                        >
+                          Lihat
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td className="px-3 py-1 border">{item.catatan || "-"}</td>
+                    <td className="px-3 py-1 border space-x-1">
+                      <button
+                        onClick={() => openEdit(item)}
+                        className="p-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
                       >
-                        Lihat
-                      </a>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td className="px-3 py-1 border">{item.catatan || "-"}</td>
-                  <td className="px-3 py-1 border space-x-1">
-                    <button
-                      onClick={() => openEdit(item)}
-                      className="p-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
-                    >
-                      <Pencil size={14} />
-                    </button>
-                    <button
-                      onClick={() => remove(item.id)}
-                      className="p-1 bg-red-600 hover:bg-red-700 text-white rounded"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {laporan.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="text-center py-4 text-gray-500 dark:text-gray-300">
-                    Tidak ada laporan
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-          <div className="flex items-center justify-between mt-2">
-            <div className="space-x-2">
-              <select
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(parseInt(e.target.value, 10));
-                  setCurrentPage(1);
-                }}
-                className="border rounded px-3 py-1 bg-white dark:bg-gray-700 dark:text-gray-200"
-              >
-                {[5, 10, 25].map((n) => (
-                  <option key={n} value={n} className="text-gray-900 dark:text-gray-200">
-                    {n}
-                  </option>
+                        <Pencil size={14} />
+                      </button>
+                      <button
+                        onClick={() => remove(item.id)}
+                        className="p-1 bg-red-600 hover:bg-red-700 text-white rounded"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </td>
+                  </tr>
                 ))}
-              </select>
+                {laporan.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="text-center py-4 text-gray-500 dark:text-gray-300"
+                    >
+                      Tidak ada laporan
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+            <div className="flex items-center justify-between mt-2">
+              <div className="space-x-2">
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(parseInt(e.target.value, 10));
+                    setCurrentPage(1);
+                  }}
+                  className="border rounded px-3 py-1 bg-white dark:bg-gray-700 dark:text-gray-200"
+                >
+                  {[5, 10, 25].map((n) => (
+                    <option
+                      key={n}
+                      value={n}
+                      className="text-gray-900 dark:text-gray-200"
+                    >
+                      {n}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
             </div>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-        </div>
+          </div>
         </>
       )}
       {showForm && (
@@ -198,16 +212,22 @@ export default function LaporanHarianPage() {
             <h3 className="text-lg font-semibold">Edit Laporan Harian</h3>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm mb-1">Tanggal<span className="text-red-500">*</span></label>
+                <label className="block text-sm mb-1">
+                  Tanggal<span className="text-red-500">*</span>
+                </label>
                 <input
                   type="date"
                   value={form.tanggal}
-                  onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, tanggal: e.target.value })
+                  }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Status<span className="text-red-500">*</span></label>
+                <label className="block text-sm mb-1">
+                  Status<span className="text-red-500">*</span>
+                </label>
                 <select
                   value={form.status}
                   onChange={(e) => setForm({ ...form, status: e.target.value })}
@@ -224,7 +244,9 @@ export default function LaporanHarianPage() {
                   <input
                     type="text"
                     value={form.bukti_link}
-                    onChange={(e) => setForm({ ...form, bukti_link: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, bukti_link: e.target.value })
+                    }
                     className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                   />
                 </div>
@@ -233,7 +255,9 @@ export default function LaporanHarianPage() {
                 <label className="block text-sm mb-1">Catatan</label>
                 <textarea
                   value={form.catatan}
-                  onChange={(e) => setForm({ ...form, catatan: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, catatan: e.target.value })
+                  }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
@@ -261,16 +285,22 @@ export default function LaporanHarianPage() {
             <h3 className="text-lg font-semibold">Edit Laporan Harian</h3>
             <div className="space-y-2">
               <div>
-                <label className="block text-sm mb-1">Tanggal<span className="text-red-500">*</span></label>
+                <label className="block text-sm mb-1">
+                  Tanggal<span className="text-red-500">*</span>
+                </label>
                 <input
                   type="date"
                   value={form.tanggal}
-                  onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, tanggal: e.target.value })
+                  }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
               <div>
-                <label className="block text-sm mb-1">Status<span className="text-red-500">*</span></label>
+                <label className="block text-sm mb-1">
+                  Status<span className="text-red-500">*</span>
+                </label>
                 <select
                   value={form.status}
                   onChange={(e) => setForm({ ...form, status: e.target.value })}
@@ -287,7 +317,9 @@ export default function LaporanHarianPage() {
                   <input
                     type="text"
                     value={form.bukti_link}
-                    onChange={(e) => setForm({ ...form, bukti_link: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, bukti_link: e.target.value })
+                    }
                     className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                   />
                 </div>
@@ -296,7 +328,9 @@ export default function LaporanHarianPage() {
                 <label className="block text-sm mb-1">Catatan</label>
                 <textarea
                   value={form.catatan}
-                  onChange={(e) => setForm({ ...form, catatan: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, catatan: e.target.value })
+                  }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
@@ -321,4 +355,3 @@ export default function LaporanHarianPage() {
     </div>
   );
 }
-
