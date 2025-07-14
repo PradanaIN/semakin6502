@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Pencil, Plus, Trash2, Search } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
 import { ROLES } from "../../utils/roles";
+import SearchInput from "../../components/SearchInput";
 
 export default function TeamsPage() {
   const { user } = useAuth();
@@ -104,21 +105,14 @@ export default function TeamsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={16} className="text-gray-400 dark:text-gray-300" />
-            </div>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder="Cari tim..."
-              className="w-full border rounded-md py-[4px] pl-10 pr-3 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
+          <SearchInput
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+            placeholder="Cari tim..."
+          />
         </div>
         <button
           onClick={openCreate}
