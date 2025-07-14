@@ -9,6 +9,7 @@ import { ROLES } from "../../utils/roles";
 import { STATUS } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Modal from "../../components/ui/Modal";
+import Table from "../../components/ui/Table";
 import months from "../../utils/months";
 
 const selectStyles = {
@@ -360,7 +361,7 @@ export default function PenugasanDetailPage() {
             Tambah
           </button>
         </div>
-        <table className="min-w-full">
+        <Table className="min-w-full">
           <thead>
             <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm">
               <th className="px-2 py-1">No</th>
@@ -424,7 +425,7 @@ export default function PenugasanDetailPage() {
               ))
             )}
           </tbody>
-        </table>
+        </Table>
       </div>
 
       {showLaporanForm && (
