@@ -42,7 +42,10 @@ const WeeklyOverview = ({ data }) => {
 
       <div className="space-y-3">
         {data.detail
-          ?.filter((d, idx) => idx < 5 || d.total > 0)
+          ?.filter((d) => {
+            const dow = new Date(d.tanggal).getDay();
+            return (dow >= 1 && dow <= 5) || d.total > 0;
+          })
           .map((day, index) => (
             <div
               key={index}

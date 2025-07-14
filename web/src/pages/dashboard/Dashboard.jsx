@@ -25,14 +25,12 @@ const Dashboard = () => {
 
       // determine start dates for each week in the month
       const firstOfMonth = new Date(year, month, 1);
+      const monthEnd = new Date(year, month + 1, 0);
       const firstMonday = new Date(firstOfMonth);
       firstMonday.setDate(firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7));
       const weekStarts = [];
-      for (let i = 0; i < 6; i++) {
-        const d = new Date(firstMonday);
-        d.setDate(firstMonday.getDate() + i * 7);
-        if (i > 0 && d.getMonth() !== month && d.getDate() > 7) break;
-        weekStarts.push(d);
+      for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+        weekStarts.push(new Date(d));
       }
 
       let currentIndex = 0;
@@ -65,7 +63,36 @@ const Dashboard = () => {
           axios.get("/monitoring/bulanan", { params: { year: String(year), ...filters } }),
         ]);
 
-        const normalized = weeklyArray.map((w, i) => ({ ...w, minggu: i + 1 }));
+        const monthStart = new Date(year, month, 1);
+        const monthEnd = new Date(year, month + 1, 0);
+        const normalized = weeklyArray.map((w, i) => {
+          const [sIso, eIso] = w.tanggal.split(" - ");
+          const startDate = new Date(sIso);
+          const endDate = new Date(eIso);
+          const displayStart = startDate < monthStart ? monthStart : startDate;
+          const displayEnd = endDate > monthEnd ? monthEnd : endDate;
+          const tanggal = `${displayStart.toISOString().slice(0, 10)} - ${displayEnd
+            .toISOString()
+            .slice(0, 10)}`;
+          const detail = w.detail.filter((d) => {
+            const t = new Date(d.tanggal);
+            return t >= monthStart && t <= monthEnd;
+          });
+          const totalSelesai = detail.reduce((sum, d) => sum + d.selesai, 0);
+          const totalTugas = detail.reduce((sum, d) => sum + d.total, 0);
+          const totalProgress = totalTugas
+            ? Math.round((totalSelesai / totalTugas) * 100)
+            : 0;
+          return {
+            ...w,
+            minggu: i + 1,
+            tanggal,
+            detail,
+            totalSelesai,
+            totalTugas,
+            totalProgress,
+          };
+        });
 
         setDailyData(dailyRes.data);
         setWeeklyList(normalized);
