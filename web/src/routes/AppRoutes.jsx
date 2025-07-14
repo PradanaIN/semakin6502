@@ -1,16 +1,19 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "../pages/auth/LoginPage";
-import Dashboard from "../pages/dashboard/Dashboard";
-import Layout from "../pages/layout/Layout";
+import React, { Suspense } from "react";
 import { useAuth } from "../pages/auth/useAuth";
-import UsersPage from "../pages/users/UsersPage";
-import TeamsPage from "../pages/teams/TeamsPage";
-import MasterKegiatanPage from "../pages/master/MasterKegiatanPage";
-import PenugasanPage from "../pages/penugasan/PenugasanPage";
-import PenugasanDetailPage from "../pages/penugasan/PenugasanDetailPage";
-import LaporanHarianPage from "../pages/laporan/LaporanHarianPage";
-import KegiatanTambahanPage from "../pages/tambahan/KegiatanTambahanPage";
-import KegiatanTambahanDetailPage from "../pages/tambahan/KegiatanTambahanDetailPage";
+import Loading from "../components/Loading";
+
+const LoginPage = React.lazy(() => import("../pages/auth/LoginPage"));
+const Dashboard = React.lazy(() => import("../pages/dashboard/Dashboard"));
+const Layout = React.lazy(() => import("../pages/layout/Layout"));
+const UsersPage = React.lazy(() => import("../pages/users/UsersPage"));
+const TeamsPage = React.lazy(() => import("../pages/teams/TeamsPage"));
+const MasterKegiatanPage = React.lazy(() => import("../pages/master/MasterKegiatanPage"));
+const PenugasanPage = React.lazy(() => import("../pages/penugasan/PenugasanPage"));
+const PenugasanDetailPage = React.lazy(() => import("../pages/penugasan/PenugasanDetailPage"));
+const LaporanHarianPage = React.lazy(() => import("../pages/laporan/LaporanHarianPage"));
+const KegiatanTambahanPage = React.lazy(() => import("../pages/tambahan/KegiatanTambahanPage"));
+const KegiatanTambahanDetailPage = React.lazy(() => import("../pages/tambahan/KegiatanTambahanDetailPage"));
 
 function PrivateRoute({ children }) {
   const { token, user } = useAuth();
@@ -24,6 +27,7 @@ export default function AppRoutes() {
   const { token, user } = useAuth();
 
   return (
+    <Suspense fallback={<Loading />}>
     <Routes>
       {/* Login tidak pakai layout */}
       <Route
@@ -52,5 +56,6 @@ export default function AppRoutes() {
         <Route path="kegiatan-tambahan/:id" element={<KegiatanTambahanDetailPage />} />
       </Route>
     </Routes>
+    </Suspense>
   );
 }
