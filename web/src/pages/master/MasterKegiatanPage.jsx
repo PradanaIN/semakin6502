@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { Pencil, Plus, Trash2, Search } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
+import { ROLES } from "../../utils/roles";
 
 export default function MasterKegiatanPage() {
   const { user } = useAuth();
@@ -115,7 +116,7 @@ export default function MasterKegiatanPage() {
     }
   };
 
-  if (!["ketua", "admin"].includes(user?.role)) {
+  if (![ROLES.KETUA, ROLES.ADMIN].includes(user?.role)) {
     return (
       <div className="p-6 text-center">
         Anda tidak memiliki akses ke halaman ini.

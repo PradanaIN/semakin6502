@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import Select from "react-select";
 import { Pencil, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
-import months from "../../utils/months";
+import { ROLES } from "../../utils/roles";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -16,7 +16,7 @@ export default function PenugasanDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const canManage = ["admin", "ketua", "pimpinan"].includes(user?.role);
+  const canManage = [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role);
   const [item, setItem] = useState(null);
   const [kegiatan, setKegiatan] = useState([]);
   const [users, setUsers] = useState([]);
@@ -264,7 +264,7 @@ export default function PenugasanDetailPage() {
               styles={selectStyles}
               menuPortalTarget={document.body}
               options={users
-                .filter((u) => u.role !== "admin")
+                .filter((u) => u.role !== ROLES.ADMIN)
                 .map((u) => ({ value: u.id, label: u.nama }))}
               value={{
                 value: form.pegawaiId,

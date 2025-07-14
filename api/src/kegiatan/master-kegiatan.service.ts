@@ -1,5 +1,6 @@
 import { Injectable, ForbiddenException, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
+import { ROLES } from "../common/roles.constants";
 import { CreateMasterKegiatanDto } from "./dto/create-master-kegiatan.dto";
 import { UpdateMasterKegiatanDto } from "./dto/update-master-kegiatan.dto";
 
@@ -39,7 +40,7 @@ export class MasterKegiatanService {
   }
 
   async create(data: CreateMasterKegiatanDto, userId: number, role: string) {
-    if (role !== "admin") {
+    if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
         where: { teamId: data.teamId, userId, is_leader: true },
       });
@@ -59,8 +60,8 @@ export class MasterKegiatanService {
     const existing = await this.prisma.masterKegiatan.findUnique({
       where: { id },
     });
-    if (!existing) throw new NotFoundException("not found");
-    if (role !== "admin") {
+    if (!existing) throw new Error("not found");
+    if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
         where: { teamId: existing.teamId, userId, is_leader: true },
       });
@@ -75,8 +76,8 @@ export class MasterKegiatanService {
 
   async remove(id: number, userId: number, role: string) {
     const existing = await this.prisma.masterKegiatan.findUnique({ where: { id } });
-    if (!existing) throw new NotFoundException("not found");
-    if (role !== "admin") {
+    if (!existing) throw new Error("not found");
+    if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
         where: { teamId: existing.teamId, userId, is_leader: true },
       });

@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { Pencil, Plus, Trash2, Search } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
+import { ROLES } from "../../utils/roles";
 
 export default function TeamsPage() {
   const { user } = useAuth();
@@ -91,7 +92,7 @@ export default function TeamsPage() {
   );
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
-  if (user?.role !== "admin") {
+  if (user?.role !== ROLES.ADMIN) {
     return (
       <div className="p-6 text-center">
         Anda tidak memiliki akses ke halaman ini.

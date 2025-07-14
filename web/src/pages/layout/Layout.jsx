@@ -15,6 +15,7 @@ import {
   FaIdBadge,
   FaCheckCircle,
 } from "react-icons/fa";
+import { ROLES } from "../../utils/roles";
 
 export default function Layout() {
   const { user, setToken, setUser } = useAuth();
@@ -89,7 +90,7 @@ export default function Layout() {
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 w-64`}
       >
-        <Sidebar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
+        <Sidebar setMobileOpen={setMobileOpen} />
       </div>
 
       {/* Overlay untuk mobile */}
@@ -183,7 +184,7 @@ export default function Layout() {
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex items-center space-x-2 text-sm focus:outline-none"
               >
-                {user?.role === "admin" ? (
+                {user?.role === ROLES.ADMIN ? (
                   <FaUserCircle className="text-2xl" />
                 ) : (
                   <img
@@ -195,16 +196,16 @@ export default function Layout() {
                   />
                 )}
                 <div className="hidden md:block text-left">
-                  {user?.role === "admin" ? (
+                  {user?.role === ROLES.ADMIN ? (
                     <div className="font-semibold">Admin</div>
                   ) : (
                     <>
                       <div className="font-semibold">{user?.nama}</div>
                       <div className="text-xs capitalize text-gray-500 dark:text-gray-300">
-                        {user?.role === "pimpinan"
+                        {user?.role === ROLES.PIMPINAN
                           ? "Pimpinan"
                           : `${
-                              user?.role === "ketua" ? "Ketua Tim" : "Anggota Tim"
+                              user?.role === ROLES.KETUA ? "Ketua Tim" : "Anggota Tim"
                             } ${
                               user?.team ||
                               user?.teamName ||

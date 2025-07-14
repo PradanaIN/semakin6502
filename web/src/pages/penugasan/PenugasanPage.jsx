@@ -6,7 +6,7 @@ import Select from "react-select";
 import { useAuth } from "../auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Pagination";
-import months from "../../utils/months";
+import { ROLES } from "../../utils/roles";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -16,7 +16,7 @@ const selectStyles = {
 
 export default function PenugasanPage() {
   const { user } = useAuth();
-  const canManage = ["admin", "ketua", "pimpinan"].includes(user?.role);
+  const canManage = [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role);
   const navigate = useNavigate();
   const [penugasan, setPenugasan] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
@@ -60,7 +60,7 @@ export default function PenugasanPage() {
       ]);
 
       let kRes;
-      if (user?.role === "admin") {
+      if (user?.role === ROLES.ADMIN) {
         kRes = await axios.get("/master-kegiatan");
       } else {
         const tId = tRes.data[0]?.id;
@@ -312,7 +312,7 @@ export default function PenugasanPage() {
                   styles={selectStyles}
                   menuPortalTarget={document.body}
                   options={users
-                    .filter((u) => u.role !== "admin")
+                    .filter((u) => u.role !== ROLES.ADMIN)
                     .map((u) => ({ value: u.id, label: `${u.nama}` }))}
                   value={form.pegawaiIds
                     .map((id) => {
@@ -334,7 +334,7 @@ export default function PenugasanPage() {
                   onClick={() =>
                     setForm({
                       ...form,
-                      pegawaiIds: users.filter((u) => u.role !== "admin").map((u) => u.id),
+                      pegawaiIds: users.filter((u) => u.role !== ROLES.ADMIN).map((u) => u.id),
                     })
                   }
                   className="mt-1 px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded"
