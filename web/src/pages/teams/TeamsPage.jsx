@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import confirmAlert from "../utils/confirmAlert";
@@ -45,11 +45,11 @@ export default function TeamsPage() {
     setShowForm(true);
   };
 
-  const openEdit = (t) => {
+  const openEdit = useCallback((t) => {
     setEditingTeam(t);
     setForm({ nama_tim: t.nama_tim });
     setShowForm(true);
-  };
+  }, []);
 
   const saveTeam = async () => {
     if (!form.nama_tim) {
@@ -71,7 +71,7 @@ export default function TeamsPage() {
     }
   };
 
-  const deleteTeam = async (id) => {
+  const deleteTeam = useCallback(async (id) => {
     const r = await confirmAlert({
       title: "Hapus tim ini?",
       icon: "warning",
@@ -86,7 +86,7 @@ export default function TeamsPage() {
       console.error("Gagal menghapus tim", err);
       Swal.fire("Error", "Gagal menghapus tim", "error");
     }
-  };
+  }, []);
 
   const filtered = teams.filter((t) =>
     t.nama_tim.toLowerCase().includes(search.toLowerCase())
