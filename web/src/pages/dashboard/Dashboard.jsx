@@ -65,8 +65,10 @@ const Dashboard = () => {
           axios.get("/monitoring/bulanan", { params: { year: String(year), ...filters } }),
         ]);
 
+        const normalized = weeklyArray.map((w, i) => ({ ...w, minggu: i + 1 }));
+
         setDailyData(dailyRes.data);
-        setWeeklyList(weeklyArray);
+        setWeeklyList(normalized);
         setWeekIndex(currentIndex);
         setMonthlyData(monthlyRes.data);
       } catch (error) {
