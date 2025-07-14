@@ -47,6 +47,8 @@ export class MonitoringService {
 
   async mingguan(minggu: string, teamId?: number, userId?: number) {
     const start = new Date(minggu);
+    const offset = (start.getDay() + 6) % 7; // days since Monday
+    start.setDate(start.getDate() - offset);
     if (isNaN(start.getTime()))
       throw new BadRequestException("minggu tidak valid");
 
