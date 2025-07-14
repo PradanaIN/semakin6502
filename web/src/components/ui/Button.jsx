@@ -8,7 +8,7 @@ export default function Button({
   ...props
 }) {
   const base = icon
-    ? "p-2 text-sm rounded focus:outline-none transition"
+    ? "icon-button"
     : "px-4 py-2 rounded focus:outline-none transition";
   const variants = {
     primary: "bg-blue-600 hover:bg-blue-700 text-white",

@@ -117,7 +117,7 @@ export default function TeamsPage() {
             placeholder="Cari tim..."
           />
         </div>
-        <Button onClick={openCreate} className="flex items-center gap-2">
+        <Button onClick={openCreate} className="add-button">
           <Plus size={16} />
           <span className="hidden sm:inline">Tambah Tim</span>
         </Button>
