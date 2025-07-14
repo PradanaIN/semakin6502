@@ -1,23 +1,40 @@
 const MonthlyOverview = ({ data = [] }) => {
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "Mei",
+    "Jun",
+    "Jul",
+    "Agu",
+    "Sep",
+    "Okt",
+    "Nov",
+    "Des",
+  ];
+
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-3 text-indigo-600">
-        Aktivitas Bulanan
+      <h2 className="text-lg font-semibold mb-3 text-blue-600">
+        Capaian Kinerja Bulanan
       </h2>
-      <div className="grid grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {data.map((item, index) => (
           <div
             key={index}
-            className={`p-3 rounded-lg text-center text-sm font-medium border ${
-              item.adaAktivitas
-                ? "bg-blue-100 border-blue-500"
-                : "bg-gray-100 dark:bg-gray-700"
-            }`}
+            className="p-3 rounded-lg text-center bg-white dark:bg-gray-800 shadow"
           >
-            <div>{item.tanggal}</div>
-            {item.adaAktivitas && (
-              <div className="text-blue-700 text-xs mt-1">✔</div>
-            )}
+            <div className="font-semibold mb-1">{monthNames[item.bulan - 1]}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">
+              {item.persen}% selesai
+            </div>
+            <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full mt-1">
+              <div
+                className="h-2 bg-blue-500 rounded-full"
+                style={{ width: `${item.persen}%` }}
+              />
+            </div>
           </div>
         ))}
       </div>
