@@ -2,6 +2,10 @@
   @apply bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase;
 }
 
+.row {
+  @apply odd:bg-gray-50 dark:odd:bg-gray-700;
+}
+
 .cell {
   @apply px-2 py-1 sm:px-4 sm:py-2;
 }
