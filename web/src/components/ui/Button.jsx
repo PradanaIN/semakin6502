@@ -10,7 +10,7 @@ export default function Button({
   const base = icon
     ? "icon-button"
     :
-      "px-4 py-2 rounded focus:outline-none transition focus-visible:ring-2 focus-visible:ring-offset-2 ring-blue-500";
+      "px-4 py-2 rounded focus-visible:outline-none transition focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2";
   const variants = {
     primary: "bg-blue-600 hover:bg-blue-700 text-white",
     secondary:
