@@ -1,4 +1,3 @@
-
 import MonitoringTabs from "../../components/dashboard/MonitoringTabs";
 import StatsSummary from "../../components/dashboard/StatsSummary";
 import { useAuth } from "../auth/useAuth";
@@ -81,6 +80,20 @@ const Dashboard = () => {
           progressPromise,
         ]);
 
+        const mingguKe = Math.ceil(today.getDate() / 7);
+        const weekAssignments = (penRes.data || []).filter(
+          (p) => parseInt(p.minggu, 10) === mingguKe
+        );
+        const selesaiCount = weekAssignments.filter((p) =>
+          String(p.status).toLowerCase().includes("selesai")
+        ).length;
+
+        const weeklyDataFixed = {
+          ...weeklyRes.data,
+          totalTugas: weekAssignments.length,
+          totalSelesai: selesaiCount,
+        };
+
         setDailyData(dailyRes.data);
         setWeeklyList(weeklyArray);
         setWeekIndex(currentIndex);
@@ -119,7 +132,7 @@ const Dashboard = () => {
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
       <h1 className="text-3xl font-bold">
-        Selamat datang, {user?.nama || "Pengguna"} 👋
+        Selamat datang, {user?.nama || "Pengguna"}! 👋
       </h1>
 
       <StatsSummary weeklyData={weeklyList[weekIndex]} />

@@ -25,7 +25,7 @@ export default function LoginPage() {
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
       setError("");
-      window.location.href = "/";
+      window.location.href = "/dashboard";
     } catch (err) {
       console.error("Login failed:", err?.response?.data || err.message);
       setError("Login gagal. Periksa data login Anda.");

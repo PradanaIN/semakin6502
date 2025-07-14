@@ -71,13 +71,15 @@ export default function Layout() {
 
   const displayedNotifications = notifications.slice(0, 5);
   const getPageTitle = () => {
-    const path = location.pathname;
-    if (path === "/") return "Dashboard";
-    return path
-      .replace("/", "")
+    const slug = location.pathname.split("/")[1] || "dashboard";
+    return slug
       .replaceAll("-", " ")
       .replace(/^\w/, (c) => c.toUpperCase());
   };
+
+  useEffect(() => {
+    document.title = `${getPageTitle()} - SEMAKIN 6502`;
+  }, [location]);
 
   return (
     <div className="h-screen overflow-hidden flex text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-900">
