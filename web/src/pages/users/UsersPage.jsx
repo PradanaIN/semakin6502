@@ -12,8 +12,10 @@ import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
+import tableStyles from "../../components/ui/Table.module.css";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import Label from "../../components/ui/Label";
 import SearchInput from "../../components/SearchInput";
 import Spinner from "../../components/Spinner";
 import { ROLES } from "../../utils/roles";
@@ -169,13 +171,13 @@ export default function UsersPage() {
 
       <Table>
         <thead>
-          <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-            <th className="px-2 py-1 sm:px-4 sm:py-2">No</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Nama</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Email</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Tim</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Role</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Aksi</th>
+          <tr className={tableStyles.headerRow}>
+            <th className={tableStyles.cell}>No</th>
+            <th className={tableStyles.cell}>Nama</th>
+            <th className={tableStyles.cell}>Email</th>
+            <th className={tableStyles.cell}>Tim</th>
+            <th className={tableStyles.cell}>Role</th>
+            <th className={tableStyles.cell}>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -194,14 +196,14 @@ export default function UsersPage() {
           ) : (
             paginatedUsers.map((u, idx) => (
               <tr key={u.id} className="border-t dark:border-gray-700">
-              <td className="px-2 py-1 sm:px-4 sm:py-2 text-center">{(currentPage - 1) * pageSize + idx + 1}</td>
-              <td className="px-2 py-1 sm:px-4 sm:py-2">{u.nama}</td>
-              <td className="px-2 py-1 sm:px-4 sm:py-2 text">{u.email}</td>
-              <td className="px-2 py-1 sm:px-4 sm:py-2 text-center">
+              <td className={`${tableStyles.cell} text-center`}>{(currentPage - 1) * pageSize + idx + 1}</td>
+              <td className={tableStyles.cell}>{u.nama}</td>
+              <td className={`${tableStyles.cell} text`}>{u.email}</td>
+              <td className={`${tableStyles.cell} text-center`}>
                 {u.members?.[0]?.team?.nama_tim || "-"}
               </td>
-              <td className="px-2 py-1 sm:px-4 sm:py-2 capitalize text-center">{u.role}</td>
-              <td className="px-2 py-1 sm:px-4 sm:py-2 space-x-2 text-center">
+              <td className={`${tableStyles.cell} capitalize text-center`}>{u.role}</td>
+              <td className={`${tableStyles.cell} space-x-2 text-center`}>
                 <Button
                   onClick={() => openEdit(u)}
                   variant="warning"
@@ -264,9 +266,9 @@ export default function UsersPage() {
           </h2>
           <div className="space-y-2">
             <div>
-              <label htmlFor="nama" className="block text-sm mb-1">
+              <Label htmlFor="nama">
                 Nama <span className="text-red-500">*</span>
-              </label>
+              </Label>
               <Input
                 id="nama"
                 type="text"
@@ -276,9 +278,9 @@ export default function UsersPage() {
               />
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm mb-1">
+              <Label htmlFor="email">
                 Email <span className="text-red-500">*</span>
-              </label>
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -288,9 +290,9 @@ export default function UsersPage() {
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm mb-1">
+              <Label htmlFor="password">
                 Password <span className="text-red-500">*</span>
-              </label>
+              </Label>
               <Input
                 id="password"
                 type="password"
@@ -302,9 +304,9 @@ export default function UsersPage() {
               />
             </div>
             <div>
-              <label htmlFor="role" className="block text-sm mb-1">
+              <Label htmlFor="role">
                 Role <span className="text-red-500">*</span>
-              </label>
+              </Label>
               <select
                 id="role"
                 value={form.role}

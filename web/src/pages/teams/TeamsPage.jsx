@@ -12,8 +12,10 @@ import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
+import tableStyles from "../../components/ui/Table.module.css";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import Label from "../../components/ui/Label";
 import { ROLES } from "../../utils/roles";
 import SearchInput from "../../components/SearchInput";
 
@@ -128,11 +130,11 @@ export default function TeamsPage() {
 
       <Table>
         <thead>
-          <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-            <th className="px-2 py-1 sm:px-4 sm:py-2">No</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Nama Tim</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Jumlah Anggota</th>
-            <th className="px-2 py-1 sm:px-4 sm:py-2">Aksi</th>
+          <tr className={tableStyles.headerRow}>
+            <th className={tableStyles.cell}>No</th>
+            <th className={tableStyles.cell}>Nama Tim</th>
+            <th className={tableStyles.cell}>Jumlah Anggota</th>
+            <th className={tableStyles.cell}>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -154,10 +156,10 @@ export default function TeamsPage() {
               key={t.id}
               className="border-t dark:border-gray-700 text-center"
             >
-              <td className="px-2 py-1 sm:px-4 sm:py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
-              <td className="px-2 py-1 sm:px-4 sm:py-2">{t.nama_tim}</td>
-              <td className="px-2 py-1 sm:px-4 sm:py-2">{t.members?.length || 0}</td>
-              <td className="px-2 py-1 sm:px-4 sm:py-2 space-x-2">
+              <td className={tableStyles.cell}>{(currentPage - 1) * pageSize + idx + 1}</td>
+              <td className={tableStyles.cell}>{t.nama_tim}</td>
+              <td className={tableStyles.cell}>{t.members?.length || 0}</td>
+              <td className={`${tableStyles.cell} space-x-2`}>
                 <Button
                   onClick={() => openEdit(t)}
                   variant="warning"
@@ -220,7 +222,7 @@ export default function TeamsPage() {
           </h2>
           <div className="space-y-2">
             <div>
-              <label htmlFor="namaTim" className="block text-sm mb-1">Nama Tim</label>
+              <Label htmlFor="namaTim">Nama Tim</Label>
               <Input
                 id="namaTim"
                 type="text"
