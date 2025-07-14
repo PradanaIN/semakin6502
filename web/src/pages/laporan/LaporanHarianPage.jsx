@@ -11,7 +11,6 @@ export default function LaporanHarianPage() {
   const [tanggal, setTanggal] = useState(new Date().toISOString().slice(0, 10));
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [tanggal, setTanggal] = useState("");
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
