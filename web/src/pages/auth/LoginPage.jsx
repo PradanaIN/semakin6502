@@ -80,13 +80,15 @@ export default function LoginPage() {
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
-              <div
+              <button
+                type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-zinc-500 dark:text-zinc-400"
                 title={showPassword ? "Sembunyikan" : "Lihat Password"}
+                aria-label={showPassword ? "Sembunyikan" : "Lihat Password"}
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </div>
+              </button>
             </div>
           </div>
 
