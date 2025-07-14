@@ -1,24 +1,17 @@
+import { getHolidays } from "../../utils/holidays";
+
 const DailyOverview = ({ data = [] }) => {
   if (!Array.isArray(data)) return <p>Data tidak tersedia</p>;
 
   const today = new Date().toISOString().slice(0, 10);
+  const currentYear = new Date(today).getFullYear();
 
   const formatDate = (iso) => {
     const [y, m, d] = iso.split("-");
     return `${d}-${m}-${y}`;
   };
 
-  const HOLIDAYS = [
-    "2025-01-01",
-    "2025-02-10",
-    "2025-03-28",
-    "2025-03-29",
-    "2025-05-01",
-    "2025-05-02",
-    "2025-08-17",
-    "2025-12-25",
-    "2025-12-26",
-  ];
+  const HOLIDAYS = getHolidays(currentYear);
 
   const isWeekend = (iso) => {
     const d = new Date(iso);
