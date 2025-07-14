@@ -38,6 +38,20 @@ const DailyOverview = ({ data = [] }) => {
       <h2 className="text-lg font-semibold mb-3 text-blue-600">
         Kalender Aktivitas Harian
       </h2>
+      <div className="flex flex-wrap justify-end gap-2 mb-2 text-xs text-gray-500">
+        <div className="flex items-center gap-1">
+          <span className="inline-block w-3 h-3 bg-green-400 rounded-sm"></span>
+          Ada Laporan
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="inline-block w-3 h-3 bg-yellow-400 rounded-sm"></span>
+          Tidak Ada Laporan
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="inline-block w-3 h-3 bg-blue-400 rounded-sm"></span>
+          Hari Libur/Akhir Pekan
+        </div>
+      </div>
       <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
         {data.map((day, index) => {
           const dayName = new Date(day.tanggal).toLocaleDateString("id-ID", {
@@ -62,20 +76,6 @@ const DailyOverview = ({ data = [] }) => {
             </div>
           );
         })}
-      </div>
-      <div className="text-xs text-gray-500 mt-2 space-y-1">
-        <div>
-          <span className="inline-block w-3 h-3 bg-green-400 rounded-sm mr-1"></span>
-          Ada Laporan
-        </div>
-        <div>
-          <span className="inline-block w-3 h-3 bg-yellow-400 rounded-sm mr-1"></span>
-          Tidak Ada Laporan
-        </div>
-        <div>
-          <span className="inline-block w-3 h-3 bg-blue-400 rounded-sm mr-1"></span>
-          Hari Libur/Akhir Pekan
-        </div>
       </div>
     </div>
   );
