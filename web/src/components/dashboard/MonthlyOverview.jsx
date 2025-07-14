@@ -1,4 +1,19 @@
 const MonthlyOverview = ({ data = [] }) => {
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "Mei",
+    "Jun",
+    "Jul",
+    "Agu",
+    "Sep",
+    "Okt",
+    "Nov",
+    "Des",
+  ];
+
   return (
     <div>
       <h2 className="text-lg font-semibold mb-3 text-blue-600">

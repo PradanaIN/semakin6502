@@ -1,15 +1,20 @@
 import { IsDateString, IsInt, IsOptional, IsString } from "class-validator";
 import { Transform } from "class-transformer";
 
-export class AddTambahanDto {
+export class UpdateTambahanDto {
+  @IsOptional()
   @IsInt()
-  kegiatanId!: number;
+  kegiatanId?: number;
 
+  @IsOptional()
+  @Transform(({ value }) => (value === "" ? undefined : value))
   @IsDateString()
-  tanggal!: string;
+  tanggal?: string;
 
+  @IsOptional()
+  @Transform(({ value }) => (value === "" ? undefined : value))
   @IsString()
-  status!: string;
+  status?: string;
 
   @IsOptional()
   @Transform(({ value }) => (value === "" ? undefined : value))
