@@ -60,19 +60,4 @@ export class TambahanService {
   remove(id: number, userId: number) {
     return this.prisma.kegiatanTambahan.delete({ where: { id, userId } });
   }
-
-  getOne(id: number, userId: number) {
-    return this.prisma.kegiatanTambahan.findFirst({ where: { id, userId } });
-  }
-
-  update(id: number, data: any, userId: number) {
-    return this.prisma.kegiatanTambahan.update({
-      where: { id, userId },
-      data,
-    });
-  }
-
-  remove(id: number, userId: number) {
-    return this.prisma.kegiatanTambahan.delete({ where: { id, userId } });
-  }
 }

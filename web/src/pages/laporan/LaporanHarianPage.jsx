@@ -7,6 +7,7 @@ import Pagination from "../../components/Pagination";
 export default function LaporanHarianPage() {
   const [laporan, setLaporan] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
@@ -77,7 +78,15 @@ export default function LaporanHarianPage() {
     fetchData();
   }, []);
 
-  const paginated = laporan.slice(
+  const filtered = laporan.filter((l) => {
+    const peg = l.pegawai?.nama?.toLowerCase() || "";
+    const keg = l.penugasan?.kegiatan?.nama_kegiatan?.toLowerCase() || "";
+    const cat = l.catatan?.toLowerCase() || "";
+    const stat = l.status.toLowerCase();
+    const txt = `${peg} ${keg} ${cat} ${stat}`;
+    return txt.includes(query.toLowerCase());
+  });
+  const paginated = filtered.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
@@ -85,6 +94,35 @@ export default function LaporanHarianPage() {
 
   return (
     <div className="p-6 space-y-4">
+      <div className="flex flex-wrap items-end gap-2">
+        <div>
+          <label className="block text-sm mb-1">Tanggal</label>
+          <input
+            type="date"
+            value={tanggal}
+            onChange={(e) => {
+              setTanggal(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="border rounded px-3 py-1 bg-white dark:bg-gray-700"
+          />
+        </div>
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search size={16} className="text-gray-400 dark:text-gray-300" />
+          </div>
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            placeholder="Cari..."
+            className="pl-10 pr-3 py-1 border rounded bg-white dark:bg-gray-700 dark:text-gray-200"
+          />
+        </div>
+      </div>
       {loading ? (
         <div>Memuat...</div>
       ) : (
