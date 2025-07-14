@@ -118,7 +118,7 @@ export class MonitoringService {
       : 0;
 
     return {
-      minggu: getWeekNumber(start),
+      minggu: getWeekOfMonth(start),
       bulan: monthName(start),
       tanggal: `${start.toISOString().slice(0, 10)} - ${end
         .toISOString()
@@ -160,8 +160,8 @@ function monthName(date: Date) {
   return MONTHS[date.getMonth()];
 }
 
-function getWeekNumber(d: Date) {
-  const start = new Date(d.getFullYear(), 0, 1);
-  const diff = (d.getTime() - start.getTime()) / 86400000;
-  return Math.ceil((diff + start.getDay() + 1) / 7);
+function getWeekOfMonth(date: Date) {
+  const first = new Date(date.getFullYear(), date.getMonth(), 1);
+  const offset = (first.getDay() + 6) % 7; // Monday-based
+  return Math.floor((date.getDate() + offset - 1) / 7) + 1;
 }
