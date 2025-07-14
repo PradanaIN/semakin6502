@@ -63,7 +63,7 @@ export default function LoginPage() {
               placeholder="Email atau Username"
               value={form.identifier ?? ""}
               onChange={(e) => setForm({ ...form, identifier: e.target.value })}
-              className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="form-input"
             />
           </div>
 
@@ -78,7 +78,7 @@ export default function LoginPage() {
                 placeholder="********"
                 value={form.password ?? ""}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="form-input"
               />
               <button
                 type="button"
