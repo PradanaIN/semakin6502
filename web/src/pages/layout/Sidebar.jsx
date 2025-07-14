@@ -10,13 +10,13 @@ import {
   UserCog,
 } from "lucide-react";
 
-export default function Sidebar({ mobileOpen, setMobileOpen }) {
+export default function Sidebar({ setMobileOpen }) {
   const { user } = useAuth();
 
   const mainLinks = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: true },
     { to: "/tugas-mingguan", label: "Tugas Mingguan", icon: ClipboardList, show: true },
-    { to: "/tugas-tambahan", label: "Tugas Tambahan", icon: FilePlus, show: true },
+    { to: "/kegiatan-tambahan", label: "Tugas Tambahan", icon: FilePlus, show: true },
     { to: "/laporan-harian", label: "Laporan Harian", icon: FileText, show: true },
   ];
 
