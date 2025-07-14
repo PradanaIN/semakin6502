@@ -3,6 +3,7 @@ import axios from "axios";
 import { Pencil, Trash2, Search } from "lucide-react";
 import Swal from "sweetalert2";
 import Pagination from "../../components/Pagination";
+import { STATUS } from "../../utils/status";
 
 export default function LaporanHarianPage() {
   const [laporan, setLaporan] = useState([]);
@@ -16,7 +17,7 @@ export default function LaporanHarianPage() {
   const [form, setForm] = useState({
     id: null,
     tanggal: new Date().toISOString().slice(0, 10),
-    status: "Belum",
+    status: STATUS.BELUM,
     bukti_link: "",
     catatan: "",
   });
@@ -265,12 +266,16 @@ export default function LaporanHarianPage() {
                   onChange={(e) => setForm({ ...form, status: e.target.value })}
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 >
-                  <option value="Belum">Belum</option>
-                  <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
-                  <option value="Selesai Dikerjakan">Selesai Dikerjakan</option>
+                  <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
+                  <option value={STATUS.SEDANG_DIKERJAKAN}>
+                    {STATUS.SEDANG_DIKERJAKAN}
+                  </option>
+                  <option value={STATUS.SELESAI_DIKERJAKAN}>
+                    {STATUS.SELESAI_DIKERJAKAN}
+                  </option>
                 </select>
               </div>
-              {form.status === "Selesai Dikerjakan" && (
+              {form.status === STATUS.SELESAI_DIKERJAKAN && (
                 <div>
                   <label className="block text-sm mb-1">Link Bukti</label>
                   <input

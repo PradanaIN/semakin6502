@@ -4,6 +4,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { Pencil, Trash2 } from "lucide-react";
 import Select from "react-select";
+import { STATUS } from "../../utils/status";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -20,12 +21,12 @@ export default function KegiatanTambahanDetailPage() {
     tanggal_selesai: "",
     tanggal_selesai_akhir: "",
     bukti_link: "",
-    status: "Selesai Dikerjakan",
+    status: STATUS.SELESAI_DIKERJAKAN,
   });
   const [form, setForm] = useState({
     kegiatanId: "",
     tanggal: "",
-    status: "Belum",
+    status: STATUS.BELUM,
     deskripsi: "",
   });
 
@@ -81,7 +82,7 @@ export default function KegiatanTambahanDetailPage() {
         tanggal_selesai: "",
         tanggal_selesai_akhir: "",
         bukti_link: "",
-        status: "Selesai Dikerjakan",
+        status: STATUS.SELESAI_DIKERJAKAN,
       });
       fetchDetail();
     } catch (err) {
@@ -224,9 +225,13 @@ export default function KegiatanTambahanDetailPage() {
               onChange={(e) => setForm({ ...form, status: e.target.value })}
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
             >
-              <option value="Belum">Belum</option>
-              <option value="Sedang Dikerjakan">Sedang Dikerjakan</option>
-              <option value="Selesai Dikerjakan">Selesai Dikerjakan</option>
+              <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
+              <option value={STATUS.SEDANG_DIKERJAKAN}>
+                {STATUS.SEDANG_DIKERJAKAN}
+              </option>
+              <option value={STATUS.SELESAI_DIKERJAKAN}>
+                {STATUS.SELESAI_DIKERJAKAN}
+              </option>
             </select>
           </div>
           <div className="flex justify-end space-x-2 pt-2">
