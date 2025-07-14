@@ -9,7 +9,12 @@ import { PrismaService } from "../prisma.service";
 export class PenugasanService {
   constructor(private prisma: PrismaService) {}
 
-  findAll(role: string, userId: number, filter: { bulan?: string; tahun?: number }) {
+  findAll(
+    role: string,
+    userId: number,
+    filter: { bulan?: string; tahun?: number }
+  ) {
+    role = role?.toLowerCase?.() || role;
     const opts: any = {
       include: {
         kegiatan: { include: { team: true } },
@@ -17,19 +22,35 @@ export class PenugasanService {
       },
       where: {},
     };
+
     if (filter.bulan) opts.where.bulan = filter.bulan;
     if (filter.tahun) opts.where.tahun = filter.tahun;
-    if (role !== "admin") {
-      opts.where.kegiatan = {
-        team: {
-          members: { some: { userId, is_leader: true } },
+
+    if (role === "admin" || role === "pimpinan") {
+      // admins and top management can see all assignments
+    } else if (role === "ketua") {
+      // team leaders can see assignments in their teams as well as tasks
+      // assigned specifically to them
+      opts.where.OR = [
+        {
+          kegiatan: {
+            team: {
+              members: { some: { userId, is_leader: true } },
+            },
+          },
         },
-      };
+        { pegawaiId: userId },
+      ];
+    } else {
+      // regular members only see their own assignments
+      opts.where.pegawaiId = userId;
     }
+
     return this.prisma.penugasan.findMany(opts);
   }
 
   async assign(data: any, userId: number, role: string) {
+    role = role?.toLowerCase?.() || role;
     const master = await this.prisma.masterKegiatan.findUnique({
       where: { id: data.kegiatanId },
     });
@@ -58,6 +79,7 @@ export class PenugasanService {
   }
 
   async assignBulk(data: any, userId: number, role: string) {
+    role = role?.toLowerCase?.() || role;
     const master = await this.prisma.masterKegiatan.findUnique({
       where: { id: data.kegiatanId },
     });
@@ -86,20 +108,32 @@ export class PenugasanService {
   }
 
   async findOne(id: number, role: string, userId: number) {
-    return this.prisma.penugasan.findFirst({
-      where: {
-        id,
-        ...(role !== "admin" && {
+    role = role?.toLowerCase?.() || role;
+    const where: any = { id };
+
+    if (role === "admin" || role === "pimpinan") {
+      // no additional restrictions
+    } else if (role === "ketua") {
+      where.OR = [
+        {
           kegiatan: {
             team: { members: { some: { userId, is_leader: true } } },
           },
-        }),
-      },
+        },
+        { pegawaiId: userId },
+      ];
+    } else {
+      where.pegawaiId = userId;
+    }
+
+    return this.prisma.penugasan.findFirst({
+      where,
       include: { kegiatan: { include: { team: true } }, pegawai: true },
     });
   }
 
   async update(id: number, data: any, userId: number, role: string) {
+    role = role?.toLowerCase?.() || role;
     const existing = await this.prisma.penugasan.findUnique({
       where: { id },
       include: { kegiatan: true },
@@ -127,6 +161,7 @@ export class PenugasanService {
   }
 
   async remove(id: number, userId: number, role: string) {
+    role = role?.toLowerCase?.() || role;
     const existing = await this.prisma.penugasan.findUnique({
       where: { id },
       include: { kegiatan: true },

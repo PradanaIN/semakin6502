@@ -1,14 +1,17 @@
 import { IsDateString, IsInt, IsOptional, IsString } from "class-validator";
 
-export class AddTambahanDto {
+export class UpdateTambahanDto {
+  @IsOptional()
   @IsInt()
-  kegiatanId!: number;
+  kegiatanId?: number;
 
+  @IsOptional()
   @IsDateString()
-  tanggal!: string;
+  tanggal?: string;
 
+  @IsOptional()
   @IsString()
-  status!: string;
+  status?: string;
 
   @IsOptional()
   @IsString()
