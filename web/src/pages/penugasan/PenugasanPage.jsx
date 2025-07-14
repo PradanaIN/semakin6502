@@ -6,6 +6,7 @@ import Select from "react-select";
 import { useAuth } from "../auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Pagination";
+import Modal from "../../components/ui/Modal";
 import { ROLES } from "../../utils/roles";
 import months from "../../utils/months";
 
@@ -273,14 +274,17 @@ export default function PenugasanPage() {
       </div>
 
       {canManage && showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
-            <h2 className="text-xl font-semibold mb-2">Tambah Penugasan</h2>
-            <div className="space-y-2">
-              <div>
-                <label className="block text-sm mb-1">
-                  Kegiatan <span className="text-red-500">*</span>
-                </label>
+        <Modal
+          onClose={() => {
+            setShowForm(false);
+          }}
+        >
+          <h2 className="text-xl font-semibold mb-2">Tambah Penugasan</h2>
+          <div className="space-y-2">
+            <div>
+              <label className="block text-sm mb-1">
+                Kegiatan <span className="text-red-500">*</span>
+              </label>
                 <Select
                   classNamePrefix="react-select"
                   className="mb-1"
@@ -409,7 +413,7 @@ export default function PenugasanPage() {
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

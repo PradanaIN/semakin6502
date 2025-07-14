@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { Pencil, Plus, Trash2, Search } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
+import Modal from "../../components/ui/Modal";
 import { ROLES } from "../../utils/roles";
 
 export default function MasterKegiatanPage() {
@@ -252,17 +253,21 @@ export default function MasterKegiatanPage() {
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
-            <h2 className="text-xl font-semibold mb-2">
-              {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}
-            </h2>
-            <div className="space-y-2">
-              <div>
-                <label className="block text-sm mb-1">
-                  Tim <span className="text-red-500">*</span>
-                </label>
-                <select
+        <Modal
+          onClose={() => {
+            setShowForm(false);
+            setEditing(null);
+          }}
+        >
+          <h2 className="text-xl font-semibold mb-2">
+            {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}
+          </h2>
+          <div className="space-y-2">
+            <div>
+              <label className="block text-sm mb-1">
+                Tim <span className="text-red-500">*</span>
+              </label>
+              <select
                   value={form.teamId}
                   onChange={(e) =>
                     setForm({ ...form, teamId: parseInt(e.target.value, 10) })
@@ -322,7 +327,7 @@ export default function MasterKegiatanPage() {
               </p>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );
