@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Pencil, Trash2 } from "lucide-react";
-import Swal from "sweetalert2";
-import confirmAlert from "../utils/confirmAlert";
+import {
+  showSuccess,
+  showError,
+  confirmDelete,
+} from "../../utils/alerts";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
@@ -59,27 +62,23 @@ export default function LaporanHarianPage() {
       }
       setShowForm(false);
       fetchData();
-      Swal.fire("Berhasil", "Laporan diperbarui", "success");
+      showSuccess("Berhasil", "Laporan diperbarui");
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Gagal menyimpan", "error");
+      showError("Error", "Gagal menyimpan");
     }
   };
 
   const remove = async (id) => {
-    const r = await confirmAlert({
-      title: "Hapus laporan ini?",
-      icon: "warning",
-      confirmButtonText: "Hapus",
-    });
+    const r = await confirmDelete("Hapus laporan ini?");
     if (!r.isConfirmed) return;
     try {
       await axios.delete(`/laporan-harian/${id}`);
       fetchData();
-      Swal.fire("Dihapus", "Laporan dihapus", "success");
+      showSuccess("Dihapus", "Laporan dihapus");
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "Gagal menghapus", "error");
+      showError("Error", "Gagal menghapus");
     }
   };
 

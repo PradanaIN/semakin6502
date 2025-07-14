@@ -1,7 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import Swal from "sweetalert2";
-import confirmAlert from "../utils/confirmAlert";
+import {
+  showSuccess,
+  showError,
+  showWarning,
+  confirmDelete,
+  confirmCancel,
+} from "../../utils/alerts";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
@@ -53,7 +58,7 @@ export default function TeamsPage() {
 
   const saveTeam = async () => {
     if (!form.nama_tim) {
-      Swal.fire("Lengkapi data", "Nama tim wajib diisi", "warning");
+      showWarning("Lengkapi data", "Nama tim wajib diisi");
       return;
     }
     try {
@@ -64,27 +69,23 @@ export default function TeamsPage() {
       }
       setShowForm(false);
       fetchTeams();
-      Swal.fire("Berhasil", "Tim disimpan", "success");
+      showSuccess("Berhasil", "Tim disimpan");
     } catch (err) {
       console.error("Gagal menyimpan tim", err);
-      Swal.fire("Error", "Gagal menyimpan tim", "error");
+      showError("Error", "Gagal menyimpan tim");
     }
   };
 
   const deleteTeam = useCallback(async (id) => {
-    const r = await confirmAlert({
-      title: "Hapus tim ini?",
-      icon: "warning",
-      confirmButtonText: "Hapus",
-    });
+    const r = await confirmDelete("Hapus tim ini?");
     if (!r.isConfirmed) return;
     try {
       await axios.delete(`/teams/${id}`);
       fetchTeams();
-      Swal.fire("Dihapus", "Tim berhasil dihapus", "success");
+      showSuccess("Dihapus", "Tim berhasil dihapus");
     } catch (err) {
       console.error("Gagal menghapus tim", err);
-      Swal.fire("Error", "Gagal menghapus tim", "error");
+      showError("Error", "Gagal menghapus tim");
     }
   }, []);
 
@@ -235,10 +236,7 @@ export default function TeamsPage() {
               <Button
                 variant="secondary"
                 onClick={async () => {
-                  const r = await confirmAlert({
-                    title: "Batalkan perubahan?",
-                    icon: "question",
-                  });
+                  const r = await confirmCancel("Batalkan perubahan?");
                   if (r.isConfirmed) setShowForm(false);
                 }}
               >

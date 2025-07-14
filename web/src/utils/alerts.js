@@ -28,9 +28,16 @@ export const confirmDelete = (title = "Hapus item ini?") =>
     confirmButtonText: "Hapus",
   });
 
+export const confirmCancel = (title = "Batalkan perubahan?") =>
+  confirmAlert({
+    title,
+    icon: "question",
+  });
+
 export default {
   showSuccess,
   showError,
   showWarning,
   confirmDelete,
+  confirmCancel,
 };
