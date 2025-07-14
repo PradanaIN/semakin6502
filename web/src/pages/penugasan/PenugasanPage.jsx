@@ -391,7 +391,6 @@ export default function PenugasanPage() {
                   />
                 </div>
               </div>
-            </div>
             <div className="flex justify-end space-x-2 pt-2">
               <button
                 onClick={() => {

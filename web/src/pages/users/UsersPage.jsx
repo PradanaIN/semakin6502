@@ -311,8 +311,7 @@ export default function UsersPage() {
                   ))}
                 </select>
               </div>
-            </div>
-            <div className="flex justify-end space-x-2 pt-2">
+              <div className="flex justify-end space-x-2 pt-2">
               <button
                 onClick={async () => {
                   const r = await Swal.fire({
