@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { Pencil, Plus, Trash2 } from "lucide-react";
@@ -61,11 +61,11 @@ export default function UsersPage() {
     setShowForm(true);
   };
 
-  const openEdit = (u) => {
+  const openEdit = useCallback((u) => {
     setEditingUser(u);
     setForm({ nama: u.nama, email: u.email, password: "", role: u.role });
     setShowForm(true);
-  };
+  }, []);
 
   const saveUser = async () => {
     if (
@@ -92,7 +92,7 @@ export default function UsersPage() {
     }
   };
 
-  const deleteUser = async (id) => {
+  const deleteUser = useCallback(async (id) => {
     const result = await Swal.fire({
       title: "Hapus pengguna ini?",
       icon: "warning",
@@ -108,7 +108,7 @@ export default function UsersPage() {
       console.error("Gagal menghapus pengguna", err);
       Swal.fire("Error", "Gagal menghapus pengguna", "error");
     }
-  };
+  }, []);
 
   const filteredUsers = users.filter(
     (u) =>
