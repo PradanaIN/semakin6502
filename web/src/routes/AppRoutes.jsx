@@ -9,6 +9,8 @@ import MasterKegiatanPage from "../pages/master/MasterKegiatanPage";
 import PenugasanPage from "../pages/penugasan/PenugasanPage";
 import PenugasanDetailPage from "../pages/penugasan/PenugasanDetailPage";
 import LaporanHarianPage from "../pages/laporan/LaporanHarianPage";
+import KegiatanTambahanPage from "../pages/tambahan/KegiatanTambahanPage";
+import KegiatanTambahanDetailPage from "../pages/tambahan/KegiatanTambahanDetailPage";
 
 function PrivateRoute({ children }) {
   const { token, user } = useAuth();
@@ -45,6 +47,8 @@ export default function AppRoutes() {
         <Route path="penugasan" element={<PenugasanPage />} />
         <Route path="penugasan/:id" element={<PenugasanDetailPage />} />
         <Route path="laporan-harian" element={<LaporanHarianPage />} />
+        <Route path="kegiatan-tambahan" element={<KegiatanTambahanPage />} />
+        <Route path="kegiatan-tambahan/:id" element={<KegiatanTambahanDetailPage />} />
       </Route>
     </Routes>
   );

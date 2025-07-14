@@ -5,6 +5,7 @@ import { Plus, Search, Filter as FilterIcon, Eye } from "lucide-react";
 import Select from "react-select";
 import { useAuth } from "../auth/useAuth";
 import { useNavigate } from "react-router-dom";
+import Pagination from "../../components/Pagination";
 
 const selectStyles = {
   option: (base) => ({ ...base, color: "#000" }),
@@ -14,6 +15,7 @@ const selectStyles = {
 
 export default function PenugasanPage() {
   const { user } = useAuth();
+  const canManage = ["admin", "ketua", "pimpinan"].includes(user?.role);
   const navigate = useNavigate();
   const [penugasan, setPenugasan] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
@@ -37,12 +39,23 @@ export default function PenugasanPage() {
   const fetchData = useCallback(async () => {
       try {
         setLoading(true);
+      const penugasanReq = axios.get(
+        `/penugasan?bulan=${filterBulan || ""}&tahun=${filterTahun || ""}`
+      );
+      const teamsReq = axios.get("/teams");
+
+      let usersReq;
+      if (canManage) {
+        usersReq = axios.get("/users");
+      } else {
+        // anggota hanya membutuhkan datanya sendiri untuk menampilkan nama
+        usersReq = Promise.resolve({ data: [user] });
+      }
+
       const [pRes, tRes, uRes] = await Promise.all([
-        axios.get(
-          `/penugasan?bulan=${filterBulan || ""}&tahun=${filterTahun || ""}`
-        ),
-        axios.get("/teams"),
-        axios.get("/users"),
+        penugasanReq,
+        teamsReq,
+        usersReq,
       ]);
 
       let kRes;
@@ -122,19 +135,15 @@ export default function PenugasanPage() {
   ];
 
   const filtered = penugasan.filter((p) => {
-    const k = kegiatan.find((k) => k.id === p.kegiatanId);
-    const peg = users.find((u) => u.id === p.pegawaiId);
-    const text = `${k?.nama_kegiatan || ""} ${peg?.nama || ""}`.toLowerCase();
+    const text = `${p.kegiatan?.nama_kegiatan || ""} ${p.pegawai?.nama || ""}`.toLowerCase();
     return text.includes(search.toLowerCase());
   });
   const paginated = filtered.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
-  if (!["ketua", "admin"].includes(user?.role)) {
-    return <div className="p-6 text-center">Anda tidak memiliki akses ke halaman ini.</div>;
-  }
 
   return (
     <div className="space-y-6">
@@ -185,13 +194,15 @@ export default function PenugasanPage() {
             <FilterIcon size={16} />
           </button>
         </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-        >
-          <Plus size={16} />
-          <span className="hidden sm:inline">Tambah Penugasan</span>
-        </button>
+        {canManage && (
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+          >
+            <Plus size={16} />
+            <span className="hidden sm:inline">Tambah Penugasan</span>
+          </button>
+        )}
       </div>
 
       <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow">
@@ -220,15 +231,12 @@ export default function PenugasanPage() {
               </td>
             </tr>
           ) : (
-            paginated.map((p, idx) => {
-              const k = kegiatan.find((k) => k.id === p.kegiatanId);
-              const peg = users.find((u) => u.id === p.pegawaiId);
-              return (
+            paginated.map((p, idx) => (
                 <tr key={p.id} className="border-t dark:border-gray-700 text-center">
                   <td className="px-2 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
-                  <td className="px-4 py-2">{k?.nama_kegiatan || "-"}</td>
-                  <td className="px-4 py-2">{k?.team?.nama_tim || "-"}</td>
-                  <td className="px-4 py-2">{peg?.nama || "-"}</td>
+                  <td className="px-4 py-2">{p.kegiatan?.nama_kegiatan || "-"}</td>
+                  <td className="px-4 py-2">{p.kegiatan?.team?.nama_tim || "-"}</td>
+                  <td className="px-4 py-2">{p.pegawai?.nama || "-"}</td>
                   <td className="px-4 py-2">{p.minggu}</td>
                   <td className="px-4 py-2">{p.status}</td>
                   <td className="px-2 py-2">
@@ -240,8 +248,7 @@ export default function PenugasanPage() {
                     </button>
                   </td>
                 </tr>
-              );
-            })
+              ))
           )}
         </tbody>
       </table>
@@ -263,40 +270,14 @@ export default function PenugasanPage() {
             ))}
           </select>
         </div>
-        <div className="space-x-1">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-          >
-            Prev
-          </button>
-          {Array.from({ length: Math.ceil(filtered.length / pageSize) || 1 }, (_, i) => i + 1).map((n) => (
-            <button
-              key={n}
-              onClick={() => setCurrentPage(n)}
-              className={`px-3 py-1 rounded-full ${
-                currentPage === n
-                  ? "bg-blue-600 text-white"
-                  : "border bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-              }`}
-            >
-              {n}
-            </button>
-          ))}
-          <button
-            onClick={() =>
-              setCurrentPage((p) => Math.min(Math.ceil(filtered.length / pageSize), p + 1))
-            }
-            disabled={currentPage >= Math.ceil(filtered.length / pageSize)}
-            className="px-3 py-1 border rounded-full disabled:opacity-50 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-          >
-            Next
-          </button>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
-      {showForm && (
+      {canManage && showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
             <h2 className="text-xl font-semibold mb-2">Tambah Penugasan</h2>
