@@ -93,13 +93,13 @@ export class MonitoringController {
 
   @Get("bulanan")
   async bulanan(
-    @Query("bulan") bulan?: string,
+    @Query("year") year?: string,
     @Req() req?: Request,
     @Query("teamId") teamId?: string,
     @Query("userId") userId?: string,
   ) {
-    if (!bulan) {
-      throw new BadRequestException("query 'bulan' diperlukan");
+    if (!year) {
+      throw new BadRequestException("query 'year' diperlukan");
     }
     const user = req?.user as any;
     const role = user?.role;
@@ -123,6 +123,6 @@ export class MonitoringController {
       }
     }
 
-    return this.monitoringService.bulanan(bulan, tId, uId);
+    return this.monitoringService.bulanan(year, tId, uId);
   }
 }

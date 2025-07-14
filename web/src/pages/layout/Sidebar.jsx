@@ -10,7 +10,7 @@ import {
   UserCog,
 } from "lucide-react";
 
-export default function Sidebar({ mobileOpen, setMobileOpen }) {
+export default function Sidebar({ setMobileOpen }) {
   const { user } = useAuth();
 
   const mainLinks = [

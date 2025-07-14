@@ -127,12 +127,12 @@ export class MonitoringService {
     };
   }
 
-  async bulanan(bulan: string, teamId?: number, userId?: number) {
-    const year = parseInt(bulan, 10);
-    if (isNaN(year)) throw new BadRequestException("bulan tidak valid");
+  async bulanan(year: string, teamId?: number, userId?: number) {
+    const yr = parseInt(year, 10);
+    if (isNaN(yr)) throw new BadRequestException("year tidak valid");
 
-    const start = new Date(year, 0, 1);
-    const end = new Date(year, 11, 31);
+    const start = new Date(yr, 0, 1);
+    const end = new Date(yr, 11, 31);
 
     const harianWhere: any = { tanggal: { gte: start, lte: end } };
     if (userId) harianWhere.pegawaiId = userId;
