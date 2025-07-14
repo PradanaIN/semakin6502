@@ -3,6 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { Plus, Filter as FilterIcon, Eye } from "lucide-react";
 import Select from "react-select";
+import selectStyles from "../../utils/selectStyles";
 import StatusBadge from "../../components/ui/StatusBadge";
 import { useAuth } from "../auth/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -14,11 +15,6 @@ import { ROLES } from "../../utils/roles";
 import months from "../../utils/months";
 import SearchInput from "../../components/SearchInput";
 
-const selectStyles = {
-  option: (base) => ({ ...base, color: "#000" }),
-  valueContainer: (base) => ({ ...base, maxHeight: "100px", overflowY: "auto" }),
-  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-};
 
 export default function PenugasanPage() {
   const { user } = useAuth();
@@ -199,13 +195,13 @@ export default function PenugasanPage() {
       <Table>
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-            <th className="px-2 py-2">No</th>
-            <th className="px-4 py-2">Kegiatan</th>
-            <th className="px-4 py-2">Tim</th>
-            <th className="px-4 py-2">Pegawai</th>
-            <th className="px-4 py-2">Minggu</th>
-            <th className="px-4 py-2">Status</th>
-            <th className="px-2 py-2">Aksi</th>
+            <th className="px-1 py-1 sm:px-2 sm:py-2">No</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Kegiatan</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Tim</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Pegawai</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Minggu</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Status</th>
+            <th className="px-1 py-1 sm:px-2 sm:py-2">Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -224,15 +220,15 @@ export default function PenugasanPage() {
           ) : (
             paginated.map((p, idx) => (
                 <tr key={p.id} className="border-t dark:border-gray-700 text-center">
-                  <td className="px-2 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
-                  <td className="px-4 py-2">{p.kegiatan?.nama_kegiatan || "-"}</td>
-                  <td className="px-4 py-2">{p.kegiatan?.team?.nama_tim || "-"}</td>
-                  <td className="px-4 py-2">{p.pegawai?.nama || "-"}</td>
-                  <td className="px-4 py-2">{p.minggu}</td>
-                  <td className="px-4 py-2">
+                  <td className="px-1 py-1 sm:px-2 sm:py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
+                  <td className="px-2 py-1 sm:px-4 sm:py-2">{p.kegiatan?.nama_kegiatan || "-"}</td>
+                  <td className="px-2 py-1 sm:px-4 sm:py-2">{p.kegiatan?.team?.nama_tim || "-"}</td>
+                  <td className="px-2 py-1 sm:px-4 sm:py-2">{p.pegawai?.nama || "-"}</td>
+                  <td className="px-2 py-1 sm:px-4 sm:py-2">{p.minggu}</td>
+                  <td className="px-2 py-1 sm:px-4 sm:py-2">
                     <StatusBadge status={p.status} />
                   </td>
-                  <td className="px-2 py-2">
+                  <td className="px-1 py-1 sm:px-2 sm:py-2">
                     <Button
                       onClick={() => navigate(`/tugas-mingguan/${p.id}`)}
                       variant="icon"

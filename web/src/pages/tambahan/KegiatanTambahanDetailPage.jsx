@@ -4,14 +4,11 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { Pencil, Trash2 } from "lucide-react";
 import Select from "react-select";
+import selectStyles from "../../utils/selectStyles";
 import { STATUS } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Button from "../../components/ui/Button";
 
-const selectStyles = {
-  option: (base) => ({ ...base, color: "#000" }),
-  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-};
 
 export default function KegiatanTambahanDetailPage() {
   const { id } = useParams();

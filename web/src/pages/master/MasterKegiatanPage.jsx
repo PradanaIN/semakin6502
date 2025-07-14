@@ -175,11 +175,11 @@ export default function MasterKegiatanPage() {
       <Table>
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-            <th className="px-4 py-2">No</th>
-            <th className="px-4 py-2">Tim</th>
-            <th className="px-4 py-2">Nama Kegiatan</th>
-            <th className="px-4 py-2">Deskripsi</th>
-            <th className="px-4 py-2">Aksi</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">No</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Tim</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Nama Kegiatan</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Deskripsi</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -201,15 +201,15 @@ export default function MasterKegiatanPage() {
               key={item.id}
               className="border-t dark:border-gray-700 text-center"
             >
-              <td className="px-4 py-2">{(page - 1) * perPage + idx + 1}</td>
-              <td className="px-4 py-2">
+              <td className="px-2 py-1 sm:px-4 sm:py-2">{(page - 1) * perPage + idx + 1}</td>
+              <td className="px-2 py-1 sm:px-4 sm:py-2">
                 {item.team?.nama_tim || item.teamId}
               </td>
-              <td className="px-4 py-2">{item.nama_kegiatan}</td>
-              <th className="px-4 py-2">
+              <td className="px-2 py-1 sm:px-4 sm:py-2">{item.nama_kegiatan}</td>
+              <th className="px-2 py-1 sm:px-4 sm:py-2">
                 {!item.deskripsi ? "-" : item.deskripsi}
               </th>
-              <td className="px-4 py-2 space-x-2">
+              <td className="px-2 py-1 sm:px-4 sm:py-2 space-x-2">
                 <Button
                   onClick={() => openEdit(item)}
                   variant="warning"

@@ -6,14 +6,11 @@ import Table from "../../components/ui/Table";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import Select from "react-select";
+import selectStyles from "../../utils/selectStyles";
 import { STATUS } from "../../utils/status";
 import Modal from "../../components/ui/Modal";
 import StatusBadge from "../../components/ui/StatusBadge";
 
-const selectStyles = {
-  option: (base) => ({ ...base, color: "#000" }),
-  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-};
 
 export default function KegiatanTambahanPage() {
   const [items, setItems] = useState([]);
@@ -127,12 +124,12 @@ export default function KegiatanTambahanPage() {
       <Table>
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-            <th className="px-4 py-2">No</th>
-            <th className="px-4 py-2">Nama</th>
-            <th className="px-4 py-2">Tim</th>
-            <th className="px-4 py-2">Tanggal</th>
-            <th className="px-4 py-2">Status</th>
-            <th className="px-4 py-2">Aksi</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">No</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Nama</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Tim</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Tanggal</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Status</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -151,14 +148,14 @@ export default function KegiatanTambahanPage() {
           ) : (
             items.map((item, idx) => (
               <tr key={item.id} className="border-t dark:border-gray-700 text-center">
-                <td className="px-4 py-2">{idx + 1}</td>
-                <td className="px-4 py-2">{item.nama}</td>
-                <td className="px-4 py-2">{item.kegiatan.team?.nama_tim || '-'}</td>
-                <td className="px-4 py-2">{item.tanggal.slice(0,10)}</td>
-                <td className="px-4 py-2">
+                <td className="px-2 py-1 sm:px-4 sm:py-2">{idx + 1}</td>
+                <td className="px-2 py-1 sm:px-4 sm:py-2">{item.nama}</td>
+                <td className="px-2 py-1 sm:px-4 sm:py-2">{item.kegiatan.team?.nama_tim || '-'}</td>
+                <td className="px-2 py-1 sm:px-4 sm:py-2">{item.tanggal.slice(0,10)}</td>
+                <td className="px-2 py-1 sm:px-4 sm:py-2">
                   <StatusBadge status={item.status} />
                 </td>
-                <td className="px-4 py-2 space-x-2">
+                <td className="px-2 py-1 sm:px-4 sm:py-2 space-x-2">
                   <Button
                     onClick={() => openDetail(item.id)}
                     icon

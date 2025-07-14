@@ -147,23 +147,23 @@ export default function LaporanHarianPage() {
           <Table>
             <thead>
               <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-                <th className="px-4 py-2">No</th>
-                <th className="px-4 py-2">Tanggal</th>
-                <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Bukti</th>
-                <th className="px-4 py-2">Catatan</th>
-                <th className="px-4 py-2">Aksi</th>
+                <th className="px-2 py-1 sm:px-4 sm:py-2">No</th>
+                <th className="px-2 py-1 sm:px-4 sm:py-2">Tanggal</th>
+                <th className="px-2 py-1 sm:px-4 sm:py-2">Status</th>
+                <th className="px-2 py-1 sm:px-4 sm:py-2">Bukti</th>
+                <th className="px-2 py-1 sm:px-4 sm:py-2">Catatan</th>
+                <th className="px-2 py-1 sm:px-4 sm:py-2">Aksi</th>
               </tr>
             </thead>
             <tbody>
               {paginated.map((item, idx) => (
                 <tr key={item.id} className="border-t dark:border-gray-700 text-center">
-                  <td className="px-4 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
-                  <td className="px-4 py-2">{item.tanggal.slice(0, 10)}</td>
-                  <td className="px-4 py-2">
+                  <td className="px-2 py-1 sm:px-4 sm:py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
+                  <td className="px-2 py-1 sm:px-4 sm:py-2">{item.tanggal.slice(0, 10)}</td>
+                  <td className="px-2 py-1 sm:px-4 sm:py-2">
                     <StatusBadge status={item.status} />
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-2 py-1 sm:px-4 sm:py-2">
                     {item.bukti_link ? (
                       <a
                         href={item.bukti_link}
@@ -177,8 +177,8 @@ export default function LaporanHarianPage() {
                       "-"
                     )}
                   </td>
-                  <td className="px-4 py-2">{item.catatan || "-"}</td>
-                  <td className="px-4 py-2 space-x-1">
+                  <td className="px-2 py-1 sm:px-4 sm:py-2">{item.catatan || "-"}</td>
+                  <td className="px-2 py-1 sm:px-4 sm:py-2 space-x-1">
                     <Button
                       onClick={() => openEdit(item)}
                       variant="warning"
