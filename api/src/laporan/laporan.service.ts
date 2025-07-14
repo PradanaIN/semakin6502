@@ -1,7 +1,7 @@
 import {
   Injectable,
-  BadRequestException,
   ForbiddenException,
+  NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { Workbook } from "exceljs";
@@ -14,7 +14,7 @@ export class LaporanService {
     const pen = await this.prisma.penugasan.findUnique({
       where: { id: data.penugasanId },
     });
-    if (!pen) throw new BadRequestException("Penugasan tidak ditemukan");
+    if (!pen) throw new NotFoundException("Penugasan tidak ditemukan");
     if (pen.pegawaiId !== data.pegawaiId)
       throw new ForbiddenException("bukan penugasan anda");
     return this.prisma.laporanHarian.create({
@@ -63,7 +63,7 @@ export class LaporanService {
     const existing = await this.prisma.laporanHarian.findUnique({
       where: { id },
     });
-    if (!existing) throw new BadRequestException("not found");
+    if (!existing) throw new NotFoundException("not found");
     if (existing.pegawaiId !== userId)
       throw new ForbiddenException("bukan laporan anda");
     return this.prisma.laporanHarian.update({
@@ -81,7 +81,7 @@ export class LaporanService {
     const existing = await this.prisma.laporanHarian.findUnique({
       where: { id },
     });
-    if (!existing) throw new BadRequestException("not found");
+    if (!existing) throw new NotFoundException("not found");
     if (existing.pegawaiId !== userId)
       throw new ForbiddenException("bukan laporan anda");
     await this.prisma.laporanHarian.delete({ where: { id } });

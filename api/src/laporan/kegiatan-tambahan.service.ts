@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 
 @Injectable()
@@ -9,7 +9,7 @@ export class TambahanService {
       where: { id: data.kegiatanId },
     });
     
-    if (!master) throw new BadRequestException('master kegiatan tidak ditemukan');
+    if (!master) throw new NotFoundException('master kegiatan tidak ditemukan');
     return this.prisma.kegiatanTambahan.create({
       data: {
         nama: master.nama_kegiatan,
@@ -47,7 +47,7 @@ export class TambahanService {
       const master = await this.prisma.masterKegiatan.findUnique({
         where: { id: data.kegiatanId },
       });
-      if (!master) throw new BadRequestException('master kegiatan tidak ditemukan');
+      if (!master) throw new NotFoundException('master kegiatan tidak ditemukan');
       updateData.nama = master.nama_kegiatan;
       updateData.teamId = master.teamId;
     }
