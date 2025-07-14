@@ -6,6 +6,7 @@ import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
 import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import { STATUS } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
@@ -246,7 +247,7 @@ export default function LaporanHarianPage() {
                 <label htmlFor="tanggal" className="block text-sm mb-1">
                   Tanggal<span className="text-red-500">*</span>
                 </label>
-                <input
+                <Input
                   id="tanggal"
                   type="date"
                   value={form.tanggal}
@@ -278,7 +279,7 @@ export default function LaporanHarianPage() {
               {form.status === STATUS.SELESAI_DIKERJAKAN && (
                 <div>
                   <label htmlFor="bukti_link" className="block text-sm mb-1">Link Bukti</label>
-                  <input
+                  <Input
                     id="bukti_link"
                     type="text"
                     value={form.bukti_link}

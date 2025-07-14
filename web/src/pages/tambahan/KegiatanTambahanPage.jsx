@@ -5,6 +5,7 @@ import { Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import Table from "../../components/ui/Table";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
 import { STATUS } from "../../utils/status";
@@ -221,7 +222,7 @@ export default function KegiatanTambahanPage() {
               </div>
               <div>
                 <label htmlFor="tanggal" className="block text-sm mb-1">Tanggal</label>
-                <input
+                <Input
                   id="tanggal"
                   type="date"
                   value={form.tanggal}

@@ -7,6 +7,7 @@ import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
 import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import { ROLES } from "../../utils/roles";
 import SearchInput from "../../components/SearchInput";
 
@@ -218,7 +219,7 @@ export default function TeamsPage() {
           <div className="space-y-2">
             <div>
               <label htmlFor="namaTim" className="block text-sm mb-1">Nama Tim</label>
-              <input
+              <Input
                 id="namaTim"
                 type="text"
                 value={form.nama_tim}

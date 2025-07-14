@@ -7,6 +7,7 @@ import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
 import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import SearchInput from "../../components/SearchInput";
 import Spinner from "../../components/Spinner";
 import { ROLES } from "../../utils/roles";
@@ -264,7 +265,7 @@ export default function UsersPage() {
               <label htmlFor="nama" className="block text-sm mb-1">
                 Nama <span className="text-red-500">*</span>
               </label>
-              <input
+              <Input
                 id="nama"
                 type="text"
                 value={form.nama}
@@ -276,7 +277,7 @@ export default function UsersPage() {
               <label htmlFor="email" className="block text-sm mb-1">
                 Email <span className="text-red-500">*</span>
               </label>
-              <input
+              <Input
                 id="email"
                 type="email"
                 value={form.email}
@@ -288,7 +289,7 @@ export default function UsersPage() {
               <label htmlFor="password" className="block text-sm mb-1">
                 Password <span className="text-red-500">*</span>
               </label>
-              <input
+              <Input
                 id="password"
                 type="password"
                 value={form.password}

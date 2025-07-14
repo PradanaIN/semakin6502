@@ -11,6 +11,7 @@ import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
 import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import { ROLES } from "../../utils/roles";
 import months from "../../utils/months";
 import SearchInput from "../../components/SearchInput";
@@ -356,7 +357,7 @@ export default function PenugasanPage() {
               <div className="grid grid-cols-3 gap-2">
                 <div>
                   <label htmlFor="minggu" className="block text-sm mb-1">Minggu</label>
-                  <input
+                  <Input
                     id="minggu"
                     type="number"
                     value={form.minggu}
@@ -383,7 +384,7 @@ export default function PenugasanPage() {
                 </div>
                 <div>
                   <label htmlFor="tahun" className="block text-sm mb-1">Tahun</label>
-                  <input
+                  <Input
                     id="tahun"
                     type="number"
                     value={form.tahun}

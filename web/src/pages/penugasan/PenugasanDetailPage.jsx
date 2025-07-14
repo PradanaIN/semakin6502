@@ -16,6 +16,7 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
 import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import months from "../../utils/months";
 
 
@@ -293,7 +294,7 @@ export default function PenugasanDetailPage() {
           <div className="grid grid-cols-3 gap-2">
             <div>
               <label htmlFor="minggu" className="block text-sm mb-1">Minggu</label>
-              <input
+              <Input
                 id="minggu"
                 type="number"
                 value={form.minggu}
@@ -324,7 +325,7 @@ export default function PenugasanDetailPage() {
             </div>
             <div>
               <label htmlFor="tahun" className="block text-sm mb-1">Tahun</label>
-              <input
+              <Input
                 id="tahun"
                 type="number"
                 value={form.tahun}
@@ -429,7 +430,7 @@ export default function PenugasanDetailPage() {
                 <label htmlFor="laporanTanggal" className="block text-sm mb-1">
                   Tanggal<span className="text-red-500">*</span>
                 </label>
-                <input
+                <Input
                   id="laporanTanggal"
                   type="date"
                   value={laporanForm.tanggal}
@@ -465,7 +466,7 @@ export default function PenugasanDetailPage() {
                   <label htmlFor="buktiLink" className="block text-sm mb-1">
                     Link Bukti <span className="text-red-500">*</span>
                   </label>
-                  <input
+                  <Input
                     id="buktiLink"
                     type="text"
                     value={laporanForm.bukti_link}
