@@ -4,7 +4,7 @@ import { useAuth } from "../auth/useAuth";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useTheme } from "../../theme/useTheme.jsx";
 import Swal from "sweetalert2";
-import confirmAlert from "../utils/confirmAlert";
+import confirmAlert from "../../utils/confirmAlert";
 import {
   FaBell,
   FaMoon,
@@ -72,9 +72,7 @@ export default function Layout() {
   const displayedNotifications = notifications.slice(0, 5);
   const getPageTitle = useCallback(() => {
     const slug = location.pathname.split("/")[1] || "dashboard";
-    return slug
-      .replaceAll("-", " ")
-      .replace(/^\w/, (c) => c.toUpperCase());
+    return slug.replaceAll("-", " ").replace(/^\w/, (c) => c.toUpperCase());
   }, [location.pathname]);
 
   useEffect(() => {
@@ -207,7 +205,9 @@ export default function Layout() {
                         {user?.role === ROLES.PIMPINAN
                           ? "Pimpinan"
                           : `${
-                              user?.role === ROLES.KETUA ? "Ketua Tim" : "Anggota Tim"
+                              user?.role === ROLES.KETUA
+                                ? "Ketua Tim"
+                                : "Anggota Tim"
                             } ${
                               user?.team ||
                               user?.teamName ||
