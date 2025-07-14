@@ -182,7 +182,7 @@ export default function PenugasanPage() {
               setFilterTahun(parseInt(e.target.value, 10));
               setCurrentPage(1);
             }}
-            className="form-input"
+            className="form-input w-24"
           />
           <button
             type="button"
