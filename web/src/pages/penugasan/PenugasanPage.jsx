@@ -3,6 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { Plus, Search, Filter as FilterIcon, Eye } from "lucide-react";
 import Select from "react-select";
+import StatusBadge from "../../components/ui/StatusBadge";
 import { useAuth } from "../auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Pagination";
@@ -233,7 +234,9 @@ export default function PenugasanPage() {
                   <td className="px-4 py-2">{p.kegiatan?.team?.nama_tim || "-"}</td>
                   <td className="px-4 py-2">{p.pegawai?.nama || "-"}</td>
                   <td className="px-4 py-2">{p.minggu}</td>
-                  <td className="px-4 py-2">{p.status}</td>
+                  <td className="px-4 py-2">
+                    <StatusBadge status={p.status} />
+                  </td>
                   <td className="px-2 py-2">
                     <button
                       onClick={() => navigate(`/tugas-mingguan/${p.id}`)}

@@ -7,6 +7,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 import { STATUS } from "../../utils/status";
+import StatusBadge from "../../components/ui/StatusBadge";
 import months from "../../utils/months";
 
 const selectStyles = {
@@ -231,7 +232,9 @@ export default function PenugasanDetailPage() {
           </div>
           <div>
             <div className="text-sm text-gray-500">Status</div>
-            <div className="font-medium">{item.status}</div>
+            <div className="font-medium">
+              <StatusBadge status={item.status} />
+            </div>
           </div>
         </div>
       ) : (
@@ -381,17 +384,7 @@ export default function PenugasanDetailPage() {
                   <td className="px-2 py-1">{idx + 1}</td>
                   <td className="px-2 py-1">{l.tanggal.slice(0, 10)}</td>
                   <td className="px-2 py-1">
-                    <span
-                      className={`px-2 py-0.5 rounded text-xs font-medium ${
-                        l.status === STATUS.SELESAI_DIKERJAKAN
-                          ? "bg-green-100 text-green-800"
-                          : l.status === STATUS.SEDANG_DIKERJAKAN
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-gray-100 text-gray-800"
-                      }`}
-                    >
-                      {l.status}
-                    </span>
+                    <StatusBadge status={l.status} />
                   </td>
                   <td className="px-2 py-1">
                     {l.bukti_link ? (

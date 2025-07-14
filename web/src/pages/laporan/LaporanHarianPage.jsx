@@ -4,6 +4,7 @@ import { Pencil, Trash2, Search } from "lucide-react";
 import Swal from "sweetalert2";
 import Pagination from "../../components/Pagination";
 import { STATUS } from "../../utils/status";
+import StatusBadge from "../../components/ui/StatusBadge";
 
 export default function LaporanHarianPage() {
   const [laporan, setLaporan] = useState([]);
@@ -171,7 +172,9 @@ export default function LaporanHarianPage() {
                 <tr key={item.id} className="border-t dark:border-gray-700 text-center">
                   <td className="px-4 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
                   <td className="px-4 py-2">{item.tanggal.slice(0, 10)}</td>
-                  <td className="px-4 py-2">{item.status}</td>
+                  <td className="px-4 py-2">
+                    <StatusBadge status={item.status} />
+                  </td>
                   <td className="px-4 py-2">
                     {item.bukti_link ? (
                       <a
