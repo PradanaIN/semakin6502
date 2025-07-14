@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -54,7 +54,7 @@ export default function PenugasanDetailPage() {
     "Desember",
   ];
 
-  const fetchDetail = async () => {
+  const fetchDetail = useCallback(async () => {
     try {
       const res = await axios.get(`/penugasan/${id}`);
       setItem(res.data);
@@ -71,7 +71,7 @@ export default function PenugasanDetailPage() {
       console.error(err);
       Swal.fire("Error", "Gagal mengambil data", "error");
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchDetail();
@@ -94,7 +94,7 @@ export default function PenugasanDetailPage() {
     } else if (user) {
       setUsers([user]);
     }
-  }, [id, canManage, user]);
+  }, [id, canManage, user, fetchDetail]);
 
   const save = async () => {
     try {

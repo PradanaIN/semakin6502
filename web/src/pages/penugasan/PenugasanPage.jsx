@@ -85,7 +85,7 @@ export default function PenugasanPage() {
     } finally {
       setLoading(false);
     }
-  }, [user?.role, filterBulan, filterTahun]);
+  }, [user, filterBulan, filterTahun, canManage]);
 
   useEffect(() => {
     fetchData();
