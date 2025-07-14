@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import DailyOverview from "./DailyOverview";
 import WeeklyOverview from "./WeeklyOverview";
 import MonthlyOverview from "./MonthlyOverview";
@@ -12,7 +12,7 @@ const MonitoringTabs = ({
 }) => {
   const [tab, setTab] = useState("harian");
 
-  const renderContent = () => {
+  const renderContent = useCallback(() => {
     switch (tab) {
       case "harian":
         return <DailyOverview data={dailyData} />;
@@ -40,15 +40,19 @@ const MonitoringTabs = ({
       default:
         return null;
     }
-  };
+  }, [tab, dailyData, weeklyList, weekIndex, onWeekChange, monthlyData]);
+
+  const handleTabClick = useCallback((t) => setTab(t), []);
 
   return (
     <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow">
-      <div className="flex space-x-3 mb-4">
+      <div className="flex space-x-3 mb-4" role="tablist">
         {["harian", "mingguan", "bulanan"].map((type) => (
           <button
             key={type}
-            onClick={() => setTab(type)}
+            onClick={() => handleTabClick(type)}
+            role="tab"
+            aria-selected={tab === type}
             className={`px-4 py-2 rounded-lg font-semibold ${
               tab === type
                 ? "bg-blue-600 text-white"
@@ -64,4 +68,4 @@ const MonitoringTabs = ({
   );
 };
 
-export default MonitoringTabs;
+export default memo(MonitoringTabs);
