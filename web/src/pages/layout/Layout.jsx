@@ -109,6 +109,7 @@ export default function Layout() {
             <button
               className="md:hidden text-xl text-gray-700 dark:text-gray-100"
               onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
             >
               {mobileOpen ? <FaTimes /> : <FaBars />}
             </button>
@@ -123,6 +124,7 @@ export default function Layout() {
               <button
                 onClick={() => setShowNotifMenu(!showNotifMenu)}
                 className="relative"
+                aria-label="Notifications"
               >
                 <FaBell className="text-xl cursor-pointer" />
                 {notifCount > 0 && (
@@ -172,6 +174,7 @@ export default function Layout() {
                   checked={theme === "dark"}
                   onChange={toggleTheme}
                   className="sr-only peer"
+                  aria-label="Toggle dark mode"
                 />
                 <div className="relative w-11 h-6 bg-gray-200 dark:bg-gray-700 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full" />
               </label>
