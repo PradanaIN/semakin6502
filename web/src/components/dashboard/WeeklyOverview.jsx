@@ -40,7 +40,9 @@ const WeeklyOverview = ({ data }) => {
       </div>
 
       <div className="space-y-3">
-        {data.detail?.map((day, index) => (
+        {data.detail
+          ?.filter((d, idx) => idx < 5 || d.total > 0)
+          .map((day, index) => (
           <div
             key={index}
             className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow"
