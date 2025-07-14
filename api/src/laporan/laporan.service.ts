@@ -69,7 +69,7 @@ export class LaporanService {
     return this.prisma.laporanHarian.update({
       where: { id },
       data: {
-        tanggal: data.tanggal,
+        tanggal: new Date(data.tanggal),
         status: data.status,
         bukti_link: data.bukti_link,
         catatan: data.catatan,

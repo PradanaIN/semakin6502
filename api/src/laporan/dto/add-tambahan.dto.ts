@@ -1,8 +1,8 @@
 import { IsDateString, IsInt, IsOptional, IsString } from "class-validator";
 
 export class AddTambahanDto {
-  @IsString()
-  nama!: string;
+  @IsInt()
+  kegiatanId!: number;
 
   @IsDateString()
   tanggal!: string;
@@ -25,8 +25,4 @@ export class AddTambahanDto {
   @IsOptional()
   @IsDateString()
   tanggal_selesai_akhir?: string;
-
-  @IsOptional()
-  @IsInt()
-  userId?: number;
 }

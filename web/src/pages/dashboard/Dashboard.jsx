@@ -7,7 +7,8 @@ import React, { useEffect, useState } from "react";
 const Dashboard = () => {
   const { user } = useAuth();
   const [dailyData, setDailyData] = useState([]);
-  const [weeklyData, setWeeklyData] = useState(null);
+  const [weeklyList, setWeeklyList] = useState([]);
+  const [weekIndex, setWeekIndex] = useState(0);
   const [monthlyProgress, setMonthlyProgress] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
@@ -16,10 +17,27 @@ const Dashboard = () => {
     const fetchAllData = async () => {
       const today = new Date();
       const tanggal = today.toISOString().split("T")[0];
-      const startOfWeek = new Date(today);
-      startOfWeek.setDate(today.getDate() - today.getDay() + 1);
-      const minggu = startOfWeek.toISOString().split("T")[0];
       const year = today.getFullYear();
+      const month = today.getMonth();
+
+      // determine start dates for each week in the month
+      const firstOfMonth = new Date(year, month, 1);
+      const firstMonday = new Date(firstOfMonth);
+      firstMonday.setDate(firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7));
+      const weekStarts = [];
+      for (let i = 0; i < 6; i++) {
+        const d = new Date(firstMonday);
+        d.setDate(firstMonday.getDate() + i * 7);
+        if (i > 0 && d.getMonth() !== month && d.getDate() > 7) break;
+        weekStarts.push(d);
+      }
+
+      let currentIndex = 0;
+      weekStarts.forEach((w, idx) => {
+        const end = new Date(w);
+        end.setDate(w.getDate() + 6);
+        if (today >= w && today <= end) currentIndex = idx;
+      });
 
       try {
         const filters = {};
@@ -48,15 +66,18 @@ const Dashboard = () => {
           )
         );
 
-        const penugasanReq = axios.get("/penugasan", {
-          params: { bulan: today.getMonth() + 1, tahun: year },
-        });
+        const weeklyPromises = weekStarts.map((d) =>
+          axios
+            .get("/monitoring/mingguan", {
+              params: { minggu: d.toISOString().split("T")[0], ...filters },
+            })
+            .then((res) => res.data)
+        );
 
-        const [dailyRes, weeklyRes, progress, penRes] = await Promise.all([
+        const [dailyRes, weeklyArray, progress] = await Promise.all([
           axios.get("/monitoring/harian", { params: { tanggal, ...filters } }),
-          axios.get("/monitoring/mingguan", { params: { minggu, ...filters } }),
+          Promise.all(weeklyPromises),
           progressPromise,
-          penugasanReq,
         ]);
 
         const mingguKe = Math.ceil(today.getDate() / 7);
@@ -74,7 +95,8 @@ const Dashboard = () => {
         };
 
         setDailyData(dailyRes.data);
-        setWeeklyData(weeklyDataFixed);
+        setWeeklyList(weeklyArray);
+        setWeekIndex(currentIndex);
         setMonthlyProgress(progress);
       } catch (error) {
         if (error?.response && [401, 403].includes(error.response.status)) {
@@ -113,11 +135,13 @@ const Dashboard = () => {
         Selamat datang, {user?.nama || "Pengguna"}! 👋
       </h1>
 
-      <StatsSummary weeklyData={weeklyData} />
+      <StatsSummary weeklyData={weeklyList[weekIndex]} />
 
       <MonitoringTabs
         dailyData={dailyData}
-        weeklyData={weeklyData}
+        weeklyList={weeklyList}
+        weekIndex={weekIndex}
+        onWeekChange={setWeekIndex}
         monthlyProgress={monthlyProgress}
       />
 

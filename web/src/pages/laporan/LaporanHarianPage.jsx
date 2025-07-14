@@ -7,6 +7,7 @@ import Pagination from "../../components/Pagination";
 export default function LaporanHarianPage() {
   const [laporan, setLaporan] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -196,6 +197,7 @@ export default function LaporanHarianPage() {
             onPageChange={setCurrentPage}
           />
         </div>
+
         </div>
         </>
       )}
