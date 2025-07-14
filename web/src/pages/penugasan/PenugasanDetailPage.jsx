@@ -188,12 +188,14 @@ export default function PenugasanDetailPage() {
             <button
               onClick={() => setEditing(true)}
               className="p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+              aria-label="Edit"
             >
               <Pencil size={16} />
             </button>
             <button
               onClick={remove}
               className="p-2 bg-red-600 hover:bg-red-700 text-white rounded"
+              aria-label="Hapus"
             >
               <Trash2 size={16} />
             </button>
@@ -405,12 +407,14 @@ export default function PenugasanDetailPage() {
                     <button
                       onClick={() => editLaporan(l)}
                       className="p-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                      aria-label="Edit"
                     >
                       <Pencil size={14} />
                     </button>
                     <button
                       onClick={() => deleteLaporan(l.id)}
                       className="p-1 bg-red-600 hover:bg-red-700 text-white rounded"
+                      aria-label="Hapus"
                     >
                       <Trash2 size={14} />
                     </button>

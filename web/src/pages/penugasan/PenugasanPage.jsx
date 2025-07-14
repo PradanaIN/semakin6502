@@ -182,6 +182,7 @@ export default function PenugasanPage() {
             type="button"
             onClick={fetchData}
             className="px-3 py-[4px] bg-gray-200 dark:bg-gray-700 rounded"
+            aria-label="Filter"
           >
             <FilterIcon size={16} />
           </button>
@@ -237,6 +238,7 @@ export default function PenugasanPage() {
                     <button
                       onClick={() => navigate(`/tugas-mingguan/${p.id}`)}
                       className="text-blue-600 hover:underline text-sm"
+                      aria-label="Detail"
                     >
                       <Eye size={16} />
                     </button>

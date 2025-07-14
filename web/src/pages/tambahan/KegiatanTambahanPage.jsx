@@ -161,18 +161,21 @@ export default function KegiatanTambahanPage() {
                   <button
                     onClick={() => openDetail(item.id)}
                     className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                    aria-label="Detail"
                   >
                     <Eye size={16} />
                   </button>
                   <button
                     onClick={() => openEdit(item)}
                     className="p-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                    aria-label="Edit"
                   >
                     <Pencil size={16} />
                   </button>
                   <button
                     onClick={() => remove(item)}
                     className="p-2 bg-red-600 hover:bg-red-700 text-white rounded"
+                    aria-label="Hapus"
                   >
                     <Trash2 size={16} />
                   </button>

@@ -203,12 +203,14 @@ export default function UsersPage() {
                 <button
                   onClick={() => openEdit(u)}
                   className="p-2 text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded"
+                  aria-label="Edit"
                 >
                   <Pencil size={16} />
                 </button>
                 <button
                   onClick={() => deleteUser(u.id)}
                   className="p-2 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                  aria-label="Hapus"
                 >
                   <Trash2 size={16} />
                 </button>
