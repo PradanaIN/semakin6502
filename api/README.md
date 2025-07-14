@@ -50,11 +50,12 @@ npm install
 ```
 
 3. **Konfigurasi environment**
-Buat file `.env` dan isi:
+Buat file `.env` dan isi (nilai `JWT_SECRET` wajib diisi, server akan gagal start jika kosong):
 ```
 DATABASE_URL="mysql://root:password@localhost:3306/semakin_6502"
 JWT_SECRET="supersecretjwtkey"
 ```
+Jika `JWT_SECRET` tidak diatur, aplikasi akan langsung keluar dengan error.
 
 4. **Setup database**
 ```bash
