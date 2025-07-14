@@ -1,7 +1,7 @@
 import {
   Injectable,
   ForbiddenException,
-  BadRequestException,
+  NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { ROLES } from "../common/roles.constants";
@@ -56,7 +56,7 @@ export class PenugasanService {
       where: { id: data.kegiatanId },
     });
     if (!master) {
-      throw new BadRequestException("master kegiatan tidak ditemukan");
+      throw new NotFoundException("master kegiatan tidak ditemukan");
     }
     if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
@@ -85,7 +85,7 @@ export class PenugasanService {
       where: { id: data.kegiatanId },
     });
     if (!master) {
-      throw new BadRequestException("master kegiatan tidak ditemukan");
+      throw new NotFoundException("master kegiatan tidak ditemukan");
     }
     if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
@@ -139,7 +139,7 @@ export class PenugasanService {
       where: { id },
       include: { kegiatan: true },
     });
-    if (!existing) throw new BadRequestException("not found");
+    if (!existing) throw new NotFoundException("not found");
     if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
         where: { teamId: existing.kegiatan.teamId, userId, is_leader: true },
@@ -167,7 +167,7 @@ export class PenugasanService {
       where: { id },
       include: { kegiatan: true },
     });
-    if (!existing) throw new BadRequestException("not found");
+    if (!existing) throw new NotFoundException("not found");
     if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
         where: { teamId: existing.kegiatan.teamId, userId, is_leader: true },
