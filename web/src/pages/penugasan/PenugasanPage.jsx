@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { Plus, Search, Filter as FilterIcon, Eye } from "lucide-react";
@@ -134,13 +134,20 @@ export default function PenugasanPage() {
     "Desember",
   ];
 
-  const filtered = penugasan.filter((p) => {
-    const text = `${p.kegiatan?.nama_kegiatan || ""} ${p.pegawai?.nama || ""}`.toLowerCase();
-    return text.includes(search.toLowerCase());
-  });
-  const paginated = filtered.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
+  const filtered = useMemo(() => {
+    return penugasan.filter((p) => {
+      const text = `${p.kegiatan?.nama_kegiatan || ""} ${p.pegawai?.nama || ""}`.toLowerCase();
+      return text.includes(search.toLowerCase());
+    });
+  }, [penugasan, search]);
+
+  const paginated = useMemo(
+    () =>
+      filtered.slice(
+        (currentPage - 1) * pageSize,
+        currentPage * pageSize
+      ),
+    [filtered, currentPage, pageSize]
   );
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
