@@ -147,17 +147,17 @@ export default function UsersPage() {
           placeholder="Cari pengguna..."
           ariaLabel="Cari pengguna"
         />
-        <select
+          <select
             value={roleFilter}
             onChange={(e) => {
               setRoleFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="border rounded px-3 py-2 bg-white text-gray-900"
+            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
           >
-            <option value="">Semua Role</option>
+            <option value="" className="text-gray-900 dark:text-gray-200">Semua Role</option>
             {roles.map((r) => (
-              <option key={r.id} value={r.name} className="text-gray-900">
+              <option key={r.id} value={r.name} className="text-gray-900 dark:text-gray-200">
                 {r.name}
               </option>
             ))}
