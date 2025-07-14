@@ -33,24 +33,26 @@ const MonitoringTabs = ({
 
   return (
     <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow">
-      <div className="flex flex-wrap items-center gap-2 mb-4" role="tablist">
-        {["harian", "mingguan", "bulanan"].map((type) => (
-          <button
-            key={type}
-            onClick={() => handleTabClick(type)}
-            role="tab"
-            aria-selected={tab === type}
-            className={`px-4 py-2 rounded-lg font-semibold ${
-              tab === type
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100"
-            }`}
-          >
-            {type.charAt(0).toUpperCase() + type.slice(1)}
-          </button>
-        ))}
+      <div className="flex flex-wrap justify-between items-center mb-4">
+        <div className="flex flex-wrap gap-2" role="tablist">
+          {["harian", "mingguan", "bulanan"].map((type) => (
+            <button
+              key={type}
+              onClick={() => handleTabClick(type)}
+              role="tab"
+              aria-selected={tab === type}
+              className={`px-4 py-2 rounded-lg font-semibold ${
+                tab === type
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100"
+              }`}
+            >
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </button>
+          ))}
+        </div>
         {tab === "mingguan" && (
-          <>
+          <div className="ml-auto flex gap-2">
             <select
               className="border rounded-md px-2 py-1 bg-gray-100 dark:bg-gray-700"
               value={monthIndex}
@@ -75,7 +77,7 @@ const MonitoringTabs = ({
                 ))}
               </select>
             )}
-          </>
+          </div>
         )}
       </div>
       <div>{renderContent()}</div>
