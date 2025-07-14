@@ -36,7 +36,7 @@ const MonitoringTabs = ({
           </div>
         );
       case "bulanan":
-        return <MonthlyOverview data={monthlyProgress} />;
+        return <MonthlyOverview data={monthlyData} />;
       default:
         return null;
     }
