@@ -8,6 +8,7 @@ import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 import { STATUS } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
+import Modal from "../../components/ui/Modal";
 import months from "../../utils/months";
 
 const selectStyles = {
@@ -427,8 +428,7 @@ export default function PenugasanDetailPage() {
       </div>
 
       {showLaporanForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md space-y-4 shadow-xl">
+        <Modal onClose={() => setShowLaporanForm(false)}>
             <h3 className="text-lg font-semibold">
               {laporanForm.id ? "Edit" : "Tambah"} Laporan Harian
             </h3>
@@ -509,8 +509,7 @@ export default function PenugasanDetailPage() {
                 Simpan
               </button>
             </div>
-          </div>
-        </div>
+        </Modal>
       )}
     </div>
   );
