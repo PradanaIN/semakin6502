@@ -13,6 +13,7 @@ import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
 import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import { ROLES } from "../../utils/roles";
 import SearchInput from "../../components/SearchInput";
 
@@ -288,7 +289,7 @@ export default function MasterKegiatanPage() {
               <label htmlFor="namaKegiatan" className="block text-sm mb-1">
                 Nama Kegiatan <span className="text-red-500">*</span>
               </label>
-              <input
+              <Input
                 id="namaKegiatan"
                 type="text"
                 value={form.nama_kegiatan}
