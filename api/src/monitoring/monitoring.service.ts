@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
+import MONTHS from "../common/months";
 
 @Injectable()
 export class MonitoringService {
@@ -162,22 +163,7 @@ export class MonitoringService {
       [...harian, ...tambahan].map((r) => r.tanggal.getMonth()),
     );
 
-    const monthNames = [
-      "Januari",
-      "Februari",
-      "Maret",
-      "April",
-      "Mei",
-      "Juni",
-      "Juli",
-      "Agustus",
-      "September",
-      "Oktober",
-      "November",
-      "Desember",
-    ];
-
-    return monthNames.map((name, idx) => ({
+    return MONTHS.map((name, idx) => ({
       tanggal: name,
       adaAktivitas: monthsWithActivity.has(idx),
     }));
@@ -185,21 +171,7 @@ export class MonitoringService {
 }
 
 function monthName(date: Date) {
-  const names = [
-    "Januari",
-    "Februari",
-    "Maret",
-    "April",
-    "Mei",
-    "Juni",
-    "Juli",
-    "Agustus",
-    "September",
-    "Oktober",
-    "November",
-    "Desember",
-  ];
-  return names[date.getMonth()];
+  return MONTHS[date.getMonth()];
 }
 
 function getWeekNumber(d: Date) {
