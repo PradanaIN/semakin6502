@@ -282,8 +282,9 @@ export default function PenugasanPage() {
           onClose={() => {
             setShowForm(false);
           }}
+          titleId="penugasan-form-title"
         >
-          <h2 className="text-xl font-semibold mb-2">Tambah Penugasan</h2>
+          <h2 id="penugasan-form-title" className="text-xl font-semibold mb-2">Tambah Penugasan</h2>
           <div className="space-y-2">
             <div>
               <Label htmlFor="kegiatanId">

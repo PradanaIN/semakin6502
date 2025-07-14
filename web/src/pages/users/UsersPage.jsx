@@ -260,8 +260,9 @@ export default function UsersPage() {
           onClose={() => {
             setShowForm(false);
           }}
+          titleId="user-form-title"
         >
-          <h2 className="text-xl font-semibold mb-2">
+          <h2 id="user-form-title" className="text-xl font-semibold mb-2">
             {editingUser ? "Edit Pengguna" : "Tambah Pengguna"}
           </h2>
           <div className="space-y-2">

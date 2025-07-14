@@ -263,8 +263,9 @@ export default function MasterKegiatanPage() {
             setShowForm(false);
             setEditing(null);
           }}
+          titleId="master-kegiatan-form-title"
         >
-          <h2 className="text-xl font-semibold mb-2">
+          <h2 id="master-kegiatan-form-title" className="text-xl font-semibold mb-2">
             {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}
           </h2>
           <div className="space-y-2">

@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 
-export default function Modal({ onClose, children, widthClass = "w-full max-w-md" }) {
+export default function Modal({
+  onClose,
+  children,
+  widthClass = "w-full max-w-md",
+  titleId,
+  descriptionId,
+}) {
   const containerRef = useRef(null);
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -45,6 +51,8 @@ export default function Modal({ onClose, children, widthClass = "w-full max-w-md
       onClick={handleClose}
       role="dialog"
       aria-modal="true"
+      aria-labelledby={titleId}
+      aria-describedby={descriptionId}
     >
       <div
         ref={containerRef}

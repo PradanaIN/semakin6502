@@ -423,8 +423,11 @@ export default function PenugasanDetailPage() {
       </div>
 
       {showLaporanForm && (
-        <Modal onClose={() => setShowLaporanForm(false)}>
-            <h3 className="text-lg font-semibold">
+        <Modal
+          onClose={() => setShowLaporanForm(false)}
+          titleId="laporan-form-title"
+        >
+            <h3 id="laporan-form-title" className="text-lg font-semibold">
               {laporanForm.id ? "Edit" : "Tambah"} Laporan Harian
             </h3>
             <div className="space-y-2">
