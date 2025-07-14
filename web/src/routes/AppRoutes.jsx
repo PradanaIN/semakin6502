@@ -14,6 +14,7 @@ const PenugasanDetailPage = React.lazy(() => import("../pages/penugasan/Penugasa
 const LaporanHarianPage = React.lazy(() => import("../pages/laporan/LaporanHarianPage"));
 const KegiatanTambahanPage = React.lazy(() => import("../pages/tambahan/KegiatanTambahanPage"));
 const KegiatanTambahanDetailPage = React.lazy(() => import("../pages/tambahan/KegiatanTambahanDetailPage"));
+const NotFound = React.lazy(() => import("../pages/NotFound"));
 
 function PrivateRoute({ children }) {
   const { token, user } = useAuth();
@@ -54,6 +55,7 @@ export default function AppRoutes() {
         <Route path="laporan-harian" element={<LaporanHarianPage />} />
         <Route path="kegiatan-tambahan" element={<KegiatanTambahanPage />} />
         <Route path="kegiatan-tambahan/:id" element={<KegiatanTambahanDetailPage />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
     </Suspense>
