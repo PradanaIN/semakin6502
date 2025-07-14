@@ -126,10 +126,10 @@ export default function TeamsPage() {
       <Table>
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-            <th className="px-4 py-2">No</th>
-            <th className="px-4 py-2">Nama Tim</th>
-            <th className="px-4 py-2">Jumlah Anggota</th>
-            <th className="px-4 py-2">Aksi</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">No</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Nama Tim</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Jumlah Anggota</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -151,10 +151,10 @@ export default function TeamsPage() {
               key={t.id}
               className="border-t dark:border-gray-700 text-center"
             >
-              <td className="px-4 py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
-              <td className="px-4 py-2">{t.nama_tim}</td>
-              <td className="px-4 py-2">{t.members?.length || 0}</td>
-              <td className="px-4 py-2 space-x-2">
+              <td className="px-2 py-1 sm:px-4 sm:py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
+              <td className="px-2 py-1 sm:px-4 sm:py-2">{t.nama_tim}</td>
+              <td className="px-2 py-1 sm:px-4 sm:py-2">{t.members?.length || 0}</td>
+              <td className="px-2 py-1 sm:px-4 sm:py-2 space-x-2">
                 <Button
                   onClick={() => openEdit(t)}
                   variant="warning"

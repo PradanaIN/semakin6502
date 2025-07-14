@@ -1,7 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 export default function Modal({ onClose, children, widthClass = "w-full max-w-md" }) {
   const containerRef = useRef(null);
+  const [visible, setVisible] = useState(false);
+  const [closing, setClosing] = useState(false);
 
   useEffect(() => {
     function handleKey(e) {
@@ -27,20 +29,27 @@ export default function Modal({ onClose, children, widthClass = "w-full max-w-md
       "a[href], button, textarea, input, select, [tabindex]:not([tabindex='-1'])"
     );
     firstInput?.focus();
+    setTimeout(() => setVisible(true), 10);
     return () => document.removeEventListener("keydown", handleKey);
   }, [onClose]);
 
+  function handleClose() {
+    setClosing(true);
+    setVisible(false);
+    setTimeout(onClose, 300);
+  }
+
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
-      onClick={onClose}
+      className={`fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 transition-opacity duration-300 ${visible && !closing ? 'opacity-100' : 'opacity-0'}`}
+      onClick={handleClose}
       role="dialog"
       aria-modal="true"
     >
       <div
         ref={containerRef}
         onClick={(e) => e.stopPropagation()}
-        className={`bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl space-y-4 ${widthClass}`}
+        className={`bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl space-y-4 transform transition-all duration-300 ${visible && !closing ? 'scale-100 opacity-100' : 'scale-95 opacity-0'} ${widthClass}`}
       >
         {children}
       </div>

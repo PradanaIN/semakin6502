@@ -7,6 +7,7 @@ import {
   confirmDelete,
 } from "../../utils/alerts";
 import Select from "react-select";
+import selectStyles from "../../utils/selectStyles";
 import { Pencil, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
@@ -17,10 +18,6 @@ import Table from "../../components/ui/Table";
 import Button from "../../components/ui/Button";
 import months from "../../utils/months";
 
-const selectStyles = {
-  option: (base) => ({ ...base, color: "#000" }),
-  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-};
 
 export default function PenugasanDetailPage() {
   const { id } = useParams();
@@ -356,12 +353,12 @@ export default function PenugasanDetailPage() {
         <Table className="min-w-full">
           <thead>
             <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm">
-              <th className="px-2 py-1">No</th>
-              <th className="px-2 py-1">Tanggal</th>
-              <th className="px-2 py-1">Status</th>
-              <th className="px-2 py-1">Bukti</th>
-              <th className="px-2 py-1">Catatan</th>
-              <th className="px-2 py-1">Aksi</th>
+              <th className="px-1 py-0.5 sm:px-2 sm:py-1">No</th>
+              <th className="px-1 py-0.5 sm:px-2 sm:py-1">Tanggal</th>
+              <th className="px-1 py-0.5 sm:px-2 sm:py-1">Status</th>
+              <th className="px-1 py-0.5 sm:px-2 sm:py-1">Bukti</th>
+              <th className="px-1 py-0.5 sm:px-2 sm:py-1">Catatan</th>
+              <th className="px-1 py-0.5 sm:px-2 sm:py-1">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -377,12 +374,12 @@ export default function PenugasanDetailPage() {
                   key={l.id}
                   className="border-t dark:border-gray-700 text-center"
                 >
-                  <td className="px-2 py-1">{idx + 1}</td>
-                  <td className="px-2 py-1">{l.tanggal.slice(0, 10)}</td>
-                  <td className="px-2 py-1">
+                  <td className="px-1 py-0.5 sm:px-2 sm:py-1">{idx + 1}</td>
+                  <td className="px-1 py-0.5 sm:px-2 sm:py-1">{l.tanggal.slice(0, 10)}</td>
+                  <td className="px-1 py-0.5 sm:px-2 sm:py-1">
                     <StatusBadge status={l.status} />
                   </td>
-                  <td className="px-2 py-1">
+                  <td className="px-1 py-0.5 sm:px-2 sm:py-1">
                     {l.bukti_link ? (
                       <a
                         href={l.bukti_link}
@@ -396,8 +393,8 @@ export default function PenugasanDetailPage() {
                       "-"
                     )}
                   </td>
-                  <td className="px-2 py-1">{l.catatan || "-"}</td>
-                  <td className="px-2 py-1 space-x-1">
+                  <td className="px-1 py-0.5 sm:px-2 sm:py-1">{l.catatan || "-"}</td>
+                  <td className="px-1 py-0.5 sm:px-2 sm:py-1 space-x-1">
                     <Button
                       onClick={() => editLaporan(l)}
                       variant="warning"

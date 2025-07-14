@@ -167,12 +167,12 @@ export default function UsersPage() {
       <Table>
         <thead>
           <tr className="bg-gray-200 dark:bg-gray-700 text-center text-sm uppercase">
-            <th className="px-4 py-2">No</th>
-            <th className="px-4 py-2">Nama</th>
-            <th className="px-4 py-2">Email</th>
-            <th className="px-4 py-2">Tim</th>
-            <th className="px-4 py-2">Role</th>
-            <th className="px-4 py-2">Aksi</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">No</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Nama</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Email</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Tim</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Role</th>
+            <th className="px-2 py-1 sm:px-4 sm:py-2">Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -191,14 +191,14 @@ export default function UsersPage() {
           ) : (
             paginatedUsers.map((u, idx) => (
               <tr key={u.id} className="border-t dark:border-gray-700">
-                <td className="px-4 py-2 text-center">{(currentPage - 1) * pageSize + idx + 1}</td>
-              <td className="px-4 py-2">{u.nama}</td>
-              <td className="px-4 py-2 text">{u.email}</td>
-              <td className="px-4 py-2 text-center">
+              <td className="px-2 py-1 sm:px-4 sm:py-2 text-center">{(currentPage - 1) * pageSize + idx + 1}</td>
+              <td className="px-2 py-1 sm:px-4 sm:py-2">{u.nama}</td>
+              <td className="px-2 py-1 sm:px-4 sm:py-2 text">{u.email}</td>
+              <td className="px-2 py-1 sm:px-4 sm:py-2 text-center">
                 {u.members?.[0]?.team?.nama_tim || "-"}
               </td>
-              <td className="px-4 py-2 capitalize text-center">{u.role}</td>
-              <td className="px-4 py-2 space-x-2 text-center">
+              <td className="px-2 py-1 sm:px-4 sm:py-2 capitalize text-center">{u.role}</td>
+              <td className="px-2 py-1 sm:px-4 sm:py-2 space-x-2 text-center">
                 <Button
                   onClick={() => openEdit(u)}
                   variant="warning"
