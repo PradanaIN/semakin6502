@@ -375,7 +375,7 @@ export default function PenugasanDetailPage() {
               laporan.map((l, idx) => (
                 <tr
                   key={l.id}
-                  className="border-t dark:border-gray-700 text-center"
+                  className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
                 >
                   <td className={tableStyles.smallCell}>{idx + 1}</td>
                   <td className={tableStyles.smallCell}>{l.tanggal.slice(0, 10)}</td>

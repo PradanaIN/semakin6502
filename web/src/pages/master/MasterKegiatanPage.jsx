@@ -203,7 +203,7 @@ export default function MasterKegiatanPage() {
           items.map((item, idx) => (
             <tr
               key={item.id}
-              className="border-t dark:border-gray-700 text-center"
+              className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
             >
               <td className={tableStyles.cell}>{(page - 1) * perPage + idx + 1}</td>
               <td className={tableStyles.cell}>

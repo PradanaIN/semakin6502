@@ -218,8 +218,8 @@ export default function PenugasanPage() {
               </td>
             </tr>
           ) : (
-            paginated.map((p, idx) => (
-                <tr key={p.id} className="border-t dark:border-gray-700 text-center">
+              paginated.map((p, idx) => (
+                  <tr key={p.id} className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}>
                   <td className="px-1 py-1 sm:px-2 sm:py-2">{(currentPage - 1) * pageSize + idx + 1}</td>
                   <td className={tableStyles.cell}>{p.kegiatan?.nama_kegiatan || "-"}</td>
                   <td className={tableStyles.cell}>{p.kegiatan?.team?.nama_tim || "-"}</td>

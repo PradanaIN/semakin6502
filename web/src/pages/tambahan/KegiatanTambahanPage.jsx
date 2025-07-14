@@ -191,7 +191,7 @@ export default function KegiatanTambahanPage() {
             </tr>
           ) : (
             paginatedItems.map((item, idx) => (
-              <tr key={item.id} className="border-t dark:border-gray-700 text-center">
+              <tr key={item.id} className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}>
                 <td className={tableStyles.cell}>{(currentPage - 1) * pageSize + idx + 1}</td>
                 <td className={tableStyles.cell}>{item.nama}</td>
                 <td className={tableStyles.cell}>{item.kegiatan.team?.nama_tim || '-'}</td>
