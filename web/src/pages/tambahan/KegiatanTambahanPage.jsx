@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import {
   showSuccess,
@@ -17,6 +17,8 @@ import selectStyles from "../../utils/selectStyles";
 import { STATUS } from "../../utils/status";
 import Modal from "../../components/ui/Modal";
 import StatusBadge from "../../components/ui/StatusBadge";
+import SearchInput from "../../components/SearchInput";
+import months from "../../utils/months";
 
 
 export default function KegiatanTambahanPage() {
@@ -31,6 +33,9 @@ export default function KegiatanTambahanPage() {
     status: STATUS.BELUM,
     deskripsi: "",
   });
+  const [search, setSearch] = useState("");
+  const [filterBulan, setFilterBulan] = useState("");
+  const [filterTahun, setFilterTahun] = useState(new Date().getFullYear());
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -114,6 +119,19 @@ export default function KegiatanTambahanPage() {
     navigate(`/kegiatan-tambahan/${id}`);
   };
 
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => {
+      const text = `${item.nama} ${item.kegiatan?.team?.nama_tim || ""}`.toLowerCase();
+      const matchesSearch = text.includes(search.toLowerCase());
+      const date = new Date(item.tanggal);
+      const bulan = date.getMonth() + 1;
+      const tahun = date.getFullYear();
+      const matchBulan = filterBulan ? bulan === parseInt(filterBulan, 10) : true;
+      const matchTahun = filterTahun ? tahun === parseInt(filterTahun, 10) : true;
+      return matchesSearch && matchBulan && matchTahun;
+    });
+  }, [items, search, filterBulan, filterTahun]);
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -121,6 +139,33 @@ export default function KegiatanTambahanPage() {
         <Button onClick={openCreate} className="add-button">
           <Plus size={16} /> Tambah
         </Button>
+      </div>
+
+      <div className="flex items-center gap-2 flex-wrap">
+        <SearchInput
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Cari kegiatan..."
+          ariaLabel="Cari kegiatan"
+        />
+        <select
+          value={filterBulan}
+          onChange={(e) => setFilterBulan(e.target.value)}
+          className="border rounded px-2 py-[4px] bg-white dark:bg-gray-700 dark:text-gray-200"
+        >
+          <option value="">Bulan</option>
+          {months.map((m, i) => (
+            <option key={i + 1} value={i + 1}>
+              {m}
+            </option>
+          ))}
+        </select>
+        <input
+          type="number"
+          value={filterTahun}
+          onChange={(e) => setFilterTahun(parseInt(e.target.value, 10))}
+          className="form-input w-24"
+        />
       </div>
 
       <Table>
@@ -141,14 +186,14 @@ export default function KegiatanTambahanPage() {
                 Memuat data...
               </td>
             </tr>
-          ) : items.length === 0 ? (
+          ) : filteredItems.length === 0 ? (
             <tr>
               <td colSpan="5" className="py-4 text-center">
                 Data tidak ditemukan
               </td>
             </tr>
           ) : (
-            items.map((item, idx) => (
+            filteredItems.map((item, idx) => (
               <tr key={item.id} className="border-t dark:border-gray-700 text-center">
                 <td className={tableStyles.cell}>{idx + 1}</td>
                 <td className={tableStyles.cell}>{item.nama}</td>
