@@ -91,7 +91,7 @@ const Dashboard = () => {
     };
 
     fetchAllData();
-  }, []);
+  }, [user?.id, user?.role, user?.teamId]);
 
   if (loading) {
     return (
