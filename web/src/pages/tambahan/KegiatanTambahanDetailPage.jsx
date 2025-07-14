@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Pencil, Trash2, Search } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import Select from "react-select";
 
 const selectStyles = {
@@ -55,7 +55,11 @@ export default function KegiatanTambahanDetailPage() {
 
   const save = async () => {
     try {
-      await axios.put(`/kegiatan-tambahan/${id}`, form);
+      const payload = { ...form };
+      Object.keys(payload).forEach((k) => {
+        if (payload[k] === "") delete payload[k];
+      });
+      await axios.put(`/kegiatan-tambahan/${id}`, payload);
       Swal.fire("Berhasil", "Kegiatan diperbarui", "success");
       setEditing(false);
       fetchDetail();
@@ -67,7 +71,11 @@ export default function KegiatanTambahanDetailPage() {
 
   const addLaporan = async () => {
     try {
-      await axios.put(`/kegiatan-tambahan/${id}`, laporanForm);
+      const payload = { ...laporanForm };
+      Object.keys(payload).forEach((k) => {
+        if (payload[k] === "") delete payload[k];
+      });
+      await axios.put(`/kegiatan-tambahan/${id}`, payload);
       Swal.fire("Berhasil", "Laporan ditambah", "success");
       setLaporanForm({
         tanggal_selesai: "",
@@ -131,9 +139,7 @@ export default function KegiatanTambahanDetailPage() {
           </div>
           <div>
             <div className="text-sm text-gray-500">Tim</div>
-            <div className="font-medium">
-              {item.kegiatan.team?.nama_tim || "-"}
-            </div>
+            <div className="font-medium">{item.kegiatan.team?.nama_tim || "-"}</div>
           </div>
           <div>
             <div className="text-sm text-gray-500">Tanggal</div>
@@ -179,29 +185,18 @@ export default function KegiatanTambahanDetailPage() {
               classNamePrefix="react-select"
               styles={selectStyles}
               menuPortalTarget={document.body}
-              options={kegiatan.map((k) => ({
-                value: k.id,
-                label: k.nama_kegiatan,
-              }))}
+              options={kegiatan.map((k) => ({ value: k.id, label: k.nama_kegiatan }))}
               value={
                 form.kegiatanId
-                  ? {
-                      value: form.kegiatanId,
-                      label: kegiatan.find((k) => k.id === form.kegiatanId)
-                        ?.nama_kegiatan,
-                    }
+                  ? { value: form.kegiatanId, label: kegiatan.find((k) => k.id === form.kegiatanId)?.nama_kegiatan }
                   : null
               }
-              onChange={(o) =>
-                setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })
-              }
+              onChange={(o) => setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })}
               placeholder="Pilih kegiatan..."
             />
             {form.kegiatanId && (
               <p className="text-sm mt-1 text-gray-600 dark:text-gray-300">
-                Tim:{" "}
-                {kegiatan.find((k) => k.id === form.kegiatanId)?.team
-                  ?.nama_tim || "-"}
+                Tim: {kegiatan.find((k) => k.id === form.kegiatanId)?.team?.nama_tim || "-"}
               </p>
             )}
           </div>
@@ -259,10 +254,7 @@ export default function KegiatanTambahanDetailPage() {
               type="date"
               value={laporanForm.tanggal_selesai}
               onChange={(e) =>
-                setLaporanForm({
-                  ...laporanForm,
-                  tanggal_selesai: e.target.value,
-                })
+                setLaporanForm({ ...laporanForm, tanggal_selesai: e.target.value })
               }
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
             />
@@ -273,10 +265,7 @@ export default function KegiatanTambahanDetailPage() {
               type="date"
               value={laporanForm.tanggal_selesai_akhir}
               onChange={(e) =>
-                setLaporanForm({
-                  ...laporanForm,
-                  tanggal_selesai_akhir: e.target.value,
-                })
+                setLaporanForm({ ...laporanForm, tanggal_selesai_akhir: e.target.value })
               }
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
             />

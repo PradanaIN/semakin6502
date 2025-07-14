@@ -50,6 +50,8 @@ export default function AppRoutes() {
         <Route path="tugas-tambahan" element={<KegiatanTambahanPage />} />
         <Route path="tugas-tambahan/:id" element={<KegiatanTambahanDetailPage />} />
         <Route path="laporan-harian" element={<LaporanHarianPage />} />
+        <Route path="kegiatan-tambahan" element={<KegiatanTambahanPage />} />
+        <Route path="kegiatan-tambahan/:id" element={<KegiatanTambahanDetailPage />} />
       </Route>
     </Routes>
   );
