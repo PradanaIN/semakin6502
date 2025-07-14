@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import confirmAlert from "../utils/confirmAlert";
 import { Pencil, Trash2 } from "lucide-react";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
@@ -91,10 +92,9 @@ export default function KegiatanTambahanDetailPage() {
   };
 
   const remove = async () => {
-    const r = await Swal.fire({
+    const r = await confirmAlert({
       title: "Hapus kegiatan ini?",
       icon: "warning",
-      showCancelButton: true,
       confirmButtonText: "Hapus",
     });
     if (!r.isConfirmed) return;

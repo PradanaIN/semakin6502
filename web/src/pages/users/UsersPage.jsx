@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import confirmAlert from "../../utils/confirmAlert";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
@@ -93,10 +94,9 @@ export default function UsersPage() {
   };
 
   const deleteUser = async (id) => {
-    const result = await Swal.fire({
+    const result = await confirmAlert({
       title: "Hapus pengguna ini?",
       icon: "warning",
-      showCancelButton: true,
       confirmButtonText: "Hapus",
     });
     if (!result.isConfirmed) return;
@@ -320,11 +320,9 @@ export default function UsersPage() {
               <Button
                 variant="secondary"
                 onClick={async () => {
-                  const r = await Swal.fire({
+                  const r = await confirmAlert({
                     title: "Batalkan perubahan?",
                     icon: "question",
-                    showCancelButton: true,
-                    confirmButtonText: "Ya",
                   });
                   if (r.isConfirmed) setShowForm(false);
                 }}

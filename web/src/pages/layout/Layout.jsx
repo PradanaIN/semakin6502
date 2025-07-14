@@ -4,6 +4,7 @@ import { useAuth } from "../auth/useAuth";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useTheme } from "../../theme/useTheme.jsx";
 import Swal from "sweetalert2";
+import confirmAlert from "../utils/confirmAlert";
 import {
   FaBell,
   FaMoon,
@@ -36,13 +37,11 @@ export default function Layout() {
   const notifRef = useRef();
 
   const handleLogout = async () => {
-    const r = await Swal.fire({
+    const r = await confirmAlert({
       title: "Logout?",
       text: "Anda yakin ingin logout?",
       icon: "warning",
-      showCancelButton: true,
       confirmButtonText: "Logout",
-      cancelButtonText: "Batal",
     });
     if (!r.isConfirmed) return;
     localStorage.removeItem("token");
