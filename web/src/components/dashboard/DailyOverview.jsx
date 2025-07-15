@@ -1,4 +1,5 @@
 import { getHolidays } from "../../utils/holidays";
+import Legend from "../ui/Legend";
 
 const DailyOverview = ({ data = [] }) => {
   if (!Array.isArray(data)) return <p>Data tidak tersedia</p>;
@@ -38,20 +39,7 @@ const DailyOverview = ({ data = [] }) => {
       <h2 className="text-lg font-semibold mb-3 text-blue-600 dark:text-blue-400">
         Kalender Aktivitas Harian
       </h2>
-      <div className="flex flex-wrap justify-end gap-2 mb-2 text-xs text-gray-500 dark:text-gray-400">
-        <div className="flex items-center gap-1">
-          <span className="inline-block w-3 h-3 bg-green-400 rounded-sm"></span>
-          Ada Laporan
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="inline-block w-3 h-3 bg-yellow-400 rounded-sm"></span>
-          Tidak Ada Laporan
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="inline-block w-3 h-3 bg-blue-400 rounded-sm"></span>
-          Hari Libur/Akhir Pekan
-        </div>
-      </div>
+      <Legend className="mb-2" />
       <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
         {data.map((day, index) => {
           const dayName = new Date(day.tanggal).toLocaleDateString("id-ID", {

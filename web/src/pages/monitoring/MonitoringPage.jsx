@@ -6,6 +6,7 @@ import months from "../../utils/months";
 import DateFilter from "../../components/ui/DateFilter";
 import Table from "../../components/ui/Table";
 import tableStyles from "../../components/ui/Table.module.css";
+import Legend from "../../components/ui/Legend";
 import DailyMatrix from "./DailyMatrix";
 import WeeklyMatrix from "./WeeklyMatrix";
 import { useAuth } from "../auth/useAuth";
@@ -465,7 +466,12 @@ export default function MonitoringPage() {
           <div>Memuat...</div>
         ) : (
           <div>
-            {tab === 'harian' && <DailyMatrix data={dailyData} />}
+            {tab === 'harian' && (
+              <>
+                <Legend className="mb-2" />
+                <DailyMatrix data={dailyData} />
+              </>
+            )}
             {tab === 'mingguan' && (
               <>
                 <WeeklyMatrix
