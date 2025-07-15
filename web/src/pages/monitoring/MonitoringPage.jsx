@@ -6,10 +6,16 @@ import months from "../../utils/months";
 import DateFilter from "../../components/ui/DateFilter";
 import Table from "../../components/ui/Table";
 import tableStyles from "../../components/ui/Table.module.css";
+import { useAuth } from "../auth/useAuth";
+import { ROLES } from "../../utils/roles";
 
 export default function MonitoringPage() {
   const [tab, setTab] = useState("harian");
+  const [allUsers, setAllUsers] = useState([]);
   const [users, setUsers] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [teamId, setTeamId] = useState("");
+  const { user } = useAuth();
 
   const [tanggal, setTanggal] = useState(new Date().toISOString().slice(0, 10));
   const [monthIndex, setMonthIndex] = useState(new Date().getMonth());
@@ -40,13 +46,40 @@ export default function MonitoringPage() {
       try {
         const res = await axios.get("/users");
         const sorted = res.data.sort((a, b) => a.nama.localeCompare(b.nama));
-        setUsers(sorted);
+        setAllUsers(sorted);
       } catch (err) {
         console.error("Gagal mengambil pengguna", err);
       }
     };
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    const fetchTeams = async () => {
+      if (user?.role === ROLES.ADMIN || user?.role === ROLES.KETUA) {
+        try {
+          const res = await axios.get("/teams");
+          setTeams(res.data);
+        } catch (err) {
+          console.error("Gagal mengambil tim", err);
+        }
+      }
+    };
+    fetchTeams();
+  }, [user?.role]);
+
+  useEffect(() => {
+    if (teamId) {
+      const t = teams.find((tm) => tm.id === parseInt(teamId, 10));
+      if (t) {
+        const mem = t.members.map((m) => m.user);
+        const sorted = mem.sort((a, b) => a.nama.localeCompare(b.nama));
+        setUsers(sorted);
+      }
+    } else {
+      setUsers(allUsers);
+    }
+  }, [teamId, teams, allUsers]);
 
   // generate week start dates when month changes
   useEffect(() => {
@@ -74,7 +107,7 @@ export default function MonitoringPage() {
       try {
         setLoading(true);
         const res = await axios.get("/monitoring/harian/all", {
-          params: { tanggal },
+          params: { tanggal, teamId: teamId || undefined },
         });
         setDailyData(mergeWithUsers(res.data));
       } catch (err) {
@@ -84,7 +117,7 @@ export default function MonitoringPage() {
       }
     };
     fetchDaily();
-  }, [tanggal, mergeWithUsers]);
+  }, [tanggal, teamId, mergeWithUsers]);
 
   useEffect(() => {
     if (!weekStarts.length) return;
@@ -93,7 +126,7 @@ export default function MonitoringPage() {
         setLoading(true);
         const minggu = weekStarts[weekIndex].toISOString().slice(0, 10);
         const res = await axios.get("/monitoring/mingguan/all", {
-          params: { minggu },
+          params: { minggu, teamId: teamId || undefined },
         });
         setWeeklyData(mergeWithUsers(res.data));
       } catch (err) {
@@ -103,7 +136,7 @@ export default function MonitoringPage() {
       }
     };
     fetchWeekly();
-  }, [weekIndex, weekStarts, mergeWithUsers]);
+  }, [weekIndex, weekStarts, teamId, mergeWithUsers]);
 
   useEffect(() => {
     const fetchMonthly = async () => {
@@ -111,7 +144,7 @@ export default function MonitoringPage() {
         setLoading(true);
         const year = new Date().getFullYear();
         const res = await axios.get("/monitoring/bulanan/all", {
-          params: { year },
+          params: { year, teamId: teamId || undefined },
         });
         setMonthlyData(mergeWithUsers(res.data));
       } catch (err) {
@@ -121,7 +154,7 @@ export default function MonitoringPage() {
       }
     };
     fetchMonthly();
-  }, [monthIndex, mergeWithUsers]);
+  }, [monthIndex, teamId, mergeWithUsers]);
 
   const renderRows = (data) => {
     const colorFor = (p) => {
@@ -417,6 +450,23 @@ export default function MonitoringPage() {
                   </Transition>
                 </div>
               </Listbox>
+            </div>
+          )}
+
+          {(user?.role === ROLES.ADMIN || user?.role === ROLES.KETUA) && (
+            <div className="w-48 mt-4 sm:mt-0">
+              <select
+                value={teamId}
+                onChange={(e) => setTeamId(e.target.value)}
+                className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out text-center w-full"
+              >
+                <option value="">Semua Tim</option>
+                {teams.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.nama_tim}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
         </div>
