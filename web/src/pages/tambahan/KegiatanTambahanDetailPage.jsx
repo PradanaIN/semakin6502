@@ -138,30 +138,30 @@ export default function KegiatanTambahanDetailPage() {
       {!editing ? (
         <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <div>
-            <div className="text-sm text-gray-500">Nama</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Nama</div>
             <div className="font-medium">{item.nama}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500">Tim</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Tim</div>
             <div className="font-medium">{item.kegiatan.team?.nama_tim || "-"}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500">Tanggal</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Tanggal</div>
             <div className="font-medium">{item.tanggal.slice(0, 10)}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500">Deskripsi</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Deskripsi</div>
             <div className="font-medium">{item.deskripsi || "-"}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500">Status</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Status</div>
             <div className="font-medium">
               <StatusBadge status={item.status} />
             </div>
           </div>
           {item.tanggal_selesai && (
             <div>
-              <div className="text-sm text-gray-500">Tanggal Selesai</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Tanggal Selesai</div>
               <div className="font-medium">
                 {item.tanggal_selesai.slice(0, 10)}
                 {item.tanggal_selesai_akhir &&
@@ -171,7 +171,7 @@ export default function KegiatanTambahanDetailPage() {
           )}
           {item.bukti_link && (
             <div>
-              <div className="text-sm text-gray-500">Bukti</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Bukti</div>
               <a
                 href={item.bukti_link}
                 target="_blank"
