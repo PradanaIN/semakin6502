@@ -31,6 +31,12 @@ export class TeamsController {
     return this.teamsService.findByLeader(user.userId);
   }
 
+  @Get("member")
+  findMemberTeams(@Req() req: Request) {
+    const { user } = req as any;
+    return this.teamsService.findByMember(user.userId);
+  }
+
   @Get(":id")
   @Roles(ROLES.ADMIN)
   findOne(@Param("id", ParseIntPipe) id: number) {
