@@ -37,7 +37,11 @@ progress for all users using progress bars in three tabs:
 - **Weekly** – progress for a selected week
 - **Yearly** – monthly progress for a chosen year
 
-The Daily tab also includes a scrollable matrix table showing each user's activity for every day in the chosen month. Cells are color coded just like in the dashboard overview.
+The Daily tab also includes a scrollable matrix table showing each user's activity for every day in the chosen month. Cells are color coded just like in the dashboard overview:
+
+- **Hijau** – ada tugas pada hari tersebut
+- **Kuning** – tidak ada tugas
+- **Biru** – akhir pekan atau hari libur
 
 When filtering results by team you may supply optional query parameters such as
 `teamId` to limit the data to a specific team.
