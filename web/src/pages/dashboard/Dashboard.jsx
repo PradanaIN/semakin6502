@@ -18,27 +18,32 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchAllData = async () => {
+      const formatISO = (d) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+      };
+
       const today = new Date();
-      const tanggal = today.toISOString().split("T")[0];
+      const tanggal = formatISO(today);
       const year = today.getFullYear();
       const month = monthIndex;
 
       // determine start dates for each week in the month
-      const firstOfMonth = new Date(year, month, 1);
+      const monthStart = new Date(year, month, 1);
       const monthEnd = new Date(year, month + 1, 0);
-      const firstMonday = new Date(firstOfMonth);
-      firstMonday.setDate(firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7));
       const weekStarts = [];
-      for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+      for (let d = new Date(monthStart); d <= monthEnd; d.setDate(d.getDate() + 7)) {
         weekStarts.push(new Date(d));
       }
 
-      let currentIndex = 0;
-      weekStarts.forEach((w, idx) => {
-        const end = new Date(w);
-        end.setDate(w.getDate() + 6);
-        if (today >= w && today <= end) currentIndex = idx;
+      let currentIndex = weekStarts.findIndex((start) => {
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        return today >= start && today <= end;
       });
+      if (currentIndex === -1) currentIndex = 0;
 
       try {
         const filters = {};
@@ -52,7 +57,7 @@ const Dashboard = () => {
         const weeklyPromises = weekStarts.map((d) =>
           axios
             .get("/monitoring/mingguan", {
-              params: { minggu: d.toISOString().split("T")[0], ...filters },
+              params: { minggu: formatISO(d), ...filters },
             })
             .then((res) => res.data)
         );
@@ -71,9 +76,7 @@ const Dashboard = () => {
           const endDate = new Date(eIso);
           const displayStart = startDate < monthStart ? monthStart : startDate;
           const displayEnd = endDate > monthEnd ? monthEnd : endDate;
-          const tanggal = `${displayStart.toISOString().slice(0, 10)} - ${displayEnd
-            .toISOString()
-            .slice(0, 10)}`;
+          const tanggal = `${formatISO(displayStart)} - ${formatISO(displayEnd)}`;
           const detail = w.detail.filter((d) => {
             const t = new Date(d.tanggal);
             return t >= monthStart && t <= monthEnd;
