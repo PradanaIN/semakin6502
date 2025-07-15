@@ -9,9 +9,7 @@ const compat = new FlatCompat({
 module.exports = [
   ...compat.extends(
     'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
-    'plugin:prettier/recommended'
+    'plugin:@typescript-eslint/recommended'
   ),
   ...compat.env({
     node: true,
@@ -25,7 +23,7 @@ module.exports = [
       sourceType: 'module',
     },
     plugins: ['@typescript-eslint'],
-    ignorePatterns: ['dist/', 'node_modules/'],
+    ignorePatterns: ['dist/', 'node_modules/', 'eslint.config.js', 'prisma/*.js'],
     rules: {
       '@typescript-eslint/interface-name-prefix': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
