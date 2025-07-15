@@ -62,4 +62,52 @@ describe('MonitoringService aggregated', () => {
     expect(res[0].detail[1]).toEqual({ tanggal: '2024-05-02', adaKegiatan: true });
     expect(res[1].detail[0]).toEqual({ tanggal: '2024-05-01', adaKegiatan: true });
   });
+
+  it('mingguanBulan aggregates per week', async () => {
+    prisma.laporanHarian.findMany.mockResolvedValue([
+      {
+        pegawaiId: 1,
+        tanggal: new Date('2024-05-02'),
+        status: STATUS.SELESAI_DIKERJAKAN,
+        pegawai: { nama: 'A' },
+      },
+      {
+        pegawaiId: 1,
+        tanggal: new Date('2024-05-08'),
+        status: STATUS.BELUM,
+        pegawai: { nama: 'A' },
+      },
+      {
+        pegawaiId: 2,
+        tanggal: new Date('2024-05-15'),
+        status: STATUS.SELESAI_DIKERJAKAN,
+        pegawai: { nama: 'B' },
+      },
+    ]);
+    const res = await service.mingguanBulan('2024-05-10');
+    expect(res).toEqual([
+      {
+        userId: 1,
+        nama: 'A',
+        weeks: [
+          { selesai: 1, total: 1, persen: 100 },
+          { selesai: 0, total: 1, persen: 0 },
+          { selesai: 0, total: 0, persen: 0 },
+          { selesai: 0, total: 0, persen: 0 },
+          { selesai: 0, total: 0, persen: 0 },
+        ],
+      },
+      {
+        userId: 2,
+        nama: 'B',
+        weeks: [
+          { selesai: 0, total: 0, persen: 0 },
+          { selesai: 0, total: 0, persen: 0 },
+          { selesai: 1, total: 1, persen: 100 },
+          { selesai: 0, total: 0, persen: 0 },
+          { selesai: 0, total: 0, persen: 0 },
+        ],
+      },
+    ]);
+  });
 });
