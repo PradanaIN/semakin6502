@@ -38,7 +38,10 @@ export default function TeamsPage() {
   const fetchTeams = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("/teams");
+      let res = await axios.get("/teams");
+      if (Array.isArray(res.data) && res.data.length === 0) {
+        res = await axios.get("/teams/member");
+      }
       setTeams(res.data);
     } catch (err) {
       console.error("Gagal mengambil tim", err);
