@@ -190,7 +190,7 @@ export default function LaporanHarianPage() {
               ))}
               {laporan.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="text-center py-4 text-gray-500 dark:text-gray-300 dark:text-gray-400">
+                  <td colSpan={6} className="text-center py-4 text-gray-500 dark:text-gray-400">
                     Tidak ada laporan
                   </td>
                 </tr>
