@@ -335,7 +335,7 @@ export default function UsersPage() {
               <Button onClick={saveUser}>
                 Simpan
               </Button>
-              <p className="text-xs text-gray-500 ml-2 self-center">
+              <p className="text-xs text-gray-500 ml-2 self-center dark:text-gray-400">
                 * wajib diisi
               </p>
             </div>

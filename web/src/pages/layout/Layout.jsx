@@ -201,7 +201,7 @@ export default function Layout() {
                   ) : (
                     <>
                       <div className="font-semibold">{user?.nama}</div>
-                      <div className="text-xs capitalize text-gray-500 dark:text-gray-300">
+                      <div className="text-xs capitalize text-gray-500 dark:text-gray-300 dark:text-gray-400">
                         {user?.role === ROLES.PIMPINAN
                           ? "Pimpinan"
                           : `${
