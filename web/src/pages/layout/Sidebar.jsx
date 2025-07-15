@@ -5,6 +5,7 @@ import {
   ClipboardList,
   FileText,
   FilePlus,
+  BarChart2,
   List,
   Users,
   UserCog,
@@ -19,6 +20,12 @@ export default function Sidebar({ setMobileOpen }) {
     { to: "/tugas-mingguan", label: "Tugas Mingguan", icon: ClipboardList, show: true },
     { to: "/kegiatan-tambahan", label: "Tugas Tambahan", icon: FilePlus, show: true },
     { to: "/laporan-harian", label: "Laporan Harian", icon: FileText, show: true },
+    {
+      to: "/monitoring",
+      label: "Monitoring",
+      icon: BarChart2,
+      show: [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role),
+    },
   ];
 
   const manageLinks = [
