@@ -86,7 +86,8 @@ export default function MonitoringPage() {
     const fetchUsers = async () => {
       try {
         const res = await axios.get("/users");
-        const sorted = res.data.sort((a, b) => a.nama.localeCompare(b.nama));
+        const filtered = res.data.filter((u) => u.role !== "admin");
+        const sorted = filtered.sort((a, b) => a.nama.localeCompare(b.nama));
         setAllUsers(sorted);
       } catch (err) {
         console.error("Gagal mengambil pengguna", err);
@@ -113,7 +114,9 @@ export default function MonitoringPage() {
     if (teamId) {
       const t = teams.find((tm) => tm.id === parseInt(teamId, 10));
       if (t) {
-        const mem = t.members.map((m) => m.user);
+        const mem = t.members
+          .map((m) => m.user)
+          .filter((u) => u.role !== "admin");
         const sorted = mem.sort((a, b) => a.nama.localeCompare(b.nama));
         setUsers(sorted);
       }
