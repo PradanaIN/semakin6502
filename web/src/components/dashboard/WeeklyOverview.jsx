@@ -18,7 +18,7 @@ const WeeklyOverview = ({ data }) => {
   return (
     <div className="space-y-4">
       <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-        <h2 className="text-xl font-semibold text-blue-600 mb-1">
+        <h2 className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-1">
           Progress Mingguan
         </h2>
         <div className="mt-2">

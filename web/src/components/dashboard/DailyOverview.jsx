@@ -35,7 +35,7 @@ const DailyOverview = ({ data = [] }) => {
   };
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-3 text-blue-600">
+      <h2 className="text-lg font-semibold mb-3 text-blue-600 dark:text-blue-400">
         Kalender Aktivitas Harian
       </h2>
       <div className="flex flex-wrap justify-end gap-2 mb-2 text-xs text-gray-500 dark:text-gray-400">

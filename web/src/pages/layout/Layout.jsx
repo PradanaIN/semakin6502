@@ -136,7 +136,7 @@ export default function Layout() {
                     <span>Notifikasi</span>
                     <button
                       onClick={markAllAsRead}
-                      className="text-xs text-blue-600 hover:underline"
+                      className="text-xs text-blue-600 hover:underline dark:text-blue-400"
                     >
                       Tandai sudah dibaca
                     </button>
@@ -228,7 +228,7 @@ export default function Layout() {
                   </button>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     <FaSignOutAlt className="mr-2" /> Logout
                   </button>

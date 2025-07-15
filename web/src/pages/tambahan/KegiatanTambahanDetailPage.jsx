@@ -176,7 +176,7 @@ export default function KegiatanTambahanDetailPage() {
                 href={item.bukti_link}
                 target="_blank"
                 rel="noreferrer"
-                className="text-blue-600 underline"
+                className="text-blue-600 underline dark:text-blue-400"
               >
                 Link
               </a>
