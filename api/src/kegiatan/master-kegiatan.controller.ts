@@ -16,7 +16,6 @@ import { CreateMasterKegiatanDto } from "./dto/create-master-kegiatan.dto";
 import { UpdateMasterKegiatanDto } from "./dto/update-master-kegiatan.dto";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
-import { Roles } from "../common/guards/roles.decorator";
 
 @Controller("master-kegiatan")
 @UseGuards(JwtAuthGuard, RolesGuard)

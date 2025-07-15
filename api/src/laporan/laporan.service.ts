@@ -5,7 +5,7 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { Workbook } from "exceljs";
-import PDFDocument = require("pdfkit");
+import PDFDocument from "pdfkit";
 
 @Injectable()
 export class LaporanService {
