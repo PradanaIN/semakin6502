@@ -44,7 +44,14 @@ export default function KegiatanTambahanPage() {
       const [tRes, kRes, teamRes] = await Promise.all([
         axios.get("/kegiatan-tambahan"),
         axios.get("/master-kegiatan?limit=1000"),
-        axios.get("/teams"),
+        axios
+          .get("/teams")
+          .then(async (res) => {
+            if (Array.isArray(res.data) && res.data.length === 0) {
+              return axios.get("/teams/member");
+            }
+            return res;
+          }),
       ]);
       setItems(tRes.data);
       setKegiatan(kRes.data.data || kRes.data);

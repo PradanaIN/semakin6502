@@ -56,7 +56,14 @@ export default function PenugasanPage() {
       const penugasanReq = axios.get(
         `/penugasan?bulan=${filterBulan || ""}&tahun=${filterTahun || ""}`
       );
-      const teamsReq = axios.get("/teams");
+      const teamsReq = axios
+        .get("/teams")
+        .then(async (res) => {
+          if (Array.isArray(res.data) && res.data.length === 0) {
+            return axios.get("/teams/member");
+          }
+          return res;
+        });
 
       let usersReq;
       if (canManage) {
