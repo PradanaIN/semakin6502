@@ -303,13 +303,14 @@ export default function KegiatanTambahanPage() {
               <select
                 id="teamId"
                 value={form.teamId}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const value = e.target.value;
                   setForm({
                     ...form,
-                    teamId: parseInt(e.target.value, 10),
+                    teamId: value ? parseInt(value, 10) : "",
                     kegiatanId: "", // reset kegiatan jika tim berubah
-                  })
-                }
+                  });
+                }}
                 className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               >
                 <option value="">Tim</option>
