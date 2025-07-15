@@ -26,3 +26,16 @@ VITE_API_URL=http://localhost:3000
 ```
 
 Adjust the URL if your backend runs on a different host/port.
+
+## Monitoring
+
+The monitoring page is available at the route `/monitoring` and can be opened by
+users with the **admin**, **ketua tim**, or **pimpinan** roles. It shows overall
+progress for all users using progress bars in three tabs:
+
+- **Daily** – progress for a selected date
+- **Weekly** – progress for a selected week
+- **Yearly** – monthly progress for a chosen year
+
+When filtering results by team you may supply optional query parameters such as
+`teamId` to limit the data to a specific team.
