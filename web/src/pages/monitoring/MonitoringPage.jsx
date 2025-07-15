@@ -6,6 +6,7 @@ import months from "../../utils/months";
 import DateFilter from "../../components/ui/DateFilter";
 import Table from "../../components/ui/Table";
 import tableStyles from "../../components/ui/Table.module.css";
+import DailyMatrix from "./DailyMatrix";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 
@@ -27,7 +28,7 @@ export default function MonitoringPage() {
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const mergeWithUsers = useCallback(
+  const mergeProgressWithUsers = useCallback(
     (data) => {
       const map = Object.fromEntries(data.map((d) => [d.userId, d]));
       return users.map((u) => ({
@@ -39,6 +40,29 @@ export default function MonitoringPage() {
       }));
     },
     [users],
+  );
+
+  const mergeMatrixWithUsers = useCallback(
+    (data) => {
+      const base = new Date(tanggal);
+      const year = base.getFullYear();
+      const month = base.getMonth();
+      const end = new Date(year, month + 1, 0);
+      const empty = [];
+      for (let d = 1; d <= end.getDate(); d++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+          d,
+        ).padStart(2, "0")}`;
+        empty.push({ tanggal: dateStr, adaKegiatan: false });
+      }
+      const map = Object.fromEntries(data.map((d) => [d.userId, d.detail]));
+      return users.map((u) => ({
+        userId: u.id,
+        nama: u.nama,
+        detail: map[u.id] || empty,
+      }));
+    },
+    [users, tanggal],
   );
 
   useEffect(() => {
@@ -106,10 +130,10 @@ export default function MonitoringPage() {
     const fetchDaily = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("/monitoring/harian/all", {
+        const res = await axios.get("/monitoring/harian/bulan", {
           params: { tanggal, teamId: teamId || undefined },
         });
-        setDailyData(mergeWithUsers(res.data));
+        setDailyData(mergeMatrixWithUsers(res.data));
       } catch (err) {
         console.error(err);
       } finally {
@@ -117,7 +141,7 @@ export default function MonitoringPage() {
       }
     };
     fetchDaily();
-  }, [tanggal, teamId, mergeWithUsers]);
+  }, [tanggal, teamId, mergeMatrixWithUsers]);
 
   useEffect(() => {
     if (!weekStarts.length) return;
@@ -128,7 +152,7 @@ export default function MonitoringPage() {
         const res = await axios.get("/monitoring/mingguan/all", {
           params: { minggu, teamId: teamId || undefined },
         });
-        setWeeklyData(mergeWithUsers(res.data));
+        setWeeklyData(mergeProgressWithUsers(res.data));
       } catch (err) {
         console.error(err);
       } finally {
@@ -136,7 +160,7 @@ export default function MonitoringPage() {
       }
     };
     fetchWeekly();
-  }, [weekIndex, weekStarts, teamId, mergeWithUsers]);
+  }, [weekIndex, weekStarts, teamId, mergeProgressWithUsers]);
 
   useEffect(() => {
     const fetchMonthly = async () => {
@@ -146,7 +170,7 @@ export default function MonitoringPage() {
         const res = await axios.get("/monitoring/bulanan/all", {
           params: { year, teamId: teamId || undefined },
         });
-        setMonthlyData(mergeWithUsers(res.data));
+        setMonthlyData(mergeProgressWithUsers(res.data));
       } catch (err) {
         console.error(err);
       } finally {
@@ -154,7 +178,7 @@ export default function MonitoringPage() {
       }
     };
     fetchMonthly();
-  }, [monthIndex, teamId, mergeWithUsers]);
+  }, [monthIndex, teamId, mergeProgressWithUsers]);
 
   const renderRows = (data) => {
     const colorFor = (p) => {
@@ -475,9 +499,9 @@ export default function MonitoringPage() {
           <div>Memuat...</div>
         ) : (
           <div>
-            {tab === "harian" && renderTable(dailyData)}
-            {tab === "mingguan" && renderTable(weeklyData)}
-            {tab === "bulanan" && renderTable(monthlyData)}
+            {tab === 'harian' && <DailyMatrix data={dailyData} />}
+            {tab === 'mingguan' && renderTable(weeklyData)}
+            {tab === 'bulanan' && renderTable(monthlyData)}
           </div>
         )}
       </div>

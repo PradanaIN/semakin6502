@@ -82,6 +82,31 @@ export class MonitoringController {
     return this.monitoringService.harianAll(tanggal, tId);
   }
 
+  @Get("harian/bulan")
+  async harianBulan(
+    @Query("tanggal") tanggal?: string,
+    @Req() req?: Request,
+    @Query("teamId") teamId?: string,
+  ) {
+    if (!tanggal) {
+      throw new BadRequestException("query 'tanggal' diperlukan");
+    }
+    const user = req?.user as any;
+    const role = user?.role;
+    const tId = teamId ? parseInt(teamId, 10) : undefined;
+
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
+      if (!tId) throw new ForbiddenException("bukan admin");
+      const member = await this.prisma.member.findFirst({
+        where: { teamId: tId, userId: user.userId },
+      });
+      if (!member || !member.is_leader)
+        throw new ForbiddenException("bukan ketua tim");
+    }
+
+    return this.monitoringService.harianBulan(tanggal, tId);
+  }
+
   @Get("mingguan")
   async mingguan(
     @Query("minggu") minggu?: string,
