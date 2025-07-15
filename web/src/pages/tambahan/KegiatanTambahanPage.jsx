@@ -348,12 +348,17 @@ export default function KegiatanTambahanPage() {
                     zIndex: 9999,
                   }),
                 }}
-                options={kegiatan
-                  .filter((k) => !form.teamId || k.teamId === form.teamId)
-                  .map((k) => ({
-                    value: k.id,
-                    label: k.nama_kegiatan,
-                  }))}
+                isDisabled={!form.teamId}
+                options={
+                  form.teamId
+                    ? kegiatan
+                        .filter((k) => k.teamId === form.teamId)
+                        .map((k) => ({
+                          value: k.id,
+                          label: k.nama_kegiatan,
+                        }))
+                    : []
+                }
                 value={
                   form.kegiatanId
                     ? {
