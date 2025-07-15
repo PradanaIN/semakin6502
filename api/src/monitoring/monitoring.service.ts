@@ -157,6 +157,50 @@ export class MonitoringService {
     });
   }
 
+  async harianBulan(tanggal: string, teamId?: number) {
+    const base = new Date(tanggal);
+    if (isNaN(base.getTime()))
+      throw new BadRequestException("tanggal tidak valid");
+
+    const year = base.getFullYear();
+    const month = base.getMonth();
+
+    const start = new Date(year, month, 1);
+    const end = new Date(year, month + 1, 0);
+
+    const where: any = { tanggal: { gte: start, lte: end } };
+    if (teamId)
+      where.penugasan = {
+        kegiatan: { teamId },
+      };
+
+    const records = await this.prisma.laporanHarian.findMany({
+      where,
+      include: { pegawai: true },
+    });
+
+    const byUser: Record<number, { nama: string; dates: Set<string> }> = {};
+    for (const r of records) {
+      const dateStr = r.tanggal.toISOString().slice(0, 10);
+      if (!byUser[r.pegawaiId])
+        byUser[r.pegawaiId] = { nama: r.pegawai.nama, dates: new Set() };
+      byUser[r.pegawaiId].dates.add(dateStr);
+    }
+
+    return Object.entries(byUser)
+      .map(([id, v]) => {
+        const detail = [] as { tanggal: string; adaKegiatan: boolean }[];
+        for (let d = 1; d <= end.getDate(); d++) {
+          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+            d,
+          ).padStart(2, "0")}`;
+          detail.push({ tanggal: dateStr, adaKegiatan: v.dates.has(dateStr) });
+        }
+        return { userId: Number(id), nama: v.nama, detail };
+      })
+      .sort((a, b) => a.nama.localeCompare(b.nama));
+  }
+
   async harianAll(tanggal: string, teamId?: number) {
     const date = new Date(tanggal);
     if (isNaN(date.getTime()))
