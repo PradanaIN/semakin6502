@@ -24,7 +24,7 @@ export default function MonitoringPage() {
   const [weekStarts, setWeekStarts] = useState([]);
 
   const [dailyData, setDailyData] = useState([]);
-  const [weeklyData, setWeeklyData] = useState([]);
+  const [, setWeeklyData] = useState([]);
   const [weeklyMonthData, setWeeklyMonthData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -300,7 +300,7 @@ export default function MonitoringPage() {
 
   const weekOptions = weekStarts.map((d, i) => {
     return {
-      label: `Minggu ${i + 1} bulan ${months[monthIndex]}`,
+      label: `Minggu ${i + 1}`,
       value: i,
     };
   });
