@@ -159,7 +159,7 @@ export default function LaporanHarianPage() {
                         href={item.bukti_link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 underline"
+                        className="text-blue-600 underline dark:text-blue-400"
                       >
                         Lihat
                       </a>
