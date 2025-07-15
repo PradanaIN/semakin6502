@@ -59,7 +59,7 @@ export default function MonitoringPage() {
     const fetchDaily = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("/monitoring/aggregated/harian", {
+        const res = await axios.get("/monitoring/harian/all", {
           params: { tanggal },
         });
         const map = Object.fromEntries(users.map((u) => [u.id, u.nama]));
@@ -81,7 +81,7 @@ export default function MonitoringPage() {
       try {
         setLoading(true);
         const minggu = weekStarts[weekIndex].toISOString().slice(0, 10);
-        const res = await axios.get("/monitoring/aggregated/mingguan", {
+        const res = await axios.get("/monitoring/mingguan/all", {
           params: { minggu },
         });
         const map = Object.fromEntries(users.map((u) => [u.id, u.nama]));
@@ -102,9 +102,8 @@ export default function MonitoringPage() {
       try {
         setLoading(true);
         const year = new Date().getFullYear();
-        const bulan = monthIndex + 1;
-        const res = await axios.get("/monitoring/aggregated/bulanan", {
-          params: { year, bulan },
+        const res = await axios.get("/monitoring/bulanan/all", {
+          params: { year },
         });
         const map = Object.fromEntries(users.map((u) => [u.id, u.nama]));
         setMonthlyData(
