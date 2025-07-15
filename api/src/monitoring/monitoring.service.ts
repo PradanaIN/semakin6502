@@ -284,6 +284,68 @@ export class MonitoringService {
       .sort((a, b) => a.nama.localeCompare(b.nama));
   }
 
+  async mingguanBulan(tanggal: string, teamId?: number) {
+    const base = new Date(tanggal);
+    if (isNaN(base.getTime()))
+      throw new BadRequestException("tanggal tidak valid");
+
+    const year = base.getFullYear();
+    const month = base.getMonth();
+
+    const monthStart = new Date(year, month, 1);
+    const monthEnd = new Date(year, month + 1, 0);
+
+    const firstMonday = new Date(monthStart);
+    firstMonday.setDate(monthStart.getDate() - ((monthStart.getDay() + 6) % 7));
+    const weekStarts: Date[] = [];
+    for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+      weekStarts.push(new Date(d));
+    }
+
+    const where: any = { tanggal: { gte: monthStart, lte: monthEnd } };
+    if (teamId)
+      where.penugasan = {
+        kegiatan: { teamId },
+      };
+
+    const records = await this.prisma.laporanHarian.findMany({
+      where,
+      include: { pegawai: true },
+    });
+
+    const byUser: Record<
+      number,
+      {
+        nama: string;
+        perWeek: Record<number, { selesai: number; total: number }>;
+      }
+    > = {};
+
+    for (const r of records) {
+      const idx = Math.floor(
+        (r.tanggal.getTime() - weekStarts[0].getTime()) / (7 * 24 * 60 * 60 * 1000),
+      );
+      if (!byUser[r.pegawaiId])
+        byUser[r.pegawaiId] = { nama: r.pegawai.nama, perWeek: {} };
+      if (!byUser[r.pegawaiId].perWeek[idx])
+        byUser[r.pegawaiId].perWeek[idx] = { selesai: 0, total: 0 };
+      byUser[r.pegawaiId].perWeek[idx].total += 1;
+      if (r.status === STATUS.SELESAI_DIKERJAKAN)
+        byUser[r.pegawaiId].perWeek[idx].selesai += 1;
+    }
+
+    return Object.entries(byUser)
+      .map(([id, v]) => {
+        const weeks = weekStarts.map((_, i) => {
+          const w = v.perWeek[i] || { selesai: 0, total: 0 };
+          const persen = w.total ? Math.round((w.selesai / w.total) * 100) : 0;
+          return { selesai: w.selesai, total: w.total, persen };
+        });
+        return { userId: Number(id), nama: v.nama, weeks };
+      })
+      .sort((a, b) => a.nama.localeCompare(b.nama));
+  }
+
   async bulananAll(year: string, teamId?: number) {
     const yr = parseInt(year, 10);
     if (isNaN(yr)) throw new BadRequestException("year tidak valid");
