@@ -41,7 +41,7 @@ export default function MonitoringPage() {
         persen: map[u.id]?.persen || 0,
       }));
     },
-    [users],
+    [users]
   );
 
   const mergeMatrixWithUsers = useCallback(
@@ -53,7 +53,7 @@ export default function MonitoringPage() {
       const empty = [];
       for (let d = 1; d <= end.getDate(); d++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
-          d,
+          d
         ).padStart(2, "0")}`;
         empty.push({ tanggal: dateStr, adaKegiatan: false });
       }
@@ -64,12 +64,16 @@ export default function MonitoringPage() {
         detail: map[u.id] || empty,
       }));
     },
-    [users, tanggal],
+    [users, tanggal]
   );
 
   const mergeWeeklyMonthWithUsers = useCallback(
     (data) => {
-      const emptyWeeks = weekStarts.map(() => ({ selesai: 0, total: 0, persen: 0 }));
+      const emptyWeeks = weekStarts.map(() => ({
+        selesai: 0,
+        total: 0,
+        persen: 0,
+      }));
       const map = Object.fromEntries(data.map((d) => [d.userId, d.weeks]));
       return users.map((u) => ({
         userId: u.id,
@@ -77,7 +81,7 @@ export default function MonitoringPage() {
         weeks: map[u.id] || emptyWeeks,
       }));
     },
-    [users, weekStarts],
+    [users, weekStarts]
   );
 
   useEffect(() => {
@@ -184,7 +188,7 @@ export default function MonitoringPage() {
         setLoading(true);
         const year = new Date().getFullYear();
         const first = new Date(year, monthIndex, 1).toISOString().slice(0, 10);
-        const res = await axios.get('/monitoring/mingguan/bulan', {
+        const res = await axios.get("/monitoring/mingguan/bulan", {
           params: { tanggal: first, teamId: teamId || undefined },
         });
         setWeeklyMonthData(mergeWeeklyMonthWithUsers(res.data));
@@ -259,7 +263,9 @@ export default function MonitoringPage() {
                 style={{ width: `${d.persen}%` }}
               />
             </div>
-            <span className={`text-xs font-medium ${textColor}`}>{d.persen}%</span>
+            <span className={`text-xs font-medium ${textColor}`}>
+              {d.persen}%
+            </span>
           </td>
         </tr>
       );
@@ -534,18 +540,17 @@ export default function MonitoringPage() {
           <div>Memuat...</div>
         ) : (
           <div>
-            {tab === 'harian' && <DailyMatrix data={dailyData} />}
-            {tab === 'mingguan' && (
+            {tab === "harian" && <DailyMatrix data={dailyData} />}
+            {tab === "mingguan" && (
               <>
                 <WeeklyMatrix
                   data={weeklyMonthData}
                   weeks={weekStarts}
                   onSelectWeek={setWeekIndex}
                 />
-                <div className="mt-4">{renderTable(weeklyData)}</div>
               </>
             )}
-            {tab === 'bulanan' && renderTable(monthlyData)}
+            {tab === "bulanan" && renderTable(monthlyData)}
           </div>
         )}
       </div>
