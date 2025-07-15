@@ -19,6 +19,7 @@ import Label from "../../components/ui/Label";
 import SearchInput from "../../components/SearchInput";
 import Spinner from "../../components/Spinner";
 import { ROLES } from "../../utils/roles";
+import SelectDataShow from "../../components/ui/SelectDataShow";
 
 export default function UsersPage() {
   const { user } = useAuth();
@@ -153,17 +154,16 @@ export default function UsersPage() {
               setRoleFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="border rounded px-2 py-[4px] bg-white dark:bg-gray-700 dark:text-gray-200 text-center"
+            className="cursor-pointer border border-gray-300 dark:border-gray-600
+    rounded-xl px-2 py-2 bg-white dark:bg-gray-800
+    text-gray-900 dark:text-gray-100
+    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+    hover:border-blue-400 dark:hover:border-blue-400
+    shadow-sm transition duration-150 ease-in-out text-center"
           >
-            <option value="" className="text-gray-900 dark:text-gray-200">
-              Semua Role
-            </option>
+            <option value="">Semua Role</option>
             {roles.map((r) => (
-              <option
-                key={r.id}
-                value={r.name}
-                className="text-gray-900 dark:text-gray-200"
-              >
+              <option key={r.id} value={r.name}>
                 {r.name}
               </option>
             ))}
@@ -241,26 +241,15 @@ export default function UsersPage() {
       </Table>
 
       <div className="flex items-center justify-between mt-4">
-        <div className="space-x-2">
-          <select
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(parseInt(e.target.value, 10));
-              setCurrentPage(1);
-            }}
-            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
-          >
-            {[5, 10, 25].map((n) => (
-              <option
-                key={n}
-                value={n}
-                className="text-gray-900 dark:text-gray-200"
-              >
-                {n}
-              </option>
-            ))}
-          </select>
-        </div>
+        <SelectDataShow
+          value={pageSize}
+          onChange={(e) => {
+            setPageSize(Number(e.target.value));
+            setCurrentPage(1);
+          }}
+          options={[5, 10, 25, 50]}
+          className="w-32"
+        />
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -275,9 +264,15 @@ export default function UsersPage() {
           }}
           titleId="user-form-title"
         >
-          <h2 id="user-form-title" className="text-xl font-semibold mb-2">
-            {editingUser ? "Edit Pengguna" : "Tambah Pengguna"}
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 id="user-form-title" className="text-xl font-semibold">
+              {editingUser ? "Edit Pengguna" : "Tambah Pengguna"}
+            </h2>
+            <p className="text-xs text-red-600 dark:text-red-500">
+              * Fardu 'Ain
+            </p>
+          </div>
+
           <div className="space-y-2">
             <div>
               <Label htmlFor="nama">
@@ -288,7 +283,7 @@ export default function UsersPage() {
                 type="text"
                 value={form.nama}
                 onChange={(e) => setForm({ ...form, nama: e.target.value })}
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               />
             </div>
             <div>
@@ -300,7 +295,7 @@ export default function UsersPage() {
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               />
             </div>
             <div>
@@ -312,7 +307,7 @@ export default function UsersPage() {
                 type="password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               />
             </div>
             <div>
@@ -323,7 +318,7 @@ export default function UsersPage() {
                 id="role"
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               >
                 <option value="">Pilih role</option>
                 {roles.map((r) => (
@@ -333,6 +328,7 @@ export default function UsersPage() {
                 ))}
               </select>
             </div>
+
             <div className="flex justify-end space-x-2 pt-2">
               <Button
                 variant="secondary"
@@ -344,9 +340,6 @@ export default function UsersPage() {
                 Batal
               </Button>
               <Button onClick={saveUser}>Simpan</Button>
-              <p className="text-xs text-gray-500 ml-2 self-center dark:text-gray-400">
-                * wajib diisi
-              </p>
             </div>
           </div>
         </Modal>

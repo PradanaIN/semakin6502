@@ -72,11 +72,15 @@ export default function Layout() {
   const displayedNotifications = notifications.slice(0, 5);
   const getPageTitle = useCallback(() => {
     const slug = location.pathname.split("/")[1] || "dashboard";
-    return slug.replaceAll("-", " ").replace(/^\w/, (c) => c.toUpperCase());
+    return slug
+      .replaceAll("-", " ")
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   }, [location.pathname]);
 
   useEffect(() => {
-    document.title = `${getPageTitle()} - SEMAKIN 6502`;
+    document.title = `SEMAKIN - ${getPageTitle()}`;
   }, [getPageTitle]);
 
   return (

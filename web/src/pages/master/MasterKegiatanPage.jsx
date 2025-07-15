@@ -18,6 +18,7 @@ import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import { ROLES } from "../../utils/roles";
 import SearchInput from "../../components/SearchInput";
+import SelectDataShow from "../../components/ui/SelectDataShow";
 
 export default function MasterKegiatanPage() {
   const { user } = useAuth();
@@ -151,7 +152,12 @@ export default function MasterKegiatanPage() {
                 setPage(1);
                 setFilterTeam(e.target.value);
               }}
-              className="border rounded px-2 py-[4px] bg-white dark:bg-gray-700 dark:text-gray-200 text-center"
+              className="cursor-pointer border border-gray-300 dark:border-gray-600 
+      rounded-xl px-2 py-2 bg-white dark:bg-gray-800 
+      text-gray-900 dark:text-gray-100 
+      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+      hover:border-blue-400 dark:hover:border-blue-400
+      shadow-sm transition duration-150 ease-in-out text-center"
             >
               <option value="">Semua</option>
               {teams.map((t) => (
@@ -235,26 +241,15 @@ export default function MasterKegiatanPage() {
       </Table>
 
       <div className="flex items-center justify-between mt-4">
-        <div className="space-x-2">
-          <select
-            value={perPage}
-            onChange={(e) => {
-              setPage(1);
-              setPerPage(parseInt(e.target.value, 10));
-            }}
-            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
-          >
-            {[5, 10, 25].map((n) => (
-              <option
-                key={n}
-                value={n}
-                className="text-gray-900 dark:text-gray-200"
-              >
-                {n}
-              </option>
-            ))}
-          </select>
-        </div>
+        <SelectDataShow
+          value={perPage}
+          onChange={(e) => {
+            setPerPage(Number(e.target.value));
+            setPage(1);
+          }}
+          options={[5, 10, 25, 50]}
+          className="w-32"
+        />
         <Pagination
           currentPage={page}
           totalPages={totalPages}
@@ -270,15 +265,21 @@ export default function MasterKegiatanPage() {
           }}
           titleId="master-kegiatan-form-title"
         >
-          <h2
-            id="master-kegiatan-form-title"
-            className="text-xl font-semibold mb-2"
-          >
-            {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2
+              id="master-kegiatan-form-title"
+              className="text-xl font-semibold"
+            >
+              {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}
+            </h2>
+            <p className="text-xs text-red-600 dark:text-red-500">
+              * Fardu 'Ain
+            </p>
+          </div>
+
           <div className="space-y-2">
             <div>
-              <Label htmlFor="teamId">
+              <Label htmlFor="teamId" className="dark:text-gray-100">
                 Tim <span className="text-red-500">*</span>
               </Label>
               <select
@@ -287,7 +288,7 @@ export default function MasterKegiatanPage() {
                 onChange={(e) =>
                   setForm({ ...form, teamId: parseInt(e.target.value, 10) })
                 }
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               >
                 <option value="">Pilih tim</option>
                 {teams.map((t) => (
@@ -297,8 +298,9 @@ export default function MasterKegiatanPage() {
                 ))}
               </select>
             </div>
+
             <div>
-              <Label htmlFor="namaKegiatan">
+              <Label htmlFor="namaKegiatan" className="dark:text-gray-100">
                 Nama Kegiatan <span className="text-red-500">*</span>
               </Label>
               <Input
@@ -308,20 +310,24 @@ export default function MasterKegiatanPage() {
                 onChange={(e) =>
                   setForm({ ...form, nama_kegiatan: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               />
             </div>
+
             <div>
-              <Label htmlFor="deskripsi">Deskripsi</Label>
+              <Label htmlFor="deskripsi" className="dark:text-gray-100">
+                Deskripsi
+              </Label>
               <textarea
                 id="deskripsi"
                 value={form.deskripsi}
                 onChange={(e) =>
                   setForm({ ...form, deskripsi: e.target.value })
                 }
-                className="form-input"
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               />
             </div>
+
             <div className="flex justify-end space-x-2 pt-2">
               <Button
                 variant="secondary"
@@ -333,9 +339,6 @@ export default function MasterKegiatanPage() {
                 Batal
               </Button>
               <Button onClick={saveItem}>Simpan</Button>
-              <p className="text-xs text-gray-500 ml-2 self-center dark:text-gray-400">
-                * wajib diisi
-              </p>
             </div>
           </div>
         </Modal>

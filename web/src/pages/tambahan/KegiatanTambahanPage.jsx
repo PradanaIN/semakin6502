@@ -16,6 +16,7 @@ import Modal from "../../components/ui/Modal";
 import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
 import Pagination from "../../components/Pagination";
+import SelectDataShow from "../../components/ui/SelectDataShow";
 
 export default function KegiatanTambahanPage() {
   const [items, setItems] = useState([]);
@@ -253,26 +254,13 @@ export default function KegiatanTambahanPage() {
       </Table>
 
       <div className="flex items-center justify-between mt-4">
-        <div className="space-x-2">
-          <select
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(parseInt(e.target.value, 10));
-              setCurrentPage(1);
-            }}
-            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
-          >
-            {[5, 10, 25].map((n) => (
-              <option
-                key={n}
-                value={n}
-                className="text-gray-900 dark:text-gray-200"
-              >
-                {n}
-              </option>
-            ))}
-          </select>
-        </div>
+        <SelectDataShow
+          value={pageSize}
+          onChange={setPageSize}
+          options={[5, 10, 25, 50]}
+          className="w-32"
+        />
+
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -288,24 +276,78 @@ export default function KegiatanTambahanPage() {
           }}
           titleId="kegiatan-tambahan-modal-title"
         >
-          <h2
-            id="kegiatan-tambahan-modal-title"
-            className="text-xl font-semibold mb-2"
-          >
-            {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2
+              id="kegiatan-tambahan-modal-title"
+              className="text-xl font-semibold"
+            >
+              {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}
+            </h2>
+            <p className="text-xs text-red-600 dark:text-red-500">
+              * Fardu 'Ain
+            </p>
+          </div>
+
           <div className="space-y-2">
+            {/* Pilih Tim */}
             <div>
-              <Label htmlFor="kegiatan">Kegiatan</Label>
+              <Label htmlFor="teamId" className="dark:text-gray-100">
+                Tim <span className="text-red-500">*</span>
+              </Label>
+              <select
+                id="teamId"
+                value={form.teamId}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    teamId: parseInt(e.target.value, 10),
+                    kegiatanId: "", // reset kegiatan jika tim berubah
+                  })
+                }
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
+              >
+                <option value="">Tim</option>
+                {teams.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.nama_tim}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Pilih Kegiatan */}
+            <div>
+              <Label htmlFor="kegiatan" className="dark:text-gray-100">
+                Kegiatan <span className="text-red-500">*</span>
+              </Label>
               <Select
                 inputId="kegiatan"
                 classNamePrefix="react-select"
-                styles={selectStyles}
                 menuPortalTarget={document.body}
-                options={kegiatan.map((k) => ({
-                  value: k.id,
-                  label: k.nama_kegiatan,
-                }))}
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    backgroundColor: "#ffffff",
+                    borderColor: "#d1d5db",
+                    borderRadius: "0.5rem",
+                    padding: "2px 6px",
+                    color: "#1f2937",
+                  }),
+                  singleValue: (base) => ({
+                    ...base,
+                    color: "#1f2937",
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    zIndex: 9999,
+                  }),
+                }}
+                options={kegiatan
+                  .filter((k) => !form.teamId || k.team_id === form.teamId)
+                  .map((k) => ({
+                    value: k.id,
+                    label: k.nama_kegiatan,
+                  }))}
                 value={
                   form.kegiatanId
                     ? {
@@ -331,34 +373,46 @@ export default function KegiatanTambahanPage() {
                 </p>
               )}
             </div>
+
+            {/* Tanggal */}
             <div>
-              <Label htmlFor="tanggal">Tanggal</Label>
+              <Label htmlFor="tanggal" className="dark:text-gray-100">
+                Tanggal <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="tanggal"
                 type="date"
                 value={form.tanggal}
                 onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               />
             </div>
+
+            {/* Deskripsi */}
             <div>
-              <Label htmlFor="deskripsi">Deskripsi</Label>
+              <Label htmlFor="deskripsi" className="dark:text-gray-100">
+                Deskripsi
+              </Label>
               <textarea
                 id="deskripsi"
                 value={form.deskripsi}
                 onChange={(e) =>
                   setForm({ ...form, deskripsi: e.target.value })
                 }
-                className="form-input"
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               />
             </div>
+
+            {/* Status */}
             <div>
-              <Label htmlFor="status">Status</Label>
+              <Label htmlFor="status" className="dark:text-gray-100">
+                Status <span className="text-red-500">*</span>
+              </Label>
               <select
                 id="status"
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               >
                 <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
                 <option value={STATUS.SEDANG_DIKERJAKAN}>
@@ -369,6 +423,8 @@ export default function KegiatanTambahanPage() {
                 </option>
               </select>
             </div>
+
+            {/* Tombol */}
             <div className="flex justify-end space-x-2 pt-2">
               <Button
                 variant="secondary"

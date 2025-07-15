@@ -18,6 +18,7 @@ import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import { ROLES } from "../../utils/roles";
 import SearchInput from "../../components/SearchInput";
+import SelectDataShow from "../../components/ui/SelectDataShow";
 
 export default function TeamsPage() {
   const { user } = useAuth();
@@ -151,59 +152,50 @@ export default function TeamsPage() {
               </td>
             </tr>
           ) : (
-          paginated.map((t, idx) => (
-            <tr
-              key={t.id}
-              className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
-            >
-              <td className={tableStyles.cell}>{(currentPage - 1) * pageSize + idx + 1}</td>
-              <td className={tableStyles.cell}>{t.nama_tim}</td>
-              <td className={tableStyles.cell}>{t.members?.length || 0}</td>
-              <td className={`${tableStyles.cell} space-x-2`}>
-                <Button
-                  onClick={() => openEdit(t)}
-                  variant="warning"
-                  icon
-                  aria-label="Edit"
-                >
-                  <Pencil size={16} />
-                </Button>
-                <Button
-                  onClick={() => deleteTeam(t.id)}
-                  variant="danger"
-                  icon
-                  aria-label="Hapus"
-                >
-                  <Trash2 size={16} />
-                </Button>
-              </td>
-            </tr>
-          ))
+            paginated.map((t, idx) => (
+              <tr
+                key={t.id}
+                className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
+              >
+                <td className={tableStyles.cell}>
+                  {(currentPage - 1) * pageSize + idx + 1}
+                </td>
+                <td className={tableStyles.cell}>{t.nama_tim}</td>
+                <td className={tableStyles.cell}>{t.members?.length || 0}</td>
+                <td className={`${tableStyles.cell} space-x-2`}>
+                  <Button
+                    onClick={() => openEdit(t)}
+                    variant="warning"
+                    icon
+                    aria-label="Edit"
+                  >
+                    <Pencil size={16} />
+                  </Button>
+                  <Button
+                    onClick={() => deleteTeam(t.id)}
+                    variant="danger"
+                    icon
+                    aria-label="Hapus"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </td>
+              </tr>
+            ))
           )}
         </tbody>
       </Table>
 
       <div className="flex items-center justify-between mt-4">
-        <div className="space-x-2">
-          <select
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(parseInt(e.target.value, 10));
-              setCurrentPage(1);
-            }}
-            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
-          >
-            {[5, 10, 25].map((n) => (
-              <option
-                key={n}
-                value={n}
-                className="text-gray-900 dark:text-gray-200"
-              >
-                {n}
-              </option>
-            ))}
-          </select>
-        </div>
+        <SelectDataShow
+          value={pageSize}
+          onChange={(e) => {
+            setPageSize(Number(e.target.value));
+            setCurrentPage(1);
+          }}
+          options={[5, 10, 25, 50]}
+          className="w-32"
+        />
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -218,38 +210,44 @@ export default function TeamsPage() {
           }}
           titleId="team-form-title"
         >
-          <h2 id="team-form-title" className="text-xl font-semibold mb-2">
-            {editingTeam ? "Edit Tim" : "Tambah Tim"}
-          </h2>
+          {/* flex container untuk judul + wajib diisi */}
+          <div className="flex items-center justify-between mb-3">
+            <h2 id="team-form-title" className="text-xl font-semibold">
+              {editingTeam ? "Edit Tim" : "Tambah Tim"}
+            </h2>
+            <p className="text-xs text-red-600 dark:text-red-500">
+              * Fardu 'Ain
+            </p>
+          </div>
+
           <div className="space-y-2">
             <div>
-              <Label htmlFor="namaTim">Nama Tim</Label>
+              <Label htmlFor="namaTim" className="dark:text-gray-100">
+                Nama Tim <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="namaTim"
                 type="text"
                 value={form.nama_tim}
-                onChange={(e) =>
-                  setForm({ ...form, nama_tim: e.target.value })
-                }
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                onChange={(e) => setForm({ ...form, nama_tim: e.target.value })}
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               />
             </div>
-            </div>
-            <div className="flex justify-end space-x-2 pt-2">
-              <Button
-                variant="secondary"
-                onClick={async () => {
-                  const r = await confirmCancel("Batalkan perubahan?");
-                  if (r.isConfirmed) setShowForm(false);
-                }}
-              >
-                Batal
-              </Button>
-              <Button onClick={saveTeam}>
-                Simpan
-              </Button>
-            </div>
-          </Modal>
+          </div>
+
+          <div className="flex justify-end space-x-2 pt-2">
+            <Button
+              variant="secondary"
+              onClick={async () => {
+                const r = await confirmCancel("Batalkan perubahan?");
+                if (r.isConfirmed) setShowForm(false);
+              }}
+            >
+              Batal
+            </Button>
+            <Button onClick={saveTeam}>Simpan</Button>
+          </div>
+        </Modal>
       )}
     </div>
   );

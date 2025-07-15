@@ -23,6 +23,7 @@ import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import { ROLES } from "../../utils/roles";
 import months from "../../utils/months";
 import SearchInput from "../../components/SearchInput";
+import SelectDataShow from "../../components/ui/SelectDataShow";
 
 export default function PenugasanPage() {
   const { user } = useAuth();
@@ -159,7 +160,6 @@ export default function PenugasanPage() {
             }}
             placeholder="Cari penugasan..."
             ariaLabel="Cari penugasan"
-            className="w-64 sm:w-80 md:w-96 lg:w-1/3"
           />
           <MonthYearPicker
             month={filterBulan}
@@ -173,14 +173,6 @@ export default function PenugasanPage() {
               setCurrentPage(1);
             }}
           />
-          {/* <button
-            type="button"
-            onClick={fetchData}
-            className="icon-button bg-gray-200 dark:bg-gray-700"
-            aria-label="Filter"
-          >
-            <FilterIcon size={16} />
-          </button> */}
         </div>
         {canManage && (
           <Button onClick={openCreate} className="add-button">
@@ -256,26 +248,13 @@ export default function PenugasanPage() {
       </Table>
 
       <div className="flex items-center justify-between mt-4">
-        <div className="space-x-2">
-          <select
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(parseInt(e.target.value, 10));
-              setCurrentPage(1);
-            }}
-            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
-          >
-            {[5, 10, 25].map((n) => (
-              <option
-                key={n}
-                value={n}
-                className="text-gray-900 dark:text-gray-200"
-              >
-                {n}
-              </option>
-            ))}
-          </select>
-        </div>
+        <SelectDataShow
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          setCurrentPage={setCurrentPage}
+          options={[5, 10, 25, 50]}
+          className="flex-1"
+        />
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

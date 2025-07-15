@@ -12,6 +12,8 @@ import Label from "../../components/ui/Label";
 import { STATUS } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
+import SelectDataShow from "../../components/ui/SelectDataShow";
+import DateFilter from "../../components/ui/DateFilter";
 
 export default function LaporanHarianPage() {
   const [laporan, setLaporan] = useState([]);
@@ -111,19 +113,14 @@ export default function LaporanHarianPage() {
           placeholder="Cari..."
           ariaLabel="Cari"
         />
-
-        <div>
-          <input
-            id="filterTanggal"
-            type="date"
-            value={tanggal}
-            onChange={(e) => {
-              setTanggal(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="form-input border rounded px-2 py-[3px] bg-white dark:bg-gray-700 dark:text-gray-200 text-center"
-          />
-        </div>
+        <DateFilter
+          tanggal={tanggal}
+          setTanggal={(date) => {
+            setTanggal(date);
+            setCurrentPage(1);
+          }}
+          setCurrentPage={setCurrentPage}
+        />
       </div>
       {loading ? (
         <div>Memuat...</div>
@@ -197,10 +194,7 @@ export default function LaporanHarianPage() {
                 ))}
                 {laporan.length === 0 && (
                   <tr>
-                    <td
-                      colSpan={8}
-                      className="text-center py-4 text-gray-500 dark:text-gray-400"
-                    >
+                    <td colSpan={8} className="text-center py-4">
                       Tidak ada laporan
                     </td>
                   </tr>
@@ -208,26 +202,15 @@ export default function LaporanHarianPage() {
               </tbody>
             </Table>
             <div className="flex items-center justify-between mt-2">
-              <div className="space-x-2">
-                <select
-                  value={pageSize}
-                  onChange={(e) => {
-                    setPageSize(parseInt(e.target.value, 10));
-                    setCurrentPage(1);
-                  }}
-                  className="border rounded px-3 py-1 bg-white dark:bg-gray-700 dark:text-gray-200"
-                >
-                  {[5, 10, 25].map((n) => (
-                    <option
-                      key={n}
-                      value={n}
-                      className="text-gray-900 dark:text-gray-200"
-                    >
-                      {n}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <SelectDataShow
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                options={[5, 10, 25, 50]}
+                className="w-32"
+              />
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
