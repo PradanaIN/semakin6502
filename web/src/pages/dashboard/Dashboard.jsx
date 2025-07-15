@@ -31,10 +31,12 @@ const Dashboard = () => {
       const month = monthIndex;
 
       // determine start dates for each week in the month
-      const monthStart = new Date(year, month, 1);
+      const firstOfMonth = new Date(year, month, 1);
       const monthEnd = new Date(year, month + 1, 0);
+      const firstMonday = new Date(firstOfMonth);
+      firstMonday.setDate(firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7));
       const weekStarts = [];
-      for (let d = new Date(monthStart); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+      for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
         weekStarts.push(new Date(d));
       }
 
