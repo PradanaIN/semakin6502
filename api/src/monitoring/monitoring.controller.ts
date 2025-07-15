@@ -34,7 +34,7 @@ export class MonitoringController {
     }
     const user = req?.user as any;
     const role = user?.role;
-    let tId = teamId ? parseInt(teamId, 10) : undefined;
+    const tId = teamId ? parseInt(teamId, 10) : undefined;
     let uId = userId ? parseInt(userId, 10) : undefined;
 
     if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
@@ -69,7 +69,7 @@ export class MonitoringController {
     }
     const user = req?.user as any;
     const role = user?.role;
-    let tId = teamId ? parseInt(teamId, 10) : undefined;
+    const tId = teamId ? parseInt(teamId, 10) : undefined;
     let uId = userId ? parseInt(userId, 10) : undefined;
 
     if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
@@ -104,7 +104,7 @@ export class MonitoringController {
     }
     const user = req?.user as any;
     const role = user?.role;
-    let tId = teamId ? parseInt(teamId, 10) : undefined;
+    const tId = teamId ? parseInt(teamId, 10) : undefined;
     let uId = userId ? parseInt(userId, 10) : undefined;
 
     if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
