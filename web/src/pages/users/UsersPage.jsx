@@ -138,26 +138,32 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-        <SearchInput
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setCurrentPage(1);
-          }}
-          placeholder="Cari pengguna..."
-          ariaLabel="Cari pengguna"
-        />
+          <SearchInput
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+            placeholder="Cari pengguna..."
+            ariaLabel="Cari pengguna"
+          />
           <select
             value={roleFilter}
             onChange={(e) => {
               setRoleFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
+            className="border rounded px-2 py-[4px] bg-white dark:bg-gray-700 dark:text-gray-200 text-center"
           >
-            <option value="" className="text-gray-900 dark:text-gray-200">Semua Role</option>
+            <option value="" className="text-gray-900 dark:text-gray-200">
+              Semua Role
+            </option>
             {roles.map((r) => (
-              <option key={r.id} value={r.name} className="text-gray-900 dark:text-gray-200">
+              <option
+                key={r.id}
+                value={r.name}
+                className="text-gray-900 dark:text-gray-200"
+              >
                 {r.name}
               </option>
             ))}
@@ -195,34 +201,41 @@ export default function UsersPage() {
             </tr>
           ) : (
             paginatedUsers.map((u, idx) => (
-              <tr key={u.id} className={`${tableStyles.row} border-t dark:border-gray-700`}>
-              <td className={`${tableStyles.cell} text-center`}>{(currentPage - 1) * pageSize + idx + 1}</td>
-              <td className={tableStyles.cell}>{u.nama}</td>
-              <td className={`${tableStyles.cell} text`}>{u.email}</td>
-              <td className={`${tableStyles.cell} text-center`}>
-                {u.members?.[0]?.team?.nama_tim || "-"}
-              </td>
-              <td className={`${tableStyles.cell} capitalize text-center`}>{u.role}</td>
-              <td className={`${tableStyles.cell} space-x-2 text-center`}>
-                <Button
-                  onClick={() => openEdit(u)}
-                  variant="warning"
-                  icon
-                  aria-label="Edit"
-                >
-                  <Pencil size={16} />
-                </Button>
-                <Button
-                  onClick={() => deleteUser(u.id)}
-                  variant="danger"
-                  icon
-                  aria-label="Hapus"
-                >
-                  <Trash2 size={16} />
-                </Button>
-              </td>
-            </tr>
-          ))
+              <tr
+                key={u.id}
+                className={`${tableStyles.row} border-t dark:border-gray-700`}
+              >
+                <td className={`${tableStyles.cell} text-center`}>
+                  {(currentPage - 1) * pageSize + idx + 1}
+                </td>
+                <td className={tableStyles.cell}>{u.nama}</td>
+                <td className={`${tableStyles.cell} text`}>{u.email}</td>
+                <td className={`${tableStyles.cell} text-center`}>
+                  {u.members?.[0]?.team?.nama_tim || "-"}
+                </td>
+                <td className={`${tableStyles.cell} capitalize text-center`}>
+                  {u.role}
+                </td>
+                <td className={`${tableStyles.cell} space-x-2 text-center`}>
+                  <Button
+                    onClick={() => openEdit(u)}
+                    variant="warning"
+                    icon
+                    aria-label="Edit"
+                  >
+                    <Pencil size={16} />
+                  </Button>
+                  <Button
+                    onClick={() => deleteUser(u.id)}
+                    variant="danger"
+                    icon
+                    aria-label="Hapus"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </td>
+              </tr>
+            ))
           )}
         </tbody>
       </Table>
@@ -298,9 +311,7 @@ export default function UsersPage() {
                 id="password"
                 type="password"
                 value={form.password}
-                onChange={(e) =>
-                  setForm({ ...form, password: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
               />
             </div>
@@ -314,15 +325,15 @@ export default function UsersPage() {
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
               >
-                  <option value="">Pilih role</option>
-                  {roles.map((r) => (
-                    <option key={r.id} value={r.name}>
-                      {r.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex justify-end space-x-2 pt-2">
+                <option value="">Pilih role</option>
+                {roles.map((r) => (
+                  <option key={r.id} value={r.name}>
+                    {r.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex justify-end space-x-2 pt-2">
               <Button
                 variant="secondary"
                 onClick={async () => {
@@ -332,9 +343,7 @@ export default function UsersPage() {
               >
                 Batal
               </Button>
-              <Button onClick={saveUser}>
-                Simpan
-              </Button>
+              <Button onClick={saveUser}>Simpan</Button>
               <p className="text-xs text-gray-500 ml-2 self-center dark:text-gray-400">
                 * wajib diisi
               </p>

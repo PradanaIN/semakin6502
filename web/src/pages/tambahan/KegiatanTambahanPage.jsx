@@ -17,7 +17,6 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
 import Pagination from "../../components/Pagination";
 
-
 export default function KegiatanTambahanPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -145,55 +144,65 @@ export default function KegiatanTambahanPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <Button onClick={openCreate} className="add-button">
-          <Plus size={16} /> Tambah
-        </Button>
-      </div>
+      <div className="flex justify-between items-center flex-wrap gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <SearchInput
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Cari kegiatan..."
+            ariaLabel="Cari kegiatan"
+          />
+          <MonthYearPicker
+            month={filterBulan}
+            year={filterTahun}
+            onMonthChange={setFilterBulan}
+            onYearChange={setFilterTahun}
+          />
+        </div>
 
-      <div className="flex items-center gap-2 flex-wrap">
-        <SearchInput
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Cari kegiatan..."
-          ariaLabel="Cari kegiatan"
-        />
-        <MonthYearPicker
-          month={filterBulan}
-          year={filterTahun}
-          onMonthChange={setFilterBulan}
-          onYearChange={setFilterTahun}
-        />
+        <div className="flex justify-between items-center">
+          <Button onClick={openCreate} className="add-button">
+            <Plus size={16} />
+            <span className="hidden sm:inline">Tugas Tambahan</span>
+          </Button>
+        </div>
       </div>
 
       <Table>
         <thead>
           <tr className={tableStyles.headerRow}>
             <th className={tableStyles.cell}>No</th>
-            <th className={tableStyles.cell}>Nama</th>
+            <th className={tableStyles.cell}>Kegiatan</th>
             <th className={tableStyles.cell}>Tim</th>
             <th className={tableStyles.cell}>Tanggal</th>
+            <th className={tableStyles.cell}>Deskripsi</th>
             <th className={tableStyles.cell}>Status</th>
+            <th className={tableStyles.cell}>Bukti Dukung</th>
             <th className={tableStyles.cell}>Aksi</th>
           </tr>
         </thead>
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="5" className="py-4 text-center">
+              <td colSpan="8" className="py-4 text-center">
                 Memuat data...
               </td>
             </tr>
           ) : paginatedItems.length === 0 ? (
             <tr>
-              <td colSpan="5" className="py-4 text-center">
+              <td colSpan="8" className="py-4 text-center">
                 Data tidak ditemukan
               </td>
             </tr>
           ) : (
             paginatedItems.map((item, idx) => (
-              <tr key={item.id} className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}>
-                <td className={tableStyles.cell}>{(currentPage - 1) * pageSize + idx + 1}</td>
+              <tr
+                key={item.id}
+                className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
+              >
+                <td className={tableStyles.cell}>
+                  {(currentPage - 1) * pageSize + idx + 1}
+                </td>
                 <td className={tableStyles.cell}>{item.nama}</td>
                 <td className={tableStyles.cell}>
                   {item.kegiatan.team?.nama_tim || "-"}
@@ -201,8 +210,16 @@ export default function KegiatanTambahanPage() {
                 <td className={tableStyles.cell}>
                   {item.tanggal.slice(0, 10)}
                 </td>
+                <td className={tableStyles.cell}>{item.deskripsi || "-"}</td>
                 <td className={tableStyles.cell}>
                   <StatusBadge status={item.status} />
+                </td>
+                <td className={tableStyles.cell}>
+                  {item.bukti_dukung ? (
+                    <Check className="w-4 h-4 text-green-600" />
+                  ) : (
+                    <X className="w-4 h-4 text-red-600" />
+                  )}
                 </td>
                 <td className={`${tableStyles.cell} space-x-2`}>
                   <Button
@@ -246,13 +263,21 @@ export default function KegiatanTambahanPage() {
             className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
           >
             {[5, 10, 25].map((n) => (
-              <option key={n} value={n} className="text-gray-900 dark:text-gray-200">
+              <option
+                key={n}
+                value={n}
+                className="text-gray-900 dark:text-gray-200"
+              >
                 {n}
               </option>
             ))}
           </select>
         </div>
-        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
       {showForm && (

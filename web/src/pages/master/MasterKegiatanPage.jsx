@@ -89,10 +89,7 @@ export default function MasterKegiatanPage() {
 
   const saveItem = async () => {
     if (!form.teamId || isNaN(form.teamId) || !form.nama_kegiatan) {
-      showWarning(
-        "Lengkapi data",
-        "Tim dan nama kegiatan wajib diisi",
-      );
+      showWarning("Lengkapi data", "Tim dan nama kegiatan wajib diisi");
       return;
     }
     try {
@@ -135,6 +132,18 @@ export default function MasterKegiatanPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
         <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex-1 max-w-sm">
+            <SearchInput
+              value={search}
+              onChange={(e) => {
+                setPage(1);
+                setSearch(e.target.value);
+              }}
+              placeholder="Cari kegiatan..."
+              ariaLabel="Cari kegiatan"
+            />
+          </div>
+
           <div>
             <select
               value={filterTeam}
@@ -142,7 +151,7 @@ export default function MasterKegiatanPage() {
                 setPage(1);
                 setFilterTeam(e.target.value);
               }}
-              className="border px-2 py-1 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
+              className="border rounded px-2 py-[4px] bg-white dark:bg-gray-700 dark:text-gray-200 text-center"
             >
               <option value="">Semua</option>
               {teams.map((t) => (
@@ -152,19 +161,6 @@ export default function MasterKegiatanPage() {
               ))}
             </select>
           </div>
-
-          <div className="flex-1 max-w-sm">
-          <SearchInput
-            value={search}
-            onChange={(e) => {
-              setPage(1);
-              setSearch(e.target.value);
-            }}
-            placeholder="Cari kegiatan..."
-            ariaLabel="Cari kegiatan"
-          />
-          </div>
-
         </div>
 
         <div>
@@ -173,7 +169,6 @@ export default function MasterKegiatanPage() {
             <span className="hidden sm:inline">Tambah Kegiatan</span>
           </Button>
         </div>
-
       </div>
 
       <Table>
@@ -200,39 +195,41 @@ export default function MasterKegiatanPage() {
               </td>
             </tr>
           ) : (
-          items.map((item, idx) => (
-            <tr
-              key={item.id}
-              className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
-            >
-              <td className={tableStyles.cell}>{(page - 1) * perPage + idx + 1}</td>
-              <td className={tableStyles.cell}>
-                {item.team?.nama_tim || item.teamId}
-              </td>
-              <td className={tableStyles.cell}>{item.nama_kegiatan}</td>
-              <th className={tableStyles.cell}>
-                {!item.deskripsi ? "-" : item.deskripsi}
-              </th>
-              <td className={`${tableStyles.cell} space-x-2`}>
-                <Button
-                  onClick={() => openEdit(item)}
-                  variant="warning"
-                  icon
-                  aria-label="Edit"
-                >
-                  <Pencil size={16} />
-                </Button>
-                <Button
-                  onClick={() => deleteItem(item)}
-                  variant="danger"
-                  icon
-                  aria-label="Hapus"
-                >
-                  <Trash2 size={16} />
-                </Button>
-              </td>
-            </tr>
-          ))
+            items.map((item, idx) => (
+              <tr
+                key={item.id}
+                className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
+              >
+                <td className={tableStyles.cell}>
+                  {(page - 1) * perPage + idx + 1}
+                </td>
+                <td className={tableStyles.cell}>
+                  {item.team?.nama_tim || item.teamId}
+                </td>
+                <td className={tableStyles.cell}>{item.nama_kegiatan}</td>
+                <th className={tableStyles.cell}>
+                  {!item.deskripsi ? "-" : item.deskripsi}
+                </th>
+                <td className={`${tableStyles.cell} space-x-2`}>
+                  <Button
+                    onClick={() => openEdit(item)}
+                    variant="warning"
+                    icon
+                    aria-label="Edit"
+                  >
+                    <Pencil size={16} />
+                  </Button>
+                  <Button
+                    onClick={() => deleteItem(item)}
+                    variant="danger"
+                    icon
+                    aria-label="Hapus"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </td>
+              </tr>
+            ))
           )}
         </tbody>
       </Table>
@@ -248,13 +245,21 @@ export default function MasterKegiatanPage() {
             className="border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
           >
             {[5, 10, 25].map((n) => (
-              <option key={n} value={n} className="text-gray-900 dark:text-gray-200">
+              <option
+                key={n}
+                value={n}
+                className="text-gray-900 dark:text-gray-200"
+              >
                 {n}
               </option>
             ))}
           </select>
         </div>
-        <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
       </div>
 
       {showForm && (
@@ -265,7 +270,10 @@ export default function MasterKegiatanPage() {
           }}
           titleId="master-kegiatan-form-title"
         >
-          <h2 id="master-kegiatan-form-title" className="text-xl font-semibold mb-2">
+          <h2
+            id="master-kegiatan-form-title"
+            className="text-xl font-semibold mb-2"
+          >
             {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}
           </h2>
           <div className="space-y-2">
@@ -281,14 +289,14 @@ export default function MasterKegiatanPage() {
                 }
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
               >
-                  <option value="">Pilih tim</option>
-                  {teams.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.nama_tim}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                <option value="">Pilih tim</option>
+                {teams.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.nama_tim}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div>
               <Label htmlFor="namaKegiatan">
                 Nama Kegiatan <span className="text-red-500">*</span>
@@ -302,7 +310,7 @@ export default function MasterKegiatanPage() {
                 }
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
               />
-              </div>
+            </div>
             <div>
               <Label htmlFor="deskripsi">Deskripsi</Label>
               <textarea
@@ -313,7 +321,7 @@ export default function MasterKegiatanPage() {
                 }
                 className="form-input"
               />
-              </div>
+            </div>
             <div className="flex justify-end space-x-2 pt-2">
               <Button
                 variant="secondary"
