@@ -204,35 +204,35 @@ export default function PenugasanDetailPage() {
       {!editing ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <div>
-            <div className="text-sm text-gray-500">Kegiatan</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Kegiatan</div>
             <div className="font-medium">{item.kegiatan?.nama_kegiatan}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500">Tim</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Tim</div>
             <div className="font-medium">{item.kegiatan?.team?.nama_tim}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500">Pegawai</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Pegawai</div>
             <div className="font-medium">{item.pegawai?.nama}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500">Minggu</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Minggu</div>
             <div className="font-medium">{item.minggu}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500">Bulan</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Bulan</div>
             <div className="font-medium">{item.bulan}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500">Tahun</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Tahun</div>
             <div className="font-medium">{item.tahun}</div>
           </div>
           <div className="sm:col-span-2 lg:col-span-3">
-            <div className="text-sm text-gray-500">Deskripsi</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Deskripsi</div>
             <div className="font-medium">{item.deskripsi || "-"}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500">Status</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Status</div>
             <div className="font-medium">
               <StatusBadge status={item.status} />
             </div>

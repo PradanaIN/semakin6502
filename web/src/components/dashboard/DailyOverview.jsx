@@ -38,7 +38,7 @@ const DailyOverview = ({ data = [] }) => {
       <h2 className="text-lg font-semibold mb-3 text-blue-600">
         Kalender Aktivitas Harian
       </h2>
-      <div className="flex flex-wrap justify-end gap-2 mb-2 text-xs text-gray-500">
+      <div className="flex flex-wrap justify-end gap-2 mb-2 text-xs text-gray-500 dark:text-gray-400">
         <div className="flex items-center gap-1">
           <span className="inline-block w-3 h-3 bg-green-400 rounded-sm"></span>
           Ada Laporan
