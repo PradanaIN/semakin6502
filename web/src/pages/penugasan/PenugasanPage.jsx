@@ -56,14 +56,12 @@ export default function PenugasanPage() {
       const penugasanReq = axios.get(
         `/penugasan?bulan=${filterBulan || ""}&tahun=${filterTahun || ""}`
       );
-      const teamsReq = axios
-        .get("/teams")
-        .then(async (res) => {
-          if (Array.isArray(res.data) && res.data.length === 0) {
-            return axios.get("/teams/member");
-          }
-          return res;
-        });
+      const teamsReq = axios.get("/teams").then(async (res) => {
+        if (Array.isArray(res.data) && res.data.length === 0) {
+          return axios.get("/teams/member");
+        }
+        return res;
+      });
 
       let usersReq;
       if (canManage) {
@@ -382,7 +380,7 @@ export default function PenugasanPage() {
                   onChange={(e) =>
                     setForm({ ...form, minggu: parseInt(e.target.value, 10) })
                   }
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
                 />
               </div>
               <div>
@@ -411,7 +409,7 @@ export default function PenugasanPage() {
                   onChange={(e) =>
                     setForm({ ...form, tahun: parseInt(e.target.value, 10) })
                   }
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
                 />
               </div>
             </div>
