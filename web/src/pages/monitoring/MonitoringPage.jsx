@@ -331,7 +331,7 @@ export default function MonitoringPage() {
           {/* filter select di kanan */}
           <div className="flex flex-wrap items-center gap-4 ml-auto mt-4 sm:mt-0">
             {tab === "harian" && (
-              <div className="w-34 mt-4 sm:mt-0">
+              <div className="w-36 mt-4 sm:mt-0">
                 <Listbox value={monthIndex} onChange={setMonthIndex}>
                   <div className="relative mt-1">
                     <Listbox.Button className="relative w-full cursor-pointer rounded-xl bg-gray-50 dark:bg-gray-800 py-2 pl-4 pr-10 text-center border border-gray-300 dark:border-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out">
