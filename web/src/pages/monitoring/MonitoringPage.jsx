@@ -7,6 +7,7 @@ import DateFilter from "../../components/ui/DateFilter";
 import Table from "../../components/ui/Table";
 import tableStyles from "../../components/ui/Table.module.css";
 import DailyMatrix from "./DailyMatrix";
+import WeeklyMatrix from "./WeeklyMatrix";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 
@@ -27,6 +28,7 @@ export default function MonitoringPage() {
 
   const [dailyData, setDailyData] = useState([]);
   const [weeklyData, setWeeklyData] = useState([]);
+  const [weeklyMonthData, setWeeklyMonthData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -65,6 +67,19 @@ export default function MonitoringPage() {
       }));
     },
     [users, tanggal],
+  );
+
+  const mergeWeeklyMonthWithUsers = useCallback(
+    (data) => {
+      const emptyWeeks = weekStarts.map(() => ({ selesai: 0, total: 0, persen: 0 }));
+      const map = Object.fromEntries(data.map((d) => [d.userId, d.weeks]));
+      return users.map((u) => ({
+        userId: u.id,
+        nama: u.nama,
+        weeks: map[u.id] || emptyWeeks,
+      }));
+    },
+    [users, weekStarts],
   );
 
   useEffect(() => {
@@ -157,6 +172,26 @@ export default function MonitoringPage() {
     };
     fetchWeekly();
   }, [weekIndex, weekStarts, teamId, mergeProgressWithUsers]);
+
+  useEffect(() => {
+    if (!weekStarts.length) return;
+    const fetchWeeklyMonth = async () => {
+      try {
+        setLoading(true);
+        const year = new Date().getFullYear();
+        const first = new Date(year, monthIndex, 1).toISOString().slice(0, 10);
+        const res = await axios.get('/monitoring/mingguan/bulan', {
+          params: { tanggal: first, teamId: teamId || undefined },
+        });
+        setWeeklyMonthData(mergeWeeklyMonthWithUsers(res.data));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWeeklyMonth();
+  }, [monthIndex, teamId, weekStarts, mergeWeeklyMonthWithUsers]);
 
   useEffect(() => {
     const fetchMonthly = async () => {
@@ -431,7 +466,16 @@ export default function MonitoringPage() {
         ) : (
           <div>
             {tab === 'harian' && <DailyMatrix data={dailyData} />}
-            {tab === 'mingguan' && renderTable(weeklyData)}
+            {tab === 'mingguan' && (
+              <>
+                <WeeklyMatrix
+                  data={weeklyMonthData}
+                  weeks={weekStarts}
+                  onSelectWeek={setWeekIndex}
+                />
+                <div className="mt-4">{renderTable(weeklyData)}</div>
+              </>
+            )}
             {tab === 'bulanan' && renderTable(monthlyData)}
           </div>
         )}
