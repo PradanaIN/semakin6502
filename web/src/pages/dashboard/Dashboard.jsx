@@ -18,8 +18,15 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchAllData = async () => {
+      const formatISO = (d) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+      };
+
       const today = new Date();
-      const tanggal = today.toISOString().split("T")[0];
+      const tanggal = formatISO(today);
       const year = today.getFullYear();
       const month = monthIndex;
 
@@ -50,7 +57,7 @@ const Dashboard = () => {
         const weeklyPromises = weekStarts.map((d) =>
           axios
             .get("/monitoring/mingguan", {
-              params: { minggu: d.toISOString().split("T")[0], ...filters },
+              params: { minggu: formatISO(d), ...filters },
             })
             .then((res) => res.data)
         );
@@ -69,9 +76,7 @@ const Dashboard = () => {
           const endDate = new Date(eIso);
           const displayStart = startDate < monthStart ? monthStart : startDate;
           const displayEnd = endDate > monthEnd ? monthEnd : endDate;
-          const tanggal = `${displayStart.toISOString().slice(0, 10)} - ${displayEnd
-            .toISOString()
-            .slice(0, 10)}`;
+          const tanggal = `${formatISO(displayStart)} - ${formatISO(displayEnd)}`;
           const detail = w.detail.filter((d) => {
             const t = new Date(d.tanggal);
             return t >= monthStart && t <= monthEnd;
