@@ -57,6 +57,31 @@ export class MonitoringController {
     return this.monitoringService.harian(tanggal, tId, uId);
   }
 
+  @Get("harian/all")
+  async harianAll(
+    @Query("tanggal") tanggal?: string,
+    @Req() req?: Request,
+    @Query("teamId") teamId?: string,
+  ) {
+    if (!tanggal) {
+      throw new BadRequestException("query 'tanggal' diperlukan");
+    }
+    const user = req?.user as any;
+    const role = user?.role;
+    const tId = teamId ? parseInt(teamId, 10) : undefined;
+
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
+      if (!tId) throw new ForbiddenException("bukan admin");
+      const member = await this.prisma.member.findFirst({
+        where: { teamId: tId, userId: user.userId },
+      });
+      if (!member || !member.is_leader)
+        throw new ForbiddenException("bukan ketua tim");
+    }
+
+    return this.monitoringService.harianAll(tanggal, tId);
+  }
+
   @Get("mingguan")
   async mingguan(
     @Query("minggu") minggu?: string,
@@ -92,6 +117,31 @@ export class MonitoringController {
     return this.monitoringService.mingguan(minggu, tId, uId);
   }
 
+  @Get("mingguan/all")
+  async mingguanAll(
+    @Query("minggu") minggu?: string,
+    @Req() req?: Request,
+    @Query("teamId") teamId?: string,
+  ) {
+    if (!minggu) {
+      throw new BadRequestException("query 'minggu' diperlukan");
+    }
+    const user = req?.user as any;
+    const role = user?.role;
+    const tId = teamId ? parseInt(teamId, 10) : undefined;
+
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
+      if (!tId) throw new ForbiddenException("bukan admin");
+      const member = await this.prisma.member.findFirst({
+        where: { teamId: tId, userId: user.userId },
+      });
+      if (!member || !member.is_leader)
+        throw new ForbiddenException("bukan ketua tim");
+    }
+
+    return this.monitoringService.mingguanAll(minggu, tId);
+  }
+
   @Get("bulanan")
   async bulanan(
     @Query("year") year?: string,
@@ -125,5 +175,30 @@ export class MonitoringController {
     }
 
     return this.monitoringService.bulanan(year, tId, uId);
+  }
+
+  @Get("bulanan/all")
+  async bulananAll(
+    @Query("year") year?: string,
+    @Req() req?: Request,
+    @Query("teamId") teamId?: string,
+  ) {
+    if (!year) {
+      throw new BadRequestException("query 'year' diperlukan");
+    }
+    const user = req?.user as any;
+    const role = user?.role;
+    const tId = teamId ? parseInt(teamId, 10) : undefined;
+
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
+      if (!tId) throw new ForbiddenException("bukan admin");
+      const member = await this.prisma.member.findFirst({
+        where: { teamId: tId, userId: user.userId },
+      });
+      if (!member || !member.is_leader)
+        throw new ForbiddenException("bukan ketua tim");
+    }
+
+    return this.monitoringService.bulananAll(year, tId);
   }
 }

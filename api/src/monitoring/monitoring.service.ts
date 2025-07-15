@@ -156,6 +156,124 @@ export class MonitoringService {
       return { bulan, persen };
     });
   }
+
+  async harianAll(tanggal: string, teamId?: number) {
+    const date = new Date(tanggal);
+    if (isNaN(date.getTime()))
+      throw new BadRequestException("tanggal tidak valid");
+
+    const where: any = { tanggal: date };
+    if (teamId)
+      where.penugasan = {
+        kegiatan: { teamId },
+      };
+
+    const records = await this.prisma.laporanHarian.findMany({
+      where,
+      include: { pegawai: true },
+    });
+
+    const byUser: Record<
+      number,
+      { nama: string; selesai: number; total: number }
+    > = {};
+
+    for (const r of records) {
+      if (!byUser[r.pegawaiId])
+        byUser[r.pegawaiId] = { nama: r.pegawai.nama, selesai: 0, total: 0 };
+      byUser[r.pegawaiId].total += 1;
+      if (r.status === STATUS.SELESAI_DIKERJAKAN) byUser[r.pegawaiId].selesai += 1;
+    }
+
+    return Object.entries(byUser)
+      .map(([id, v]) => ({
+        userId: Number(id),
+        nama: v.nama,
+        selesai: v.selesai,
+        total: v.total,
+        persen: v.total ? Math.round((v.selesai / v.total) * 100) : 0,
+      }))
+      .sort((a, b) => a.nama.localeCompare(b.nama));
+  }
+
+  async mingguanAll(minggu: string, teamId?: number) {
+    const start = new Date(minggu);
+    const offset = (start.getDay() + 6) % 7;
+    start.setDate(start.getDate() - offset);
+    if (isNaN(start.getTime()))
+      throw new BadRequestException("minggu tidak valid");
+
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+
+    const where: any = { tanggal: { gte: start, lte: end } };
+    if (teamId)
+      where.penugasan = {
+        kegiatan: { teamId },
+      };
+
+    const records = await this.prisma.laporanHarian.findMany({
+      where,
+      include: { pegawai: true },
+    });
+
+    const byUser: Record<
+      number,
+      { nama: string; selesai: number; total: number }
+    > = {};
+
+    for (const r of records) {
+      if (!byUser[r.pegawaiId])
+        byUser[r.pegawaiId] = { nama: r.pegawai.nama, selesai: 0, total: 0 };
+      byUser[r.pegawaiId].total += 1;
+      if (r.status === STATUS.SELESAI_DIKERJAKAN) byUser[r.pegawaiId].selesai += 1;
+    }
+
+    return Object.entries(byUser)
+      .map(([id, v]) => ({
+        userId: Number(id),
+        nama: v.nama,
+        selesai: v.selesai,
+        total: v.total,
+        persen: v.total ? Math.round((v.selesai / v.total) * 100) : 0,
+      }))
+      .sort((a, b) => a.nama.localeCompare(b.nama));
+  }
+
+  async bulananAll(year: string, teamId?: number) {
+    const yr = parseInt(year, 10);
+    if (isNaN(yr)) throw new BadRequestException("year tidak valid");
+
+    const where: any = { tahun: yr };
+    if (teamId) where.kegiatan = { teamId };
+
+    const tugas = await this.prisma.penugasan.findMany({
+      where,
+      include: { pegawai: true },
+    });
+
+    const byUser: Record<
+      number,
+      { nama: string; selesai: number; total: number }
+    > = {};
+
+    for (const t of tugas) {
+      if (!byUser[t.pegawaiId])
+        byUser[t.pegawaiId] = { nama: t.pegawai.nama, selesai: 0, total: 0 };
+      byUser[t.pegawaiId].total += 1;
+      if (t.status === STATUS.SELESAI_DIKERJAKAN) byUser[t.pegawaiId].selesai += 1;
+    }
+
+    return Object.entries(byUser)
+      .map(([id, v]) => ({
+        userId: Number(id),
+        nama: v.nama,
+        selesai: v.selesai,
+        total: v.total,
+        persen: v.total ? Math.round((v.selesai / v.total) * 100) : 0,
+      }))
+      .sort((a, b) => a.nama.localeCompare(b.nama));
+  }
 }
 
 function monthName(date: Date) {
