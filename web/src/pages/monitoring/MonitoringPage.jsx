@@ -124,34 +124,78 @@ export default function MonitoringPage() {
   }, [monthIndex, mergeWithUsers]);
 
   const renderRows = (data) => {
-    return data.map((d, i) => (
-      <tr
-        key={d.userId || i}
-        className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
-      >
-        <td className={tableStyles.cell}>{i + 1}</td>
-        <td className={tableStyles.cell}>{d.nama}</td>
-        <td className={tableStyles.cell}>{d.selesai}</td>
-        <td className={tableStyles.cell}>{d.total}</td>
-        <td className={tableStyles.cell}>{d.persen}%</td>
-      </tr>
-    ));
+    const colorFor = (p) => {
+      if (p >= 80) return "green";
+      if (p >= 50) return "yellow";
+      return "red";
+    };
+
+    return data.map((d, i) => {
+      const color = colorFor(d.persen);
+      const progressColor =
+        color === "green"
+          ? "bg-green-500"
+          : color === "yellow"
+          ? "bg-yellow-500"
+          : "bg-red-500";
+      const textColor =
+        color === "green"
+          ? "text-green-600"
+          : color === "yellow"
+          ? "text-yellow-600"
+          : "text-red-600";
+
+      return (
+        <tr
+          key={d.userId || i}
+          className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
+        >
+          <td className={tableStyles.cell}>{i + 1}</td>
+          <td className={tableStyles.cell}>{d.nama}</td>
+          <td className={tableStyles.cell}>{d.selesai}</td>
+          <td className={tableStyles.cell}>{d.total}</td>
+          <td className={`${tableStyles.cell} space-y-1`}>
+            <div
+              role="progressbar"
+              aria-valuenow={d.persen}
+              aria-valuemin="0"
+              aria-valuemax="100"
+              className="w-full bg-gray-200 dark:bg-gray-700 rounded h-2"
+            >
+              <div
+                className={`${progressColor} h-2 rounded`}
+                style={{ width: `${d.persen}%` }}
+              />
+            </div>
+            <span className={`text-xs font-medium ${textColor}`}>{d.persen}%</span>
+          </td>
+        </tr>
+      );
+    });
   };
 
-  const renderTable = (data) => (
-    <Table>
-      <thead>
-        <tr className={tableStyles.headerRow}>
-          <th className={tableStyles.cell}>No</th>
-          <th className={tableStyles.cell}>Nama</th>
-          <th className={tableStyles.cell}>Selesai</th>
-          <th className={tableStyles.cell}>Total</th>
-          <th className={tableStyles.cell}>%</th>
-        </tr>
-      </thead>
-      <tbody>{renderRows(data)}</tbody>
-    </Table>
-  );
+  const renderTable = (data) => {
+    const totalTasks = data.reduce((sum, d) => sum + d.total, 0);
+    return (
+      <>
+        <Table>
+          <thead>
+            <tr className={tableStyles.headerRow}>
+              <th className={tableStyles.cell}>No</th>
+              <th className={tableStyles.cell}>Nama</th>
+              <th className={tableStyles.cell}>Selesai</th>
+              <th className={tableStyles.cell}>Total</th>
+              <th className={tableStyles.cell}>%</th>
+            </tr>
+          </thead>
+          <tbody>{renderRows(data)}</tbody>
+        </Table>
+        <p className="text-sm text-right mt-2">
+          Total semua tugas: <span className="font-semibold">{totalTasks}</span>
+        </p>
+      </>
+    );
+  };
 
   const weekOptions = weekStarts.map((d, i) => {
     return {
