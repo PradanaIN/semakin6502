@@ -222,7 +222,7 @@ export default function KegiatanTambahanPage() {
                   <StatusBadge status={item.status} />
                 </td>
                 <td className={tableStyles.cell}>
-                  {item.bukti_dukung ? (
+                  {item.bukti_link ? (
                     <Check className="w-4 h-4 text-green-600" />
                   ) : (
                     <X className="w-4 h-4 text-red-600" />
