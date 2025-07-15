@@ -10,7 +10,6 @@ import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import Select from "react-select";
-import selectStyles from "../../utils/selectStyles";
 import { STATUS } from "../../utils/status";
 import Modal from "../../components/ui/Modal";
 import StatusBadge from "../../components/ui/StatusBadge";
@@ -23,8 +22,10 @@ export default function KegiatanTambahanPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [teams, setTeams] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
   const [form, setForm] = useState({
+    teamId: "",
     kegiatanId: "",
     tanggal: new Date().toISOString().slice(0, 10),
     status: STATUS.BELUM,
@@ -40,12 +41,14 @@ export default function KegiatanTambahanPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [tRes, kRes] = await Promise.all([
+      const [tRes, kRes, teamRes] = await Promise.all([
         axios.get("/kegiatan-tambahan"),
         axios.get("/master-kegiatan?limit=1000"),
+        axios.get("/teams"),
       ]);
       setItems(tRes.data);
       setKegiatan(kRes.data.data || kRes.data);
+      setTeams(teamRes.data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -60,6 +63,7 @@ export default function KegiatanTambahanPage() {
   const openCreate = () => {
     setEditing(null);
     setForm({
+      teamId: "",
       kegiatanId: "",
       tanggal: new Date().toISOString().slice(0, 10),
       status: STATUS.BELUM,
@@ -71,6 +75,7 @@ export default function KegiatanTambahanPage() {
   const openEdit = (item) => {
     setEditing(item);
     setForm({
+      teamId: item.teamId,
       kegiatanId: item.kegiatanId,
       tanggal: item.tanggal.slice(0, 10),
       status: item.status,
@@ -80,9 +85,10 @@ export default function KegiatanTambahanPage() {
   };
 
   const save = async () => {
-    if (!form.kegiatanId || !form.tanggal) return;
+    if (!form.teamId || !form.kegiatanId || !form.tanggal) return;
     try {
       const payload = { ...form };
+      delete payload.teamId;
       Object.keys(payload).forEach((k) => {
         if (payload[k] === "") delete payload[k];
       });
@@ -297,13 +303,14 @@ export default function KegiatanTambahanPage() {
               <select
                 id="teamId"
                 value={form.teamId}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const val = e.target.value;
                   setForm({
                     ...form,
-                    teamId: parseInt(e.target.value, 10),
+                    teamId: val === "" ? "" : parseInt(val, 10),
                     kegiatanId: "", // reset kegiatan jika tim berubah
-                  })
-                }
+                  });
+                }}
                 className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               >
                 <option value="">Tim</option>
@@ -343,7 +350,10 @@ export default function KegiatanTambahanPage() {
                   }),
                 }}
                 options={kegiatan
-                  .filter((k) => !form.teamId || k.team_id === form.teamId)
+                  .filter(
+                    (k) =>
+                      !form.teamId || Number(k.teamId) === Number(form.teamId)
+                  )
                   .map((k) => ({
                     value: k.id,
                     label: k.nama_kegiatan,
