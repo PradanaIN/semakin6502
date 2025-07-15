@@ -226,7 +226,11 @@ export default function MonitoringPage() {
       try {
         setLoading(true);
         const res = await axios.get("/monitoring/bulanan/matrix", {
-          params: { year, teamId: teamId || undefined },
+          params: {
+            year,
+            bulan: monthIndex + 1,
+            teamId: teamId || undefined,
+          },
         });
         setMonthlyData(mergeMonthlyMatrixWithUsers(res.data));
       } catch (err) {

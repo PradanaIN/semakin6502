@@ -346,11 +346,17 @@ export class MonitoringService {
       .sort((a, b) => a.nama.localeCompare(b.nama));
   }
 
-  async bulananAll(year: string, teamId?: number) {
+  async bulananAll(year: string, teamId?: number, bulan?: string) {
     const yr = parseInt(year, 10);
     if (isNaN(yr)) throw new BadRequestException("year tidak valid");
 
     const where: any = { tahun: yr };
+    if (bulan) {
+      const bln = parseInt(bulan, 10);
+      if (isNaN(bln) || bln < 1 || bln > 12)
+        throw new BadRequestException("bulan tidak valid");
+      where.bulan = String(bln);
+    }
     if (teamId) where.kegiatan = { teamId };
 
     const tugas = await this.prisma.penugasan.findMany({
