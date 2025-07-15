@@ -1,4 +1,4 @@
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useState, Fragment, useCallback } from "react";
 import axios from "axios";
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid";
@@ -22,6 +22,20 @@ export default function MonitoringPage() {
   const [weeklyData, setWeeklyData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const mergeWithUsers = useCallback(
+    (data) => {
+      const map = Object.fromEntries(data.map((d) => [d.userId, d]));
+      return users.map((u) => ({
+        userId: u.id,
+        nama: u.nama,
+        selesai: map[u.id]?.selesai || 0,
+        total: map[u.id]?.total || 0,
+        persen: map[u.id]?.persen || 0,
+      }));
+    },
+    [users],
+  );
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -58,10 +72,7 @@ export default function MonitoringPage() {
         const res = await axios.get("/monitoring/harian/all", {
           params: { tanggal },
         });
-        const map = Object.fromEntries(users.map((u) => [u.id, u.nama]));
-        setDailyData(
-          res.data.map((d) => ({ ...d, nama: d.nama || map[d.userId] || "-" }))
-        );
+        setDailyData(mergeWithUsers(res.data));
       } catch (err) {
         console.error(err);
       } finally {
@@ -69,7 +80,7 @@ export default function MonitoringPage() {
       }
     };
     fetchDaily();
-  }, [tanggal, users]);
+  }, [tanggal, mergeWithUsers]);
 
   useEffect(() => {
     if (!weekStarts.length) return;
@@ -80,10 +91,7 @@ export default function MonitoringPage() {
         const res = await axios.get("/monitoring/mingguan/all", {
           params: { minggu },
         });
-        const map = Object.fromEntries(users.map((u) => [u.id, u.nama]));
-        setWeeklyData(
-          res.data.map((d) => ({ ...d, nama: d.nama || map[d.userId] || "-" }))
-        );
+        setWeeklyData(mergeWithUsers(res.data));
       } catch (err) {
         console.error(err);
       } finally {
@@ -91,7 +99,7 @@ export default function MonitoringPage() {
       }
     };
     fetchWeekly();
-  }, [weekIndex, weekStarts, users]);
+  }, [weekIndex, weekStarts, mergeWithUsers]);
 
   useEffect(() => {
     const fetchMonthly = async () => {
@@ -101,10 +109,7 @@ export default function MonitoringPage() {
         const res = await axios.get("/monitoring/bulanan/all", {
           params: { year },
         });
-        const map = Object.fromEntries(users.map((u) => [u.id, u.nama]));
-        setMonthlyData(
-          res.data.map((d) => ({ ...d, nama: d.nama || map[d.userId] || "-" }))
-        );
+        setMonthlyData(mergeWithUsers(res.data));
       } catch (err) {
         console.error(err);
       } finally {
@@ -112,7 +117,7 @@ export default function MonitoringPage() {
       }
     };
     fetchMonthly();
-  }, [monthIndex, users]);
+  }, [monthIndex, mergeWithUsers]);
 
   const renderRows = (data) => {
     return data.map((d, i) => (
