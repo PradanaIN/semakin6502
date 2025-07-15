@@ -33,7 +33,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
             onClick={() => onPageChange(p)}
             className={`px-3 py-1 rounded-full ${
               currentPage === p
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-600 text-white dark:bg-blue-700"
                 : "border bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
             }`}
           >
