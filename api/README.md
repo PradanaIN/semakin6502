@@ -1,6 +1,3 @@
-| GET    | `/monitoring/harian/all`   | Monitoring harian semua pegawai (query: `tanggal`, `teamId` opsional) | admin, pimpinan, ketua tim |
-| GET    | `/monitoring/mingguan/all` | Monitoring mingguan semua pegawai (query: `minggu`, `teamId` opsional) | admin, pimpinan, ketua tim |
-| GET    | `/monitoring/bulanan/all`  | Monitoring bulanan semua pegawai (query: `year`, `teamId` opsional) | admin, pimpinan, ketua tim |
 # 📦 SEMAKIN 6502 API (Backend)
 
 Ini adalah backend resmi dari aplikasi **SEMAKIN 6502** (Sistem Evaluasi dan Monitoring Kinerja), dibangun dengan **NestJS**, **Prisma ORM**, dan **MySQL**.
