@@ -54,7 +54,7 @@ const MonitoringTabs = ({
         {tab === "mingguan" && (
           <div className="ml-auto flex gap-2">
             <select
-              className="border rounded-md px-2 py-1 bg-gray-100 dark:bg-gray-700"
+              className="border rounded-md px-2 py-1 bg-gray-100 dark:bg-gray-700 text-center"
               value={monthIndex}
               onChange={(e) => onMonthChange?.(parseInt(e.target.value, 10))}
             >
@@ -66,7 +66,7 @@ const MonitoringTabs = ({
             </select>
             {weeklyList.length > 0 && (
               <select
-                className="border rounded-md px-2 py-1 bg-gray-100 dark:bg-gray-700"
+                className="border rounded-md px-2 py-1 bg-gray-100 dark:bg-gray-700 text-center"
                 value={weekIndex}
                 onChange={(e) => onWeekChange?.(parseInt(e.target.value, 10))}
               >

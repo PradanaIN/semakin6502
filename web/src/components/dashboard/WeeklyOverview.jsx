@@ -17,26 +17,22 @@ const WeeklyOverview = ({ data }) => {
 
   return (
     <div className="space-y-4">
+      <h2 className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-1">
+        Progress Mingguan
+      </h2>
       <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-        <h2 className="text-xl font-semibold text-blue-600 dark:text-blue-400 mb-1">
-          Progress Mingguan
-        </h2>
-        <div className="mt-2">
-          <div className="flex justify-between text-sm font-medium">
-            <span className="text-blue-700 dark:text-blue-300">
-              {rangeText}
-            </span>
-            <span className="text-gray-600 dark:text-gray-300">
-              {data.totalProgress}% selesai ({data.totalSelesai}/
-              {data.totalTugas})
-            </span>
-          </div>
-          <div className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-full mt-1">
-            <div
-              className="h-2 bg-blue-500 rounded-full"
-              style={{ width: `${data.totalProgress}%` }}
-            />
-          </div>
+        <div className="flex justify-between text-sm font-medium">
+          <span className="text-blue-700 dark:text-blue-300">{rangeText}</span>
+          <span className="text-gray-600 dark:text-gray-300">
+            {data.totalProgress}% selesai ({data.totalSelesai}/{data.totalTugas}
+            )
+          </span>
+        </div>
+        <div className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-full mt-1">
+          <div
+            className="h-2 bg-blue-500 rounded-full"
+            style={{ width: `${data.totalProgress}%` }}
+          />
         </div>
       </div>
 

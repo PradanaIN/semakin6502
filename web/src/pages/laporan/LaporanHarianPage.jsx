@@ -134,10 +134,12 @@ export default function LaporanHarianPage() {
               <thead>
                 <tr className={tableStyles.headerRow}>
                   <th className={tableStyles.cell}>No</th>
+                  <th className={tableStyles.cell}>Kegiatan</th>
+                  <th className={tableStyles.cell}>Tim</th>
+                  <th className={tableStyles.cell}>Deskripsi</th>
                   <th className={tableStyles.cell}>Tanggal</th>
                   <th className={tableStyles.cell}>Status</th>
                   <th className={tableStyles.cell}>Bukti</th>
-                  <th className={tableStyles.cell}>Catatan</th>
                   <th className={tableStyles.cell}>Aksi</th>
                 </tr>
               </thead>
@@ -151,23 +153,25 @@ export default function LaporanHarianPage() {
                       {(currentPage - 1) * pageSize + idx + 1}
                     </td>
                     <td className={tableStyles.cell}>
+                      {item.penugasan?.kegiatan?.nama_kegiatan || "-"}
+                    </td>
+                    <td className={tableStyles.cell}>
+                      {item.penugasan?.tim?.nama_tim || "-"}
+                    </td>
+                    <td className={tableStyles.cell}>
+                      {item.penugasan?.kegiatan?.deskripsi || "-"}
+                    </td>
+                    <td className={tableStyles.cell}>
                       {item.tanggal.slice(0, 10)}
                     </td>
                     <td className={tableStyles.cell}>
                       <StatusBadge status={item.status} />
                     </td>
                     <td className={tableStyles.cell}>
-                      {item.bukti_link ? (
-                        <a
-                          href={item.bukti_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 underline dark:text-blue-400"
-                        >
-                          Lihat
-                        </a>
+                      {item.bukti_dukung ? (
+                        <Check className="w-4 h-4 text-green-600" />
                       ) : (
-                        "-"
+                        <X className="w-4 h-4 text-red-600" />
                       )}
                     </td>
                     <td className={tableStyles.cell}>{item.catatan || "-"}</td>
@@ -194,7 +198,7 @@ export default function LaporanHarianPage() {
                 {laporan.length === 0 && (
                   <tr>
                     <td
-                      colSpan={6}
+                      colSpan={8}
                       className="text-center py-4 text-gray-500 dark:text-gray-400"
                     >
                       Tidak ada laporan

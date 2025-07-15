@@ -208,8 +208,8 @@ export default function UsersPage() {
                 <td className={`${tableStyles.cell} text-center`}>
                   {(currentPage - 1) * pageSize + idx + 1}
                 </td>
-                <td className={tableStyles.cell}>{u.nama}</td>
-                <td className={`${tableStyles.cell} text`}>{u.email}</td>
+                <td className={`${tableStyles.cell} text-center`}>{u.nama}</td>
+                <td className={`${tableStyles.cell} text-center`}>{u.email}</td>
                 <td className={`${tableStyles.cell} text-center`}>
                   {u.members?.[0]?.team?.nama_tim || "-"}
                 </td>
