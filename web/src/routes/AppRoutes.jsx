@@ -28,7 +28,7 @@ export default function AppRoutes() {
   const { token, user } = useAuth();
 
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Loading fullScreen />}>
     <Routes>
       {/* Login tidak pakai layout */}
       <Route
