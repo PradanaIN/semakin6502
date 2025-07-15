@@ -8,4 +8,5 @@ import { PrismaService } from "../prisma.service";
   providers: [PrismaService, MonitoringService],
   exports: [MonitoringService],
 })
+// Module providing monitoring related services
 export class MonitoringModule {}
