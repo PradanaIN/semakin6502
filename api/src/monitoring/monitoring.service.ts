@@ -346,11 +346,17 @@ export class MonitoringService {
       .sort((a, b) => a.nama.localeCompare(b.nama));
   }
 
-  async bulananAll(year: string, teamId?: number) {
+  async bulananAll(year: string, teamId?: number, bulan?: string) {
     const yr = parseInt(year, 10);
     if (isNaN(yr)) throw new BadRequestException("year tidak valid");
 
     const where: any = { tahun: yr };
+    if (bulan) {
+      const bln = parseInt(bulan, 10);
+      if (isNaN(bln) || bln < 1 || bln > 12)
+        throw new BadRequestException("bulan tidak valid");
+      where.bulan = String(bln);
+    }
     if (teamId) where.kegiatan = { teamId };
 
     const tugas = await this.prisma.penugasan.findMany({
@@ -378,6 +384,46 @@ export class MonitoringService {
         total: v.total,
         persen: v.total ? Math.round((v.selesai / v.total) * 100) : 0,
       }))
+      .sort((a, b) => a.nama.localeCompare(b.nama));
+  }
+
+  async bulananMatrix(year: string, teamId?: number) {
+    const yr = parseInt(year, 10);
+    if (isNaN(yr)) throw new BadRequestException("year tidak valid");
+
+    const where: any = { tahun: yr };
+    if (teamId) where.kegiatan = { teamId };
+
+    const tugas = await this.prisma.penugasan.findMany({
+      where,
+      include: { pegawai: true },
+    });
+
+    const byUser: Record<
+      number,
+      { nama: string; perMonth: Record<number, { selesai: number; total: number }> }
+    > = {};
+
+    for (const t of tugas) {
+      const idx = parseInt(t.bulan, 10) - 1;
+      if (!byUser[t.pegawaiId])
+        byUser[t.pegawaiId] = { nama: t.pegawai.nama, perMonth: {} };
+      if (!byUser[t.pegawaiId].perMonth[idx])
+        byUser[t.pegawaiId].perMonth[idx] = { selesai: 0, total: 0 };
+      byUser[t.pegawaiId].perMonth[idx].total += 1;
+      if (t.status === STATUS.SELESAI_DIKERJAKAN)
+        byUser[t.pegawaiId].perMonth[idx].selesai += 1;
+    }
+
+    return Object.entries(byUser)
+      .map(([id, v]) => {
+        const months = MONTHS.map((_, i) => {
+          const m = v.perMonth[i] || { selesai: 0, total: 0 };
+          const persen = m.total ? Math.round((m.selesai / m.total) * 100) : 0;
+          return { selesai: m.selesai, total: m.total, persen };
+        });
+        return { userId: Number(id), nama: v.nama, months };
+      })
       .sort((a, b) => a.nama.localeCompare(b.nama));
   }
 }

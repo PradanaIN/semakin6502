@@ -38,15 +38,15 @@ describe('MonitoringService aggregated', () => {
     ]);
   });
 
-  it('bulananAll aggregates and sorts', async () => {
+  it('bulananAll aggregates and can filter by month', async () => {
     prisma.penugasan.findMany.mockResolvedValue([
-      { pegawaiId: 2, status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'B' } },
-      { pegawaiId: 1, status: STATUS.BELUM, pegawai: { nama: 'A' } },
-      { pegawaiId: 1, status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'A' } },
+      { pegawaiId: 2, bulan: '1', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'B' } },
+      { pegawaiId: 1, bulan: '2', status: STATUS.BELUM, pegawai: { nama: 'A' } },
+      { pegawaiId: 1, bulan: '1', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'A' } },
     ]);
-    const res = await service.bulananAll('2024');
+    const res = await service.bulananAll('2024', undefined, '1');
     expect(res).toEqual([
-      { userId: 1, nama: 'A', selesai: 1, total: 2, persen: 50 },
+      { userId: 1, nama: 'A', selesai: 1, total: 1, persen: 100 },
       { userId: 2, nama: 'B', selesai: 1, total: 1, persen: 100 },
     ]);
   });
@@ -106,6 +106,51 @@ describe('MonitoringService aggregated', () => {
           { selesai: 1, total: 1, persen: 100 },
           { selesai: 0, total: 0, persen: 0 },
           { selesai: 0, total: 0, persen: 0 },
+        ],
+      },
+    ]);
+  });
+
+  it('bulananMatrix aggregates per month', async () => {
+    prisma.penugasan.findMany.mockResolvedValue([
+      {
+        pegawaiId: 1,
+        bulan: '1',
+        status: STATUS.SELESAI_DIKERJAKAN,
+        pegawai: { nama: 'A' },
+      },
+      {
+        pegawaiId: 1,
+        bulan: '2',
+        status: STATUS.BELUM,
+        pegawai: { nama: 'A' },
+      },
+      {
+        pegawaiId: 2,
+        bulan: '1',
+        status: STATUS.SELESAI_DIKERJAKAN,
+        pegawai: { nama: 'B' },
+      },
+    ]);
+
+    const res = await service.bulananMatrix('2024');
+    const zero = { selesai: 0, total: 0, persen: 0 };
+    expect(res).toEqual([
+      {
+        userId: 1,
+        nama: 'A',
+        months: [
+          { selesai: 1, total: 1, persen: 100 },
+          { selesai: 0, total: 1, persen: 0 },
+          ...Array(10).fill(zero),
+        ],
+      },
+      {
+        userId: 2,
+        nama: 'B',
+        months: [
+          { selesai: 1, total: 1, persen: 100 },
+          ...Array(11).fill(zero),
         ],
       },
     ]);

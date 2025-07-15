@@ -104,6 +104,9 @@ Server berjalan di: `http://localhost:3000`
 | GET    | `/monitoring/mingguan/all` | Monitoring mingguan semua pegawai (query: `minggu`, `teamId` opsional) | admin, pimpinan, ketua tim |
 | GET    | `/monitoring/mingguan/bulan` | Rekap mingguan per pegawai dalam sebulan (query: `tanggal`, `teamId` opsional) | admin, pimpinan, ketua tim |
 | GET    | `/monitoring/bulanan/all`  | Monitoring bulanan semua pegawai (query: `year`, `teamId` opsional) | admin, pimpinan, ketua tim |
+| GET    | `/monitoring/bulanan/matrix` | Matriks bulanan per user (query: `year`, `teamId` opsional) | admin, pimpinan, ketua tim |
+
+Format hasil: array per pengguna, masing-masing memiliki array 12 objek bulan.
 
 ---
 
