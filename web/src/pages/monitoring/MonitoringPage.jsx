@@ -11,9 +11,7 @@ export default function MonitoringPage() {
   const [tab, setTab] = useState("harian");
   const [users, setUsers] = useState([]);
 
-  const [tanggal, setTanggal] = useState(
-    new Date().toISOString().slice(0, 10),
-  );
+  const [tanggal, setTanggal] = useState(new Date().toISOString().slice(0, 10));
   const [monthIndex, setMonthIndex] = useState(new Date().getMonth());
   const [weekIndex, setWeekIndex] = useState(0);
   const [weekStarts, setWeekStarts] = useState([]);
@@ -42,9 +40,15 @@ export default function MonitoringPage() {
     const firstOfMonth = new Date(year, monthIndex, 1);
     const monthEnd = new Date(year, monthIndex + 1, 0);
     const firstMonday = new Date(firstOfMonth);
-    firstMonday.setDate(firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7));
+    firstMonday.setDate(
+      firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
+    );
     const starts = [];
-    for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+    for (
+      let d = new Date(firstMonday);
+      d <= monthEnd;
+      d.setDate(d.getDate() + 7)
+    ) {
       starts.push(new Date(d));
     }
     setWeekStarts(starts);
@@ -157,7 +161,7 @@ export default function MonitoringPage() {
       <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow">
         <div className="flex flex-wrap justify-between items-center mb-4">
           <div className="flex flex-wrap gap-2" role="tablist">
-            {['harian', 'mingguan', 'bulanan'].map((t) => (
+            {["harian", "mingguan", "bulanan"].map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
@@ -165,8 +169,8 @@ export default function MonitoringPage() {
                 aria-selected={tab === t}
                 className={`px-4 py-2 rounded-lg font-semibold ${
                   tab === t
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100'
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100"
                 }`}
               >
                 {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -174,22 +178,36 @@ export default function MonitoringPage() {
             ))}
           </div>
 
-          {tab === 'harian' && (
-            <DateFilter tanggal={tanggal} setTanggal={setTanggal} setCurrentPage={() => {}} />
+          {tab === "harian" && (
+            <DateFilter
+              tanggal={tanggal}
+              setTanggal={setTanggal}
+              setCurrentPage={() => {}}
+            />
           )}
 
-          {tab === 'mingguan' && (
+          {tab === "mingguan" && (
             <div className="flex gap-4 w-full sm:w-auto mt-4 sm:mt-0">
               <div className="w-36">
                 <Listbox value={monthIndex} onChange={setMonthIndex}>
                   <div className="relative mt-1">
                     <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-gray-50 dark:bg-gray-800 py-2 pl-4 pr-10 text-center border border-gray-300 dark:border-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-                      <span className="block truncate">{months[monthIndex]}</span>
+                      <span className="block truncate">
+                        {months[monthIndex]}
+                      </span>
                       <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                        <ChevronUpDownIcon
+                          className="h-5 w-5 text-gray-400"
+                          aria-hidden="true"
+                        />
                       </span>
                     </Listbox.Button>
-                    <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
+                    <Transition
+                      as={Fragment}
+                      leave="transition ease-in duration-100"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0"
+                    >
                       <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-50">
                         {months.map((m, i) => (
                           <Listbox.Option
@@ -197,16 +215,27 @@ export default function MonitoringPage() {
                             value={i}
                             className={({ active }) =>
                               `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
-                                active ? 'bg-blue-100 dark:bg-gray-600 text-blue-900 dark:text-white' : 'text-gray-900 dark:text-gray-100'
+                                active
+                                  ? "bg-blue-100 dark:bg-gray-600 text-blue-900 dark:text-white"
+                                  : "text-gray-900 dark:text-gray-100"
                               }`
                             }
                           >
                             {({ selected }) => (
                               <>
-                                <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{m}</span>
+                                <span
+                                  className={`block truncate ${
+                                    selected ? "font-medium" : "font-normal"
+                                  }`}
+                                >
+                                  {m}
+                                </span>
                                 {selected && (
                                   <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 dark:text-blue-400">
-                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                    <CheckIcon
+                                      className="h-5 w-5"
+                                      aria-hidden="true"
+                                    />
                                   </span>
                                 )}
                               </>
@@ -224,12 +253,22 @@ export default function MonitoringPage() {
                   <Listbox value={weekIndex} onChange={setWeekIndex}>
                     <div className="relative mt-1">
                       <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-gray-50 dark:bg-gray-800 py-2 pl-4 pr-10 text-center border border-gray-300 dark:border-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-                        <span className="block truncate">{weekOptions[weekIndex]?.label}</span>
+                        <span className="block truncate">
+                          {weekOptions[weekIndex]?.label}
+                        </span>
                         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                          <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                          <ChevronUpDownIcon
+                            className="h-5 w-5 text-gray-400"
+                            aria-hidden="true"
+                          />
                         </span>
                       </Listbox.Button>
-                      <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
+                      <Transition
+                        as={Fragment}
+                        leave="transition ease-in duration-100"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                      >
                         <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-50">
                           {weekOptions.map((w) => (
                             <Listbox.Option
@@ -237,16 +276,27 @@ export default function MonitoringPage() {
                               value={w.value}
                               className={({ active }) =>
                                 `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
-                                  active ? 'bg-blue-100 dark:bg-gray-600 text-blue-900 dark:text-white' : 'text-gray-900 dark:text-gray-100'
+                                  active
+                                    ? "bg-blue-100 dark:bg-gray-600 text-blue-900 dark:text-white"
+                                    : "text-gray-900 dark:text-gray-100"
                                 }`
                               }
                             >
                               {({ selected }) => (
                                 <>
-                                  <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{w.label}</span>
+                                  <span
+                                    className={`block truncate ${
+                                      selected ? "font-medium" : "font-normal"
+                                    }`}
+                                  >
+                                    {w.label}
+                                  </span>
                                   {selected && (
                                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 dark:text-blue-400">
-                                      <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                      <CheckIcon
+                                        className="h-5 w-5"
+                                        aria-hidden="true"
+                                      />
                                     </span>
                                   )}
                                 </>
@@ -262,17 +312,25 @@ export default function MonitoringPage() {
             </div>
           )}
 
-          {tab === 'bulanan' && (
+          {tab === "bulanan" && (
             <div className="w-36 mt-4 sm:mt-0">
               <Listbox value={monthIndex} onChange={setMonthIndex}>
                 <div className="relative mt-1">
                   <Listbox.Button className="relative w-full cursor-pointer rounded-lg bg-gray-50 dark:bg-gray-800 py-2 pl-4 pr-10 text-center border border-gray-300 dark:border-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out">
                     <span className="block truncate">{months[monthIndex]}</span>
                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                      <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                      <ChevronUpDownIcon
+                        className="h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
                     </span>
                   </Listbox.Button>
-                  <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
+                  <Transition
+                    as={Fragment}
+                    leave="transition ease-in duration-100"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
                     <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-50">
                       {months.map((m, i) => (
                         <Listbox.Option
@@ -280,16 +338,27 @@ export default function MonitoringPage() {
                           value={i}
                           className={({ active }) =>
                             `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
-                              active ? 'bg-blue-100 dark:bg-gray-600 text-blue-900 dark:text-white' : 'text-gray-900 dark:text-gray-100'
+                              active
+                                ? "bg-blue-100 dark:bg-gray-600 text-blue-900 dark:text-white"
+                                : "text-gray-900 dark:text-gray-100"
                             }`
                           }
                         >
                           {({ selected }) => (
                             <>
-                              <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{m}</span>
+                              <span
+                                className={`block truncate ${
+                                  selected ? "font-medium" : "font-normal"
+                                }`}
+                              >
+                                {m}
+                              </span>
                               {selected && (
                                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 dark:text-blue-400">
-                                  <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                  <CheckIcon
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
                                 </span>
                               )}
                             </>
@@ -308,13 +377,12 @@ export default function MonitoringPage() {
           <div>Memuat...</div>
         ) : (
           <div>
-            {tab === 'harian' && renderTable(dailyData)}
-            {tab === 'mingguan' && renderTable(weeklyData)}
-            {tab === 'bulanan' && renderTable(monthlyData)}
+            {tab === "harian" && renderTable(dailyData)}
+            {tab === "mingguan" && renderTable(weeklyData)}
+            {tab === "bulanan" && renderTable(monthlyData)}
           </div>
         )}
       </div>
     </div>
   );
 }
-
