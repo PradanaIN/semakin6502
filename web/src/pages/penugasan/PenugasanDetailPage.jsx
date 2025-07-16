@@ -166,7 +166,15 @@ export default function PenugasanDetailPage() {
       navigate(-1);
     } catch (err) {
       console.error(err);
-      showError("Error", "Gagal menghapus");
+      if (err?.response?.status === 403) {
+        showError(
+          "Tidak diizinkan",
+          "Hanya admin atau ketua tim yang dapat menghapus penugasan."
+        );
+      } else {
+        const msg = err?.response?.data?.message || "Gagal menghapus";
+        showError("Error", msg);
+      }
     }
   };
 
