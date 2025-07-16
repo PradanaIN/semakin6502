@@ -10,6 +10,9 @@ export class SubmitLaporanDto {
   @IsString()
   status!: string;
 
+  @IsString()
+  deskripsi!: string;
+
   @IsOptional()
   @IsString()
   bukti_link?: string;

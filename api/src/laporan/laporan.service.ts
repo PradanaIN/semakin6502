@@ -25,6 +25,7 @@ export class LaporanService {
         pegawaiId: data.pegawaiId,
         tanggal: new Date(data.tanggal),
         status: data.status,
+        deskripsi: data.deskripsi,
         bukti_link: data.bukti_link || undefined,
         catatan: data.catatan || undefined,
       },
@@ -89,6 +90,7 @@ export class LaporanService {
       data: {
         tanggal: new Date(data.tanggal),
         status: data.status,
+        deskripsi: data.deskripsi,
         bukti_link: data.bukti_link,
         catatan: data.catatan,
       },
