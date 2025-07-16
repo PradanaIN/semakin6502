@@ -272,7 +272,9 @@ export default function PenugasanDetailPage() {
               styles={selectStyles}
               menuPortalTarget={document.body}
               options={users
-                .filter((u) => u.role !== ROLES.ADMIN)
+                .filter(
+                  (u) => u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN
+                )
                 .map((u) => ({ value: u.id, label: u.nama }))}
               value={{
                 value: form.pegawaiId,
