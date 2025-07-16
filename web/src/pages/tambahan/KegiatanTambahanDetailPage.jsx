@@ -5,6 +5,7 @@ import {
   showSuccess,
   showError,
   confirmDelete,
+  confirmCancel,
 } from "../../utils/alerts";
 import { Pencil, Trash2 } from "lucide-react";
 import Select from "react-select";
@@ -244,7 +245,13 @@ export default function KegiatanTambahanDetailPage() {
             </select>
           </div>
           <div className="flex justify-end space-x-2 pt-2">
-            <Button variant="secondary" onClick={() => setEditing(false)}>
+            <Button
+              variant="secondary"
+              onClick={async () => {
+                const r = await confirmCancel("Batalkan perubahan?");
+                if (r.isConfirmed) setEditing(false);
+              }}
+            >
               Batal
             </Button>
             <Button onClick={save}>Simpan</Button>
