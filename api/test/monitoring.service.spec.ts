@@ -38,15 +38,19 @@ describe('MonitoringService aggregated', () => {
     ]);
   });
 
-  it('bulananAll aggregates and can filter by month', async () => {
+  it('bulananAll aggregates and passes bulan filter', async () => {
     prisma.penugasan.findMany.mockResolvedValue([
       { pegawaiId: 2, bulan: '1', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'B' } },
-      { pegawaiId: 1, bulan: '2', status: STATUS.BELUM, pegawai: { nama: 'A' } },
+      { pegawaiId: 1, bulan: '1', status: STATUS.BELUM, pegawai: { nama: 'A' } },
       { pegawaiId: 1, bulan: '1', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'A' } },
     ]);
-    const res = await service.bulananAll('2024', undefined, '1');
+    const res = await service.bulananAll('2024', 3, '1');
+    expect(prisma.penugasan.findMany).toHaveBeenCalledWith({
+      where: { tahun: 2024, bulan: '1', kegiatan: { teamId: 3 } },
+      include: { pegawai: true },
+    });
     expect(res).toEqual([
-      { userId: 1, nama: 'A', selesai: 1, total: 1, persen: 100 },
+      { userId: 1, nama: 'A', selesai: 1, total: 2, persen: 50 },
       { userId: 2, nama: 'B', selesai: 1, total: 1, persen: 100 },
     ]);
   });
