@@ -2,9 +2,9 @@ import Spinner from "./Spinner";
 
 export default function Loading({ fullScreen = false }) {
   const content = (
-    <div className="flex flex-col items-center space-y-3 animate-fade-in">
-      <Spinner className="h-8 w-8 text-primary-500 animate-pulse" />
-      <div className="text-gray-700 dark:text-gray-300 font-medium">
+    <div className="flex flex-col items-center space-y-4 animate-fade-in">
+      <Spinner className="h-10 w-10 text-primary-500 animate-pulse drop-shadow" />
+      <div className="text-lg font-medium text-gray-700 dark:text-gray-300 tracking-wide transition-colors">
         Sabar, ambil nafas dulu...
       </div>
     </div>
