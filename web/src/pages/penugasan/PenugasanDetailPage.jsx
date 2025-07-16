@@ -4,7 +4,7 @@ import axios from "axios";
 import { showSuccess, showError, confirmDelete } from "../../utils/alerts";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Plus } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 import { STATUS } from "../../utils/status";
@@ -365,7 +365,8 @@ export default function PenugasanDetailPage() {
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Laporan Harian</h3>
           <Button onClick={openLaporan} className="px-3 py-1">
-            Tambah
+            <Plus size={16} className="sm:mr-1" />
+            <span className="hidden sm:inline">Tambah Laporan</span>
           </Button>
         </div>
         <Table className="min-w-full">
