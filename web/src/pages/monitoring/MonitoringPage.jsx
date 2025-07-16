@@ -24,7 +24,7 @@ export default function MonitoringPage() {
   const [year, setYear] = useState(new Date().getFullYear());
 
   const [dailyData, setDailyData] = useState([]);
-  const [, setWeeklyData] = useState([]);
+  const [setWeeklyData] = useState([]);
   const [weeklyMonthData, setWeeklyMonthData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(false);

@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
-import { FaTimes } from "react-icons/fa";
+import { ChevronLeft } from "lucide-react";
 import {
   LayoutDashboard,
   ClipboardList,
@@ -18,9 +18,24 @@ export default function Sidebar({ setSidebarOpen }) {
 
   const mainLinks = [
     { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: true },
-    { to: "/tugas-mingguan", label: "Tugas Mingguan", icon: ClipboardList, show: true },
-    { to: "/kegiatan-tambahan", label: "Tugas Tambahan", icon: FilePlus, show: true },
-    { to: "/laporan-harian", label: "Laporan Harian", icon: FileText, show: true },
+    {
+      to: "/tugas-mingguan",
+      label: "Tugas Mingguan",
+      icon: ClipboardList,
+      show: true,
+    },
+    {
+      to: "/kegiatan-tambahan",
+      label: "Tugas Tambahan",
+      icon: FilePlus,
+      show: true,
+    },
+    {
+      to: "/laporan-harian",
+      label: "Laporan Harian",
+      icon: FileText,
+      show: true,
+    },
     {
       to: "/monitoring",
       label: "Monitoring",
@@ -36,8 +51,18 @@ export default function Sidebar({ setSidebarOpen }) {
       icon: List,
       show: [ROLES.ADMIN, ROLES.KETUA].includes(user?.role),
     },
-    { to: "/users", label: "Kelola Pengguna", icon: Users, show: user?.role === ROLES.ADMIN },
-    { to: "/teams", label: "Kelola Tim", icon: UserCog, show: user?.role === ROLES.ADMIN },
+    {
+      to: "/users",
+      label: "Kelola Pengguna",
+      icon: Users,
+      show: user?.role === ROLES.ADMIN,
+    },
+    {
+      to: "/teams",
+      label: "Kelola Tim",
+      icon: UserCog,
+      show: user?.role === ROLES.ADMIN,
+    },
   ];
 
   const renderLink = (link) => {
@@ -74,11 +99,20 @@ export default function Sidebar({ setSidebarOpen }) {
         {manageLinks.filter((l) => l.show).map(renderLink)}
       </nav>
       <button
-        className="mt-auto flex items-center justify-center text-xl text-gray-700 dark:text-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ring-blue-500"
+        className="mt-auto flex items-center justify-center
+    text-lg text-blue-700 dark:text-white
+    font-semibold  bg-white dark:bg-gray-800
+    rounded-full px-4 py-2
+    bg-gradient-to-tr from-blue-100 to-blue-50 dark:from-blue-900 dark:to-blue-800
+    hover:from-blue-200 hover:to-blue-100 dark:hover:from-blue-800 dark:hover:to-blue-700
+    shadow-sm hover:shadow-md
+    focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500
+    transition-all duration-200 ease-in-out"
         onClick={() => setSidebarOpen(false)}
-        aria-label="Close menu"
+        aria-label="Tutup menu"
       >
-        <FaTimes />
+        <ChevronLeft className="w-5 h-5" />
+        <span className="ml-2 text-sm">Tutup Sidebar</span>
       </button>
     </aside>
   );
