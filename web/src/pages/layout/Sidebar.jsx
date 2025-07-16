@@ -63,13 +63,6 @@ export default function Sidebar({ setSidebarOpen }) {
 
   return (
     <aside className="relative h-full w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 p-4 shadow-md overflow-y-auto flex flex-col">
-      <button
-        className="md:hidden absolute top-2 right-2 text-xl text-gray-700 dark:text-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ring-blue-500"
-        onClick={() => setSidebarOpen(false)}
-        aria-label="Close menu"
-      >
-        <FaTimes />
-      </button>
       <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-6 text-center">
         SEMAKIN 6502
       </div>
@@ -80,6 +73,13 @@ export default function Sidebar({ setSidebarOpen }) {
         )}
         {manageLinks.filter((l) => l.show).map(renderLink)}
       </nav>
+      <button
+        className="mt-auto flex items-center justify-center text-xl text-gray-700 dark:text-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ring-blue-500"
+        onClick={() => setSidebarOpen(false)}
+        aria-label="Close menu"
+      >
+        <FaTimes />
+      </button>
     </aside>
   );
 }
