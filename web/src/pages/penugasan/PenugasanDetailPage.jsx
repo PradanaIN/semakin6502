@@ -1,7 +1,12 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { showSuccess, showError, confirmDelete } from "../../utils/alerts";
+import {
+  showSuccess,
+  showError,
+  confirmDelete,
+  confirmCancel,
+} from "../../utils/alerts";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
 import { Pencil, Trash2, Plus } from "lucide-react";
@@ -366,7 +371,13 @@ export default function PenugasanDetailPage() {
             </div>
           </div>
           <div className="flex justify-end space-x-2 pt-2">
-            <Button variant="secondary" onClick={() => setEditing(false)}>
+            <Button
+              variant="secondary"
+              onClick={async () => {
+                const r = await confirmCancel("Batalkan perubahan?");
+                if (r.isConfirmed) setEditing(false);
+              }}
+            >
               Batal
             </Button>
             <Button onClick={save}>Simpan</Button>
