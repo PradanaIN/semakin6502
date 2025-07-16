@@ -580,6 +580,7 @@ export default function MonitoringPage() {
                 <MonthlyMatrix data={monthlyData} />
               ) : (
                 <div className="text-center py-4">Tidak ada data</div>
+              ))}
           </div>
         )}
       </div>

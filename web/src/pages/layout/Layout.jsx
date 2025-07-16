@@ -22,7 +22,7 @@ export default function Layout() {
   const { user, setToken, setUser } = useAuth();
   const location = useLocation();
 
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [notifCount, setNotifCount] = useState(3);
   const [notifications, setNotifications] = useState([
     { id: 1, text: "Laporan harian belum dikirim", read: false },
@@ -87,18 +87,17 @@ export default function Layout() {
     <div className="h-screen overflow-hidden flex text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-900">
       {/* Sidebar */}
       <div
-        className={`fixed md:static top-0 left-0 z-40 h-full transition-transform duration-300 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 w-64`}
+        className={`fixed md:static top-0 left-0 z-40 h-full overflow-hidden transition-all duration-300 w-64 ${
+          sidebarOpen ? "translate-x-0 md:w-64" : "-translate-x-full md:w-0"
+        } md:translate-x-0`}
       >
-        <Sidebar setMobileOpen={setMobileOpen} />
+        <Sidebar setSidebarOpen={setSidebarOpen} />
       </div>
 
       {/* Overlay untuk mobile */}
-      {mobileOpen && (
+      {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black opacity-30 z-30 md:hidden"
-          onClick={() => setMobileOpen(false)}
         />
       )}
 
@@ -108,11 +107,11 @@ export default function Layout() {
         <div className="flex items-center justify-between gap-2 p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex-shrink-0">
           <div className="flex items-center space-x-3">
             <button
-              className="md:hidden text-xl text-gray-700 dark:text-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ring-blue-500"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              className={`text-xl text-gray-700 dark:text-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ring-blue-500 ${sidebarOpen ? "hidden" : ""}`}
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Open menu"
             >
-              {mobileOpen ? <FaTimes /> : <FaBars />}
+              <FaBars />
             </button>
             <div className="text-lg sm:text-xl font-semibold capitalize truncate max-w-[200px] sm:max-w-xs">
               {getPageTitle()}
