@@ -232,6 +232,7 @@ export class MonitoringController {
     @Query("year") year?: string,
     @Req() req?: Request,
     @Query("teamId") teamId?: string,
+    @Query("bulan") bulan?: string,
   ) {
     if (!year) {
       throw new BadRequestException("query 'year' diperlukan");
@@ -249,7 +250,7 @@ export class MonitoringController {
         throw new ForbiddenException("bukan ketua tim");
     }
 
-    return this.monitoringService.bulananAll(year, tId);
+    return this.monitoringService.bulananAll(year, tId, bulan);
   }
 
   @Get("bulanan/matrix")
