@@ -181,7 +181,10 @@ export class PenugasanService {
       const leader = await this.prisma.member.findFirst({
         where: { teamId: existing.kegiatan.teamId, userId, is_leader: true },
       });
-      if (!leader) throw new ForbiddenException("bukan ketua tim kegiatan ini");
+      if (!leader)
+        throw new ForbiddenException(
+          "hanya admin atau ketua tim yang dapat menghapus penugasan"
+        );
     }
     await this.prisma.penugasan.delete({ where: { id } });
     return { success: true };
