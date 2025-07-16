@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { showSuccess, showError, confirmDelete } from "../../utils/alerts";
@@ -46,6 +46,8 @@ export default function PenugasanDetailPage() {
     bukti_link: "",
     catatan: "",
   });
+
+  const dateRef = useRef(null);
 
   const fetchDetail = useCallback(async () => {
     try {
@@ -456,10 +458,12 @@ export default function PenugasanDetailPage() {
               <Input
                 id="laporanTanggal"
                 type="date"
+                ref={dateRef}
                 value={laporanForm.tanggal}
                 onChange={(e) =>
                   setLaporanForm({ ...laporanForm, tanggal: e.target.value })
                 }
+                onFocus={() => dateRef.current?.showPicker()}
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
               />
             </div>
