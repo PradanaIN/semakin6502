@@ -74,13 +74,13 @@ export class LaporanController {
     @Body() body: SubmitLaporanDto,
     @Req() req: Request,
   ) {
-    const userId = (req.user as any).userId;
-    return this.laporanService.update(id, body, userId);
+    const u = req.user as any;
+    return this.laporanService.update(id, body, u.userId, u.role);
   }
 
   @Delete(":id")
   remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
-    const userId = (req.user as any).userId;
-    return this.laporanService.remove(id, userId);
+    const u = req.user as any;
+    return this.laporanService.remove(id, u.userId, u.role);
   }
 }

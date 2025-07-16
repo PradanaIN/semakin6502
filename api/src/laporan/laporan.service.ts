@@ -6,6 +6,8 @@ import {
 import { PrismaService } from "../prisma.service";
 import { Workbook } from "exceljs";
 import PDFDocument from "pdfkit";
+import { normalizeRole } from "../common/roles";
+import { ROLES } from "../common/roles.constants";
 
 @Injectable()
 export class LaporanService {
@@ -59,13 +61,29 @@ export class LaporanService {
     });
   }
 
-  async update(id: number, data: any, userId: number) {
+  async update(id: number, data: any, userId: number, role: string) {
+    role = normalizeRole(role);
     const existing = await this.prisma.laporanHarian.findUnique({
       where: { id },
+      include: { penugasan: { include: { kegiatan: true } } },
     });
     if (!existing) throw new NotFoundException("not found");
-    if (existing.pegawaiId !== userId)
-      throw new ForbiddenException("bukan laporan anda");
+    if (existing.pegawaiId !== userId) {
+      if (role === ROLES.ADMIN) {
+        // admins can modify any report
+      } else if (role === ROLES.KETUA) {
+        const leader = await this.prisma.member.findFirst({
+          where: {
+            teamId: existing.penugasan.kegiatan.teamId,
+            userId,
+            is_leader: true,
+          },
+        });
+        if (!leader) throw new ForbiddenException("bukan laporan anda");
+      } else {
+        throw new ForbiddenException("bukan laporan anda");
+      }
+    }
     return this.prisma.laporanHarian.update({
       where: { id },
       data: {
@@ -77,13 +95,29 @@ export class LaporanService {
     });
   }
 
-  async remove(id: number, userId: number) {
+  async remove(id: number, userId: number, role: string) {
+    role = normalizeRole(role);
     const existing = await this.prisma.laporanHarian.findUnique({
       where: { id },
+      include: { penugasan: { include: { kegiatan: true } } },
     });
     if (!existing) throw new NotFoundException("not found");
-    if (existing.pegawaiId !== userId)
-      throw new ForbiddenException("bukan laporan anda");
+    if (existing.pegawaiId !== userId) {
+      if (role === ROLES.ADMIN) {
+        // admins can remove any report
+      } else if (role === ROLES.KETUA) {
+        const leader = await this.prisma.member.findFirst({
+          where: {
+            teamId: existing.penugasan.kegiatan.teamId,
+            userId,
+            is_leader: true,
+          },
+        });
+        if (!leader) throw new ForbiddenException("bukan laporan anda");
+      } else {
+        throw new ForbiddenException("bukan laporan anda");
+      }
+    }
     await this.prisma.laporanHarian.delete({ where: { id } });
     return { success: true };
   }
