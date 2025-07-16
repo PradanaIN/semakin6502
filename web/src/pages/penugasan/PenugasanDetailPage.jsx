@@ -456,7 +456,7 @@ export default function PenugasanDetailPage() {
             </div>
             <div>
               <Label htmlFor="laporanStatus">
-                Status<span className="text-red-500">*</span>
+                Status <span className="text-red-500">*</span>
               </Label>
               <select
                 id="laporanStatus"
