@@ -1,14 +1,12 @@
-import React, { useEffect, useState, Fragment, useCallback } from "react";
+import { useEffect, useState, Fragment, useCallback } from "react";
 import axios from "axios";
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid";
 import months from "../../utils/months";
 import Legend from "../../components/ui/Legend";
-import DailyMatrix, { DailyMatrixRow } from "./DailyMatrix";
-import WeeklyMatrix, { WeeklyMatrixRow } from "./WeeklyMatrix";
-import MonthlyMatrix, { MonthlyMatrixRow } from "../../components/monitoring/MonthlyMatrix";
-import { FixedSizeList as List } from "react-window";
-import { getHolidays } from "../../utils/holidays";
+import DailyMatrix from "./DailyMatrix";
+import WeeklyMatrix from "./WeeklyMatrix";
+import MonthlyMatrix from "../../components/monitoring/MonthlyMatrix";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 
@@ -30,41 +28,6 @@ export default function MonitoringPage() {
   const [weeklyMonthData, setWeeklyMonthData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const ROW_HEIGHT = 40;
-
-  const dailyBoxClass = (() => {
-    const today = new Date().toISOString().slice(0, 10);
-    const year = new Date().getFullYear();
-    const HOLIDAYS = getHolidays(year);
-    const isWeekend = (iso) => {
-      const d = new Date(iso);
-      const g = d.getDay();
-      return g === 0 || g === 6;
-    };
-    const isHoliday = (iso) => HOLIDAYS.includes(iso);
-    return (day) => {
-      if (day.adaKegiatan) {
-        return "bg-green-200 border-green-400 dark:bg-green-700 dark:border-green-500";
-      }
-      if (isWeekend(day.tanggal) || isHoliday(day.tanggal)) {
-        return "bg-blue-200 border-blue-400 dark:bg-blue-700 dark:border-blue-500";
-      }
-      if (day.tanggal < today) {
-        return "bg-yellow-200 border-yellow-400 dark:bg-yellow-700 dark:border-yellow-500";
-      }
-      return "bg-gray-100 dark:bg-gray-700";
-    };
-  })();
-
-  const progressColor = (p) => {
-    if (p >= 80) return "bg-green-500";
-    if (p >= 50) return "bg-yellow-500";
-    return "bg-red-500";
-  };
-
-  const TBody = React.forwardRef(function TBody(props, ref) {
-    return <tbody ref={ref} {...props} />;
-  });
 
   const mergeProgressWithUsers = useCallback(
     (data) => {
@@ -279,10 +242,8 @@ export default function MonitoringPage() {
     fetchMonthly();
   }, [year, monthIndex, teamId, mergeMonthlyMatrixWithUsers]);
 
-
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
-  const dayCount = dailyData[0]?.detail.length || 0;
 
   return (
     <div className="space-y-4">
@@ -471,115 +432,54 @@ export default function MonitoringPage() {
         </div>
 
         {loading ? (
-          <div>Memuat...</div>
+          <div className="flex flex-col justify-center items-center h-72 space-y-3">
+            <svg
+              className="animate-spin h-10 w-10 text-blue-600"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 6.364A8.001 8.001 0 0112 20v4c-6.627 0-12-5.373-12-12h4a8.001 8.001 0 006.364 2.93zM20 12a8 8 0 01-8 8v4c6.627 0 12-5.373 12-12h-4zm-2.93-6.364A8.001 8.001 0 0112 4V0c6.627 0 12 5.373 12 12h-4a8.001 8.001 0 00-6.364-2.93z"
+              ></path>
+            </svg>
+            <span className="text-lg font-medium text-gray-600 dark:text-gray-300">
+              Memuat data monitoring...
+            </span>
+          </div>
         ) : (
           <div>
             {tab === "harian" && (
               <>
-                <div className="overflow-auto" style={{ maxHeight: 400 }}>
-                  <table className="min-w-full text-xs border-collapse">
-                    <thead>
-                      <tr>
-                        <th className="p-2 border text-left">Nama</th>
-                        {Array.from({ length: dayCount }, (_, i) => (
-                          <th key={i} className="p-1 border text-center">{i + 1}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <List
-                      height={Math.min(400, ROW_HEIGHT * dailyData.length)}
-                      itemCount={dailyData.length}
-                      itemSize={ROW_HEIGHT}
-                      width="100%"
-                      outerElementType={TBody}
-                      itemData={dailyData}
-                    >
-                      {({ index, style, data }) => (
-                        <DailyMatrixRow
-                          style={style}
-                          user={data[index]}
-                          boxClass={dailyBoxClass}
-                        />
-                      )}
-                    </List>
-                  </table>
-                </div>
+                <DailyMatrix data={dailyData} />
                 <Legend className="mt-2" />
               </>
             )}
             {tab === "mingguan" && (
-              <div className="overflow-auto" style={{ maxHeight: 400 }}>
-                <table className="min-w-full text-xs border-collapse">
-                  <thead>
-                    <tr>
-                      <th className="p-2 border text-left">Nama</th>
-                      {weekStarts.map((_, i) => (
-                        <th
-                          key={i}
-                          onClick={() => setWeekIndex(i)}
-                          className="p-2 border text-center cursor-pointer"
-                        >
-                          Minggu {i + 1}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <List
-                    height={Math.min(400, ROW_HEIGHT * weeklyMonthData.length)}
-                    itemCount={weeklyMonthData.length}
-                    itemSize={ROW_HEIGHT}
-                    width="100%"
-                    outerElementType={TBody}
-                    itemData={weeklyMonthData}
-                  >
-                    {({ index, style, data }) => (
-                      <WeeklyMatrixRow
-                        style={style}
-                        user={data[index]}
-                        progressColor={(p) => progressColor(p)}
-                      />
-                    )}
-                  </List>
-                </table>
-              </div>
-            )}
-            {tab === "bulanan" && (
-              <div className="overflow-auto" style={{ maxHeight: 400 }}>
-                <table className="min-w-full text-xs border-collapse">
-                  <thead>
-                    <tr>
-                      <th className="p-2 border text-left">Nama</th>
-                      {months.map((m, i) => (
-                        <th key={i} className="p-2 border text-center whitespace-nowrap">
-                          {m.slice(0, 3)}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <List
-                    height={Math.min(400, ROW_HEIGHT * monthlyData.length)}
-                    itemCount={monthlyData.length}
-                    itemSize={ROW_HEIGHT}
-                    width="100%"
-                    outerElementType={TBody}
-                    itemData={monthlyData}
-                  >
-                    {({ index, style, data }) => (
-                      <MonthlyMatrixRow
-                        style={style}
-                        user={data[index]}
-                        progressColor={(p) => progressColor(p)}
-                      />
-                    )}
-                  </List>
-                </table>
-              </div>
+              <>
+                <WeeklyMatrix
+                  data={weeklyMonthData}
+                  weeks={weekStarts}
+                  onSelectWeek={setWeekIndex}
+                />
+              </>
             )}
             {tab === "bulanan" &&
               (monthlyData.length > 0 ? (
                 <MonthlyMatrix data={monthlyData} />
               ) : (
                 <div className="text-center py-4">Tidak ada data</div>
+              ))}
           </div>
         )}
       </div>

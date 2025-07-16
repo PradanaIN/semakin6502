@@ -34,9 +34,15 @@ const Dashboard = () => {
       const firstOfMonth = new Date(year, month, 1);
       const monthEnd = new Date(year, month + 1, 0);
       const firstMonday = new Date(firstOfMonth);
-      firstMonday.setDate(firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7));
+      firstMonday.setDate(
+        firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
+      );
       const weekStarts = [];
-      for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+      for (
+        let d = new Date(firstMonday);
+        d <= monthEnd;
+        d.setDate(d.getDate() + 7)
+      ) {
         weekStarts.push(new Date(d));
       }
 
@@ -67,7 +73,9 @@ const Dashboard = () => {
         const [dailyRes, weeklyArray, monthlyRes] = await Promise.all([
           axios.get("/monitoring/harian", { params: { tanggal, ...filters } }),
           Promise.all(weeklyPromises),
-          axios.get("/monitoring/bulanan", { params: { year: String(year), ...filters } }),
+          axios.get("/monitoring/bulanan", {
+            params: { year: String(year), ...filters },
+          }),
         ]);
 
         const monthStart = new Date(year, month, 1);
@@ -78,7 +86,9 @@ const Dashboard = () => {
           const endDate = new Date(eIso);
           const displayStart = startDate < monthStart ? monthStart : startDate;
           const displayEnd = endDate > monthEnd ? monthEnd : endDate;
-          const tanggal = `${formatISO(displayStart)} - ${formatISO(displayEnd)}`;
+          const tanggal = `${formatISO(displayStart)} - ${formatISO(
+            displayEnd
+          )}`;
           const detail = w.detail.filter((d) => {
             const t = new Date(d.tanggal);
             return t >= monthStart && t <= monthEnd;
@@ -118,9 +128,32 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="p-6 text-center">
-        <p className="text-gray-600 dark:text-gray-300">
-          Memuat data monitoring...
+      <div className="flex flex-col items-center justify-center h-full w-full min-h-[60vh] space-y-3">
+        <svg
+          className="animate-spin h-6 w-6 text-blue-600 drop-shadow"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 
+      6.364A8.001 8.001 0 0112 20v4c-6.627 
+      0-12-5.373-12-12h4a8.001 8.001 
+      0 006.364 2.93z"
+          ></path>
+        </svg>
+        <p className="text-lg font-medium text-gray-600 dark:text-gray-300 tracking-wide">
+          Memuat data...
         </p>
       </div>
     );
@@ -156,10 +189,7 @@ const Dashboard = () => {
         <h2 className="text-xl font-semibold text-green-800 dark:text-white mb-3">
           Ayo lengkapi laporan harianmu!
         </h2>
-        <Button
-          variant="primary"
-          className="font-semibold w-fit mx-auto"
-        >
+        <Button variant="primary" className="font-semibold w-fit mx-auto">
           Isi Laporan Sekarang
         </Button>
       </div>
