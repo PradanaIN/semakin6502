@@ -1,11 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  showSuccess,
-  showError,
-  confirmDelete,
-} from "../../utils/alerts";
+import { showSuccess, showError, confirmDelete } from "../../utils/alerts";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
 import { Pencil, Trash2 } from "lucide-react";
@@ -21,12 +17,13 @@ import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import months from "../../utils/months";
 
-
 export default function PenugasanDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const canManage = [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role);
+  const canManage = [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(
+    user?.role
+  );
   const [item, setItem] = useState(null);
   const [kegiatan, setKegiatan] = useState([]);
   const [users, setUsers] = useState([]);
@@ -49,7 +46,6 @@ export default function PenugasanDetailPage() {
     bukti_link: "",
     catatan: "",
   });
-
 
   const fetchDetail = useCallback(async () => {
     try {
@@ -78,7 +74,7 @@ export default function PenugasanDetailPage() {
     axios.get("/master-kegiatan").then((r) => {
       const kData = r.data.data || r.data;
       const sorted = [...kData].sort((a, b) =>
-        a.nama_kegiatan.localeCompare(b.nama_kegiatan),
+        a.nama_kegiatan.localeCompare(b.nama_kegiatan)
       );
       setKegiatan(sorted);
     });
@@ -190,12 +186,7 @@ export default function PenugasanDetailPage() {
             >
               <Pencil size={16} />
             </Button>
-            <Button
-              onClick={remove}
-              variant="danger"
-              icon
-              aria-label="Hapus"
-            >
+            <Button onClick={remove} variant="danger" icon aria-label="Hapus">
               <Trash2 size={16} />
             </Button>
           </div>
@@ -204,7 +195,9 @@ export default function PenugasanDetailPage() {
       {!editing ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Kegiatan</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Kegiatan
+            </div>
             <div className="font-medium">{item.kegiatan?.nama_kegiatan}</div>
           </div>
           <div>
@@ -212,27 +205,39 @@ export default function PenugasanDetailPage() {
             <div className="font-medium">{item.kegiatan?.team?.nama_tim}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Pegawai</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Pegawai
+            </div>
             <div className="font-medium">{item.pegawai?.nama}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Minggu</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Minggu
+            </div>
             <div className="font-medium">{item.minggu}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Bulan</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Bulan
+            </div>
             <div className="font-medium">{item.bulan}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Tahun</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Tahun
+            </div>
             <div className="font-medium">{item.tahun}</div>
           </div>
           <div className="sm:col-span-2 lg:col-span-3">
-            <div className="text-sm text-gray-500 dark:text-gray-400">Deskripsi</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Deskripsi
+            </div>
             <div className="font-medium">{item.deskripsi || "-"}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Status</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Status
+            </div>
             <div className="font-medium">
               <StatusBadge status={item.status} />
             </div>
@@ -307,7 +312,7 @@ export default function PenugasanDetailPage() {
                 onChange={(e) =>
                   setForm({ ...form, minggu: parseInt(e.target.value, 10) })
                 }
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
               />
             </div>
             <div>
@@ -318,7 +323,7 @@ export default function PenugasanDetailPage() {
                 onChange={(e) =>
                   setForm({ ...form, bulan: parseInt(e.target.value, 10) })
                 }
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
               >
                 {months.map((m, i) => (
                   <option key={i + 1} value={i + 1}>
@@ -336,7 +341,7 @@ export default function PenugasanDetailPage() {
                 onChange={(e) =>
                   setForm({ ...form, tahun: parseInt(e.target.value, 10) })
                 }
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
               />
             </div>
           </div>
@@ -380,7 +385,9 @@ export default function PenugasanDetailPage() {
                   className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
                 >
                   <td className={tableStyles.smallCell}>{idx + 1}</td>
-                  <td className={tableStyles.smallCell}>{l.tanggal.slice(0, 10)}</td>
+                  <td className={tableStyles.smallCell}>
+                    {l.tanggal.slice(0, 10)}
+                  </td>
                   <td className={tableStyles.smallCell}>
                     <StatusBadge status={l.status} />
                   </td>
@@ -429,82 +436,85 @@ export default function PenugasanDetailPage() {
           onClose={() => setShowLaporanForm(false)}
           titleId="laporan-form-title"
         >
-            <h3 id="laporan-form-title" className="text-lg font-semibold">
-              {laporanForm.id ? "Edit" : "Tambah"} Laporan Harian
-            </h3>
-            <div className="space-y-2">
+          <h3 id="laporan-form-title" className="text-lg font-semibold">
+            {laporanForm.id ? "Edit" : "Tambah"} Laporan Harian
+          </h3>
+          <div className="space-y-2">
+            <div>
+              <Label htmlFor="laporanTanggal">
+                Tanggal <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="laporanTanggal"
+                type="date"
+                value={laporanForm.tanggal}
+                onChange={(e) =>
+                  setLaporanForm({ ...laporanForm, tanggal: e.target.value })
+                }
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+            <div>
+              <Label htmlFor="laporanStatus">
+                Status<span className="text-red-500">*</span>
+              </Label>
+              <select
+                id="laporanStatus"
+                value={laporanForm.status}
+                onChange={(e) =>
+                  setLaporanForm({ ...laporanForm, status: e.target.value })
+                }
+                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              >
+                <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
+                <option value={STATUS.SEDANG_DIKERJAKAN}>
+                  {STATUS.SEDANG_DIKERJAKAN}
+                </option>
+                <option value={STATUS.SELESAI_DIKERJAKAN}>
+                  {STATUS.SELESAI_DIKERJAKAN}
+                </option>
+              </select>
+            </div>
+            {laporanForm.status === STATUS.SELESAI_DIKERJAKAN && (
               <div>
-                <Label htmlFor="laporanTanggal">
-                  Tanggal<span className="text-red-500">*</span>
+                <Label htmlFor="buktiLink">
+                  Link Bukti <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  id="laporanTanggal"
-                  type="date"
-                  value={laporanForm.tanggal}
+                  id="buktiLink"
+                  type="text"
+                  value={laporanForm.bukti_link}
                   onChange={(e) =>
-                    setLaporanForm({ ...laporanForm, tanggal: e.target.value })
+                    setLaporanForm({
+                      ...laporanForm,
+                      bukti_link: e.target.value,
+                    })
                   }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
-              <div>
-                <Label htmlFor="laporanStatus">
-                  Status<span className="text-red-500">*</span>
-                </Label>
-                <select
-                  id="laporanStatus"
-                  value={laporanForm.status}
-                  onChange={(e) =>
-                    setLaporanForm({ ...laporanForm, status: e.target.value })
-                  }
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                >
-                  <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
-                  <option value={STATUS.SEDANG_DIKERJAKAN}>
-                    {STATUS.SEDANG_DIKERJAKAN}
-                  </option>
-                  <option value={STATUS.SELESAI_DIKERJAKAN}>
-                    {STATUS.SELESAI_DIKERJAKAN}
-                  </option>
-                </select>
-              </div>
-              {laporanForm.status === STATUS.SELESAI_DIKERJAKAN && (
-                <div>
-                  <Label htmlFor="buktiLink">
-                    Link Bukti <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="buktiLink"
-                    type="text"
-                    value={laporanForm.bukti_link}
-                    onChange={(e) =>
-                      setLaporanForm({
-                        ...laporanForm,
-                        bukti_link: e.target.value,
-                      })
-                    }
-                    className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                  />
-                </div>
-              )}
-              <div>
-                <Label htmlFor="catatan">Catatan</Label>
-                <textarea
-                  id="catatan"
-                  value={laporanForm.catatan}
-                  onChange={(e) =>
-                    setLaporanForm({ ...laporanForm, catatan: e.target.value })
-                  }
-                  className="form-input"
-                />
-              </div>
+            )}
+            <div>
+              <Label htmlFor="catatan">Catatan</Label>
+              <textarea
+                id="catatan"
+                value={laporanForm.catatan}
+                onChange={(e) =>
+                  setLaporanForm({ ...laporanForm, catatan: e.target.value })
+                }
+                className="form-input"
+              />
             </div>
-            <div className="flex justify-end space-x-2 pt-2">
-              <Button variant="secondary" onClick={() => setShowLaporanForm(false)}>
-                Batal
-              </Button>
-              <Button onClick={saveLaporan}>Simpan</Button>
-            </div>
+          </div>
+          <div className="flex justify-end space-x-2 pt-2">
+            <Button
+              variant="secondary"
+              onClick={() => setShowLaporanForm(false)}
+            >
+              Batal
+            </Button>
+            <Button onClick={saveLaporan}>Simpan</Button>
+          </div>
         </Modal>
       )}
     </div>
