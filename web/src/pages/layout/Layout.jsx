@@ -98,7 +98,6 @@ export default function Layout() {
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black opacity-30 z-30 md:hidden"
-          onClick={() => setSidebarOpen(false)}
         />
       )}
 
