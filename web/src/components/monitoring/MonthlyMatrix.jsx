@@ -1,4 +1,27 @@
 import React from "react";
+
+export const MonthlyMatrixRow = ({ user, progressColor, style }) => (
+  <tr className="text-center" style={style}>
+    <td className="p-2 border text-left whitespace-nowrap text-sm">{user.nama}</td>
+    {(user.months || []).map((b, idx) => (
+      <td key={idx} className="p-1 border space-y-1">
+        <div
+          role="progressbar"
+          aria-valuenow={b.persen}
+          aria-valuemin="0"
+          aria-valuemax="100"
+          className="w-full bg-gray-200 dark:bg-gray-700 rounded h-2"
+        >
+          <div
+            className={`${progressColor(b.persen)} h-2 rounded`}
+            style={{ width: `${b.persen}%` }}
+          />
+        </div>
+        <span className="text-xs font-medium">{b.persen}%</span>
+      </td>
+    ))}
+  </tr>
+);
 import months from "../../utils/months";
 
 const MonthlyMatrix = ({ data = [] }) => {
@@ -34,28 +57,7 @@ const MonthlyMatrix = ({ data = [] }) => {
         </thead>
         <tbody>
           {data.map((u) => (
-            <tr key={u.userId} className="text-center">
-              <td className="p-2 border text-left whitespace-nowrap text-sm">
-                {u.nama}
-              </td>
-              {(u.months || []).map((b, idx) => (
-                <td key={idx} className="p-1 border space-y-1">
-                  <div
-                    role="progressbar"
-                    aria-valuenow={b.persen}
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                    className="w-full bg-gray-200 dark:bg-gray-700 rounded h-2"
-                  >
-                    <div
-                      className={`${progressColor(b.persen)} h-2 rounded`}
-                      style={{ width: `${b.persen}%` }}
-                    />
-                  </div>
-                  <span className="text-xs font-medium">{b.persen}%</span>
-                </td>
-              ))}
-            </tr>
+            <MonthlyMatrixRow key={u.userId} user={u} progressColor={progressColor} />
           ))}
         </tbody>
       </table>
