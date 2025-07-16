@@ -4,6 +4,7 @@ import axios from "axios";
 import {
   showSuccess,
   showError,
+  showWarning,
   confirmDelete,
   confirmCancel,
 } from "../../utils/alerts";
@@ -123,6 +124,18 @@ export default function PenugasanDetailPage() {
 
   const saveLaporan = async () => {
     try {
+      if (laporanForm.deskripsi.trim() === "") {
+        showWarning("Lengkapi data", "Deskripsi wajib diisi");
+        return;
+      }
+      if (
+        laporanForm.status === STATUS.SELESAI_DIKERJAKAN &&
+        laporanForm.bukti_link.trim() === ""
+      ) {
+        showWarning("Lengkapi data", "Link bukti wajib diisi");
+        return;
+      }
+
       if (laporanForm.id) {
         await axios.put(`/laporan-harian/${laporanForm.id}`, laporanForm);
       } else {
@@ -430,7 +443,12 @@ export default function PenugasanDetailPage() {
                   </td>
                   <td className={tableStyles.smallCell}>
                     {l.bukti_link ? (
-                      <a href={l.bukti_link} target="_blank" rel="noreferrer">
+                      <a
+                        href={l.bukti_link}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="Lihat bukti dukung"
+                      >
                         <ExternalLink
                           size={16}
                           className="mx-auto text-blue-600 dark:text-blue-400"
@@ -501,19 +519,36 @@ export default function PenugasanDetailPage() {
                   setLaporanForm({ ...laporanForm, tanggal: e.target.value })
                 }
                 onFocus={() => dateRef.current?.showPicker()}
+                required
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
               />
-            </div>
-            <div>
-              <Label htmlFor="laporanStatus">
-                Status <span className="text-red-500">*</span>
-              </Label>
+          </div>
+          <div>
+            <Label htmlFor="laporanDeskripsi">
+              Deskripsi <span className="text-red-500">*</span>
+            </Label>
+            <textarea
+              id="laporanDeskripsi"
+              value={laporanForm.deskripsi}
+              onChange={(e) =>
+                setLaporanForm({ ...laporanForm, deskripsi: e.target.value })
+              }
+              placeholder="Tuliskan deskripsi kegiatan..."
+              required
+              className="form-input"
+            />
+          </div>
+          <div>
+            <Label htmlFor="laporanStatus">
+              Status <span className="text-red-500">*</span>
+            </Label>
               <select
                 id="laporanStatus"
                 value={laporanForm.status}
                 onChange={(e) =>
                   setLaporanForm({ ...laporanForm, status: e.target.value })
                 }
+                required
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
               >
                 <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
@@ -540,6 +575,7 @@ export default function PenugasanDetailPage() {
                       bukti_link: e.target.value,
                     })
                   }
+                  placeholder="https://..."
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
@@ -552,6 +588,7 @@ export default function PenugasanDetailPage() {
                 onChange={(e) =>
                   setLaporanForm({ ...laporanForm, catatan: e.target.value })
                 }
+                placeholder="Catatan tambahan (opsional)..."
                 className="form-input"
               />
             </div>
