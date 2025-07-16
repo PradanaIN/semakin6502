@@ -191,7 +191,7 @@ export default function PenugasanDetailPage() {
   if (!item) return <div className="p-6">Memuat...</div>;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-3 space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Detail Penugasan</h2>
         {canManage && !editing && (
@@ -430,11 +430,7 @@ export default function PenugasanDetailPage() {
                   </td>
                   <td className={tableStyles.smallCell}>
                     {l.bukti_link ? (
-                      <a
-                        href={l.bukti_link}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
+                      <a href={l.bukti_link} target="_blank" rel="noreferrer">
                         <ExternalLink
                           size={16}
                           className="mx-auto text-blue-600 dark:text-blue-400"
@@ -479,10 +475,23 @@ export default function PenugasanDetailPage() {
             {laporanForm.id ? "Edit" : "Tambah"} Laporan Harian
           </h3>
           <div className="space-y-2">
-          <div>
-            <Label htmlFor="laporanTanggal">
-              Tanggal <span className="text-red-500">*</span>
-            </Label>
+            <div>
+              <Label htmlFor="laporanDeskripsi">
+                Deskripsi <span className="text-red-500">*</span>
+              </Label>
+              <textarea
+                id="laporanDeskripsi"
+                value={laporanForm.deskripsi}
+                onChange={(e) =>
+                  setLaporanForm({ ...laporanForm, deskripsi: e.target.value })
+                }
+                className="form-input"
+              />
+            </div>
+            <div>
+              <Label htmlFor="laporanTanggal">
+                Tanggal <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="laporanTanggal"
                 type="date"
@@ -494,24 +503,11 @@ export default function PenugasanDetailPage() {
                 onFocus={() => dateRef.current?.showPicker()}
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
               />
-          </div>
-          <div>
-            <Label htmlFor="laporanDeskripsi">
-              Deskripsi <span className="text-red-500">*</span>
-            </Label>
-            <textarea
-              id="laporanDeskripsi"
-              value={laporanForm.deskripsi}
-              onChange={(e) =>
-                setLaporanForm({ ...laporanForm, deskripsi: e.target.value })
-              }
-              className="form-input"
-            />
-          </div>
-          <div>
-            <Label htmlFor="laporanStatus">
-              Status <span className="text-red-500">*</span>
-            </Label>
+            </div>
+            <div>
+              <Label htmlFor="laporanStatus">
+                Status <span className="text-red-500">*</span>
+              </Label>
               <select
                 id="laporanStatus"
                 value={laporanForm.status}

@@ -312,9 +312,17 @@ export default function PenugasanPage() {
           }}
           titleId="penugasan-form-title"
         >
-          <h2 id="penugasan-form-title" className="text-xl font-semibold mb-2">
-            Tambah Penugasan
-          </h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2
+              id="penugasan-form-title"
+              className="text-xl font-semibold mb-2"
+            >
+              Tambah Penugasan
+            </h2>
+            <p className="text-xs text-red-600 dark:text-red-500">
+              * Fardu 'Ain
+            </p>
+          </div>
           <div className="space-y-2">
             <div>
               <Label htmlFor="kegiatanId">
@@ -415,7 +423,9 @@ export default function PenugasanPage() {
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div>
-                <Label htmlFor="minggu">Minggu</Label>
+                <Label htmlFor="minggu">
+                  Minggu <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="minggu"
                   type="number"
@@ -429,7 +439,9 @@ export default function PenugasanPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="bulan">Bulan</Label>
+                <Label htmlFor="bulan">
+                  Bulan <span className="text-red-500">*</span>
+                </Label>
                 <select
                   id="bulan"
                   value={form.bulan}
@@ -446,7 +458,9 @@ export default function PenugasanPage() {
                 </select>
               </div>
               <div>
-                <Label htmlFor="tahun">Tahun</Label>
+                <Label htmlFor="tahun">
+                  Tahun <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="tahun"
                   type="number"
