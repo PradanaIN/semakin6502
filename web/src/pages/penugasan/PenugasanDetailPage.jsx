@@ -4,6 +4,7 @@ import axios from "axios";
 import {
   showSuccess,
   showError,
+  showWarning,
   confirmDelete,
   confirmCancel,
 } from "../../utils/alerts";
@@ -123,6 +124,18 @@ export default function PenugasanDetailPage() {
 
   const saveLaporan = async () => {
     try {
+      if (laporanForm.deskripsi.trim() === "") {
+        showWarning("Lengkapi data", "Deskripsi wajib diisi");
+        return;
+      }
+      if (
+        laporanForm.status === STATUS.SELESAI_DIKERJAKAN &&
+        laporanForm.bukti_link.trim() === ""
+      ) {
+        showWarning("Lengkapi data", "Link bukti wajib diisi");
+        return;
+      }
+
       if (laporanForm.id) {
         await axios.put(`/laporan-harian/${laporanForm.id}`, laporanForm);
       } else {
@@ -493,6 +506,7 @@ export default function PenugasanDetailPage() {
                   setLaporanForm({ ...laporanForm, tanggal: e.target.value })
                 }
                 onFocus={() => dateRef.current?.showPicker()}
+                required
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
               />
           </div>
@@ -506,6 +520,8 @@ export default function PenugasanDetailPage() {
               onChange={(e) =>
                 setLaporanForm({ ...laporanForm, deskripsi: e.target.value })
               }
+              placeholder="Tuliskan deskripsi kegiatan..."
+              required
               className="form-input"
             />
           </div>
@@ -519,6 +535,7 @@ export default function PenugasanDetailPage() {
                 onChange={(e) =>
                   setLaporanForm({ ...laporanForm, status: e.target.value })
                 }
+                required
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
               >
                 <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
@@ -545,6 +562,7 @@ export default function PenugasanDetailPage() {
                       bukti_link: e.target.value,
                     })
                   }
+                  placeholder="https://..."
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
@@ -557,6 +575,7 @@ export default function PenugasanDetailPage() {
                 onChange={(e) =>
                   setLaporanForm({ ...laporanForm, catatan: e.target.value })
                 }
+                placeholder="Catatan tambahan (opsional)..."
                 className="form-input"
               />
             </div>
