@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { ROLES } from "../../utils/roles";
 
-export default function Sidebar({ setSidebarOpen }) {
+export default function Sidebar({ setMobileOpen }) {
   const { user } = useAuth();
 
   const mainLinks = [
@@ -45,7 +45,7 @@ export default function Sidebar({ setSidebarOpen }) {
       <NavLink
         key={link.to}
         to={link.to}
-        onClick={() => setSidebarOpen(false)}
+        onClick={() => setMobileOpen(false)}
         className={({ isActive }) =>
           `flex items-center gap-3 px-4 py-2 rounded transition-all ${
             isActive
