@@ -257,7 +257,9 @@ export default function PenugasanDetailPage() {
         <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <h2 className="text-xl font-semibold">Edit Penugasan</h2>
           <div>
-            <Label htmlFor="kegiatan">Kegiatan</Label>
+            <Label htmlFor="kegiatan">
+              Kegiatan <span className="text-red-500">*</span>
+            </Label>
             <Select
               inputId="kegiatan"
               classNamePrefix="react-select"
@@ -280,7 +282,9 @@ export default function PenugasanDetailPage() {
             />
           </div>
           <div>
-            <Label htmlFor="pegawai">Pegawai</Label>
+            <Label htmlFor="pegawai">
+              Pegawai <span className="text-red-500">*</span>
+            </Label>
             <Select
               inputId="pegawai"
               classNamePrefix="react-select"
@@ -312,7 +316,9 @@ export default function PenugasanDetailPage() {
           </div>
           <div className="grid grid-cols-3 gap-2">
             <div>
-              <Label htmlFor="minggu">Minggu</Label>
+              <Label htmlFor="minggu">
+                Minggu <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="minggu"
                 type="number"
@@ -326,7 +332,9 @@ export default function PenugasanDetailPage() {
               />
             </div>
             <div>
-              <Label htmlFor="bulan">Bulan</Label>
+              <Label htmlFor="bulan">
+                Bulan <span className="text-red-500">*</span>
+              </Label>
               <select
                 id="bulan"
                 value={form.bulan}
@@ -343,7 +351,9 @@ export default function PenugasanDetailPage() {
               </select>
             </div>
             <div>
-              <Label htmlFor="tahun">Tahun</Label>
+              <Label htmlFor="tahun">
+                Tahun <span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="tahun"
                 type="number"
