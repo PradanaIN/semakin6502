@@ -434,6 +434,7 @@ export default function PenugasanDetailPage() {
                         href={l.bukti_link}
                         target="_blank"
                         rel="noreferrer"
+                        aria-label="Lihat bukti dukung"
                       >
                         <ExternalLink
                           size={16}
