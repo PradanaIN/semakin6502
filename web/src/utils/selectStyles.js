@@ -13,6 +13,18 @@ export const selectStyles = {
     },
     boxShadow: state.isFocused ? "0 0 0 2px #3b82f6" : base.boxShadow,
   }),
+  input: (base) => ({
+    ...base,
+    color: document.documentElement.classList.contains("dark")
+      ? "#f9fafb"
+      : "#1f2937",
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: document.documentElement.classList.contains("dark")
+      ? "#9ca3af"
+      : "#6b7280",
+  }),
   option: (base, state) => ({
     ...base,
     backgroundColor: state.isFocused
@@ -40,14 +52,14 @@ export const selectStyles = {
   multiValue: (base) => ({
     ...base,
     backgroundColor: document.documentElement.classList.contains("dark")
-      ? "#4b5563" // dark: bg-gray-600
-      : "#e2e8f0", // light: gray-200
+      ? "#4b5563"
+      : "#e2e8f0",
   }),
   multiValueLabel: (base) => ({
     ...base,
     color: document.documentElement.classList.contains("dark")
-      ? "#f9fafb" // gray-100
-      : "#1f2937", // gray-900
+      ? "#f9fafb"
+      : "#1f2937",
   }),
   multiValueRemove: (base) => ({
     ...base,
@@ -56,8 +68,8 @@ export const selectStyles = {
       : "#1f2937",
     ":hover": {
       backgroundColor: document.documentElement.classList.contains("dark")
-        ? "#6b7280" // gray-500
-        : "#cbd5e1", // gray-300
+        ? "#6b7280"
+        : "#cbd5e1",
       color: "#000",
     },
   }),

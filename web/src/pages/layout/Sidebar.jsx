@@ -87,9 +87,17 @@ export default function Sidebar({ setSidebarOpen }) {
 
   return (
     <aside className="relative h-full w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 p-4 shadow-md overflow-y-auto flex flex-col">
-      <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-6 text-center">
-        SEMAKIN 6502
+      <div className="flex items-center justify-center gap-2 mb-6">
+        <img
+          src="/logo.png"
+          alt="Logo SEMAKIN 6502"
+          className="h-8 w-8 object-contain"
+        />
+        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+          SEMAKIN 6502
+        </div>
       </div>
+
       <nav className="space-y-2">
         {mainLinks.filter((l) => l.show).map(renderLink)}
         {manageLinks.some((l) => l.show) && (

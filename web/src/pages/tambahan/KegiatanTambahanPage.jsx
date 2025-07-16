@@ -16,6 +16,7 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
 import Pagination from "../../components/Pagination";
 import SelectDataShow from "../../components/ui/SelectDataShow";
+import { useRef } from "react";
 
 export default function KegiatanTambahanPage() {
   const [items, setItems] = useState([]);
@@ -37,6 +38,7 @@ export default function KegiatanTambahanPage() {
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
+  const tanggalRef = useRef(null);
 
   const fetchData = async () => {
     try {
@@ -337,8 +339,7 @@ export default function KegiatanTambahanPage() {
             </p>
           </div>
 
-          <div className="space-y-2">
-            {/* Pilih Tim */}
+          <div className="space-y-4">
             <div>
               <Label htmlFor="teamId" className="dark:text-gray-100">
                 Tim <span className="text-red-500">*</span>
@@ -351,99 +352,72 @@ export default function KegiatanTambahanPage() {
                   setForm({
                     ...form,
                     teamId: value ? parseInt(value, 10) : "",
-                    kegiatanId: "", // reset kegiatan jika tim berubah
+                    kegiatanId: "", // reset kegiatan saat tim berubah
                   });
                 }}
-                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
+                className="w-full border rounded-lg px-3 py-2 bg-white text-gray-900 
+            dark:bg-gray-700 dark:text-gray-100 
+            focus:outline-none focus:ring-2 focus:ring-blue-500 
+            shadow-sm transition duration-150 ease-in-out"
               >
-                <option value="">Tim</option>
-                {teams.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.nama_tim}
-                  </option>
-                ))}
+                <option value="">Pilih Tim</option>
+                {teams
+                  .filter((t) => t.nama_tim !== "Pimpinan")
+                  .map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.nama_tim}
+                    </option>
+                  ))}
               </select>
             </div>
 
-            {/* Pilih Kegiatan */}
             <div>
-              <Label htmlFor="kegiatan" className="dark:text-gray-100">
+              <Label htmlFor="kegiatanId" className="dark:text-gray-100">
                 Kegiatan <span className="text-red-500">*</span>
               </Label>
-              <Select
-                inputId="kegiatan"
-                classNamePrefix="react-select"
-                menuPortalTarget={document.body}
-                styles={{
-                  control: (base) => ({
-                    ...base,
-                    backgroundColor: "#ffffff",
-                    borderColor: "#d1d5db",
-                    borderRadius: "0.5rem",
-                    padding: "2px 6px",
-                    color: "#1f2937",
-                  }),
-                  singleValue: (base) => ({
-                    ...base,
-                    color: "#1f2937",
-                  }),
-                  menu: (base) => ({
-                    ...base,
-                    zIndex: 9999,
-                  }),
-                }}
-                isDisabled={!form.teamId}
-                options={
-                  form.teamId
-                    ? kegiatan
-                        .filter((k) => k.teamId === form.teamId)
-                        .map((k) => ({
-                          value: k.id,
-                          label: k.nama_kegiatan,
-                        }))
-                    : []
+              <select
+                id="kegiatanId"
+                value={form.kegiatanId}
+                onChange={(e) =>
+                  setForm({ ...form, kegiatanId: e.target.value })
                 }
-                value={
-                  form.kegiatanId
-                    ? {
-                        value: form.kegiatanId,
-                        label: kegiatan.find((k) => k.id === form.kegiatanId)
-                          ?.nama_kegiatan,
-                      }
-                    : null
-                }
-                onChange={(o) =>
-                  setForm({
-                    ...form,
-                    kegiatanId: o ? parseInt(o.value, 10) : "",
-                  })
-                }
-                placeholder="Pilih kegiatan..."
-              />
-              {form.kegiatanId && (
-                <p className="text-sm mt-1 text-gray-600 dark:text-gray-300">
-                  Tim:{" "}
-                  {kegiatan.find((k) => k.id === form.kegiatanId)?.team
-                    ?.nama_tim || "-"}
-                </p>
-              )}
+                className="w-full border rounded-lg px-3 py-2 bg-white text-gray-900 
+            dark:bg-gray-700 dark:text-gray-100 
+            focus:outline-none focus:ring-2 focus:ring-blue-500 
+            shadow-sm transition duration-150 ease-in-out"
+                disabled={!form.teamId}
+              >
+                <option value="">
+                  {form.teamId ? "Pilih Kegiatan" : "Pilih Tim terlebih dahulu"}
+                </option>
+                {kegiatan
+                  .filter((k) => k.teamId === form.teamId)
+                  .map((k) => (
+                    <option key={k.id} value={k.id}>
+                      {k.nama_kegiatan}
+                    </option>
+                  ))}
+              </select>
             </div>
 
-            {/* Tanggal */}
             <div>
-              <Label htmlFor="tanggal" className="dark:text-gray-100">
+              <Label htmlFor="kegiatanId" className="dark:text-gray-100">
                 Tanggal <span className="text-red-500">*</span>
               </Label>
               <Input
+                ref={tanggalRef}
                 id="tanggal"
                 type="date"
                 value={form.tanggal}
                 onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
-                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
+                onClick={() => tanggalRef.current?.showPicker()}
+                className="w-full cursor-pointer border rounded-lg px-3 py-2 bg-white text-gray-900 
+    dark:bg-gray-700 dark:text-gray-100 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 
+    shadow-sm transition duration-150 ease-in-out"
               />
             </div>
 
-            {/* Deskripsi */}
             <div>
               <Label htmlFor="deskripsi" className="dark:text-gray-100">
                 Deskripsi
@@ -454,11 +428,13 @@ export default function KegiatanTambahanPage() {
                 onChange={(e) =>
                   setForm({ ...form, deskripsi: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
+                className="w-full border rounded-lg px-3 py-2 bg-white text-gray-900 
+            dark:bg-gray-700 dark:text-gray-100 
+            focus:outline-none focus:ring-2 focus:ring-blue-500 
+            shadow-sm transition duration-150 ease-in-out resize-none"
               />
             </div>
 
-            {/* Status */}
             <div>
               <Label htmlFor="status" className="dark:text-gray-100">
                 Status <span className="text-red-500">*</span>
@@ -467,7 +443,10 @@ export default function KegiatanTambahanPage() {
                 id="status"
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
+                className="w-full border rounded-lg px-3 py-2 bg-white text-gray-900 
+            dark:bg-gray-700 dark:text-gray-100 
+            focus:outline-none focus:ring-2 focus:ring-blue-500 
+            shadow-sm transition duration-150 ease-in-out"
               >
                 <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
                 <option value={STATUS.SEDANG_DIKERJAKAN}>
@@ -479,7 +458,6 @@ export default function KegiatanTambahanPage() {
               </select>
             </div>
 
-            {/* Tombol */}
             <div className="flex justify-end space-x-2 pt-2">
               <Button
                 variant="secondary"

@@ -347,6 +347,7 @@ export default function PenugasanPage() {
                 }
                 placeholder="Pilih kegiatan..."
                 isSearchable
+                noOptionsMessage={() => "Tidak ditemukan."}
               />
             </div>
             <div>
@@ -381,6 +382,7 @@ export default function PenugasanPage() {
                 }
                 placeholder="Pilih pegawai..."
                 isSearchable
+                noOptionsMessage={() => "Tidak ditemukan."}
               />
               <button
                 type="button"
@@ -389,7 +391,8 @@ export default function PenugasanPage() {
                     ...form,
                     pegawaiIds: users
                       .filter(
-                        (u) => u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN
+                        (u) =>
+                          u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN
                       )
                       .map((u) => u.id),
                   })
