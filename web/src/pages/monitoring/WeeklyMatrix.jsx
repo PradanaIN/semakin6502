@@ -1,5 +1,28 @@
 import React from "react";
 
+export const WeeklyMatrixRow = ({ user, progressColor, style }) => (
+  <tr className="text-center" style={style}>
+    <td className="p-2 border text-left whitespace-nowrap text-sm">{user.nama}</td>
+    {user.weeks.map((w, i) => (
+      <td key={i} className="p-1 border space-y-1">
+        <div
+          role="progressbar"
+          aria-valuenow={w.persen}
+          aria-valuemin="0"
+          aria-valuemax="100"
+          className="w-full bg-gray-200 dark:bg-gray-700 rounded h-2"
+        >
+          <div
+            className={`${progressColor(w.persen)} h-2 rounded`}
+            style={{ width: `${w.persen}%` }}
+          />
+        </div>
+        <span className="text-xs font-medium">{w.persen}%</span>
+      </td>
+    ))}
+  </tr>
+);
+
 const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek }) => {
   if (!Array.isArray(data) || data.length === 0) return null;
 
@@ -37,28 +60,7 @@ const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek }) => {
         </thead>
         <tbody>
           {data.map((u) => (
-            <tr key={u.userId} className="text-center">
-              <td className="p-2 border text-left whitespace-nowrap text-sm">
-                {u.nama}
-              </td>
-              {u.weeks.map((w, i) => (
-                <td key={i} className="p-1 border space-y-1">
-                  <div
-                    role="progressbar"
-                    aria-valuenow={w.persen}
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                    className="w-full bg-gray-200 dark:bg-gray-700 rounded h-2"
-                  >
-                    <div
-                      className={`${progressColor(w.persen)} h-2 rounded`}
-                      style={{ width: `${w.persen}%` }}
-                    />
-                  </div>
-                  <span className="text-xs font-medium">{w.persen}%</span>
-                </td>
-              ))}
-            </tr>
+            <WeeklyMatrixRow key={u.userId} user={u} progressColor={progressColor} />
           ))}
         </tbody>
       </table>

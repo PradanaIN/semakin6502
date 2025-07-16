@@ -1,5 +1,14 @@
 import { getHolidays } from "../../utils/holidays";
 
+export const DailyMatrixRow = ({ user, boxClass, style }) => (
+  <tr className="text-center" style={style}>
+    <td className="p-2 border text-left whitespace-nowrap text-sm">{user.nama}</td>
+    {user.detail.map((day, i) => (
+      <td key={i} className={`p-1 border ${boxClass(day)}`}></td>
+    ))}
+  </tr>
+);
+
 const DailyMatrix = ({ data = [] }) => {
   if (!Array.isArray(data) || data.length === 0) return null;
 
@@ -45,14 +54,7 @@ const DailyMatrix = ({ data = [] }) => {
         </thead>
         <tbody>
           {data.map((u) => (
-            <tr key={u.userId} className="text-center">
-              <td className="p-2 border text-left whitespace-nowrap text-sm">
-                {u.nama}
-              </td>
-              {u.detail.map((day, i) => (
-                <td key={i} className={`p-1 border ${boxClass(day)}`}></td>
-              ))}
-            </tr>
+            <DailyMatrixRow key={u.userId} user={u} boxClass={boxClass} />
           ))}
         </tbody>
       </table>
