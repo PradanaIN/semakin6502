@@ -44,14 +44,12 @@ export default function KegiatanTambahanPage() {
       const [tRes, kRes, teamRes] = await Promise.all([
         axios.get("/kegiatan-tambahan"),
         axios.get("/master-kegiatan?limit=1000"),
-        axios
-          .get("/teams")
-          .then(async (res) => {
-            if (Array.isArray(res.data) && res.data.length === 0) {
-              return axios.get("/teams/member");
-            }
-            return res;
-          }),
+        axios.get("/teams").then(async (res) => {
+          if (Array.isArray(res.data) && res.data.length === 0) {
+            return axios.get("/teams/member");
+          }
+          return res;
+        }),
       ]);
       setItems(tRes.data);
       setKegiatan(kRes.data.data || kRes.data);
@@ -198,14 +196,52 @@ export default function KegiatanTambahanPage() {
         <tbody>
           {loading ? (
             <tr>
-              <td colSpan="8" className="py-4 text-center">
-                Memuat data...
+              <td
+                colSpan="7"
+                className="py-6 text-center text-gray-600 dark:text-gray-300"
+              >
+                <div className="flex flex-col items-center space-y-2">
+                  <svg
+                    className="animate-spin h-6 w-6 text-blue-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 
+            6.364A8.001 8.001 0 0112 20v4c-6.627 
+            0-12-5.373-12-12h4a8.001 8.001 
+            0 006.364 2.93z"
+                    ></path>
+                  </svg>
+                  <span className="text-sm font-medium tracking-wide">
+                    Memuat data...
+                  </span>
+                </div>
               </td>
             </tr>
           ) : paginatedItems.length === 0 ? (
             <tr>
-              <td colSpan="8" className="py-4 text-center">
-                Data tidak ditemukan
+              <td
+                colSpan="7"
+                className="py-6 text-center text-gray-600 dark:text-gray-300"
+              >
+                <div className="flex flex-col items-center space-y-1">
+                  <span className="text-xl">🫰🫰🤟🤟😜☝☝</span>
+                  <span className="text-sm font-medium tracking-wide">
+                    Data tidak ditemukan.
+                  </span>
+                </div>
               </td>
             </tr>
           ) : (
