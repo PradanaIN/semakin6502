@@ -22,7 +22,7 @@ export default function Layout() {
   const { user, setToken, setUser } = useAuth();
   const location = useLocation();
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [notifCount, setNotifCount] = useState(3);
   const [notifications, setNotifications] = useState([
     { id: 1, text: "Laporan harian belum dikirim", read: false },
@@ -108,11 +108,11 @@ export default function Layout() {
         <div className="flex items-center justify-between gap-2 p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex-shrink-0">
           <div className="flex items-center space-x-3">
             <button
-              className="text-xl text-gray-700 dark:text-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ring-blue-500"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              aria-label={sidebarOpen ? "Close menu" : "Open menu"}
+              className={`text-xl text-gray-700 dark:text-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ring-blue-500 ${sidebarOpen ? "hidden" : ""}`}
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Open menu"
             >
-              {sidebarOpen ? <FaTimes /> : <FaBars />}
+              <FaBars />
             </button>
             <div className="text-lg sm:text-xl font-semibold capitalize truncate max-w-[200px] sm:max-w-xs">
               {getPageTitle()}
