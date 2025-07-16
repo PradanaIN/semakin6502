@@ -103,7 +103,9 @@ export default function MonitoringPage() {
     const fetchUsers = async () => {
       try {
         const res = await axios.get("/users");
-        const filtered = res.data.filter((u) => u.role !== "admin");
+        const filtered = res.data.filter(
+          (u) => u.role !== "admin" && u.role !== "pimpinan"
+        );
         const sorted = filtered.sort((a, b) => a.nama.localeCompare(b.nama));
         setAllUsers(sorted);
       } catch (err) {
@@ -133,7 +135,7 @@ export default function MonitoringPage() {
       if (t) {
         const mem = t.members
           .map((m) => m.user)
-          .filter((u) => u.role !== "admin");
+          .filter((u) => u.role !== "admin" && u.role !== "pimpinan");
         const sorted = mem.sort((a, b) => a.nama.localeCompare(b.nama));
         setUsers(sorted);
       }

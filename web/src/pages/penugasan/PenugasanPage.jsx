@@ -361,7 +361,9 @@ export default function PenugasanPage() {
                 styles={selectStyles}
                 menuPortalTarget={document.body}
                 options={users
-                  .filter((u) => u.role !== ROLES.ADMIN)
+                  .filter(
+                    (u) => u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN
+                  )
                   .map((u) => ({ value: u.id, label: `${u.nama}` }))}
                 value={form.pegawaiIds
                   .map((id) => {
@@ -386,7 +388,9 @@ export default function PenugasanPage() {
                   setForm({
                     ...form,
                     pegawaiIds: users
-                      .filter((u) => u.role !== ROLES.ADMIN)
+                      .filter(
+                        (u) => u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN
+                      )
                       .map((u) => u.id),
                   })
                 }
