@@ -225,7 +225,7 @@ export default function MonitoringPage() {
     const fetchMonthly = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("/monitoring/bulanan/matrix", {
+        const res = await axios.get("/monitoring/bulanan/all", {
           params: {
             year,
             bulan: monthIndex + 1,
@@ -240,7 +240,7 @@ export default function MonitoringPage() {
       }
     };
     fetchMonthly();
-  }, [year, teamId, mergeMonthlyMatrixWithUsers]);
+  }, [year, monthIndex, teamId, mergeMonthlyMatrixWithUsers]);
 
 
   const currentYear = new Date().getFullYear();
@@ -451,7 +451,12 @@ export default function MonitoringPage() {
                 />
               </>
             )}
-            {tab === "bulanan" && <MonthlyMatrix data={monthlyData} />}
+            {tab === "bulanan" &&
+              (monthlyData.length > 0 ? (
+                <MonthlyMatrix data={monthlyData} />
+              ) : (
+                <div className="text-center py-4">Tidak ada data</div>
+              ))}
           </div>
         )}
       </div>
