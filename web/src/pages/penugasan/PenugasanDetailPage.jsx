@@ -9,7 +9,7 @@ import {
 } from "../../utils/alerts";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, ExternalLink } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 import { STATUS } from "../../utils/status";
@@ -47,6 +47,7 @@ export default function PenugasanDetailPage() {
   const [laporanForm, setLaporanForm] = useState({
     id: null,
     tanggal: new Date().toISOString().slice(0, 10),
+    deskripsi: "",
     status: STATUS.BELUM, // Belum, Sedang Dikerjakan, Selesai Dikerjakan
     bukti_link: "",
     catatan: "",
@@ -112,6 +113,7 @@ export default function PenugasanDetailPage() {
     setLaporanForm({
       id: null,
       tanggal: new Date().toISOString().slice(0, 10),
+      deskripsi: "",
       status: STATUS.BELUM,
       bukti_link: "",
       catatan: "",
@@ -143,6 +145,7 @@ export default function PenugasanDetailPage() {
     setLaporanForm({
       id: item.id,
       tanggal: item.tanggal.slice(0, 10),
+      deskripsi: item.deskripsi || "",
       status: item.status,
       bukti_link: item.bukti_link || "",
       catatan: item.catatan || "",
@@ -396,6 +399,7 @@ export default function PenugasanDetailPage() {
           <thead>
             <tr className={`${tableStyles.headerRow} text-sm`}>
               <th className={tableStyles.smallCell}>No</th>
+              <th className={tableStyles.smallCell}>Deskripsi</th>
               <th className={tableStyles.smallCell}>Tanggal</th>
               <th className={tableStyles.smallCell}>Status</th>
               <th className={tableStyles.smallCell}>Bukti</th>
@@ -406,7 +410,7 @@ export default function PenugasanDetailPage() {
           <tbody>
             {laporan.length === 0 ? (
               <tr>
-                <td colSpan="6" className="py-2 text-center">
+                <td colSpan="7" className="py-2 text-center">
                   Belum ada laporan
                 </td>
               </tr>
@@ -417,6 +421,7 @@ export default function PenugasanDetailPage() {
                   className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
                 >
                   <td className={tableStyles.smallCell}>{idx + 1}</td>
+                  <td className={tableStyles.smallCell}>{l.deskripsi}</td>
                   <td className={tableStyles.smallCell}>
                     {l.tanggal.slice(0, 10)}
                   </td>
@@ -429,9 +434,11 @@ export default function PenugasanDetailPage() {
                         href={l.bukti_link}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-blue-600 underline dark:text-blue-400"
                       >
-                        Link
+                        <ExternalLink
+                          size={16}
+                          className="mx-auto text-blue-600 dark:text-blue-400"
+                        />
                       </a>
                     ) : (
                       "-"
@@ -472,10 +479,10 @@ export default function PenugasanDetailPage() {
             {laporanForm.id ? "Edit" : "Tambah"} Laporan Harian
           </h3>
           <div className="space-y-2">
-            <div>
-              <Label htmlFor="laporanTanggal">
-                Tanggal <span className="text-red-500">*</span>
-              </Label>
+          <div>
+            <Label htmlFor="laporanTanggal">
+              Tanggal <span className="text-red-500">*</span>
+            </Label>
               <Input
                 id="laporanTanggal"
                 type="date"
@@ -487,11 +494,24 @@ export default function PenugasanDetailPage() {
                 onFocus={() => dateRef.current?.showPicker()}
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
               />
-            </div>
-            <div>
-              <Label htmlFor="laporanStatus">
-                Status <span className="text-red-500">*</span>
-              </Label>
+          </div>
+          <div>
+            <Label htmlFor="laporanDeskripsi">
+              Deskripsi <span className="text-red-500">*</span>
+            </Label>
+            <textarea
+              id="laporanDeskripsi"
+              value={laporanForm.deskripsi}
+              onChange={(e) =>
+                setLaporanForm({ ...laporanForm, deskripsi: e.target.value })
+              }
+              className="form-input"
+            />
+          </div>
+          <div>
+            <Label htmlFor="laporanStatus">
+              Status <span className="text-red-500">*</span>
+            </Label>
               <select
                 id="laporanStatus"
                 value={laporanForm.status}

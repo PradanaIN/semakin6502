@@ -66,6 +66,7 @@ model LaporanHarian {
   penugasanId Int
   tanggal     DateTime
   status      String
+  deskripsi   String?
   bukti_link  String?
   catatan     String?
   pegawaiId   Int

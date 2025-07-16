@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, ExternalLink, X } from "lucide-react";
 import { showSuccess, showError, confirmDelete } from "../../utils/alerts";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
@@ -26,6 +26,7 @@ export default function LaporanHarianPage() {
   const [form, setForm] = useState({
     id: null,
     tanggal: new Date().toISOString().slice(0, 10),
+    deskripsi: "",
     status: STATUS.BELUM,
     bukti_link: "",
     catatan: "",
@@ -47,6 +48,7 @@ export default function LaporanHarianPage() {
     setForm({
       id: item.id,
       tanggal: item.tanggal.slice(0, 10),
+      deskripsi: item.deskripsi || "",
       status: item.status,
       bukti_link: item.bukti_link || "",
       catatan: item.catatan || "",
@@ -88,9 +90,10 @@ export default function LaporanHarianPage() {
   const filtered = laporan.filter((l) => {
     const peg = l.pegawai?.nama?.toLowerCase() || "";
     const keg = l.penugasan?.kegiatan?.nama_kegiatan?.toLowerCase() || "";
+    const desc = l.deskripsi?.toLowerCase() || "";
     const cat = l.catatan?.toLowerCase() || "";
     const stat = l.status.toLowerCase();
-    const txt = `${peg} ${keg} ${cat} ${stat}`;
+    const txt = `${peg} ${keg} ${desc} ${cat} ${stat}`;
     const matchQuery = txt.includes(query.toLowerCase());
     const matchDate = l.tanggal.slice(0, 10) === tanggal;
     return matchQuery && matchDate;
@@ -130,7 +133,8 @@ export default function LaporanHarianPage() {
                 <th className={tableStyles.cell}>No</th>
                 <th className={tableStyles.cell}>Kegiatan</th>
                 <th className={tableStyles.cell}>Tim</th>
-                <th className={tableStyles.cell}>Deskripsi</th>
+                <th className={tableStyles.cell}>Deskripsi Kegiatan</th>
+                <th className={tableStyles.cell}>Deskripsi Laporan</th>
                 <th className={tableStyles.cell}>Tanggal</th>
                 <th className={tableStyles.cell}>Status</th>
                 <th className={tableStyles.cell}>Bukti</th>
@@ -140,7 +144,7 @@ export default function LaporanHarianPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="8" className="py-10">
+                  <td colSpan="9" className="py-10">
                     <div className="flex flex-col items-center justify-center space-y-3">
                       <svg
                         className="animate-spin h-8 w-8 text-blue-600"
@@ -175,7 +179,7 @@ export default function LaporanHarianPage() {
               ) : filtered.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="8"
+                    colSpan="9"
                     className="py-6 text-center text-gray-600 dark:text-gray-300"
                   >
                     <div className="flex flex-col items-center space-y-1">
@@ -204,6 +208,7 @@ export default function LaporanHarianPage() {
                     <td className={tableStyles.cell}>
                       {item.penugasan?.kegiatan?.deskripsi || "-"}
                     </td>
+                    <td className={tableStyles.cell}>{item.deskripsi}</td>
                     <td className={tableStyles.cell}>
                       {item.tanggal.slice(0, 10)}
                     </td>
@@ -211,8 +216,10 @@ export default function LaporanHarianPage() {
                       <StatusBadge status={item.status} />
                     </td>
                     <td className={tableStyles.cell}>
-                      {item.bukti_dukung ? (
-                        <Check className="w-4 h-4 text-green-600" />
+                    {item.bukti_link ? (
+                        <a href={item.bukti_link} target="_blank" rel="noreferrer">
+                          <ExternalLink size={16} className="mx-auto text-blue-600 dark:text-blue-400" />
+                        </a>
                       ) : (
                         <X className="w-4 h-4 text-red-600" />
                       )}
@@ -270,10 +277,10 @@ export default function LaporanHarianPage() {
             Edit Laporan Harian
           </h3>
           <div className="space-y-2">
-            <div>
-              <Label htmlFor="tanggal">
-                Tanggal<span className="text-red-500">*</span>
-              </Label>
+          <div>
+            <Label htmlFor="tanggal">
+              Tanggal<span className="text-red-500">*</span>
+            </Label>
               <Input
                 id="tanggal"
                 type="date"
@@ -281,10 +288,21 @@ export default function LaporanHarianPage() {
                 onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
               />
-            </div>
-            <div>
-              <Label htmlFor="status">
-                Status<span className="text-red-500">*</span>
+          </div>
+          <div>
+            <Label htmlFor="deskripsi">
+              Deskripsi <span className="text-red-500">*</span>
+            </Label>
+            <textarea
+              id="deskripsi"
+              value={form.deskripsi}
+              onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
+              className="form-input"
+            />
+          </div>
+          <div>
+            <Label htmlFor="status">
+              Status<span className="text-red-500">*</span>
               </Label>
               <select
                 id="status"
