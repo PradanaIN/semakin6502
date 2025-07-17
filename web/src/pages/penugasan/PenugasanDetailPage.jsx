@@ -54,6 +54,10 @@ export default function PenugasanDetailPage() {
     catatan: "",
   });
 
+  const closeLaporanForm = useCallback(() => {
+    setShowLaporanForm(false);
+  }, []);
+
   const dateRef = useRef(null);
 
   const fetchDetail = useCallback(async () => {
@@ -142,6 +146,7 @@ export default function PenugasanDetailPage() {
         await axios.post("/laporan-harian", {
           ...laporanForm,
           penugasanId: parseInt(id, 10),
+          pegawaiId: item.pegawaiId,
         });
       }
 
@@ -526,7 +531,7 @@ export default function PenugasanDetailPage() {
 
       {showLaporanForm && (
         <Modal
-          onClose={() => setShowLaporanForm(false)}
+          onClose={closeLaporanForm}
           titleId="laporan-form-title"
         >
           <div className="space-y-6">
@@ -643,7 +648,14 @@ export default function PenugasanDetailPage() {
             <div className="flex justify-end gap-3 pt-4">
               <Button
                 variant="secondary"
-                onClick={() => setShowLaporanForm(false)}
+                onClick={async () => {
+                  const r = await confirmCancel(
+                    laporanForm.id
+                      ? "Batalkan perubahan?"
+                      : "Batalkan penambahan laporan?"
+                  );
+                  if (r.isConfirmed) setShowLaporanForm(false);
+                }}
               >
                 Batal
               </Button>

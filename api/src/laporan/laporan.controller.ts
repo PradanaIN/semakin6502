@@ -24,8 +24,8 @@ export class LaporanController {
 
   @Post()
   submit(@Body() body: SubmitLaporanDto, @Req() req: Request) {
-    const userId = (req.user as any).userId;
-    return this.laporanService.submit({ ...body, pegawaiId: userId });
+    const u = req.user as any;
+    return this.laporanService.submit(body, u.userId, u.role);
   }
 
   @Get()
