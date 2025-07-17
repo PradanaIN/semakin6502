@@ -444,7 +444,10 @@ async function main() {
   }
 
   if (tambahanRows.length) {
-    await prisma.kegiatanTambahan.createMany({ data: tambahanRows });
+    await prisma.kegiatanTambahan.createMany({
+      data: tambahanRows,
+      skipDuplicates: true,
+    });
   }
 
   const penugasanRows: any[] = [];
