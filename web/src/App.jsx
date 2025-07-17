@@ -6,9 +6,9 @@ import Loading from "./components/Loading";
 const LoginPage = React.lazy(() => import("./pages/auth/LoginPage"));
 
 export default function App() {
-  const { token, user } = useAuth();
+  const { user } = useAuth();
 
-  if (!token || !user) {
+  if (!user) {
     return (
       <Suspense fallback={<Loading fullScreen />}>
         <LoginPage />

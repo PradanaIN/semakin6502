@@ -9,20 +9,18 @@ export default function LoginPage() {
   const [form, setForm] = useState({ identifier: "", password: "" });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const { setToken, setUser } = useAuth();
+  const { setUser } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/auth/login`,
-        form
+        form,
+        { withCredentials: true }
       );
 
-      setToken(res.data.access_token);
       setUser(res.data.user);
-
-      localStorage.setItem("token", res.data.access_token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
       setError("");
