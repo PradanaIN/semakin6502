@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useTheme } from "../../theme/useTheme.jsx";
 import Swal from "sweetalert2";
 import confirmAlert from "../../utils/confirmAlert";
+import axios from "axios";
 import {
   FaBell,
   FaMoon,
@@ -44,7 +45,7 @@ export default function Layout() {
       confirmButtonText: "Logout",
     });
     if (!r.isConfirmed) return;
-    await axios.post(`${import.meta.env.VITE_API_URL}/auth/logout`, {}, { withCredentials: true });
+    await axios.post("/auth/logout", {}, { withCredentials: true });
     localStorage.removeItem("user");
     setUser(null);
   };

@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
 
-  const origins = (process.env.CORS_ORIGIN || "")
+  const origins = (process.env.CORS_ORIGIN || "http://localhost:5173")
     .split(",")
     .map((o) => o.trim())
     .filter(Boolean);
