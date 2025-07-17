@@ -227,10 +227,9 @@ export default function MonitoringPage() {
     const fetchMonthly = async () => {
       try {
         setLoading(true);
-        const res = await axios.get("/monitoring/bulanan/all", {
+        const res = await axios.get("/monitoring/bulanan/matrix", {
           params: {
             year,
-            bulan: monthIndex + 1,
             teamId: teamId || undefined,
           },
         });
@@ -242,7 +241,7 @@ export default function MonitoringPage() {
       }
     };
     fetchMonthly();
-  }, [year, monthIndex, teamId, mergeMonthlyMatrixWithUsers]);
+  }, [year, teamId, mergeMonthlyMatrixWithUsers]);
 
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
