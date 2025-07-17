@@ -14,8 +14,11 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
 import DateFilter from "../../components/ui/DateFilter";
+import { useAuth } from "../auth/useAuth";
+import { ROLES } from "../../utils/roles";
 
 export default function LaporanHarianPage() {
+  const { user } = useAuth();
   const [laporan, setLaporan] = useState([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -36,7 +39,9 @@ export default function LaporanHarianPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("/laporan-harian/mine");
+      const url =
+        user?.role === ROLES.ADMIN ? "/laporan-harian/all" : "/laporan-harian/mine";
+      const res = await axios.get(url);
       setLaporan(res.data);
     } catch (err) {
       console.error("Gagal mengambil laporan", err);
@@ -85,8 +90,8 @@ export default function LaporanHarianPage() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (user) fetchData();
+  }, [user]);
 
   const filtered = laporan.filter((l) => {
     const peg = l.pegawai?.nama?.toLowerCase() || "";

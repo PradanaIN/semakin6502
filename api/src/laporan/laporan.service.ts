@@ -14,6 +14,16 @@ import { STATUS } from "../common/status.constants";
 export class LaporanService {
   constructor(private prisma: PrismaService) {}
 
+  getAll() {
+    return this.prisma.laporanHarian.findMany({
+      orderBy: { tanggal: 'desc' },
+      include: {
+        pegawai: true,
+        penugasan: { include: { kegiatan: true } },
+      },
+    });
+  }
+
   private async syncPenugasanStatus(penugasanId: number) {
     const latest = await this.prisma.laporanHarian.findFirst({
       where: { penugasanId },

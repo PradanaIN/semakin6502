@@ -24,6 +24,11 @@ import { AuthRequestUser } from "../common/auth-request-user.interface";
 export class LaporanController {
   constructor(private readonly laporanService: LaporanService) {}
 
+  @Get('all')
+  getAll() {
+    return this.laporanService.getAll();
+  }
+
   @Post()
   submit(@Body() body: SubmitLaporanDto, @Req() req: Request) {
     const u = req.user as AuthRequestUser;
