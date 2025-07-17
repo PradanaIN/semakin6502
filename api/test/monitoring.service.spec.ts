@@ -38,6 +38,30 @@ describe('MonitoringService aggregated', () => {
     ]);
   });
 
+  it('mingguan calculates progress from assignments and marks presence', async () => {
+    prisma.penugasan.findMany.mockResolvedValue([
+      { status: STATUS.SELESAI_DIKERJAKAN },
+      { status: STATUS.BELUM },
+    ]);
+    prisma.laporanHarian.findMany.mockResolvedValue([
+      { tanggal: new Date('2024-04-29'), status: STATUS.SELESAI_DIKERJAKAN },
+      { tanggal: new Date('2024-05-01'), status: STATUS.BELUM },
+    ]);
+
+    const res = await service.mingguan('2024-05-01');
+
+    expect(prisma.penugasan.findMany).toHaveBeenCalledWith({
+      where: { minggu: 5, bulan: '4', tahun: 2024 },
+      select: { status: true },
+    });
+
+    expect(res.totalTugas).toBe(2);
+    expect(res.totalSelesai).toBe(1);
+    expect(res.detail[0].persen).toBe(100);
+    expect(res.detail[1].persen).toBe(0);
+    expect(res.detail[2].persen).toBe(100);
+  });
+
   it('bulananAll aggregates and passes bulan filter', async () => {
     prisma.penugasan.findMany.mockResolvedValue([
       { pegawaiId: 2, bulan: '1', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'B' } },
