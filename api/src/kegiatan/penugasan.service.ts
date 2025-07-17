@@ -184,7 +184,7 @@ export class PenugasanService {
       });
       if (!leader)
         throw new ForbiddenException(
-          "hanya admin atau ketua tim yang dapat menghapus penugasan"
+          "Hanya admin atau ketua tim yang dapat menghapus penugasan"
         );
     }
     const count = await this.prisma.laporanHarian.count({
@@ -192,7 +192,7 @@ export class PenugasanService {
     });
     if (count > 0)
       throw new BadRequestException(
-        "hapus laporan harian penugasan ini terlebih dahulu"
+        "Hapus laporan harian penugasan ini terlebih dahulu"
       );
     await this.prisma.penugasan.delete({ where: { id } });
     return { success: true };

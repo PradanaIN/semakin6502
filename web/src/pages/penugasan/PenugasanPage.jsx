@@ -411,7 +411,7 @@ export default function PenugasanPage() {
               </button>
             </div>
             <div>
-              <Label htmlFor="deskripsi">Deskripsi</Label>
+              <Label htmlFor="deskripsi">Deskripsi Penugasan</Label>
               <textarea
                 id="deskripsi"
                 value={form.deskripsi}
