@@ -55,16 +55,29 @@ export class MonitoringService {
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
 
-    const where: any = { tanggal: { gte: start, lte: end } };
-    if (userId) where.pegawaiId = userId;
+    const laporanWhere: any = { tanggal: { gte: start, lte: end } };
+    if (userId) laporanWhere.pegawaiId = userId;
     if (teamId)
-      where.penugasan = {
+      laporanWhere.penugasan = {
         kegiatan: { teamId },
       };
 
     const records = await this.prisma.laporanHarian.findMany({
-      where,
+      where: laporanWhere,
       select: { tanggal: true, status: true },
+    });
+
+    const tugasWhere: any = {
+      minggu: getWeekOfMonth(start),
+      bulan: String(start.getMonth() + 1),
+      tahun: start.getFullYear(),
+    };
+    if (teamId) tugasWhere.kegiatan = { teamId };
+    if (userId) tugasWhere.pegawaiId = userId;
+
+    const tugas = await this.prisma.penugasan.findMany({
+      where: tugasWhere,
+      select: { status: true },
     });
 
     const perDay: Record<string, { selesai: number; total: number }> = {};
@@ -94,16 +107,16 @@ export class MonitoringService {
       persen: number;
     }[];
 
-    let totalSelesai = 0;
-    let totalTugas = 0;
+    let totalSelesai = tugas.filter(
+      (t: { status: string }) => t.status === STATUS.SELESAI_DIKERJAKAN,
+    ).length;
+    let totalTugas = tugas.length;
     for (let i = 0; i < 7; i++) {
       const d = new Date(start);
       d.setDate(start.getDate() + i);
       const dateStr = d.toISOString().slice(0, 10);
       const data = perDay[dateStr] || { selesai: 0, total: 0 };
-      const persen = data.total
-        ? Math.round((data.selesai / data.total) * 100)
-        : 0;
+      const persen = data.total > 0 ? 100 : 0;
       detail.push({
         hari: hari[d.getDay()],
         tanggal: dateStr,
@@ -111,8 +124,6 @@ export class MonitoringService {
         total: data.total,
         persen,
       });
-      totalSelesai += data.selesai;
-      totalTugas += data.total;
     }
 
     const totalProgress = totalTugas
