@@ -60,6 +60,11 @@ export default function PenugasanDetailPage() {
 
   const dateRef = useRef(null);
 
+  const formatDMY = (iso) => {
+    const [y, m, d] = iso.slice(0, 10).split("-");
+    return `${d}-${m}-${y}`;
+  };
+
   const fetchDetail = useCallback(async () => {
     try {
       const res = await axios.get(`/penugasan/${id}`);
@@ -287,7 +292,7 @@ export default function PenugasanDetailPage() {
             <div className="text-sm text-gray-500 dark:text-gray-400">
               Bulan
             </div>
-            <div className="font-medium">{item.bulan}</div>
+            <div className="font-medium">{months[item.bulan - 1]}</div>
           </div>
           <div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -297,7 +302,7 @@ export default function PenugasanDetailPage() {
           </div>
           <div className="sm:col-span-2 lg:col-span-3">
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              Deskripsi
+              Deskripsi Penugasan
             </div>
             <div className="font-medium">{item.deskripsi || "-"}</div>
           </div>
@@ -363,7 +368,7 @@ export default function PenugasanDetailPage() {
             />
           </div>
           <div>
-            <Label htmlFor="deskripsi">Deskripsi</Label>
+            <Label htmlFor="deskripsi">Deskripsi Penugasan</Label>
             <textarea
               id="deskripsi"
               value={form.deskripsi}
@@ -494,7 +499,7 @@ export default function PenugasanDetailPage() {
                   >
                     <td className="py-3 px-4">{idx + 1}</td>
                     <td className="py-3 px-4">{l.deskripsi}</td>
-                    <td className="py-3 px-4">{l.tanggal.slice(0, 10)}</td>
+                    <td className="py-3 px-4">{formatDMY(l.tanggal)}</td>
                     <td className="py-3 px-4">
                       <StatusBadge status={l.status} />
                     </td>
