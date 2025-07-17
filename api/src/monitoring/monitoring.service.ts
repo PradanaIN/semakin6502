@@ -151,23 +151,19 @@ export class MonitoringService {
 
     for (let i = 0; i < MONTHS.length; i++) {
       const first = new Date(Date.UTC(yr, i, 1));
-      const weekly = await this.mingguanBulan(
+      const weeks = await this.penugasanBulan(
         first.toISOString().slice(0, 10),
         teamId,
+        userId,
       );
 
-      const users = weekly.filter((u) => !userId || u.userId === userId);
-      if (users.length === 0) {
+      if (weeks.length === 0) {
         results.push({ bulan: MONTHS[i], persen: 0 });
         continue;
       }
 
-      const avgPerUser = users.map((u) => {
-        const total = u.weeks.reduce((sum, w) => sum + w.persen, 0);
-        return u.weeks.length ? total / u.weeks.length : 0;
-      });
       const bulanAvg =
-        avgPerUser.reduce((sum, v) => sum + v, 0) / avgPerUser.length;
+        weeks.reduce((sum, w) => sum + w.persen, 0) / weeks.length;
       results.push({ bulan: MONTHS[i], persen: Math.round(bulanAvg) });
     }
 
@@ -396,6 +392,55 @@ export class MonitoringService {
     }
 
     return { total: tugas.length, selesai, belum };
+  }
+
+  async penugasanBulan(
+    tanggal: string,
+    teamId?: number,
+    userId?: number,
+  ) {
+    const base = new Date(tanggal);
+    if (isNaN(base.getTime()))
+      throw new BadRequestException("tanggal tidak valid");
+
+    const year = base.getFullYear();
+    const month = base.getMonth();
+
+    const monthStart = new Date(year, month, 1);
+    const monthEnd = new Date(year, month + 1, 0);
+
+    const firstMonday = new Date(monthStart);
+    firstMonday.setDate(monthStart.getDate() - ((monthStart.getDay() + 6) % 7));
+    const weekStarts: Date[] = [];
+    for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+      weekStarts.push(new Date(d));
+    }
+
+    const where: any = {
+      tahun: year,
+      bulan: String(month + 1),
+    };
+    if (teamId) where.kegiatan = { teamId };
+    if (userId) where.pegawaiId = userId;
+
+    const tugas = await this.prisma.penugasan.findMany({
+      where,
+      select: { minggu: true, status: true },
+    });
+
+    const perWeek: Record<number, { selesai: number; total: number }> = {};
+    for (const t of tugas) {
+      const idx = t.minggu - 1;
+      if (!perWeek[idx]) perWeek[idx] = { selesai: 0, total: 0 };
+      perWeek[idx].total += 1;
+      if (t.status === STATUS.SELESAI_DIKERJAKAN) perWeek[idx].selesai += 1;
+    }
+
+    return weekStarts.map((_, i) => {
+      const w = perWeek[i] || { selesai: 0, total: 0 };
+      const persen = w.total ? Math.round((w.selesai / w.total) * 100) : 0;
+      return { minggu: i + 1, selesai: w.selesai, total: w.total, persen };
+    });
   }
 
   async bulananAll(year: string, teamId?: number, bulan?: string) {

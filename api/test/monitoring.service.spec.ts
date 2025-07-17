@@ -139,35 +139,44 @@ describe('MonitoringService aggregated', () => {
     ]);
   });
 
+  it('penugasanBulan aggregates per week', async () => {
+    prisma.penugasan.findMany.mockResolvedValue([
+      { minggu: 1, status: STATUS.SELESAI_DIKERJAKAN },
+      { minggu: 1, status: STATUS.BELUM },
+      { minggu: 3, status: STATUS.SELESAI_DIKERJAKAN },
+    ]);
+
+    const res = await service.penugasanBulan('2024-05-10');
+    expect(prisma.penugasan.findMany).toHaveBeenCalledWith({
+      where: { tahun: 2024, bulan: '5' },
+      select: { minggu: true, status: true },
+    });
+    const zero = { selesai: 0, total: 0, persen: 0 };
+    expect(res).toEqual([
+      { minggu: 1, selesai: 1, total: 2, persen: 50 },
+      { minggu: 2, ...zero },
+      { minggu: 3, selesai: 1, total: 1, persen: 100 },
+      { minggu: 4, ...zero },
+      { minggu: 5, ...zero },
+    ]);
+  });
+
   it('bulanan averages weekly progress', async () => {
-    const weekly = [
-      {
-        userId: 1,
-        nama: 'A',
-        weeks: [
-          { selesai: 1, total: 1, persen: 100 },
-          { selesai: 0, total: 1, persen: 0 },
-        ],
-      },
-      {
-        userId: 2,
-        nama: 'B',
-        weeks: [
-          { selesai: 1, total: 1, persen: 100 },
-          { selesai: 1, total: 1, persen: 100 },
-        ],
-      },
+    const weeks = [
+      { minggu: 1, selesai: 1, total: 1, persen: 100 },
+      { minggu: 2, selesai: 0, total: 1, persen: 0 },
+      { minggu: 3, selesai: 1, total: 1, persen: 100 },
     ];
     const spy = jest
-      .spyOn(service, 'mingguanBulan')
-      .mockResolvedValue(weekly);
+      .spyOn(service, 'penugasanBulan')
+      .mockResolvedValue(weeks);
 
     const res = await service.bulanan('2024');
     expect(spy).toHaveBeenCalledTimes(12);
-    expect(res[0]).toEqual({ bulan: 'Januari', persen: 75 });
+    expect(res[0]).toEqual({ bulan: 'Januari', persen: 67 });
 
     const resUser = await service.bulanan('2024', undefined, 1);
-    expect(resUser[0]).toEqual({ bulan: 'Januari', persen: 50 });
+    expect(resUser[0]).toEqual({ bulan: 'Januari', persen: 67 });
   });
 
   it('bulananMatrix aggregates per month', async () => {
