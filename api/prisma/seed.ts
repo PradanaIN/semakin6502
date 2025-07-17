@@ -1,5 +1,8 @@
+/// <reference path="../types/web-utils-holidays.d.ts" />
 import { PrismaClient } from "@prisma/client";
 import { hashPassword } from "../src/common/hash";
+import { STATUS } from "../src/common/status.constants";
+const { getHolidays } = require("../../web/src/utils/holidays") as { getHolidays: (year: number) => string[] };
 
 const prisma = new PrismaClient();
 
@@ -487,23 +490,45 @@ async function main() {
 
   if (penugasans.length) {
     const laporanRows: any[] = [];
+    const selesaiIds = new Set<number>();
+    const holidays = new Set(getHolidays(2025));
+
     for (const p of penugasans) {
       const info = months.find((m) => m.bulan === p.bulan);
       if (!info) continue;
       const start = 1 + (p.minggu - 1) * 7;
       const end = Math.min(start + 6, info.days);
+
       for (let d = start; d <= end; d++) {
         const date = new Date(Date.UTC(info.year, info.monthIndex, d));
+        const day = date.getDay();
+        const dateStr = date.toISOString().slice(0, 10);
+        if (day === 0 || day === 6 || holidays.has(dateStr)) continue;
+        if (Math.random() < 0.5) continue;
+
+        const status =
+          Math.random() < 0.5
+            ? STATUS.SEDANG_DIKERJAKAN
+            : STATUS.SELESAI_DIKERJAKAN;
+
+        if (status === STATUS.SELESAI_DIKERJAKAN) selesaiIds.add(p.id);
+
         laporanRows.push({
           penugasanId: p.id,
           pegawaiId: p.pegawaiId,
           tanggal: date.toISOString(),
-          status: "Belum Dikerjakan",
+          status,
         });
       }
     }
     if (laporanRows.length) {
       await prisma.laporanHarian.createMany({ data: laporanRows, skipDuplicates: true });
+    }
+    if (selesaiIds.size) {
+      await prisma.penugasan.updateMany({
+        where: { id: { in: Array.from(selesaiIds) } },
+        data: { status: STATUS.SELESAI_DIKERJAKAN },
+      });
     }
   }
 }
