@@ -79,7 +79,7 @@ export default function PenugasanPage() {
 
       let kRes;
       if (user?.role === ROLES.ADMIN) {
-        kRes = await axios.get("/master-kegiatan");
+        kRes = await axios.get("/master-kegiatan?limit=1000");
       } else {
         const tId = tRes.data[0]?.id;
         if (tId) {
