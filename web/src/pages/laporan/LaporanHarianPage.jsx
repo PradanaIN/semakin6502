@@ -19,7 +19,8 @@ export default function LaporanHarianPage() {
   const [laporan, setLaporan] = useState([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
-  const [tanggal, setTanggal] = useState(new Date().toISOString().slice(0, 10));
+  // default to empty string so all laporan are shown initially
+  const [tanggal, setTanggal] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
@@ -95,7 +96,9 @@ export default function LaporanHarianPage() {
     const stat = l.status.toLowerCase();
     const txt = `${peg} ${keg} ${desc} ${cat} ${stat}`;
     const matchQuery = txt.includes(query.toLowerCase());
-    const matchDate = l.tanggal.slice(0, 10) === tanggal;
+    const matchDate = tanggal
+      ? l.tanggal.slice(0, 10) === tanggal
+      : true;
     return matchQuery && matchDate;
   });
   const paginated = filtered.slice(
