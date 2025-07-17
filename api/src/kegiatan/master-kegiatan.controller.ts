@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
 } from "@nestjs/common";
 import { Request } from "express";
+import { AuthRequestUser } from "../common/auth-request-user.interface";
 import { MasterKegiatanService } from "./master-kegiatan.service";
 import { CreateMasterKegiatanDto } from "./dto/create-master-kegiatan.dto";
 import { UpdateMasterKegiatanDto } from "./dto/update-master-kegiatan.dto";
@@ -27,7 +28,7 @@ export class MasterKegiatanController {
     @Body() body: CreateMasterKegiatanDto,
     @Req() req: Request,
   ) {
-    const u = req.user as any;
+    const u = req.user as AuthRequestUser;
     return this.masterService.create(body, u.userId, u.role);
   }
 
@@ -48,13 +49,13 @@ export class MasterKegiatanController {
     @Body() body: UpdateMasterKegiatanDto,
     @Req() req: Request,
   ) {
-    const u = req.user as any;
+    const u = req.user as AuthRequestUser;
     return this.masterService.update(id, body, u.userId, u.role);
   }
 
   @Delete(":id")
   remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
-    const u = req.user as any;
+    const u = req.user as AuthRequestUser;
     return this.masterService.remove(id, u.userId, u.role);
   }
 }

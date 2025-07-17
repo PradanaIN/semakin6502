@@ -17,6 +17,7 @@ import { LaporanService } from "./laporan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { SubmitLaporanDto } from "./dto/submit-laporan.dto";
 import { UpdateLaporanDto } from "./dto/update-laporan.dto";
+import { AuthRequestUser } from "../common/auth-request-user.interface";
 
 @Controller("laporan-harian")
 @UseGuards(JwtAuthGuard)
@@ -25,7 +26,7 @@ export class LaporanController {
 
   @Post()
   submit(@Body() body: SubmitLaporanDto, @Req() req: Request) {
-    const u = req.user as any;
+    const u = req.user as AuthRequestUser;
     return this.laporanService.submit(body, u.userId, u.role);
   }
 
@@ -41,7 +42,7 @@ export class LaporanController {
 
   @Get("mine")
   myReports(@Req() req: Request) {
-    const userId = (req.user as any).userId;
+    const userId = (req.user as AuthRequestUser).userId;
     return this.laporanService.getByUser(userId);
   }
 
@@ -51,7 +52,7 @@ export class LaporanController {
     @Res() res: Response,
     @Query("format") format = "xlsx",
   ) {
-    const userId = (req.user as any).userId;
+    const userId = (req.user as AuthRequestUser).userId;
     const buf = await this.laporanService.export(userId, format);
     if (format === "pdf") {
       res.setHeader("Content-Type", "application/pdf");
@@ -75,13 +76,13 @@ export class LaporanController {
     @Body() body: UpdateLaporanDto,
     @Req() req: Request,
   ) {
-    const u = req.user as any;
+    const u = req.user as AuthRequestUser;
     return this.laporanService.update(id, body, u.userId, u.role);
   }
 
   @Delete(":id")
   remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
-    const u = req.user as any;
+    const u = req.user as AuthRequestUser;
     return this.laporanService.remove(id, u.userId, u.role);
   }
 }
