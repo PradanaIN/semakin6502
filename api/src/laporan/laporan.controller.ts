@@ -16,6 +16,7 @@ import { Request, Response } from "express";
 import { LaporanService } from "./laporan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { SubmitLaporanDto } from "./dto/submit-laporan.dto";
+import { UpdateLaporanDto } from "./dto/update-laporan.dto";
 
 @Controller("laporan-harian")
 @UseGuards(JwtAuthGuard)
@@ -71,7 +72,7 @@ export class LaporanController {
   @Put(":id")
   update(
     @Param("id", ParseIntPipe) id: number,
-    @Body() body: SubmitLaporanDto,
+    @Body() body: UpdateLaporanDto,
     @Req() req: Request,
   ) {
     const u = req.user as any;
