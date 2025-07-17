@@ -16,6 +16,7 @@ import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/guards/roles.decorator";
 import { Request } from "express";
 import { ROLES } from "../common/roles.constants";
+import { AuthRequestUser } from "../common/auth-request-user.interface";
 
 @Controller("teams")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -24,7 +25,7 @@ export class TeamsController {
 
   @Get()
   findAll(@Req() req: Request) {
-    const { user } = req as any;
+    const user = req.user as AuthRequestUser;
     if (user.role === ROLES.ADMIN) {
       return this.teamsService.findAll();
     }
@@ -33,7 +34,7 @@ export class TeamsController {
 
   @Get("member")
   findMemberTeams(@Req() req: Request) {
-    const { user } = req as any;
+    const user = req.user as AuthRequestUser;
     return this.teamsService.findByMember(user.userId);
   }
 
