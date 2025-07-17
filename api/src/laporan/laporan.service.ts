@@ -34,7 +34,7 @@ export class LaporanService {
         throw new ForbiddenException("bukan penugasan anda");
       }
     }
-    return this.prisma.laporanHarian.create({
+    const laporan = await this.prisma.laporanHarian.create({
       data: {
         penugasanId: data.penugasanId,
         pegawaiId: targetId,
@@ -45,6 +45,13 @@ export class LaporanService {
         catatan: data.catatan || undefined,
       },
     });
+
+    await this.prisma.penugasan.update({
+      where: { id: data.penugasanId },
+      data: { status: data.status },
+    });
+
+    return laporan;
   }
 
   getByTanggal(tanggal: string) {
@@ -100,7 +107,7 @@ export class LaporanService {
         throw new ForbiddenException("bukan laporan anda");
       }
     }
-    return this.prisma.laporanHarian.update({
+    const laporan = await this.prisma.laporanHarian.update({
       where: { id },
       data: {
         tanggal: new Date(data.tanggal),
@@ -110,6 +117,13 @@ export class LaporanService {
         catatan: data.catatan,
       },
     });
+
+    await this.prisma.penugasan.update({
+      where: { id: existing.penugasanId },
+      data: { status: data.status },
+    });
+
+    return laporan;
   }
 
   async remove(id: number, userId: number, role: string) {
@@ -136,6 +150,17 @@ export class LaporanService {
       }
     }
     await this.prisma.laporanHarian.delete({ where: { id } });
+
+    const latest = await this.prisma.laporanHarian.findFirst({
+      where: { penugasanId: existing.penugasanId },
+      orderBy: { tanggal: 'desc' },
+    });
+
+    await this.prisma.penugasan.update({
+      where: { id: existing.penugasanId },
+      data: { status: latest?.status || 'Belum' },
+    });
+
     return { success: true };
   }
 
