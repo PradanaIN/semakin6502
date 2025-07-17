@@ -417,6 +417,36 @@ async function main() {
   ];
 
   const members = await prisma.member.findMany({ include: { user: true } });
+
+  // seed tugas tambahan linked to master kegiatan
+  const tambahanRows: any[] = [];
+  for (const m of members) {
+    if (m.user.role === "admin") continue;
+    const masters = await prisma.masterKegiatan.findMany({ where: { teamId: m.teamId } });
+    if (!masters.length) continue;
+
+    for (let i = 0; i < 3; i++) {
+      const k = masters[i % masters.length];
+      const info = months[i % months.length];
+      const day = ((m.userId + i) % info.days) + 1;
+      const date = new Date(Date.UTC(info.year, info.monthIndex, day));
+      const status = i === 0 ? "Belum" : i === 1 ? "Sedang Dikerjakan" : "Selesai Dikerjakan";
+      tambahanRows.push({
+        nama: k.nama_kegiatan,
+        tanggal: date.toISOString(),
+        status,
+        userId: m.userId,
+        kegiatanId: k.id,
+        teamId: m.teamId,
+        deskripsi: `Tugas tambahan ${k.nama_kegiatan}`,
+      });
+    }
+  }
+
+  if (tambahanRows.length) {
+    await prisma.kegiatanTambahan.createMany({ data: tambahanRows });
+  }
+
   const penugasanRows: any[] = [];
 
   for (const m of members) {
