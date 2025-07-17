@@ -54,6 +54,10 @@ export default function PenugasanDetailPage() {
     catatan: "",
   });
 
+  const closeLaporanForm = useCallback(() => {
+    setShowLaporanForm(false);
+  }, []);
+
   const dateRef = useRef(null);
 
   const fetchDetail = useCallback(async () => {
@@ -526,7 +530,7 @@ export default function PenugasanDetailPage() {
 
       {showLaporanForm && (
         <Modal
-          onClose={() => setShowLaporanForm(false)}
+          onClose={closeLaporanForm}
           titleId="laporan-form-title"
         >
           <div className="space-y-6">
