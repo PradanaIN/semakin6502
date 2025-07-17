@@ -1,4 +1,4 @@
-import { getHolidays } from "../../../../api/src/utils/holidays";
+import { getHolidays } from "../../utils/holidays";
 import Legend from "../ui/Legend";
 
 const DailyOverview = ({ data = [] }) => {
