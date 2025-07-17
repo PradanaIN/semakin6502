@@ -146,6 +146,7 @@ export default function PenugasanDetailPage() {
         await axios.post("/laporan-harian", {
           ...laporanForm,
           penugasanId: parseInt(id, 10),
+          pegawaiId: item.pegawaiId,
         });
       }
 
