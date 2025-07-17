@@ -16,19 +16,25 @@ const StatsSummary = ({ weeklyData }) => {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <div className={`${statStyle} bg-blue-50 dark:bg-blue-900`}>
-        <p className="text-sm text-gray-600 dark:text-gray-300">Tugas Hari Ini</p>
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          Tugas Hari Ini
+        </p>
         <p className="text-2xl font-bold text-blue-600 dark:text-blue-200">
           {tugasHariIni}
         </p>
       </div>
       <div className={`${statStyle} bg-indigo-50 dark:bg-indigo-900`}>
-        <p className="text-sm text-gray-600 dark:text-gray-300">Tugas Minggu Ini</p>
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          Tugas Minggu Ini
+        </p>
         <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-200">
           {tugasMingguIni}
         </p>
       </div>
       <div className={`${statStyle} bg-yellow-50 dark:bg-yellow-900`}>
-        <p className="text-sm text-gray-600 dark:text-gray-300">Belum Selesai</p>
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          Belum Selesai
+        </p>
         <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-200">
           {belumSelesai}
         </p>
