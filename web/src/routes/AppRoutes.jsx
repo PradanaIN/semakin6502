@@ -32,15 +32,15 @@ const MonitoringPage = React.lazy(() =>
 const NotFound = React.lazy(() => import("../pages/NotFound"));
 
 function PrivateRoute({ children }) {
-  const { token, user } = useAuth();
-  if (!token || !user) {
+  const { user } = useAuth();
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
   return children;
 }
 
 export default function AppRoutes() {
-  const { token, user } = useAuth();
+  const { user } = useAuth();
 
   return (
     <Suspense fallback={<Loading fullScreen />}>
@@ -49,7 +49,7 @@ export default function AppRoutes() {
         <Route
           path="/login"
           element={
-            token && user ? <Navigate to="/dashboard" replace /> : <LoginPage />
+            user ? <Navigate to="/dashboard" replace /> : <LoginPage />
           }
         />
 

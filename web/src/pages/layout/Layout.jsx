@@ -19,7 +19,7 @@ import {
 import { ROLES } from "../../utils/roles";
 
 export default function Layout() {
-  const { user, setToken, setUser } = useAuth();
+  const { user, setUser } = useAuth();
   const location = useLocation();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -44,9 +44,8 @@ export default function Layout() {
       confirmButtonText: "Logout",
     });
     if (!r.isConfirmed) return;
-    localStorage.removeItem("token");
+    await axios.post(`${import.meta.env.VITE_API_URL}/auth/logout`, {}, { withCredentials: true });
     localStorage.removeItem("user");
-    setToken(null);
     setUser(null);
   };
 
