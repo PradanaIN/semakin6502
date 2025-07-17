@@ -84,7 +84,7 @@ export default function PenugasanDetailPage() {
     axios
       .get(`/laporan-harian/penugasan/${id}`)
       .then((r) => setLaporan(r.data));
-    axios.get("/master-kegiatan").then((r) => {
+    axios.get("/master-kegiatan?limit=1000").then((r) => {
       const kData = r.data.data || r.data;
       const sorted = [...kData].sort((a, b) =>
         a.nama_kegiatan.localeCompare(b.nama_kegiatan)
