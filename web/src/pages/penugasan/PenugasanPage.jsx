@@ -30,6 +30,17 @@ const EXCLUDED_TB_NAMES = [
   "Elly Astutik",
 ];
 
+const getCurrentWeek = () => {
+  const today = new Date();
+  const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const firstMonday = new Date(firstOfMonth);
+  firstMonday.setDate(
+    firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
+  );
+  const diff = Math.floor((today - firstMonday) / (1000 * 60 * 60 * 24));
+  return Math.floor(diff / 7) + 1;
+};
+
 export default function PenugasanPage() {
   const { user } = useAuth();
   const canManage = [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(
@@ -45,7 +56,7 @@ export default function PenugasanPage() {
     kegiatanId: "",
     pegawaiIds: [],
     deskripsi: "",
-    minggu: 1,
+    minggu: getCurrentWeek(),
     bulan: new Date().getMonth() + 1,
     tahun: new Date().getFullYear(),
   });
@@ -120,7 +131,7 @@ export default function PenugasanPage() {
       kegiatanId: "",
       pegawaiIds: [],
       deskripsi: "",
-      minggu: 1,
+      minggu: getCurrentWeek(),
       bulan: new Date().getMonth() + 1,
       tahun: new Date().getFullYear(),
     });
@@ -441,7 +452,7 @@ export default function PenugasanPage() {
                   type="number"
                   value={form.minggu}
                   min="1"
-                  max="5"
+                  max="6"
                   onChange={(e) =>
                     setForm({ ...form, minggu: parseInt(e.target.value, 10) })
                   }
