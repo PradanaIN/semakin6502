@@ -24,7 +24,6 @@ export default function MonitoringPage() {
   const [year, setYear] = useState(new Date().getFullYear());
 
   const [dailyData, setDailyData] = useState([]);
-  const [setWeeklyData] = useState([]);
   const [weeklyMonthData, setWeeklyMonthData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -190,10 +189,9 @@ export default function MonitoringPage() {
       try {
         setLoading(true);
         const minggu = weekStarts[weekIndex].toISOString().slice(0, 10);
-        const res = await axios.get("/monitoring/mingguan/all", {
+        await axios.get("/monitoring/mingguan/all", {
           params: { minggu, teamId: teamId || undefined },
         });
-        setWeeklyData(mergeProgressWithUsers(res.data));
       } catch (err) {
         console.error(err);
       } finally {
