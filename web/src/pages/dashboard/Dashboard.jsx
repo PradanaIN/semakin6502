@@ -70,12 +70,21 @@ const Dashboard = () => {
             .then((res) => res.data)
         );
 
-        const [dailyRes, weeklyArray, monthlyRes] = await Promise.all([
+        const tugasPromises = weekStarts.map((d) =>
+          axios
+            .get("/monitoring/penugasan/minggu", {
+              params: { minggu: formatISO(d), ...filters },
+            })
+            .then((res) => res.data)
+        );
+
+        const [dailyRes, weeklyArray, monthlyRes, tugasArray] = await Promise.all([
           axios.get("/monitoring/harian", { params: { tanggal, ...filters } }),
           Promise.all(weeklyPromises),
           axios.get("/monitoring/bulanan", {
             params: { year: String(year), ...filters },
           }),
+          Promise.all(tugasPromises),
         ]);
 
         const monthStart = new Date(year, month, 1);
@@ -106,6 +115,7 @@ const Dashboard = () => {
             totalSelesai,
             totalTugas,
             totalProgress,
+            penugasan: tugasArray[i],
           };
         });
 

@@ -7,9 +7,11 @@ const StatsSummary = ({ weeklyData }) => {
   const today = weeklyData.detail?.find((d) => d.tanggal === todayStr) || {};
 
   const tugasHariIni = today.selesai || 0;
-  const tugasMingguIni = weeklyData.totalTugas || 0;
-  const selesai = weeklyData.totalSelesai || 0;
-  const belumSelesai = Math.max(tugasMingguIni - selesai, 0);
+  const pen = weeklyData.penugasan || {};
+  const tugasMingguIni = pen.total || 0;
+  const selesai = pen.selesai || 0;
+  const belumSelesai =
+    pen.belum !== undefined ? pen.belum : Math.max(tugasMingguIni - selesai, 0);
 
   const statStyle = "p-4 rounded-lg shadow text-center";
 
