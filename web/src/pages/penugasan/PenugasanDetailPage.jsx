@@ -144,10 +144,15 @@ export default function PenugasanDetailPage() {
           penugasanId: parseInt(id, 10),
         });
       }
-      setShowLaporanForm(false);
-      const r = await axios.get(`/laporan-harian/penugasan/${id}`);
-      setLaporan(r.data);
+
       showSuccess("Berhasil", "Laporan disimpan");
+      setShowLaporanForm(false);
+
+      // Delay fetch laporan agar modal sudah tertutup dulu
+      setTimeout(async () => {
+        const r = await axios.get(`/laporan-harian/penugasan/${id}`);
+        setLaporan(r.data);
+      }, 200);
     } catch (err) {
       console.error(err);
       showError("Error", "Gagal menyimpan laporan");
@@ -524,105 +529,126 @@ export default function PenugasanDetailPage() {
           onClose={() => setShowLaporanForm(false)}
           titleId="laporan-form-title"
         >
-          <h3 id="laporan-form-title" className="text-lg font-semibold">
-            {laporanForm.id ? "Edit" : "Tambah"} Laporan Harian
-          </h3>
-          <div className="space-y-2">
-            <div>
-              <Label htmlFor="laporanDeskripsi">
-                Deskripsi <span className="text-red-500">*</span>
-              </Label>
-              <textarea
-                id="laporanDeskripsi"
-                value={laporanForm.deskripsi}
-                onChange={(e) =>
-                  setLaporanForm({ ...laporanForm, deskripsi: e.target.value })
-                }
-                placeholder="Tuliskan deskripsi kegiatan..."
-                required
-                className="form-input"
-              />
-            </div>
-            <div>
-              <Label htmlFor="laporanTanggal">
-                Tanggal <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="laporanTanggal"
-                type="date"
-                ref={dateRef}
-                value={laporanForm.tanggal}
-                onChange={(e) =>
-                  setLaporanForm({ ...laporanForm, tanggal: e.target.value })
-                }
-                onFocus={() => dateRef.current?.showPicker()}
-                required
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="laporanStatus">
-                Status <span className="text-red-500">*</span>
-              </Label>
-              <select
-                id="laporanStatus"
-                value={laporanForm.status}
-                onChange={(e) =>
-                  setLaporanForm({ ...laporanForm, status: e.target.value })
-                }
-                required
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-              >
-                <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
-                <option value={STATUS.SEDANG_DIKERJAKAN}>
-                  {STATUS.SEDANG_DIKERJAKAN}
-                </option>
-                <option value={STATUS.SELESAI_DIKERJAKAN}>
-                  {STATUS.SELESAI_DIKERJAKAN}
-                </option>
-              </select>
-            </div>
-            {laporanForm.status === STATUS.SELESAI_DIKERJAKAN && (
+          <div className="space-y-6">
+            <h3
+              id="laporan-form-title"
+              className="text-xl font-bold text-gray-800 dark:text-gray-100"
+            >
+              {laporanForm.id ? "Edit" : "Tambah"} Laporan Harian
+            </h3>
+
+            <div className="space-y-4">
+              {/* Deskripsi */}
               <div>
-                <Label htmlFor="buktiLink">
-                  Link Bukti <span className="text-red-500">*</span>
+                <Label htmlFor="laporanDeskripsi">
+                  Deskripsi <span className="text-red-500">*</span>
                 </Label>
-                <Input
-                  id="buktiLink"
-                  type="text"
-                  value={laporanForm.bukti_link}
+                <textarea
+                  id="laporanDeskripsi"
+                  value={laporanForm.deskripsi}
                   onChange={(e) =>
                     setLaporanForm({
                       ...laporanForm,
-                      bukti_link: e.target.value,
+                      deskripsi: e.target.value,
                     })
                   }
-                  placeholder="https://..."
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                  placeholder="Tuliskan deskripsi kegiatan..."
+                  required
+                  className="w-full mt-1 rounded-md border px-4 py-2 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-            )}
-            <div>
-              <Label htmlFor="catatan">Catatan</Label>
-              <textarea
-                id="catatan"
-                value={laporanForm.catatan}
-                onChange={(e) =>
-                  setLaporanForm({ ...laporanForm, catatan: e.target.value })
-                }
-                placeholder="Catatan tambahan (opsional)..."
-                className="form-input"
-              />
+
+              {/* Tanggal */}
+              <div>
+                <Label htmlFor="laporanTanggal">
+                  Tanggal <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="laporanTanggal"
+                  type="date"
+                  ref={dateRef}
+                  value={laporanForm.tanggal}
+                  onChange={(e) =>
+                    setLaporanForm({ ...laporanForm, tanggal: e.target.value })
+                  }
+                  onFocus={() => dateRef.current?.showPicker()}
+                  required
+                  className="w-full mt-1 rounded-md border px-4 py-2 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Status */}
+              <div>
+                <Label htmlFor="laporanStatus">
+                  Status <span className="text-red-500">*</span>
+                </Label>
+                <select
+                  id="laporanStatus"
+                  value={laporanForm.status}
+                  onChange={(e) =>
+                    setLaporanForm({ ...laporanForm, status: e.target.value })
+                  }
+                  required
+                  className="w-full mt-1 rounded-md border px-4 py-2 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
+                  <option value={STATUS.SEDANG_DIKERJAKAN}>
+                    {STATUS.SEDANG_DIKERJAKAN}
+                  </option>
+                  <option value={STATUS.SELESAI_DIKERJAKAN}>
+                    {STATUS.SELESAI_DIKERJAKAN}
+                  </option>
+                </select>
+              </div>
+
+              {/* Link Bukti (opsional, tergantung status) */}
+              {laporanForm.status === STATUS.SELESAI_DIKERJAKAN && (
+                <div>
+                  <Label htmlFor="buktiLink">
+                    Link Bukti <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="buktiLink"
+                    type="url"
+                    value={laporanForm.bukti_link}
+                    onChange={(e) =>
+                      setLaporanForm({
+                        ...laporanForm,
+                        bukti_link: e.target.value,
+                      })
+                    }
+                    placeholder="https://..."
+                    required
+                    className="w-full mt-1 rounded-md border px-4 py-2 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              )}
+
+              {/* Catatan */}
+              <div>
+                <Label htmlFor="catatan">Catatan</Label>
+                <textarea
+                  id="catatan"
+                  value={laporanForm.catatan}
+                  onChange={(e) =>
+                    setLaporanForm({ ...laporanForm, catatan: e.target.value })
+                  }
+                  placeholder="Catatan tambahan (opsional)..."
+                  className="w-full mt-1 rounded-md border px-4 py-2 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex justify-end space-x-2 pt-2">
-            <Button
-              variant="secondary"
-              onClick={() => setShowLaporanForm(false)}
-            >
-              Batal
-            </Button>
-            <Button onClick={saveLaporan}>Simpan</Button>
+
+            {/* Aksi tombol */}
+            <div className="flex justify-end gap-3 pt-4">
+              <Button
+                variant="secondary"
+                onClick={() => setShowLaporanForm(false)}
+              >
+                Batal
+              </Button>
+              <Button onClick={saveLaporan}>Simpan</Button>
+            </div>
           </div>
         </Modal>
       )}
