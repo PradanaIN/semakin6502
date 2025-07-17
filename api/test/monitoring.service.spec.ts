@@ -115,6 +115,37 @@ describe('MonitoringService aggregated', () => {
     ]);
   });
 
+  it('bulanan averages weekly progress', async () => {
+    const weekly = [
+      {
+        userId: 1,
+        nama: 'A',
+        weeks: [
+          { selesai: 1, total: 1, persen: 100 },
+          { selesai: 0, total: 1, persen: 0 },
+        ],
+      },
+      {
+        userId: 2,
+        nama: 'B',
+        weeks: [
+          { selesai: 1, total: 1, persen: 100 },
+          { selesai: 1, total: 1, persen: 100 },
+        ],
+      },
+    ];
+    const spy = jest
+      .spyOn(service, 'mingguanBulan')
+      .mockResolvedValue(weekly);
+
+    const res = await service.bulanan('2024');
+    expect(spy).toHaveBeenCalledTimes(12);
+    expect(res[0]).toEqual({ bulan: 'Januari', persen: 75 });
+
+    const resUser = await service.bulanan('2024', undefined, 1);
+    expect(resUser[0]).toEqual({ bulan: 'Januari', persen: 50 });
+  });
+
   it('bulananMatrix aggregates per month', async () => {
     prisma.penugasan.findMany.mockResolvedValue([
       {
