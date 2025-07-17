@@ -427,7 +427,18 @@ export default function PenugasanDetailPage() {
               variant="secondary"
               onClick={async () => {
                 const r = await confirmCancel("Batalkan perubahan?");
-                if (r.isConfirmed) setEditing(false);
+                if (r.isConfirmed) {
+                  setForm({
+                    kegiatanId: item.kegiatanId,
+                    pegawaiId: item.pegawaiId,
+                    deskripsi: item.deskripsi || "",
+                    minggu: item.minggu,
+                    bulan: item.bulan,
+                    tahun: item.tahun,
+                    status: item.status,
+                  });
+                  setEditing(false);
+                }
               }}
             >
               Batal
@@ -438,18 +449,20 @@ export default function PenugasanDetailPage() {
       )}
 
       <div className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
             Laporan Harian
           </h3>
           <Button
             onClick={openLaporan}
-            className="flex items-center gap-2 px-4 py-2"
+            className="flex items-center gap-2 px-3 py-2 sm:px-4"
+            aria-label="Tambah Laporan"
           >
             <Plus size={18} />
-            <span>Tambah Laporan</span>
+            <span className="hidden sm:inline">Tambah Laporan</span>
           </Button>
         </div>
+
         <div className="overflow-x-auto rounded-lg border dark:border-gray-700">
           <Table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm">
