@@ -1,4 +1,4 @@
-export const getHolidays = (year) => [
+export const getHolidays = (year: number): string[] => [
   `${year}-01-01`,
   `${year}-02-10`,
   `${year}-03-28`,
@@ -9,3 +9,4 @@ export const getHolidays = (year) => [
   `${year}-12-25`,
   `${year}-12-26`,
 ];
+export default getHolidays;

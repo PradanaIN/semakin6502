@@ -1,8 +1,7 @@
-/// <reference path="../types/web-utils-holidays.d.ts" />
 import { PrismaClient } from "@prisma/client";
 import { hashPassword } from "../src/common/hash";
 import { STATUS } from "../src/common/status.constants";
-const { getHolidays } = require("../../web/src/utils/holidays") as { getHolidays: (year: number) => string[] };
+import { getHolidays } from "../src/utils/holidays";
 
 const prisma = new PrismaClient();
 
