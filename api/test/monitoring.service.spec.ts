@@ -79,16 +79,17 @@ describe('MonitoringService aggregated', () => {
     ]);
   });
 
-  it('harianBulan groups by user and marks days', async () => {
+  it('harianBulan groups by user and counts records', async () => {
     prisma.laporanHarian.findMany.mockResolvedValue([
+      { pegawaiId: 1, tanggal: new Date('2024-05-02'), pegawai: { nama: 'A' } },
       { pegawaiId: 1, tanggal: new Date('2024-05-02'), pegawai: { nama: 'A' } },
       { pegawaiId: 2, tanggal: new Date('2024-05-01'), pegawai: { nama: 'B' } },
     ]);
     const res = await service.harianBulan('2024-05-10');
     expect(res.map((u) => u.nama)).toEqual(['A', 'B']);
     expect(res[0].detail.length).toBe(31);
-    expect(res[0].detail[1]).toEqual({ tanggal: '2024-05-02', adaKegiatan: true });
-    expect(res[1].detail[0]).toEqual({ tanggal: '2024-05-01', adaKegiatan: true });
+    expect(res[0].detail[1]).toEqual({ tanggal: '2024-05-02', count: 2 });
+    expect(res[1].detail[0]).toEqual({ tanggal: '2024-05-01', count: 1 });
   });
 
   it('mingguanBulan aggregates per week', async () => {

@@ -4,7 +4,7 @@ export const DailyMatrixRow = ({ user, boxClass, style }) => (
   <tr className="text-center" style={style}>
     <td className="p-2 border text-left whitespace-nowrap text-sm">{user.nama}</td>
     {user.detail.map((day, i) => (
-      <td key={i} className={`p-1 border ${boxClass(day)}`}></td>
+      <td key={i} className={`p-1 border ${boxClass(day)}`}>{day.count || ""}</td>
     ))}
   </tr>
 );
@@ -25,7 +25,7 @@ const DailyMatrix = ({ data = [] }) => {
   const isHoliday = (iso) => HOLIDAYS.includes(iso);
 
   const boxClass = (day) => {
-    if (day.adaKegiatan) {
+    if (day.count > 0) {
       return "bg-green-200 border-green-400 dark:bg-green-700 dark:border-green-500";
     }
     if (isWeekend(day.tanggal) || isHoliday(day.tanggal)) {
