@@ -2,6 +2,7 @@ import {
   Injectable,
   ForbiddenException,
   NotFoundException,
+  BadRequestException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import { ROLES } from "../common/roles.constants";
@@ -186,6 +187,13 @@ export class PenugasanService {
           "hanya admin atau ketua tim yang dapat menghapus penugasan"
         );
     }
+    const count = await this.prisma.laporanHarian.count({
+      where: { penugasanId: id },
+    });
+    if (count > 0)
+      throw new BadRequestException(
+        "hapus laporan harian penugasan ini terlebih dahulu"
+      );
     await this.prisma.penugasan.delete({ where: { id } });
     return { success: true };
   }
