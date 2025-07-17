@@ -136,25 +136,31 @@ export class MonitoringService {
     const yr = parseInt(year, 10);
     if (isNaN(yr)) throw new BadRequestException("year tidak valid");
 
-    const where: any = { tahun: yr };
-    if (userId) where.pegawaiId = userId;
-    if (teamId) where.kegiatan = { teamId };
+    const results = [] as { bulan: string; persen: number }[];
 
-    const tugas = await this.prisma.penugasan.findMany({
-      where,
-      select: { bulan: true, status: true },
-    });
+    for (let i = 0; i < MONTHS.length; i++) {
+      const first = new Date(Date.UTC(yr, i, 1));
+      const weekly = await this.mingguanBulan(
+        first.toISOString().slice(0, 10),
+        teamId,
+      );
 
-    return MONTHS.map((bulan, idx) => {
-      const key = String(idx + 1);
-      const bulanTasks = tugas.filter((t: any) => t.bulan === key);
-      const total = bulanTasks.length;
-      const selesai = bulanTasks.filter(
-        (t: any) => t.status === STATUS.SELESAI_DIKERJAKAN,
-      ).length;
-      const persen = total ? Math.round((selesai / total) * 100) : 0;
-      return { bulan, persen };
-    });
+      const users = weekly.filter((u) => !userId || u.userId === userId);
+      if (users.length === 0) {
+        results.push({ bulan: MONTHS[i], persen: 0 });
+        continue;
+      }
+
+      const avgPerUser = users.map((u) => {
+        const total = u.weeks.reduce((sum, w) => sum + w.persen, 0);
+        return u.weeks.length ? total / u.weeks.length : 0;
+      });
+      const bulanAvg =
+        avgPerUser.reduce((sum, v) => sum + v, 0) / avgPerUser.length;
+      results.push({ bulan: MONTHS[i], persen: Math.round(bulanAvg) });
+    }
+
+    return results;
   }
 
   async harianBulan(tanggal: string, teamId?: number) {
