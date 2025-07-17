@@ -16,7 +16,7 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 
 
-export default function KegiatanTambahanDetailPage() {
+export default function TugasTambahanDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [item, setItem] = useState(null);
@@ -38,7 +38,7 @@ export default function KegiatanTambahanDetailPage() {
   const fetchDetail = useCallback(async () => {
     try {
       const [dRes, kRes] = await Promise.all([
-        axios.get(`/kegiatan-tambahan/${id}`),
+        axios.get(`/tugas-tambahan/${id}`),
         axios.get("/master-kegiatan?limit=1000"),
       ]);
       setItem(dRes.data);
@@ -65,7 +65,7 @@ export default function KegiatanTambahanDetailPage() {
       Object.keys(payload).forEach((k) => {
         if (payload[k] === "") delete payload[k];
       });
-      await axios.put(`/kegiatan-tambahan/${id}`, payload);
+      await axios.put(`/tugas-tambahan/${id}`, payload);
       showSuccess("Berhasil", "Kegiatan diperbarui");
       setEditing(false);
       fetchDetail();
@@ -81,7 +81,7 @@ export default function KegiatanTambahanDetailPage() {
       Object.keys(payload).forEach((k) => {
         if (payload[k] === "") delete payload[k];
       });
-      await axios.put(`/kegiatan-tambahan/${id}`, payload);
+      await axios.put(`/tugas-tambahan/${id}`, payload);
       showSuccess("Berhasil", "Laporan ditambah");
       setLaporanForm({
         tanggal_selesai: "",
@@ -100,7 +100,7 @@ export default function KegiatanTambahanDetailPage() {
     const r = await confirmDelete("Hapus kegiatan ini?");
     if (!r.isConfirmed) return;
     try {
-      await axios.delete(`/kegiatan-tambahan/${id}`);
+      await axios.delete(`/tugas-tambahan/${id}`);
       showSuccess("Dihapus", "Kegiatan dihapus");
       navigate(-1);
     } catch (err) {
@@ -114,7 +114,7 @@ export default function KegiatanTambahanDetailPage() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Detail Kegiatan Tambahan</h2>
+        <h2 className="text-xl font-semibold">Detail Tugas Tambahan</h2>
         {!editing && (
           <div className="space-x-2">
             <Button

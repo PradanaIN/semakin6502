@@ -18,7 +18,7 @@ import Pagination from "../../components/Pagination";
 import SelectDataShow from "../../components/ui/SelectDataShow";
 import { useRef } from "react";
 
-export default function KegiatanTambahanPage() {
+export default function TugasTambahanPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -44,7 +44,7 @@ export default function KegiatanTambahanPage() {
     try {
       setLoading(true);
       const [tRes, kRes, teamRes] = await Promise.all([
-        axios.get("/kegiatan-tambahan"),
+        axios.get("/tugas-tambahan"),
         axios.get("/master-kegiatan?limit=1000"),
         axios.get("/teams").then(async (res) => {
           if (Array.isArray(res.data) && res.data.length === 0) {
@@ -100,9 +100,9 @@ export default function KegiatanTambahanPage() {
         if (payload[k] === "") delete payload[k];
       });
       if (editing) {
-        await axios.put(`/kegiatan-tambahan/${editing.id}`, payload);
+        await axios.put(`/tugas-tambahan/${editing.id}`, payload);
       } else {
-        await axios.post("/kegiatan-tambahan", payload);
+        await axios.post("/tugas-tambahan", payload);
       }
       setShowForm(false);
       setEditing(null);
@@ -118,7 +118,7 @@ export default function KegiatanTambahanPage() {
     const r = await confirmDelete("Hapus kegiatan ini?");
     if (!r.isConfirmed) return;
     try {
-      await axios.delete(`/kegiatan-tambahan/${item.id}`);
+      await axios.delete(`/tugas-tambahan/${item.id}`);
       fetchData();
       showSuccess("Dihapus", "Kegiatan dihapus");
     } catch (err) {
@@ -128,7 +128,7 @@ export default function KegiatanTambahanPage() {
   };
 
   const openDetail = (id) => {
-    navigate(`/kegiatan-tambahan/${id}`);
+    navigate(`/tugas-tambahan/${id}`);
   };
 
   const filteredItems = useMemo(() => {
@@ -325,11 +325,11 @@ export default function KegiatanTambahanPage() {
             setShowForm(false);
             setEditing(null);
           }}
-          titleId="kegiatan-tambahan-modal-title"
+          titleId="tugas-tambahan-modal-title"
         >
           <div className="flex items-center justify-between mb-3">
             <h2
-              id="kegiatan-tambahan-modal-title"
+              id="tugas-tambahan-modal-title"
               className="text-xl font-semibold"
             >
               {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}

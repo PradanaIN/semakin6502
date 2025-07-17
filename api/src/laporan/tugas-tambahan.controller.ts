@@ -11,12 +11,12 @@ import {
   Delete,
 } from "@nestjs/common";
 import { Request } from "express";
-import { TambahanService } from "./kegiatan-tambahan.service";
+import { TambahanService } from "./tugas-tambahan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { AddTambahanDto } from "./dto/add-tambahan.dto";
 import { UpdateTambahanDto } from "./dto/update-tambahan.dto";
 
-@Controller("kegiatan-tambahan")
+@Controller("tugas-tambahan")
 @UseGuards(JwtAuthGuard)
 export class TambahanController {
   constructor(private readonly tambahanService: TambahanService) {}

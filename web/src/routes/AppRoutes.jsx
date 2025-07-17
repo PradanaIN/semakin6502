@@ -20,11 +20,11 @@ const PenugasanDetailPage = React.lazy(() =>
 const LaporanHarianPage = React.lazy(() =>
   import("../pages/laporan/LaporanHarianPage")
 );
-const KegiatanTambahanPage = React.lazy(() =>
-  import("../pages/tambahan/KegiatanTambahanPage")
+const TugasTambahanPage = React.lazy(() =>
+  import("../pages/tambahan/TugasTambahanPage")
 );
-const KegiatanTambahanDetailPage = React.lazy(() =>
-  import("../pages/tambahan/KegiatanTambahanDetailPage")
+const TugasTambahanDetailPage = React.lazy(() =>
+  import("../pages/tambahan/TugasTambahanDetailPage")
 );
 const MonitoringPage = React.lazy(() =>
   import("../pages/monitoring/MonitoringPage")
@@ -71,10 +71,10 @@ export default function AppRoutes() {
           <Route path="tugas-mingguan/:id" element={<PenugasanDetailPage />} />
           <Route path="laporan-harian" element={<LaporanHarianPage />} />
           <Route path="monitoring" element={<MonitoringPage />} />
-          <Route path="kegiatan-tambahan" element={<KegiatanTambahanPage />} />
+          <Route path="tugas-tambahan" element={<TugasTambahanPage />} />
           <Route
-            path="kegiatan-tambahan/:id"
-            element={<KegiatanTambahanDetailPage />}
+            path="tugas-tambahan/:id"
+            element={<TugasTambahanDetailPage />}
           />
           <Route path="*" element={<NotFound />} />
         </Route>
