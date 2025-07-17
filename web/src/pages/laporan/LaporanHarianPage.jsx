@@ -14,12 +14,16 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
 import DateFilter from "../../components/ui/DateFilter";
+import { useAuth } from "../auth/useAuth";
+import { ROLES } from "../../utils/roles";
 
 export default function LaporanHarianPage() {
+  const { user } = useAuth();
   const [laporan, setLaporan] = useState([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
-  const [tanggal, setTanggal] = useState(new Date().toISOString().slice(0, 10));
+  // default to empty string so all laporan are shown initially
+  const [tanggal, setTanggal] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
@@ -35,7 +39,9 @@ export default function LaporanHarianPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("/laporan-harian/mine");
+      const url =
+        user?.role === ROLES.ADMIN ? "/laporan-harian/all" : "/laporan-harian/mine";
+      const res = await axios.get(url);
       setLaporan(res.data);
     } catch (err) {
       console.error("Gagal mengambil laporan", err);
@@ -84,8 +90,8 @@ export default function LaporanHarianPage() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (user) fetchData();
+  }, [user]);
 
   const filtered = laporan.filter((l) => {
     const peg = l.pegawai?.nama?.toLowerCase() || "";
@@ -95,7 +101,9 @@ export default function LaporanHarianPage() {
     const stat = l.status.toLowerCase();
     const txt = `${peg} ${keg} ${desc} ${cat} ${stat}`;
     const matchQuery = txt.includes(query.toLowerCase());
-    const matchDate = l.tanggal.slice(0, 10) === tanggal;
+    const matchDate = tanggal
+      ? l.tanggal.slice(0, 10) === tanggal
+      : true;
     return matchQuery && matchDate;
   });
   const paginated = filtered.slice(
