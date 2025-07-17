@@ -352,6 +352,41 @@ export class MonitoringService {
       .sort((a, b) => a.nama.localeCompare(b.nama));
   }
 
+  async penugasanMinggu(
+    minggu: string,
+    teamId?: number,
+    userId?: number,
+  ) {
+    const start = new Date(minggu);
+    const offset = (start.getDay() + 6) % 7;
+    start.setDate(start.getDate() - offset);
+    if (isNaN(start.getTime()))
+      throw new BadRequestException("minggu tidak valid");
+
+    const where: any = {
+      minggu: getWeekOfMonth(start),
+      bulan: String(start.getMonth() + 1),
+      tahun: start.getFullYear(),
+    };
+    if (teamId) where.kegiatan = { teamId };
+    if (userId) where.pegawaiId = userId;
+
+    const tugas = await this.prisma.penugasan.findMany({
+      where,
+      select: { status: true },
+    });
+
+    let selesai = 0;
+    let belum = 0;
+    for (const t of tugas) {
+      if (t.status === STATUS.SELESAI_DIKERJAKAN) selesai += 1;
+      if (t.status === STATUS.BELUM || t.status === STATUS.SEDANG_DIKERJAKAN)
+        belum += 1;
+    }
+
+    return { total: tugas.length, selesai, belum };
+  }
+
   async bulananAll(year: string, teamId?: number, bulan?: string) {
     const yr = parseInt(year, 10);
     if (isNaN(yr)) throw new BadRequestException("year tidak valid");
