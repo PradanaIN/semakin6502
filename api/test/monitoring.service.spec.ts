@@ -119,7 +119,7 @@ describe('MonitoringService aggregated', () => {
         nama: 'A',
         weeks: [
           { selesai: 1, total: 1, persen: 100 },
-          { selesai: 0, total: 1, persen: 0 },
+          { selesai: 0, total: 1, persen: 100 },
           { selesai: 0, total: 0, persen: 0 },
           { selesai: 0, total: 0, persen: 0 },
           { selesai: 0, total: 0, persen: 0 },

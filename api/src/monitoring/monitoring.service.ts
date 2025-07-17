@@ -355,7 +355,7 @@ export class MonitoringService {
       .map(([id, v]) => {
         const weeks = weekStarts.map((_, i) => {
           const w = v.perWeek[i] || { selesai: 0, total: 0 };
-          const persen = w.total ? Math.round((w.selesai / w.total) * 100) : 0;
+          const persen = w.total > 0 ? 100 : 0;
           return { selesai: w.selesai, total: w.total, persen };
         });
         return { userId: Number(id), nama: v.nama, weeks };

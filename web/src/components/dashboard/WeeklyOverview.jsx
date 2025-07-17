@@ -23,10 +23,9 @@ const WeeklyOverview = ({ data }) => {
       <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
         <div className="flex justify-between text-sm font-medium">
           <span className="text-blue-700 dark:text-blue-300">{rangeText}</span>
-          <span className="text-gray-600 dark:text-gray-300">
-            {data.totalProgress}% selesai ({data.totalSelesai}/{data.totalTugas}
-            )
-          </span>
+            <span className="text-gray-600 dark:text-gray-300">
+              {data.totalProgress}% selesai
+            </span>
         </div>
         <div className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-full mt-1">
           <div
@@ -51,9 +50,7 @@ const WeeklyOverview = ({ data }) => {
                 <span>
                   {day.hari}, {formatDate(day.tanggal)}
                 </span>
-                <span>
-                  {day.selesai}/{day.total} &nbsp; {day.persen}%
-                </span>
+                <span>{day.persen}%</span>
               </div>
               <div className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-full mt-1">
                 <div
