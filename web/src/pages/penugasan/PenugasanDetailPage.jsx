@@ -201,7 +201,33 @@ export default function PenugasanDetailPage() {
     }
   };
 
-  if (!item) return <div className="p-6">Memuat...</div>;
+  if (!item) return;
+
+  <div className="flex flex-col justify-center items-center h-72 space-y-3">
+    <svg
+      className="animate-spin h-10 w-10 text-blue-600"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      ></circle>
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 6.364A8.001 8.001 0 0112 20v4c-6.627 0-12-5.373-12-12h4a8.001 8.001 0 006.364 2.93zM20 12a8 8 0 01-8 8v4c6.627 0 12-5.373 12-12h-4zm-2.93-6.364A8.001 8.001 0 0112 4V0c6.627 0 12 5.373 12 12h-4a8.001 8.001 0 00-6.364-2.93z"
+      ></path>
+    </svg>
+    <span className="text-lg font-medium text-gray-600 dark:text-gray-300">
+      Memuat data penugasan...
+    </span>
+  </div>;
 
   return (
     <div className="p-3 space-y-4">
@@ -400,88 +426,97 @@ export default function PenugasanDetailPage() {
           </div>
         </div>
       )}
-      <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">Laporan Harian</h3>
-          <Button onClick={openLaporan} className="px-3 py-1">
-            <Plus size={16} className="sm:mr-1" />
-            <span className="hidden sm:inline">Tambah Laporan</span>
+
+      <div className="space-y-4 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+            Laporan Harian
+          </h3>
+          <Button
+            onClick={openLaporan}
+            className="flex items-center gap-2 px-4 py-2"
+          >
+            <Plus size={18} />
+            <span>Tambah Laporan</span>
           </Button>
         </div>
-        <Table className="min-w-full">
-          <thead>
-            <tr className={`${tableStyles.headerRow} text-sm`}>
-              <th className={tableStyles.smallCell}>No</th>
-              <th className={tableStyles.smallCell}>Deskripsi</th>
-              <th className={tableStyles.smallCell}>Tanggal</th>
-              <th className={tableStyles.smallCell}>Status</th>
-              <th className={tableStyles.smallCell}>Bukti</th>
-              <th className={tableStyles.smallCell}>Catatan</th>
-              <th className={tableStyles.smallCell}>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {laporan.length === 0 ? (
+        <div className="overflow-x-auto rounded-lg border dark:border-gray-700">
+          <Table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm">
               <tr>
-                <td colSpan="7" className="py-2 text-center">
-                  Belum ada laporan
-                </td>
+                <th className="py-3 px-4">No</th>
+                <th className="py-3 px-4">Deskripsi</th>
+                <th className="py-3 px-4">Tanggal</th>
+                <th className="py-3 px-4">Status</th>
+                <th className="py-3 px-4">Bukti</th>
+                <th className="py-3 px-4">Catatan</th>
+                <th className="py-3 px-4">Aksi</th>
               </tr>
-            ) : (
-              laporan.map((l, idx) => (
-                <tr
-                  key={l.id}
-                  className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
-                >
-                  <td className={tableStyles.smallCell}>{idx + 1}</td>
-                  <td className={tableStyles.smallCell}>{l.deskripsi}</td>
-                  <td className={tableStyles.smallCell}>
-                    {l.tanggal.slice(0, 10)}
-                  </td>
-                  <td className={tableStyles.smallCell}>
-                    <StatusBadge status={l.status} />
-                  </td>
-                  <td className={tableStyles.smallCell}>
-                    {l.bukti_link ? (
-                      <a
-                        href={l.bukti_link}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label="Lihat bukti dukung"
-                      >
-                        <ExternalLink
-                          size={16}
-                          className="mx-auto text-blue-600 dark:text-blue-400"
-                        />
-                      </a>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td className={tableStyles.smallCell}>{l.catatan || "-"}</td>
-                  <td className={`${tableStyles.smallCell} space-x-1`}>
-                    <Button
-                      onClick={() => editLaporan(l)}
-                      variant="warning"
-                      icon
-                      aria-label="Edit"
-                    >
-                      <Pencil size={14} />
-                    </Button>
-                    <Button
-                      onClick={() => deleteLaporan(l.id)}
-                      variant="danger"
-                      icon
-                      aria-label="Hapus"
-                    >
-                      <Trash2 size={14} />
-                    </Button>
+            </thead>
+            <tbody>
+              {laporan.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan="7"
+                    className="py-6 text-center text-gray-500 dark:text-gray-400"
+                  >
+                    Belum ada laporan
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </Table>
+              ) : (
+                laporan.map((l, idx) => (
+                  <tr
+                    key={l.id}
+                    className="border-t dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center"
+                  >
+                    <td className="py-3 px-4">{idx + 1}</td>
+                    <td className="py-3 px-4">{l.deskripsi}</td>
+                    <td className="py-3 px-4">{l.tanggal.slice(0, 10)}</td>
+                    <td className="py-3 px-4">
+                      <StatusBadge status={l.status} />
+                    </td>
+                    <td className="py-3 px-4">
+                      {l.bukti_link ? (
+                        <a
+                          href={l.bukti_link}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label="Lihat bukti dukung"
+                        >
+                          <ExternalLink
+                            size={16}
+                            className="mx-auto text-blue-600 dark:text-blue-400 hover:scale-110 transition-transform"
+                          />
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td className="py-3 px-4">{l.catatan || "-"}</td>
+                    <td className="py-3 px-4 space-x-2">
+                      <Button
+                        onClick={() => editLaporan(l)}
+                        variant="warning"
+                        icon
+                        aria-label="Edit laporan"
+                      >
+                        <Pencil size={14} />
+                      </Button>
+                      <Button
+                        onClick={() => deleteLaporan(l.id)}
+                        variant="danger"
+                        icon
+                        aria-label="Hapus laporan"
+                      >
+                        <Trash2 size={14} />
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </Table>
+        </div>
       </div>
 
       {showLaporanForm && (
@@ -503,6 +538,8 @@ export default function PenugasanDetailPage() {
                 onChange={(e) =>
                   setLaporanForm({ ...laporanForm, deskripsi: e.target.value })
                 }
+                placeholder="Tuliskan deskripsi kegiatan..."
+                required
                 className="form-input"
               />
             </div>
@@ -522,26 +559,11 @@ export default function PenugasanDetailPage() {
                 required
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
               />
-          </div>
-          <div>
-            <Label htmlFor="laporanDeskripsi">
-              Deskripsi <span className="text-red-500">*</span>
-            </Label>
-            <textarea
-              id="laporanDeskripsi"
-              value={laporanForm.deskripsi}
-              onChange={(e) =>
-                setLaporanForm({ ...laporanForm, deskripsi: e.target.value })
-              }
-              placeholder="Tuliskan deskripsi kegiatan..."
-              required
-              className="form-input"
-            />
-          </div>
-          <div>
-            <Label htmlFor="laporanStatus">
-              Status <span className="text-red-500">*</span>
-            </Label>
+            </div>
+            <div>
+              <Label htmlFor="laporanStatus">
+                Status <span className="text-red-500">*</span>
+              </Label>
               <select
                 id="laporanStatus"
                 value={laporanForm.status}

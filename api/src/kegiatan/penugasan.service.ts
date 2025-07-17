@@ -141,7 +141,7 @@ export class PenugasanService {
     id: number,
     data: AssignPenugasanDto,
     userId: number,
-    role: string,
+    role: string
   ) {
     role = normalizeRole(role);
     const existing = await this.prisma.penugasan.findUnique({
