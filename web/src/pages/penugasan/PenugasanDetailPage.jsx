@@ -162,6 +162,7 @@ export default function PenugasanDetailPage() {
       setTimeout(async () => {
         const r = await axios.get(`/laporan-harian/penugasan/${id}`);
         setLaporan(r.data);
+        fetchDetail();
       }, 200);
     } catch (err) {
       console.error(err);
@@ -188,6 +189,7 @@ export default function PenugasanDetailPage() {
       await axios.delete(`/laporan-harian/${laporanId}`);
       const res = await axios.get(`/laporan-harian/penugasan/${id}`);
       setLaporan(res.data);
+      fetchDetail();
       showSuccess("Dihapus", "Laporan dihapus");
     } catch (err) {
       console.error(err);
@@ -465,14 +467,16 @@ export default function PenugasanDetailPage() {
           <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
             Laporan Harian
           </h3>
-          <Button
-            onClick={openLaporan}
-            className="flex items-center gap-2 px-3 py-2 sm:px-4"
-            aria-label="Tambah Laporan"
-          >
-            <Plus size={18} />
-            <span className="hidden sm:inline">Tambah Laporan</span>
-          </Button>
+          {item.status !== STATUS.SELESAI_DIKERJAKAN && (
+            <Button
+              onClick={openLaporan}
+              className="flex items-center gap-2 px-3 py-2 sm:px-4"
+              aria-label="Tambah Laporan"
+            >
+              <Plus size={18} />
+              <span className="hidden sm:inline">Tambah Laporan</span>
+            </Button>
+          )}
         </div>
 
         <div className="overflow-x-auto rounded-lg border dark:border-gray-700">

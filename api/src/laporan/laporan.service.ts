@@ -8,10 +8,22 @@ import { Workbook } from "exceljs";
 import PDFDocument from "pdfkit";
 import { normalizeRole } from "../common/roles";
 import { ROLES } from "../common/roles.constants";
+import { STATUS } from "../common/status.constants";
 
 @Injectable()
 export class LaporanService {
   constructor(private prisma: PrismaService) {}
+
+  private async syncPenugasanStatus(penugasanId: number) {
+    const latest = await this.prisma.laporanHarian.findFirst({
+      where: { penugasanId },
+      orderBy: { tanggal: 'desc' },
+    });
+    await this.prisma.penugasan.update({
+      where: { id: penugasanId },
+      data: { status: latest?.status || STATUS.BELUM },
+    });
+  }
   async submit(data: any, userId: number, role: string) {
     role = normalizeRole(role);
     const pen = await this.prisma.penugasan.findUnique({
@@ -34,7 +46,7 @@ export class LaporanService {
         throw new ForbiddenException("bukan penugasan anda");
       }
     }
-    return this.prisma.laporanHarian.create({
+    const laporan = await this.prisma.laporanHarian.create({
       data: {
         penugasanId: data.penugasanId,
         pegawaiId: targetId,
@@ -45,6 +57,10 @@ export class LaporanService {
         catatan: data.catatan || undefined,
       },
     });
+
+    await this.syncPenugasanStatus(data.penugasanId);
+
+    return laporan;
   }
 
   getByTanggal(tanggal: string) {
@@ -100,7 +116,7 @@ export class LaporanService {
         throw new ForbiddenException("bukan laporan anda");
       }
     }
-    return this.prisma.laporanHarian.update({
+    const laporan = await this.prisma.laporanHarian.update({
       where: { id },
       data: {
         tanggal: new Date(data.tanggal),
@@ -110,6 +126,10 @@ export class LaporanService {
         catatan: data.catatan,
       },
     });
+
+    await this.syncPenugasanStatus(existing.penugasanId);
+
+    return laporan;
   }
 
   async remove(id: number, userId: number, role: string) {
@@ -136,6 +156,9 @@ export class LaporanService {
       }
     }
     await this.prisma.laporanHarian.delete({ where: { id } });
+
+    await this.syncPenugasanStatus(existing.penugasanId);
+
     return { success: true };
   }
 
