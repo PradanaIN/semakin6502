@@ -97,7 +97,7 @@ Server berjalan di: `http://localhost:3000`
 | POST   | `/master-kegiatan`         | Tambah kegiatan              | ketua tim    |
 | POST   | `/penugasan`               | Assign penugasan             | ketua tim    |
 | POST   | `/laporan-harian`          | Laporan kegiatan harian      | anggota tim |
-| POST   | `/kegiatan-tambahan`       | Laporan kegiatan tambahan    | anggota tim |
+| POST   | `/tugas-tambahan`          | Laporan tugas tambahan       | anggota tim |
 | GET    | `/monitoring/harian`       | Monitoring harian            | semua    |
 | GET    | `/monitoring/harian/all`   | Monitoring harian semua pegawai (query: `tanggal`, `teamId` opsional) | admin, pimpinan, ketua tim |
 | GET    | `/monitoring/harian/bulan` | Rekap harian sebulan penuh per pegawai (query: `tanggal`, `teamId` opsional) | admin, pimpinan, ketua tim |

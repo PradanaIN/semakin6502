@@ -25,7 +25,7 @@ export default function Sidebar({ setSidebarOpen }) {
       show: true,
     },
     {
-      to: "/kegiatan-tambahan",
+      to: "/tugas-tambahan",
       label: "Tugas Tambahan",
       icon: FilePlus,
       show: true,
