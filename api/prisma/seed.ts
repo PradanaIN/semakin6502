@@ -436,7 +436,12 @@ async function main() {
       const info = months[i % months.length];
       const day = ((m.userId + i) % info.days) + 1;
       const date = new Date(Date.UTC(info.year, info.monthIndex, day));
-      const status = i === 0 ? "Belum" : i === 1 ? "Sedang Dikerjakan" : "Selesai Dikerjakan";
+      const status =
+        i === 0
+          ? STATUS.BELUM
+          : i === 1
+          ? STATUS.SEDANG_DIKERJAKAN
+          : STATUS.SELESAI_DIKERJAKAN;
       tambahanRows.push({
         nama: k.nama_kegiatan,
         tanggal: date.toISOString(),
@@ -475,7 +480,7 @@ async function main() {
             bulan: info.bulan,
             tahun: info.year,
             deskripsi: `Tugas ${k.nama_kegiatan}`,
-            status: "Belum",
+            status: STATUS.BELUM,
           });
         }
       }
