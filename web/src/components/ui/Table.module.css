@@ -1,0 +1,5 @@
+.headerRow { @apply bg-gray-200 dark:bg-gray-900 text-gray-700 dark:text-gray-200 text-center text-sm uppercase; }
+.row       { @apply odd:bg-gray-100 dark:odd:bg-gray-700 text-gray-700 dark:text-gray-200; }
+.cell      { @apply px-2 py-1 sm:px-4 sm:py-2; }
+.smallCell { @apply px-1 py-0.5 sm:px-2 sm:py-1; }
+
