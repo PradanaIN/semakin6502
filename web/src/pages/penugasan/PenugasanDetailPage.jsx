@@ -317,7 +317,14 @@ export default function PenugasanDetailPage() {
         </div>
       ) : (
         <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-          <h2 className="text-xl font-semibold">Edit Penugasan</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+              Edit Penugasan
+            </h2>
+            <p className="text-xs text-red-600 dark:text-red-500">
+              * Fardu 'Ain
+            </p>
+          </div>
           <div>
             <Label htmlFor="kegiatan">
               Kegiatan <span className="text-red-500">*</span>
