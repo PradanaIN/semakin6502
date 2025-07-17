@@ -44,7 +44,7 @@ export default function Layout() {
       confirmButtonText: "Logout",
     });
     if (!r.isConfirmed) return;
-    await axios.post(`${import.meta.env.VITE_API_URL}/auth/logout`, {}, { withCredentials: true });
+    await axios.post("/auth/logout", {}, { withCredentials: true });
     localStorage.removeItem("user");
     setUser(null);
   };
