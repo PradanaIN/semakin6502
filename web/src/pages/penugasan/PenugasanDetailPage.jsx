@@ -647,7 +647,14 @@ export default function PenugasanDetailPage() {
             <div className="flex justify-end gap-3 pt-4">
               <Button
                 variant="secondary"
-                onClick={() => setShowLaporanForm(false)}
+                onClick={async () => {
+                  const r = await confirmCancel(
+                    laporanForm.id
+                      ? "Batalkan perubahan?"
+                      : "Batalkan penambahan laporan?"
+                  );
+                  if (r.isConfirmed) setShowLaporanForm(false);
+                }}
               >
                 Batal
               </Button>
