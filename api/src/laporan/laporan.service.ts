@@ -12,17 +12,32 @@ import { ROLES } from "../common/roles.constants";
 @Injectable()
 export class LaporanService {
   constructor(private prisma: PrismaService) {}
-  async submit(data: any) {
+  async submit(data: any, userId: number, role: string) {
+    role = normalizeRole(role);
     const pen = await this.prisma.penugasan.findUnique({
       where: { id: data.penugasanId },
+      include: { kegiatan: true },
     });
     if (!pen) throw new NotFoundException("Penugasan tidak ditemukan");
-    if (pen.pegawaiId !== data.pegawaiId)
-      throw new ForbiddenException("bukan penugasan anda");
+
+    let targetId = data.pegawaiId ?? userId;
+    if (pen.pegawaiId !== targetId) {
+      if (role === ROLES.ADMIN) {
+        targetId = pen.pegawaiId;
+      } else if (role === ROLES.KETUA) {
+        const leader = await this.prisma.member.findFirst({
+          where: { teamId: pen.kegiatan.teamId, userId, is_leader: true },
+        });
+        if (!leader) throw new ForbiddenException("bukan penugasan anda");
+        targetId = pen.pegawaiId;
+      } else {
+        throw new ForbiddenException("bukan penugasan anda");
+      }
+    }
     return this.prisma.laporanHarian.create({
       data: {
         penugasanId: data.penugasanId,
-        pegawaiId: data.pegawaiId,
+        pegawaiId: targetId,
         tanggal: new Date(data.tanggal),
         status: data.status,
         deskripsi: data.deskripsi,
