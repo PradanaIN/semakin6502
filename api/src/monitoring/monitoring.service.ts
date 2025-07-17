@@ -192,22 +192,29 @@ export class MonitoringService {
       include: { pegawai: true },
     });
 
-    const byUser: Record<number, { nama: string; dates: Set<string> }> = {};
+    const byUser: Record<
+      number,
+      { nama: string; counts: Record<string, number> }
+    > = {};
     for (const r of records) {
       const dateStr = r.tanggal.toISOString().slice(0, 10);
       if (!byUser[r.pegawaiId])
-        byUser[r.pegawaiId] = { nama: r.pegawai.nama, dates: new Set() };
-      byUser[r.pegawaiId].dates.add(dateStr);
+        byUser[r.pegawaiId] = { nama: r.pegawai.nama, counts: {} };
+      byUser[r.pegawaiId].counts[dateStr] =
+        (byUser[r.pegawaiId].counts[dateStr] || 0) + 1;
     }
 
     return Object.entries(byUser)
       .map(([id, v]) => {
-        const detail = [] as { tanggal: string; adaKegiatan: boolean }[];
+        const detail = [] as { tanggal: string; count: number }[];
         for (let d = 1; d <= end.getDate(); d++) {
           const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
             d,
           ).padStart(2, "0")}`;
-          detail.push({ tanggal: dateStr, adaKegiatan: v.dates.has(dateStr) });
+          detail.push({
+            tanggal: dateStr,
+            count: v.counts[dateStr] || 0,
+          });
         }
         return { userId: Number(id), nama: v.nama, detail };
       })
