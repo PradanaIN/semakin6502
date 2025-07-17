@@ -54,6 +54,7 @@ Buat file `.env` dan isi (nilai `JWT_SECRET` wajib diisi, server akan gagal star
 ```
 DATABASE_URL="mysql://root:password@localhost:3306/semakin_6502"
 JWT_SECRET="your_jwt_secret_here"  # wajib diisi
+PORT=3000  # opsional, default 3000
 ```
 Jika `JWT_SECRET` tidak diatur, aplikasi akan langsung keluar dengan error.
 
@@ -74,7 +75,7 @@ node prisma/seed.js
 npm run start:dev
 ```
 
-Server berjalan di: `http://localhost:3000`
+Server berjalan di: `http://localhost:${PORT}` (default 3000)
 
 ---
 
