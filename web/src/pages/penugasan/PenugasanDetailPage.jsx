@@ -529,17 +529,19 @@ export default function PenugasanDetailPage() {
       </div>
 
       {showLaporanForm && (
-        <Modal
-          onClose={closeLaporanForm}
-          titleId="laporan-form-title"
-        >
+        <Modal onClose={closeLaporanForm} titleId="laporan-form-title">
           <div className="space-y-6">
-            <h3
-              id="laporan-form-title"
-              className="text-xl font-bold text-gray-800 dark:text-gray-100"
-            >
-              {laporanForm.id ? "Edit" : "Tambah"} Laporan Harian
-            </h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3
+                id="laporan-form-title"
+                className="text-xl font-bold text-gray-800 dark:text-gray-100"
+              >
+                {laporanForm.id ? "Edit" : "Tambah"} Laporan Harian
+              </h3>
+              <p className="text-xs text-red-600 dark:text-red-500">
+                * Fardu 'Ain
+              </p>
+            </div>
 
             <div className="space-y-4">
               {/* Deskripsi */}
@@ -637,7 +639,7 @@ export default function PenugasanDetailPage() {
                   onChange={(e) =>
                     setLaporanForm({ ...laporanForm, catatan: e.target.value })
                   }
-                  placeholder="Catatan tambahan (opsional)..."
+                  placeholder="Catatan Kendala..."
                   className="w-full mt-1 rounded-md border px-4 py-2 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
