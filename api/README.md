@@ -55,8 +55,11 @@ Buat file `.env` dan isi (nilai `JWT_SECRET` wajib diisi, server akan gagal star
 DATABASE_URL="mysql://root:password@localhost:3306/semakin_6502"
 JWT_SECRET="your_jwt_secret_here"  # wajib diisi
 PORT=3000  # opsional, default 3000
+CORS_ORIGIN="http://localhost:5173"   
 ```
 Jika `JWT_SECRET` tidak diatur, aplikasi akan langsung keluar dengan error.
+`CORS_ORIGIN` opsional, isi dengan satu atau beberapa origin (pisahkan koma)
+untuk membatasi akses CORS.
 
 4. **Setup database**
 ```bash

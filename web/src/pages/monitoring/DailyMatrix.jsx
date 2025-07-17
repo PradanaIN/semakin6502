@@ -1,4 +1,4 @@
-import { getHolidays } from "../../utils/holidays";
+import { getHolidays } from "../../../../api/src/utils/holidays";
 
 export const DailyMatrixRow = ({ user, boxClass, style }) => (
   <tr className="text-center" style={style}>

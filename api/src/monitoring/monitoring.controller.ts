@@ -13,6 +13,7 @@ import { RolesGuard } from "../common/guards/roles.guard";
 import { PrismaService } from "../prisma.service";
 import { Request } from "express";
 import { ROLES } from "../common/roles.constants";
+import { AuthRequestUser } from "../common/auth-request-user.interface";
 
 @Controller("monitoring")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -32,7 +33,7 @@ export class MonitoringController {
     if (!tanggal) {
       throw new BadRequestException("query 'tanggal' diperlukan");
     }
-    const user = req?.user as any;
+    const user = req?.user as AuthRequestUser;
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
     let uId = userId ? parseInt(userId, 10) : undefined;
@@ -66,7 +67,7 @@ export class MonitoringController {
     if (!tanggal) {
       throw new BadRequestException("query 'tanggal' diperlukan");
     }
-    const user = req?.user as any;
+    const user = req?.user as AuthRequestUser;
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
 
@@ -91,7 +92,7 @@ export class MonitoringController {
     if (!tanggal) {
       throw new BadRequestException("query 'tanggal' diperlukan");
     }
-    const user = req?.user as any;
+    const user = req?.user as AuthRequestUser;
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
 
@@ -117,7 +118,7 @@ export class MonitoringController {
     if (!minggu) {
       throw new BadRequestException("query 'minggu' diperlukan");
     }
-    const user = req?.user as any;
+    const user = req?.user as AuthRequestUser;
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
     let uId = userId ? parseInt(userId, 10) : undefined;
@@ -151,7 +152,7 @@ export class MonitoringController {
     if (!minggu) {
       throw new BadRequestException("query 'minggu' diperlukan");
     }
-    const user = req?.user as any;
+    const user = req?.user as AuthRequestUser;
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
 
@@ -176,7 +177,7 @@ export class MonitoringController {
     if (!tanggal) {
       throw new BadRequestException("query 'tanggal' diperlukan");
     }
-    const user = req?.user as any;
+    const user = req?.user as AuthRequestUser;
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
 
@@ -202,7 +203,7 @@ export class MonitoringController {
     if (!year) {
       throw new BadRequestException("query 'year' diperlukan");
     }
-    const user = req?.user as any;
+    const user = req?.user as AuthRequestUser;
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
     let uId = userId ? parseInt(userId, 10) : undefined;
@@ -237,7 +238,7 @@ export class MonitoringController {
     if (!year) {
       throw new BadRequestException("query 'year' diperlukan");
     }
-    const user = req?.user as any;
+    const user = req?.user as AuthRequestUser;
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
 
@@ -262,7 +263,7 @@ export class MonitoringController {
     if (!year) {
       throw new BadRequestException("query 'year' diperlukan");
     }
-    const user = req?.user as any;
+    const user = req?.user as AuthRequestUser;
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
 
