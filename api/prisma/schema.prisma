@@ -35,6 +35,7 @@ model Member {
   is_leader Boolean
   user      User    @relation(fields: [userId], references: [id])
   team      Team    @relation(fields: [teamId], references: [id])
+  @@unique([userId, teamId])
 }
 
 model MasterKegiatan {

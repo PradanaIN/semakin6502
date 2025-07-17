@@ -386,6 +386,7 @@ async function main() {
     }
   }
 
+  const memberRows: any[] = [];
   for (const u of rawUsers) {
     const role = roleMap[u.role] || "anggota";
     const user = await prisma.user.upsert({
@@ -402,14 +403,16 @@ async function main() {
 
     const teamId = teamMap.get(u.team);
     if (teamId) {
-      await prisma.member.create({
-        data: {
-          userId: user.id,
-          teamId,
-          is_leader: role !== "anggota",
-        },
+      memberRows.push({
+        userId: user.id,
+        teamId,
+        is_leader: role !== "anggota",
       });
     }
+  }
+
+  if (memberRows.length) {
+    await prisma.member.createMany({ data: memberRows, skipDuplicates: true });
   }
 
   // seed penugasan for June and July 2025
