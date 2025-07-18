@@ -39,17 +39,33 @@ export default function MissedReportsPage() {
       <h1 className="text-xl font-bold flex items-center gap-2">
         <AlertCircle className="w-5 h-5" /> Ketepatan Laporan
       </h1>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div className="p-4 rounded-lg shadow text-center bg-red-50 dark:bg-red-900">
+          <p className="text-sm text-gray-600 dark:text-gray-300">Terlambat 1 Hari</p>
+          <p className="text-2xl font-bold text-red-600 dark:text-red-200">{data.day1.length}</p>
+        </div>
+        <div className="p-4 rounded-lg shadow text-center bg-orange-50 dark:bg-orange-900">
+          <p className="text-sm text-gray-600 dark:text-gray-300">Terlambat 3 Hari</p>
+          <p className="text-2xl font-bold text-orange-600 dark:text-orange-200">{data.day3.length}</p>
+        </div>
+        <div className="p-4 rounded-lg shadow text-center bg-yellow-50 dark:bg-yellow-900">
+          <p className="text-sm text-gray-600 dark:text-gray-300">Terlambat 7 Hari</p>
+          <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-200">{data.day7.length}</p>
+        </div>
+      </div>
+
       <div className="grid gap-6 md:grid-cols-3">
-        <div>
-          <h2 className="font-semibold mb-2">Terlambat 1 Hari</h2>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
+          <h2 className="font-semibold mb-2">Terlambat 1 Hari ({data.day1.length})</h2>
           {renderList(data.day1)}
         </div>
-        <div>
-          <h2 className="font-semibold mb-2">Terlambat 3 Hari</h2>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
+          <h2 className="font-semibold mb-2">Terlambat 3 Hari ({data.day3.length})</h2>
           {renderList(data.day3)}
         </div>
-        <div>
-          <h2 className="font-semibold mb-2">Terlambat 7 Hari</h2>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
+          <h2 className="font-semibold mb-2">Terlambat 7 Hari ({data.day7.length})</h2>
           {renderList(data.day7)}
         </div>
       </div>
