@@ -7,20 +7,22 @@ import {
   useEffect,
 } from "react";
 import axios from "axios";
+import camelizeKeys from "../../utils/camelizeKeys.js";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const u = localStorage.getItem("user");
-    return u ? JSON.parse(u) : null;
+    return u ? camelizeKeys(JSON.parse(u)) : null;
   });
 
   const verifyToken = async () => {
     try {
       const res = await axios.get("/auth/me");
-      setUser(res.data.user);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      const userData = camelizeKeys(res.data.user);
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
     } catch {
       localStorage.removeItem("user");
       setUser(null);
