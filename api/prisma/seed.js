@@ -110,15 +110,15 @@ function main() {
                     _o.sent();
                     teamNames = Array.from(new Set(rawUsers.map(function (u) { return u.team; })));
                     return [4 /*yield*/, prisma.team.createMany({
-                            data: teamNames.map(function (n) { return ({ nama_tim: n }); }),
+                        data: teamNames.map(function (n) { return ({ namaTim: n }); }),
                             skipDuplicates: true,
                         })];
                 case 4:
                     _o.sent();
-                    return [4 /*yield*/, prisma.team.findMany({ where: { nama_tim: { in: teamNames } } })];
+                    return [4 /*yield*/, prisma.team.findMany({ where: { namaTim: { in: teamNames } } })];
                 case 5:
                     teams = _o.sent();
-                    teamMap = new Map(teams.map(function (t) { return [t.nama_tim, t.id]; }));
+                    teamMap = new Map(teams.map(function (t) { return [t.namaTim, t.id]; }));
                     kegiatanByTeam = {
                         Umum: [
                             "SAKIP",
@@ -235,12 +235,12 @@ function main() {
                     if (!(_e < kegiatan_1.length)) return [3 /*break*/, 11];
                     nama = kegiatan_1[_e];
                     return [4 /*yield*/, prisma.masterKegiatan.findFirst({
-                            where: { teamId: teamId, nama_kegiatan: nama },
+                            where: { teamId: teamId, namaKegiatan: nama },
                         })];
                 case 8:
                     existing = _o.sent();
                     if (!!existing) return [3 /*break*/, 10];
-                    return [4 /*yield*/, prisma.masterKegiatan.create({ data: { teamId: teamId, nama_kegiatan: nama } })];
+                    return [4 /*yield*/, prisma.masterKegiatan.create({ data: { teamId: teamId, namaKegiatan: nama } })];
                 case 9:
                     _o.sent();
                     _o.label = 10;
@@ -280,7 +280,7 @@ function main() {
                             data: {
                                 userId: user.id,
                                 teamId: teamId,
-                                is_leader: role !== "anggota",
+                                isLeader: role !== "anggota",
                             },
                         })];
                 case 16:

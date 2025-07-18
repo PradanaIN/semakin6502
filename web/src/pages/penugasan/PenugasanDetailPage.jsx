@@ -50,7 +50,6 @@ export default function PenugasanDetailPage() {
     tanggal: new Date().toISOString().slice(0, 10),
     deskripsi: "",
     status: STATUS.BELUM, // Belum, Sedang Dikerjakan, Selesai Dikerjakan
-    bukti_link: "",
     catatan: "",
   });
 
@@ -92,7 +91,7 @@ export default function PenugasanDetailPage() {
     axios.get("/master-kegiatan?limit=1000").then((r) => {
       const kData = r.data.data || r.data;
       const sorted = [...kData].sort((a, b) =>
-        a.nama_kegiatan.localeCompare(b.nama_kegiatan)
+        a.namaKegiatan.localeCompare(b.namaKegiatan)
       );
       setKegiatan(sorted);
     });
@@ -125,7 +124,6 @@ export default function PenugasanDetailPage() {
       tanggal: new Date().toISOString().slice(0, 10),
       deskripsi: "",
       status: STATUS.BELUM,
-      bukti_link: "",
       catatan: "",
     });
     setShowLaporanForm(true);
@@ -139,7 +137,6 @@ export default function PenugasanDetailPage() {
       }
       if (
         laporanForm.status === STATUS.SELESAI_DIKERJAKAN &&
-        laporanForm.bukti_link.trim() === ""
       ) {
         showWarning("Lengkapi data", "Link bukti wajib diisi");
         return;
@@ -176,7 +173,6 @@ export default function PenugasanDetailPage() {
       tanggal: item.tanggal.slice(0, 10),
       deskripsi: item.deskripsi || "",
       status: item.status,
-      bukti_link: item.bukti_link || "",
       catatan: item.catatan || "",
     });
     setShowLaporanForm(true);
@@ -272,11 +268,11 @@ export default function PenugasanDetailPage() {
             <div className="text-sm text-gray-500 dark:text-gray-400">
               Kegiatan
             </div>
-            <div className="font-medium">{item.kegiatan?.nama_kegiatan}</div>
+            <div className="font-medium">{item.kegiatan?.namaKegiatan}</div>
           </div>
           <div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Tim</div>
-            <div className="font-medium">{item.kegiatan?.team?.nama_tim}</div>
+            <div className="font-medium">{item.kegiatan?.team?.namaTim}</div>
           </div>
           <div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -338,13 +334,13 @@ export default function PenugasanDetailPage() {
               menuPortalTarget={document.body}
               options={kegiatan.map((k) => ({
                 value: k.id,
-                label: k.nama_kegiatan,
+                label: k.namaKegiatan,
               }))}
               value={{
                 value: form.kegiatanId,
                 label:
                   kegiatan.find((k) => k.id === form.kegiatanId)
-                    ?.nama_kegiatan || "",
+                    ?.namaKegiatan || "",
               }}
               onChange={(o) =>
                 setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })
@@ -512,9 +508,9 @@ export default function PenugasanDetailPage() {
                       <StatusBadge status={l.status} />
                     </td>
                     <td className={tableStyles.cell}>
-                      {l.bukti_link ? (
+                      {l.buktiLink ? (
                         <a
-                          href={l.bukti_link}
+                          href={l.buktiLink}
                           target="_blank"
                           rel="noreferrer"
                           aria-label="Lihat bukti dukung"
@@ -643,11 +639,11 @@ export default function PenugasanDetailPage() {
                   <Input
                     id="buktiLink"
                     type="url"
-                    value={laporanForm.bukti_link}
+                    value={laporanForm.buktiLink}
                     onChange={(e) =>
                       setLaporanForm({
                         ...laporanForm,
-                        bukti_link: e.target.value,
+                        buktiLink: e.target.value,
                       })
                     }
                     placeholder="https://..."

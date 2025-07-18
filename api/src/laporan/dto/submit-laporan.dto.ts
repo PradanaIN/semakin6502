@@ -15,7 +15,7 @@ export class SubmitLaporanDto {
 
   @IsOptional()
   @IsString()
-  bukti_link?: string;
+  buktiLink?: string;
 
   @IsOptional()
   @IsString()

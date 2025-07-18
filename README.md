@@ -32,3 +32,7 @@ This repository contains both the backend API and the frontend web application.
    ```
 
 Check each subproject README for detailed configuration and feature descriptions.
+
+## Naming Conventions
+
+Code and database fields use **camelCase**. When adding new API DTOs or Prisma models, prefer English terms and camelCase naming (e.g. `teamId`, `namaKegiatan`). Legacy snake_case columns remain for compatibility but new contributions should avoid them.

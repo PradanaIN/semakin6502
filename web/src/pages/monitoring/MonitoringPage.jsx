@@ -421,7 +421,7 @@ export default function MonitoringPage() {
                   <option value="">Semua Tim</option>
                   {teams.map((t) => (
                     <option key={t.id} value={t.id}>
-                      {t.nama_tim}
+                      {t.namaTim}
                     </option>
                   ))}
                 </select>

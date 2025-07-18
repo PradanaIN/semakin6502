@@ -7,7 +7,7 @@ export class CreateMasterKegiatanDto {
   teamId!: number;
 
   @IsString()
-  nama_kegiatan!: string;
+  namaKegiatan!: string;
 
   @IsOptional()
   @IsString()
