@@ -128,13 +128,13 @@ export default function MasterKegiatanPage() {
     openCreateForm();
   };
 
-  const openEdit = (item) => {
+  function openEdit(item) {
     openEditForm(item, (i) => ({
       teamId: i.teamId,
       namaKegiatan: i.namaKegiatan,
       deskripsi: i.deskripsi || "",
     }));
-  };
+  }
 
   const saveItem = async () => {
     if (!form.teamId || isNaN(form.teamId) || !form.namaKegiatan) {
@@ -155,7 +155,7 @@ export default function MasterKegiatanPage() {
     }
   };
 
-  const deleteItem = async (item) => {
+  async function deleteItem(item) {
     const r = await confirmDelete("Hapus kegiatan ini?");
     if (!r.isConfirmed) return;
     try {
@@ -165,7 +165,7 @@ export default function MasterKegiatanPage() {
     } catch (err) {
       handleAxiosError(err, "Gagal menghapus kegiatan");
     }
-  };
+  }
 
   if (![ROLES.KETUA, ROLES.ADMIN].includes(user?.role)) {
     return (
