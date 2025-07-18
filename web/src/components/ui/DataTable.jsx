@@ -146,7 +146,7 @@ export default function DataTable({
                   className="px-4 py-3 font-semibold text-center border-t border-b border-gray-300 dark:border-gray-700 select-none"
                   onClick={header.column.getToggleSortingHandler()}
                 >
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center justify-center gap-1">
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
@@ -181,17 +181,24 @@ export default function DataTable({
                 key={row.id}
                 className="text-center odd:bg-white even:bg-gray-50 dark:odd:bg-gray-900 dark:even:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    className="px-4 py-3 border-t border-b border-gray-300 dark:border-gray-700"
-                  >
-                    {flexRender(
-                      cell.column.columnDef.cell ?? cell.getValue(),
-                      cell.getContext()
-                    )}
-                  </td>
-                ))}
+                {row.getVisibleCells().map((cell) => {
+                  let extra = cell.column.columnDef.meta?.cellClassName;
+                  if (typeof extra === "function") {
+                    extra = extra(cell);
+                  }
+                  if (!extra) extra = "px-4 py-3";
+                  return (
+                    <td
+                      key={cell.id}
+                      className={`${extra} border-t border-b border-gray-300 dark:border-gray-700`}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell ?? cell.getValue(),
+                        cell.getContext()
+                      )}
+                    </td>
+                  );
+                })}
               </tr>
             ))
           )}
