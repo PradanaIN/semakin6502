@@ -1,18 +1,11 @@
+import React, { useMemo } from "react";
 import { getHolidays } from "../../utils/holidays";
-
-export const DailyMatrixRow = ({ user, boxClass }) => (
-  <tr className="text-center">
-    <td className="p-2 border text-left whitespace-nowrap text-sm">{user.nama}</td>
-    {user.detail.map((day, i) => (
-      <td key={i} className={`p-1 border ${boxClass(day)}`}>{day.count || ""}</td>
-    ))}
-  </tr>
-);
+import DataTable from "../../components/ui/DataTable";
 
 const DailyMatrix = ({ data = [] }) => {
-  if (!Array.isArray(data) || data.length === 0) return null;
-
-  const year = new Date(data[0].detail[0].tanggal).getFullYear();
+  const year = data[0]?.detail?.[0]
+    ? new Date(data[0].detail[0].tanggal).getFullYear()
+    : new Date().getFullYear();
   const today = new Date().toISOString().slice(0, 10);
   const HOLIDAYS = getHolidays(year);
 
@@ -37,27 +30,45 @@ const DailyMatrix = ({ data = [] }) => {
     return "bg-gray-100 dark:bg-gray-700";
   };
 
-  const dayCount = data[0].detail.length;
+  const dayCount = data[0]?.detail?.length || 0;
+
+  const columns = useMemo(() => {
+    if (dayCount === 0) return [];
+    const cols = [
+      {
+        Header: "Nama",
+        accessor: "nama",
+        meta: { cellClassName: "p-2 border text-left whitespace-nowrap text-sm" },
+        disableFilters: true,
+      },
+    ];
+    for (let i = 0; i < dayCount; i += 1) {
+      cols.push({
+        id: `day-${i + 1}`,
+        Header: i + 1,
+        accessor: (row) => row.detail[i],
+        Cell: ({ row }) => row.original.detail[i].count || "",
+        meta: {
+          cellClassName: (cell) =>
+            `p-1 border text-center ${boxClass(cell.getValue())}`,
+        },
+        disableFilters: true,
+      });
+    }
+    return cols;
+  }, [dayCount, boxClass]);
+
+  if (!Array.isArray(data) || data.length === 0) return null;
 
   return (
     <div className="overflow-auto md:overflow-visible">
-      <table className="min-w-full text-xs border-collapse">
-        <thead>
-          <tr>
-            <th className="p-2 border text-left">Nama</th>
-            {Array.from({ length: dayCount }, (_, i) => (
-              <th key={i} className="p-1 border text-center">
-                {i + 1}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((u) => (
-            <DailyMatrixRow key={u.userId} user={u} boxClass={boxClass} />
-          ))}
-        </tbody>
-      </table>
+      <DataTable
+        columns={columns}
+        data={data}
+        showGlobalFilter={false}
+        showPagination={false}
+        selectable={false}
+      />
     </div>
   );
 };
