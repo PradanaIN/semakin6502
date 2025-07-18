@@ -114,6 +114,13 @@ Server berjalan di: `http://localhost:${PORT}` (default 3000)
 
 Format hasil: array per pengguna, masing-masing memiliki array 12 objek bulan.
 
+## 🕒 Zona Waktu
+
+Semua kalkulasi tanggal pada backend mengasumsikan server berjalan dalam
+timezone **UTC**. Pastikan data `tanggal` yang dikirim menggunakan format ISO
+`YYYY-MM-DD` sehingga diparse sebagai waktu UTC oleh Node.js. Apabila server
+dijalankan dengan timezone berbeda, hasil perhitungan tanggal bisa bergeser.
+
 ---
 
 ## 🧪 Uji API

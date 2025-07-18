@@ -10,6 +10,9 @@ import { normalizeRole } from "../common/roles";
 import { ROLES } from "../common/roles.constants";
 import { STATUS } from "../common/status.constants";
 
+// Semua perhitungan tanggal pada service ini mengasumsikan server
+// berjalan dalam timezone UTC.
+
 @Injectable()
 export class LaporanService {
   constructor(private prisma: PrismaService) {}
