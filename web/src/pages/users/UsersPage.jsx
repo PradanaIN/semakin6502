@@ -218,14 +218,16 @@ export default function UsersPage() {
           <Spinner className="h-6 w-6 mx-auto" />
         </div>
       ) : (
-        <DataTable
-          columns={columns}
-          data={paginated}
-          showGlobalFilter={false}
-          showColumnFilters={false}
-          showPagination={false}
-          selectable={false}
-        />
+        <div className="overflow-x-auto md:overflow-x-visible">
+          <DataTable
+            columns={columns}
+            data={paginated}
+            showGlobalFilter={false}
+            showColumnFilters={false}
+            showPagination={false}
+            selectable={false}
+          />
+        </div>
       )}
 
       <div className="flex items-center justify-between mt-4">

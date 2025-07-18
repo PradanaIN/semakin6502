@@ -23,7 +23,9 @@ export default function Layout() {
   const { user, setUser } = useAuth();
   const location = useLocation();
 
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth >= 768 : true
+  );
   const [notifCount, setNotifCount] = useState(3);
   const [notifications, setNotifications] = useState([
     { id: 1, text: "Laporan harian belum dikirim", read: false },
@@ -67,6 +69,15 @@ export default function Layout() {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) setSidebarOpen(false);
+    };
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const displayedNotifications = notifications.slice(0, 5);
