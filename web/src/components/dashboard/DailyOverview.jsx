@@ -41,14 +41,14 @@ const DailyOverview = ({ data = [] }) => {
       </h2>
       <Legend className="mb-2" />
       <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-        {data.map((day, index) => {
+        {data.map((day) => {
           const dayName = new Date(day.tanggal).toLocaleDateString("id-ID", {
             weekday: "short",
           });
           const weekend = isWeekend(day.tanggal) || isHoliday(day.tanggal);
           return (
             <div
-              key={index}
+              key={day.tanggal}
               className={`p-3 rounded-lg text-center text-sm font-medium border ${boxClass(
                 day
               )}`}

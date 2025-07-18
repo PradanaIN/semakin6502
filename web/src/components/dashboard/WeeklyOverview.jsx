@@ -41,9 +41,9 @@ const WeeklyOverview = ({ data }) => {
             const dow = new Date(d.tanggal).getDay();
             return (dow >= 1 && dow <= 5) || d.total > 0;
           })
-          .map((day, index) => (
+          .map((day) => (
             <div
-              key={index}
+              key={day.tanggal}
               className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow"
             >
               <div className="flex justify-between text-sm">

@@ -5,9 +5,9 @@ const MonthlyOverview = ({ data = [] }) => {
         Capaian Kinerja Bulanan
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-        {data.map((item, index) => (
+        {data.map((item) => (
           <div
-            key={index}
+            key={item.bulan}
             className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900 text-center"
           >
             <div className="font-medium">{item.bulan}</div>
