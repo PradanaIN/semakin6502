@@ -193,7 +193,7 @@ export class MonitoringService {
     const records = (await this.prisma.laporanHarian.findMany({
       where,
       include: { pegawai: true },
-    })).filter((r) => !r.pegawai.username.startsWith("demo"));
+    })).filter((r: any) => !r.pegawai?.username?.startsWith("demo"));
 
     const byUser: Record<
       number,
@@ -238,7 +238,7 @@ export class MonitoringService {
     const records = (await this.prisma.laporanHarian.findMany({
       where,
       include: { pegawai: true },
-    })).filter((r) => !r.pegawai.username.startsWith("demo"));
+    })).filter((r: any) => !r.pegawai?.username?.startsWith("demo"));
 
     const byUser: Record<
       number,
@@ -282,7 +282,7 @@ export class MonitoringService {
     const records = (await this.prisma.laporanHarian.findMany({
       where,
       include: { pegawai: true },
-    })).filter((r) => !r.pegawai.username.startsWith("demo"));
+    })).filter((r: any) => !r.pegawai?.username?.startsWith("demo"));
 
     const byUser: Record<
       number,
@@ -334,7 +334,7 @@ export class MonitoringService {
     const records = (await this.prisma.laporanHarian.findMany({
       where,
       include: { pegawai: true },
-    })).filter((r) => !r.pegawai.username.startsWith("demo"));
+    })).filter((r: any) => !r.pegawai?.username?.startsWith("demo"));
 
     const byUser: Record<
       number,
@@ -469,7 +469,7 @@ export class MonitoringService {
     const tugas = (await this.prisma.penugasan.findMany({
       where,
       include: { pegawai: true },
-    })).filter((t) => !t.pegawai.username.startsWith("demo"));
+    })).filter((t: any) => !t.pegawai?.username?.startsWith("demo"));
 
     const byUser: Record<
       number,
@@ -504,8 +504,8 @@ export class MonitoringService {
     const tugas = (await this.prisma.penugasan.findMany({
       where,
       include: { pegawai: true },
-    })).filter((t) => !t.pegawai.username.startsWith("demo"));
-
+    })).filter((t: any) => !t.pegawai?.username?.startsWith("demo"));
+    
     const byUser: Record<
       number,
       { nama: string; perMonth: Record<number, { selesai: number; total: number }> }
