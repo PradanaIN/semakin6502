@@ -204,7 +204,7 @@ export default function DataTable({
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className={tableStyles.cell}>
                     {flexRender(
-                      cell.column.columnDef.cell || cell.column.columnDef.header,
+                      cell.column.columnDef.cell,
                       cell.getContext()
                     )}
                   </td>
