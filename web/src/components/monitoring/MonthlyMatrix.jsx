@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import DataTable from "../ui/DataTable";
-
 import months from "../../utils/months";
 
 const MonthlyMatrix = ({ data = [] }) => {

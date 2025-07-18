@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import DataTable from "../../components/ui/DataTable";
 
-
 const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek }) => {
 
   const colorFor = (p) => {

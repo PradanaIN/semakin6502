@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import { getHolidays } from "../../utils/holidays";
 import DataTable from "../../components/ui/DataTable";
 
-
 const DailyMatrix = ({ data = [] }) => {
   const year = data[0]?.detail?.[0]
     ? new Date(data[0].detail[0].tanggal).getFullYear()
