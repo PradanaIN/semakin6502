@@ -68,6 +68,7 @@ export default function DataTable({
   data,
   initialPageSize = 10,
   showGlobalFilter = true,
+  showColumnFilters = true,
   initialSorting = [],
   onRowSelectionChange,
   showPagination = true,
@@ -171,18 +172,23 @@ export default function DataTable({
                         <ArrowUpDown size={12} className="text-gray-400" />
                       ))}
                   </div>
-                  {header.column.getCanFilter() && (
-                    <div className="mt-1" onClick={(e) => e.stopPropagation()}>
-                      {(() => {
-                        const FilterComp = header.column.columnDef.meta?.Filter;
-                        return FilterComp ? (
-                          <FilterComp column={header.column} />
-                        ) : (
-                          <DefaultColumnFilter column={header.column} />
-                        );
-                      })()}
-                    </div>
-                  )}
+                  {showColumnFilters &&
+                    header.column.getCanFilter() && (
+                      <div
+                        className="mt-1"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {(() => {
+                          const FilterComp =
+                            header.column.columnDef.meta?.Filter;
+                          return FilterComp ? (
+                            <FilterComp column={header.column} />
+                          ) : (
+                            <DefaultColumnFilter column={header.column} />
+                          );
+                        })()}
+                      </div>
+                    )}
                 </th>
               ))}
             </tr>
