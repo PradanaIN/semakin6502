@@ -71,9 +71,9 @@ npx prisma db push
 
 5. **Seed data dummy**
 ```bash
-npx tsc prisma/seed.ts
-node prisma/seed.js
+npm run seed
 ```
+Script ini juga menambahkan pengguna demo dengan laporan terakhir 1, 3, dan 7 hari sebelum tanggal `BASE_DATE` di `prisma/seed.ts`.
 
 6. **Jalankan server**
 ```bash
