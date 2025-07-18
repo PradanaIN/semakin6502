@@ -1,30 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
+import DataTable from "../../components/ui/DataTable";
 
-export const WeeklyMatrixRow = ({ user, progressColor, style }) => (
-  <tr className="text-center" style={style}>
-    <td className="p-2 border text-left whitespace-nowrap text-sm">{user.nama}</td>
-    {user.weeks.map((w, i) => (
-      <td key={i} className="p-1 border space-y-1">
-        <div
-          role="progressbar"
-          aria-valuenow={w.persen}
-          aria-valuemin="0"
-          aria-valuemax="100"
-          className="w-full bg-gray-200 dark:bg-gray-700 rounded h-2"
-        >
-          <div
-            className={`${progressColor(w.persen)} h-2 rounded`}
-            style={{ width: `${w.persen}%` }}
-          />
-        </div>
-        <span className="text-xs font-medium">{w.persen}%</span>
-      </td>
-    ))}
-  </tr>
-);
 
 const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek }) => {
-  if (!Array.isArray(data) || data.length === 0) return null;
 
   const colorFor = (p) => {
     if (p >= 80) return "green";
@@ -41,29 +19,60 @@ const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek }) => {
       : "bg-red-500";
   };
 
+  const columns = useMemo(() => {
+    if (!Array.isArray(data) || data.length === 0) return [];
+    const cols = [
+      {
+        Header: "Nama",
+        accessor: "nama",
+        meta: { cellClassName: "p-2 border text-left whitespace-nowrap text-sm" },
+        disableFilters: true,
+      },
+    ];
+    weeks.forEach((_, i) => {
+      cols.push({
+        id: `week-${i + 1}`,
+        Header: (
+          <span onClick={() => onSelectWeek && onSelectWeek(i)} className="cursor-pointer">
+            Minggu {i + 1}
+          </span>
+        ),
+        accessor: (row) => row.weeks[i],
+        Cell: ({ row }) => (
+          <div className="space-y-1">
+            <div
+              role="progressbar"
+              aria-valuenow={row.original.weeks[i].persen}
+              aria-valuemin="0"
+              aria-valuemax="100"
+              className="w-full bg-gray-200 dark:bg-gray-700 rounded h-2"
+            >
+              <div
+                className={`${progressColor(row.original.weeks[i].persen)} h-2 rounded`}
+                style={{ width: `${row.original.weeks[i].persen}%` }}
+              />
+            </div>
+            <span className="text-xs font-medium">{row.original.weeks[i].persen}%</span>
+          </div>
+        ),
+        meta: { cellClassName: "p-1 border text-center" },
+        disableFilters: true,
+      });
+    });
+    return cols;
+  }, [weeks, onSelectWeek, progressColor, data]);
+
+  if (!Array.isArray(data) || data.length === 0) return null;
+
   return (
     <div className="overflow-auto md:overflow-visible">
-      <table className="min-w-full text-xs border-collapse">
-        <thead>
-          <tr>
-            <th className="p-2 border text-left">Nama</th>
-            {weeks.map((_, i) => (
-              <th
-                key={i}
-                onClick={() => onSelectWeek && onSelectWeek(i)}
-                className="p-2 border text-center cursor-pointer"
-              >
-                Minggu {i + 1}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((u) => (
-            <WeeklyMatrixRow key={u.userId} user={u} progressColor={progressColor} />
-          ))}
-        </tbody>
-      </table>
+      <DataTable
+        columns={columns}
+        data={data}
+        showGlobalFilter={false}
+        showPagination={false}
+        selectable={false}
+      />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState, Fragment, useCallback } from "react";
+import { useEffect, useState, Fragment, useCallback, useMemo } from "react";
 import axios from "axios";
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid";
@@ -11,9 +11,9 @@ import MonthlyMatrix from "../../components/monitoring/MonthlyMatrix";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 import { handleAxiosError } from "../../utils/alerts";
+import DataTable from "../../components/ui/DataTable";
 
 const WeeklyProgressTable = ({ data = [] }) => {
-  if (!Array.isArray(data) || data.length === 0) return null;
 
   const colorFor = (p) => {
     if (p >= 80) return "green";
@@ -30,42 +30,64 @@ const WeeklyProgressTable = ({ data = [] }) => {
       : "bg-red-500";
   };
 
+  const columns = useMemo(
+    () => [
+      {
+        Header: "Nama",
+        accessor: "nama",
+        meta: { cellClassName: "p-2 border text-left whitespace-nowrap text-sm" },
+        disableFilters: true,
+      },
+      {
+        Header: "Selesai",
+        accessor: "selesai",
+        meta: { cellClassName: "p-1 border text-center" },
+        disableFilters: true,
+      },
+      {
+        Header: "Total",
+        accessor: "total",
+        meta: { cellClassName: "p-1 border text-center" },
+        disableFilters: true,
+      },
+      {
+        Header: "Progress",
+        accessor: "persen",
+        Cell: ({ row }) => (
+          <div className="space-y-1">
+            <div
+              role="progressbar"
+              aria-valuenow={row.original.persen}
+              aria-valuemin="0"
+              aria-valuemax="100"
+              className="w-full bg-gray-200 dark:bg-gray-700 rounded h-2"
+            >
+              <div
+                className={`${progressColor(row.original.persen)} h-2 rounded`}
+                style={{ width: `${row.original.persen}%` }}
+              />
+            </div>
+            <span className="text-xs font-medium">{row.original.persen}%</span>
+          </div>
+        ),
+        meta: { cellClassName: "p-1 border text-center" },
+        disableFilters: true,
+      },
+    ],
+    [data, progressColor]
+  );
+
+  if (!Array.isArray(data) || data.length === 0) return null;
+
   return (
     <div className="overflow-auto md:overflow-visible mt-4">
-      <table className="min-w-full text-xs border-collapse">
-        <thead>
-          <tr>
-            <th className="p-2 border text-left">Nama</th>
-            <th className="p-2 border text-center">Selesai</th>
-            <th className="p-2 border text-center">Total</th>
-            <th className="p-2 border text-center">Progress</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((u) => (
-            <tr key={u.userId} className="text-center">
-              <td className="p-2 border text-left whitespace-nowrap text-sm">{u.nama}</td>
-              <td className="p-1 border">{u.selesai}</td>
-              <td className="p-1 border">{u.total}</td>
-              <td className="p-1 border space-y-1">
-                <div
-                  role="progressbar"
-                  aria-valuenow={u.persen}
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                  className="w-full bg-gray-200 dark:bg-gray-700 rounded h-2"
-                >
-                  <div
-                    className={`${progressColor(u.persen)} h-2 rounded`}
-                    style={{ width: `${u.persen}%` }}
-                  />
-                </div>
-                <span className="text-xs font-medium">{u.persen}%</span>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <DataTable
+        columns={columns}
+        data={data}
+        showGlobalFilter={false}
+        showPagination={false}
+        selectable={false}
+      />
     </div>
   );
 };
