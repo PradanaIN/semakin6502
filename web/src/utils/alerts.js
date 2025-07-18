@@ -1,25 +1,16 @@
-import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 import confirmAlert from "./confirmAlert.js";
 
-const baseOptions = {
-  heightAuto: false,
-  width: 400,
+
+const showToast = (type, title, text) => {
+  toast[type](`${title}${text ? `: ${text}` : ""}`);
 };
 
-const showAlert = (title, text, icon) =>
-  Swal.fire({
-    title,
-    text,
-    icon,
-    confirmButtonText: "OK",
-    ...baseOptions,
-  });
+export const showSuccess = (title, text = "") => showToast("success", title, text);
 
-export const showSuccess = (title, text = "") => showAlert(title, text, "success");
+export const showError = (title, text = "") => showToast("error", title, text);
 
-export const showError = (title, text = "") => showAlert(title, text, "error");
-
-export const showWarning = (title, text = "") => showAlert(title, text, "warning");
+export const showWarning = (title, text = "") => showToast("warn", title, text);
 
 export const confirmDelete = (title = "Hapus item ini?") =>
   confirmAlert({

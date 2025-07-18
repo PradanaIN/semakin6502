@@ -4,6 +4,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid";
 import months from "../../utils/months";
 import Legend from "../../components/ui/Legend";
+import Skeleton from "../../components/ui/Skeleton";
 import DailyMatrix from "./DailyMatrix";
 import WeeklyMatrix from "./WeeklyMatrix";
 import MonthlyMatrix from "../../components/monitoring/MonthlyMatrix";
@@ -87,6 +88,7 @@ export default function MonitoringPage() {
   const [weeklyData, setWeeklyData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const skeletonCols = tab === "harian" ? 7 : tab === "mingguan" ? 4 : 12;
 
   const mergeProgressWithUsers = useCallback(
     (data) => {
@@ -492,30 +494,35 @@ export default function MonitoringPage() {
         </div>
 
         {loading ? (
-          <div className="flex flex-col justify-center items-center h-72 space-y-3">
-            <svg
-              className="animate-spin h-10 w-10 text-blue-600"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 6.364A8.001 8.001 0 0112 20v4c-6.627 0-12-5.373-12-12h4a8.001 8.001 0 006.364 2.93zM20 12a8 8 0 01-8 8v4c6.627 0 12-5.373 12-12h-4zm-2.93-6.364A8.001 8.001 0 0112 4V0c6.627 0 12 5.373 12 12h-4a8.001 8.001 0 00-6.364-2.93z"
-              ></path>
-            </svg>
-            <span className="text-lg font-medium text-gray-600 dark:text-gray-300">
-              Memuat data monitoring...
-            </span>
+          <div className="overflow-auto">
+            <table className="min-w-full text-xs border-collapse">
+              <thead>
+                <tr>
+                  <th className="p-2 border text-left">
+                    <Skeleton className="h-4 w-20" />
+                  </th>
+                  {Array.from({ length: skeletonCols }).map((_, i) => (
+                    <th key={i} className="p-1 border">
+                      <Skeleton className="h-4 w-full" />
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i}>
+                    <td className="p-2 border">
+                      <Skeleton className="h-4 w-32" />
+                    </td>
+                    {Array.from({ length: skeletonCols }).map((_, j) => (
+                      <td key={j} className="p-1 border">
+                        <Skeleton className="h-4 w-full" />
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : (
           <div>

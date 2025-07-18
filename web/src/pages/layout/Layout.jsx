@@ -6,6 +6,7 @@ import { useTheme } from "../../theme/useTheme.jsx";
 import Swal from "sweetalert2";
 import confirmAlert from "../../utils/confirmAlert";
 import axios from "axios";
+import { ToastContainer } from "react-toastify";
 import {
   FaBell,
   FaMoon,
@@ -276,6 +277,7 @@ export default function Layout() {
         <main className="p-4 overflow-y-auto flex-1 bg-gray-100 dark:bg-gray-900">
           <Outlet />
         </main>
+        <ToastContainer position="top-right" autoClose={3000} theme={theme} />
       </div>
     </div>
   );
