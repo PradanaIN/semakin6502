@@ -13,6 +13,7 @@ import Pagination from "../Pagination";
 import SelectDataShow from "./SelectDataShow";
 import SearchInput from "../SearchInput";
 import Input from "./Input";
+import tableStyles from "./Table.module.css";
 
 function GlobalFilter({ table }) {
   return (
@@ -139,11 +140,11 @@ export default function DataTable({
       <Table>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <tr key={headerGroup.id} className={tableStyles.headerRow}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-2 py-2 text-left select-none"
+                  className={`${tableStyles.cell} select-none text-left`}
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   <div className="flex items-center gap-1">
@@ -184,10 +185,16 @@ export default function DataTable({
             </tr>
           ) : (
             table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border-t dark:border-gray-700">
+              <tr
+                key={row.id}
+                className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
+              >
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-2 py-2 text-center">
-                    {flexRender(cell.column.columnDef.cell || cell.column.columnDef.header, cell.getContext())}
+                  <td key={cell.id} className={tableStyles.cell}>
+                    {flexRender(
+                      cell.column.columnDef.cell || cell.column.columnDef.header,
+                      cell.getContext()
+                    )}
                   </td>
                 ))}
               </tr>
