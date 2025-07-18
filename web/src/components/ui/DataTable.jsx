@@ -104,11 +104,14 @@ export default function DataTable({ columns, data, initialPageSize = 10, showGlo
                   {flexRender(header.column.columnDef.header, header.getContext())}
                   {header.column.getCanFilter() && (
                     <div className="mt-1">
-                      {header.column.columnDef.meta?.Filter ? (
-                        <header.column.columnDef.meta.Filter column={header.column} />
-                      ) : (
-                        <DefaultColumnFilter column={header.column} />
-                      )}
+                      {(() => {
+                        const FilterComp = header.column.columnDef.meta?.Filter;
+                        return FilterComp ? (
+                          <FilterComp column={header.column} />
+                        ) : (
+                          <DefaultColumnFilter column={header.column} />
+                        );
+                      })()}
                     </div>
                   )}
                 </th>
