@@ -20,7 +20,7 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.6.3",
     "react-select": "^5.10.2",
-    "react-table": "^7.8.0",
+    "@tanstack/react-table": "^8.21.3",
     "sweetalert2": "10.16.9"
   },
   "devDependencies": {
