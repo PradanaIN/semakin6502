@@ -248,10 +248,7 @@ export default function TugasTambahanPage() {
             </tr>
           ) : (
             paginatedItems.map((item, idx) => (
-              <tr
-                key={item.id}
-                className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
-              >
+              <tr key={item.id} className={tableStyles.row}>
                 <td className={tableStyles.cell}>
                   {(currentPage - 1) * pageSize + idx + 1}
                 </td>
