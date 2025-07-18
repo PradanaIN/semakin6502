@@ -13,57 +13,46 @@ import {
 } from "lucide-react";
 import { ROLES } from "../../utils/roles";
 
+const mainLinks = [
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/tugas-mingguan", label: "Tugas Mingguan", icon: ClipboardList },
+  { to: "/tugas-tambahan", label: "Tugas Tambahan", icon: FilePlus },
+  { to: "/laporan-harian", label: "Laporan Harian", icon: FileText },
+  {
+    to: "/monitoring",
+    label: "Monitoring",
+    icon: BarChart2,
+    roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN],
+  },
+];
+
+const manageLinks = [
+  {
+    to: "/master-kegiatan",
+    label: "Master Kegiatan",
+    icon: List,
+    roles: [ROLES.ADMIN, ROLES.KETUA],
+  },
+  {
+    to: "/users",
+    label: "Kelola Pengguna",
+    icon: Users,
+    roles: [ROLES.ADMIN],
+  },
+  {
+    to: "/teams",
+    label: "Kelola Tim",
+    icon: UserCog,
+    roles: [ROLES.ADMIN],
+  },
+];
+
 export default function Sidebar({ setSidebarOpen }) {
   const { user } = useAuth();
 
-  const mainLinks = [
-    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, show: true },
-    {
-      to: "/tugas-mingguan",
-      label: "Tugas Mingguan",
-      icon: ClipboardList,
-      show: true,
-    },
-    {
-      to: "/tugas-tambahan",
-      label: "Tugas Tambahan",
-      icon: FilePlus,
-      show: true,
-    },
-    {
-      to: "/laporan-harian",
-      label: "Laporan Harian",
-      icon: FileText,
-      show: true,
-    },
-    {
-      to: "/monitoring",
-      label: "Monitoring",
-      icon: BarChart2,
-      show: [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role),
-    },
-  ];
-
-  const manageLinks = [
-    {
-      to: "/master-kegiatan",
-      label: "Master Kegiatan",
-      icon: List,
-      show: [ROLES.ADMIN, ROLES.KETUA].includes(user?.role),
-    },
-    {
-      to: "/users",
-      label: "Kelola Pengguna",
-      icon: Users,
-      show: user?.role === ROLES.ADMIN,
-    },
-    {
-      to: "/teams",
-      label: "Kelola Tim",
-      icon: UserCog,
-      show: user?.role === ROLES.ADMIN,
-    },
-  ];
+  const isLinkVisible = (link) => !link.roles || link.roles.includes(user?.role);
+  const visibleMainLinks = mainLinks.filter(isLinkVisible);
+  const visibleManageLinks = manageLinks.filter(isLinkVisible);
 
   const renderLink = (link) => {
     const Icon = link.icon;
@@ -99,11 +88,11 @@ export default function Sidebar({ setSidebarOpen }) {
       </div>
 
       <nav className="space-y-2">
-        {mainLinks.filter((l) => l.show).map(renderLink)}
-        {manageLinks.some((l) => l.show) && (
+        {visibleMainLinks.map(renderLink)}
+        {visibleManageLinks.length > 0 && (
           <hr className="my-4 border-gray-200 dark:border-gray-700" />
         )}
-        {manageLinks.filter((l) => l.show).map(renderLink)}
+        {visibleManageLinks.map(renderLink)}
       </nav>
       <button
         className="mt-auto flex items-center justify-center
