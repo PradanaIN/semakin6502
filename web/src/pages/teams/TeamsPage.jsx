@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import {
   showSuccess,
@@ -14,7 +14,11 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import { ROLES } from "../../utils/roles";
-import DataTable from "../../components/ui/DataTable";
+import Table from "../../components/ui/Table";
+import tableStyles from "../../components/ui/Table.module.css";
+import SearchInput from "../../components/SearchInput";
+import Pagination from "../../components/Pagination";
+import SelectDataShow from "../../components/ui/SelectDataShow";
 
 export default function TeamsPage() {
   const { user } = useAuth();
@@ -23,6 +27,9 @@ export default function TeamsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingTeam, setEditingTeam] = useState(null);
   const [form, setForm] = useState({ nama_tim: "" });
+  const [query, setQuery] = useState("");
+  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetchTeams();
@@ -88,53 +95,14 @@ export default function TeamsPage() {
     }
   }, []);
 
-  const columns = useMemo(
-    () => [
-      {
-        Header: "No",
-        id: "row",
-        Cell: ({ row }) => row.index + 1,
-        disableFilters: true,
-      },
-      {
-        Header: "Nama Tim",
-        accessor: "nama_tim",
-      },
-      {
-        Header: "Jumlah Anggota",
-        accessor: (row) => row.members?.length || 0,
-        id: "anggota",
-        disableFilters: true,
-      },
-      {
-        Header: "Aksi",
-        id: "aksi",
-        disableFilters: true,
-        Cell: ({ row }) => (
-          <div className="space-x-2">
-            <Button
-              onClick={() => openEdit(row.original)}
-              variant="warning"
-              icon
-              aria-label="Edit"
-            >
-              <Pencil size={16} />
-            </Button>
-            <Button
-              onClick={() => deleteTeam(row.original.id)}
-              variant="danger"
-              icon
-              aria-label="Hapus"
-            >
-              <Trash2 size={16} />
-            </Button>
-          </div>
-        ),
-      },
-    ],
-    [deleteTeam, openEdit]
+  const filtered = teams.filter((t) =>
+    t.nama_tim.toLowerCase().includes(query.toLowerCase())
   );
-
+  const paginated = filtered.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
   if (user?.role !== ROLES.ADMIN) {
     return (
@@ -146,22 +114,94 @@ export default function TeamsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap justify-between items-center gap-2">
+      <div className="flex flex-wrap justify-between items-end gap-2">
+        <SearchInput
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setCurrentPage(1);
+          }}
+          placeholder="Cari tim..."
+          ariaLabel="Cari tim"
+        />
+
         <Button onClick={openCreate} className="add-button">
           <Plus size={16} />
           <span className="hidden sm:inline">Tambah Tim</span>
         </Button>
       </div>
 
-      {loading ? (
-        <div className="py-4 text-center">Memuat data...</div>
-      ) : (
-        <DataTable
-          columns={columns}
-          data={teams}
-          initialSorting={[{ id: "nama_tim", desc: false }]}
+      <Table>
+        <thead>
+          <tr className={tableStyles.headerRow}>
+            <th className={tableStyles.cell}>No</th>
+            <th className={tableStyles.cell}>Nama Tim</th>
+            <th className={tableStyles.cell}>Jumlah Anggota</th>
+            <th className={tableStyles.cell}>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loading ? (
+            <tr>
+              <td colSpan="4" className="py-4 text-center">
+                Memuat data...
+              </td>
+            </tr>
+          ) : paginated.length === 0 ? (
+            <tr>
+              <td colSpan="4" className="py-4 text-center">
+                Data tidak ditemukan
+              </td>
+            </tr>
+          ) : (
+            paginated.map((t, idx) => (
+              <tr
+                key={t.id}
+                className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
+              >
+                <td className={tableStyles.cell}>
+                  {(currentPage - 1) * pageSize + idx + 1}
+                </td>
+                <td className={tableStyles.cell}>{t.nama_tim}</td>
+                <td className={tableStyles.cell}>{t.members?.length || 0}</td>
+                <td className={`${tableStyles.cell} space-x-2`}>
+                  <Button
+                    onClick={() => openEdit(t)}
+                    variant="warning"
+                    icon
+                    aria-label="Edit"
+                  >
+                    <Pencil size={16} />
+                  </Button>
+                  <Button
+                    onClick={() => deleteTeam(t.id)}
+                    variant="danger"
+                    icon
+                    aria-label="Hapus"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </Table>
+
+      <div className="flex items-center justify-between mt-4">
+        <SelectDataShow
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          setCurrentPage={setCurrentPage}
+          options={[5, 10, 25, 50]}
+          className="w-32"
         />
-      )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      </div>
 
       {showForm && (
         <Modal

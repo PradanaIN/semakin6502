@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import {
   showSuccess,
@@ -15,7 +15,11 @@ import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import Spinner from "../../components/Spinner";
 import { ROLES } from "../../utils/roles";
-import DataTable, { SelectColumnFilter } from "../../components/ui/DataTable";
+import Table from "../../components/ui/Table";
+import tableStyles from "../../components/ui/Table.module.css";
+import SearchInput from "../../components/SearchInput";
+import Pagination from "../../components/Pagination";
+import SelectDataShow from "../../components/ui/SelectDataShow";
 
 export default function UsersPage() {
   const { user } = useAuth();
@@ -24,7 +28,10 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
-  const [_rowSelection, setRowSelection] = useState({});
+  const [query, setQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
+  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
   const [form, setForm] = useState({
     nama: "",
     email: "",
@@ -108,63 +115,18 @@ export default function UsersPage() {
     }
   }, []);
 
-  const columns = useMemo(
-    () => [
-      {
-        Header: "No",
-        id: "row",
-        Cell: ({ row }) => row.index + 1,
-        disableFilters: true,
-      },
-      {
-        Header: "Nama",
-        accessor: "nama",
-      },
-      {
-        Header: "Email",
-        accessor: "email",
-      },
-      {
-        Header: "Tim",
-        accessor: (row) => row.members?.[0]?.team?.nama_tim || "-",
-        id: "team",
-        disableFilters: true,
-      },
-      {
-        Header: "Role",
-        accessor: "role",
-        Filter: SelectColumnFilter,
-        filter: "includes",
-      },
-      {
-        Header: "Aksi",
-        id: "aksi",
-        disableFilters: true,
-        Cell: ({ row }) => (
-          <div className="space-x-2">
-            <Button
-              onClick={() => openEdit(row.original)}
-              variant="warning"
-              icon
-              aria-label="Edit"
-            >
-              <Pencil size={16} />
-            </Button>
-            <Button
-              onClick={() => deleteUser(row.original.id)}
-              variant="danger"
-              icon
-              aria-label="Hapus"
-            >
-              <Trash2 size={16} />
-            </Button>
-          </div>
-        ),
-      },
-    ],
-    [deleteUser, openEdit]
-  );
+  const filtered = users.filter((u) => {
+    const txt = `${u.nama} ${u.email}`.toLowerCase();
+    const matchQuery = txt.includes(query.toLowerCase());
+    const matchRole = roleFilter ? u.role === roleFilter : true;
+    return matchQuery && matchRole;
+  });
 
+  const paginated = filtered.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
   if (user?.role !== ROLES.ADMIN) {
     return (
@@ -176,25 +138,117 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap justify-between items-center gap-2">
+      <div className="flex flex-wrap justify-between items-end gap-2">
+        <div className="flex items-end gap-2 flex-wrap">
+          <SearchInput
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            placeholder="Cari pengguna..."
+            ariaLabel="Cari pengguna"
+          />
+          <select
+            value={roleFilter}
+            onChange={(e) => {
+              setRoleFilter(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          >
+            <option value="">Semua role</option>
+            {roles.map((r) => (
+              <option key={r.id} value={r.name}>
+                {r.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <Button onClick={openCreate} className="add-button">
           <Plus size={16} />
           <span className="hidden sm:inline">Tambah Pengguna</span>
         </Button>
       </div>
 
-      {loading ? (
-        <div className="py-4 text-center">
-          <Spinner className="h-6 w-6 mx-auto" />
-        </div>
-      ) : (
-        <DataTable
-          columns={columns}
-          data={users}
-          initialSorting={[{ id: "nama", desc: false }]}
-          onRowSelectionChange={setRowSelection}
+      <Table>
+        <thead>
+          <tr className={tableStyles.headerRow}>
+            <th className={tableStyles.cell}>No</th>
+            <th className={tableStyles.cell}>Nama</th>
+            <th className={tableStyles.cell}>Email</th>
+            <th className={tableStyles.cell}>Tim</th>
+            <th className={tableStyles.cell}>Role</th>
+            <th className={tableStyles.cell}>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loading ? (
+            <tr>
+              <td colSpan="6" className="py-4 text-center">
+                <Spinner className="h-6 w-6 mx-auto" />
+              </td>
+            </tr>
+          ) : paginated.length === 0 ? (
+            <tr>
+              <td colSpan="6" className="py-4 text-center">
+                Data tidak ditemukan
+              </td>
+            </tr>
+          ) : (
+            paginated.map((u, idx) => (
+              <tr
+                key={u.id}
+                className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
+              >
+                <td className={tableStyles.cell}>
+                  {(currentPage - 1) * pageSize + idx + 1}
+                </td>
+                <td className={tableStyles.cell}>{u.nama}</td>
+                <td className={tableStyles.cell}>{u.email}</td>
+                <td className={tableStyles.cell}>
+                  {u.members?.[0]?.team?.nama_tim || "-"}
+                </td>
+                <td className={tableStyles.cell}>{u.role}</td>
+                <td className={`${tableStyles.cell} space-x-2`}>
+                  <Button
+                    onClick={() => openEdit(u)}
+                    variant="warning"
+                    icon
+                    aria-label="Edit"
+                  >
+                    <Pencil size={16} />
+                  </Button>
+                  <Button
+                    onClick={() => deleteUser(u.id)}
+                    variant="danger"
+                    icon
+                    aria-label="Hapus"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </Table>
+
+      <div className="flex items-center justify-between mt-4">
+        <SelectDataShow
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          setCurrentPage={setCurrentPage}
+          options={[5, 10, 25, 50]}
+          className="w-32"
         />
-      )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      </div>
 
       {showForm && (
         <Modal
