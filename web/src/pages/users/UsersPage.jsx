@@ -135,7 +135,8 @@ export default function UsersPage() {
       { Header: "Email", accessor: "email" },
       {
         Header: "Tim",
-        accessor: (row) => row.members?.[0]?.team?.namaTim || "-",
+        accessor: (row) => row.members?.[0]?.team?.nama_tim || "-",
+
       },
       { Header: "Role", accessor: "role" },
       {
@@ -216,16 +217,13 @@ export default function UsersPage() {
           <Spinner className="h-6 w-6 mx-auto" />
         </div>
       ) : (
-        <div className="overflow-x-auto md:overflow-x-visible">
-          <DataTable
-            columns={columns}
-            data={paginated}
-            showGlobalFilter={false}
-            showColumnFilters={false}
-            showPagination={false}
-            selectable={false}
-          />
-        </div>
+        <DataTable
+          columns={columns}
+          data={paginated}
+          showGlobalFilter={false}
+          showPagination={false}
+          selectable={false}
+        />
       )}
 
       <div className="flex items-center justify-between mt-4">

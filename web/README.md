@@ -88,3 +88,4 @@ const columns = [
 - `showPagination` – toggle built-in pagination controls
 - `selectable` – include checkbox column for row selection
 - `showColumnFilters` – whether to display per-column filter dropdowns (default `true`); disabling it hides the filters
+
