@@ -3,6 +3,7 @@ import { UnauthorizedException } from '@nestjs/common';
 
 const service = {
   login: jest.fn(),
+  me: jest.fn(),
 } as any;
 
 const controller = new AuthController(service);
@@ -33,5 +34,15 @@ describe('AuthController logout', () => {
     const result = controller.logout(res);
     expect(res.clearCookie).toHaveBeenCalledWith('token');
     expect(result).toEqual({ message: 'Logged out' });
+  });
+});
+
+describe('AuthController me', () => {
+  it('returns current user', async () => {
+    const req: any = { user: { userId: 1 } };
+    service.me.mockResolvedValue({ id: 1 });
+    const result = await controller.me(req);
+    expect(service.me).toHaveBeenCalledWith(1);
+    expect(result).toEqual({ user: { id: 1 } });
   });
 });
