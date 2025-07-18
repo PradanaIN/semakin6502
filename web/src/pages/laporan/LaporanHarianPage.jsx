@@ -52,7 +52,7 @@ export default function LaporanHarianPage() {
     }
   };
 
-  const openEdit = (item) => {
+  const _openEdit = (item) => {
     setForm({
       id: item.id,
       tanggal: item.tanggal.slice(0, 10),
@@ -78,7 +78,7 @@ export default function LaporanHarianPage() {
     }
   };
 
-  const remove = async (id) => {
+  const _remove = async (id) => {
     const r = await confirmDelete("Hapus laporan ini?");
     if (!r.isConfirmed) return;
     try {
@@ -91,9 +91,8 @@ export default function LaporanHarianPage() {
     }
   };
 
-  useEffect(() => {
-    if (user) fetchData();
-  }, [user]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (user) fetchData(); }, [user]);
 
   const filtered = laporan.filter((l) => {
     const peg = l.pegawai?.nama?.toLowerCase() || "";
