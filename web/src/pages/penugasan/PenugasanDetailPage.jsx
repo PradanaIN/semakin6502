@@ -17,6 +17,7 @@ import { STATUS } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
+import tableStyles from "../../components/ui/Table.module.css";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
@@ -480,15 +481,15 @@ export default function PenugasanDetailPage() {
 
         <div className="overflow-x-auto rounded-lg border dark:border-gray-700">
           <Table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm">
-              <tr>
-                <th className="py-3 px-4">No</th>
-                <th className="py-3 px-4">Deskripsi</th>
-                <th className="py-3 px-4">Tanggal</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Bukti</th>
-                <th className="py-3 px-4">Catatan</th>
-                <th className="py-3 px-4">Aksi</th>
+            <thead>
+              <tr className={tableStyles.headerRow}>
+                <th className={tableStyles.cell}>No</th>
+                <th className={tableStyles.cell}>Deskripsi</th>
+                <th className={tableStyles.cell}>Tanggal</th>
+                <th className={tableStyles.cell}>Status</th>
+                <th className={tableStyles.cell}>Bukti</th>
+                <th className={tableStyles.cell}>Catatan</th>
+                <th className={tableStyles.cell}>Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -505,15 +506,15 @@ export default function PenugasanDetailPage() {
                 laporan.map((l, idx) => (
                   <tr
                     key={l.id}
-                    className="border-t dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center"
+                    className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
                   >
-                    <td className="py-3 px-4">{idx + 1}</td>
-                    <td className="py-3 px-4">{l.deskripsi}</td>
-                    <td className="py-3 px-4">{formatDMY(l.tanggal)}</td>
-                    <td className="py-3 px-4">
+                    <td className={tableStyles.cell}>{idx + 1}</td>
+                    <td className={tableStyles.cell}>{l.deskripsi}</td>
+                    <td className={tableStyles.cell}>{formatDMY(l.tanggal)}</td>
+                    <td className={tableStyles.cell}>
                       <StatusBadge status={l.status} />
                     </td>
-                    <td className="py-3 px-4">
+                    <td className={tableStyles.cell}>
                       {l.bukti_link ? (
                         <a
                           href={l.bukti_link}
@@ -530,8 +531,8 @@ export default function PenugasanDetailPage() {
                         "-"
                       )}
                     </td>
-                    <td className="py-3 px-4">{l.catatan || "-"}</td>
-                    <td className="py-3 px-4 space-x-2">
+                    <td className={tableStyles.cell}>{l.catatan || "-"}</td>
+                    <td className={`${tableStyles.cell} space-x-2`}>
                       <Button
                         onClick={() => editLaporan(l)}
                         variant="warning"
