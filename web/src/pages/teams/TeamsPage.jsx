@@ -2,10 +2,10 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import {
   showSuccess,
-  showError,
   showWarning,
   confirmDelete,
   confirmCancel,
+  handleAxiosError,
 } from "../../utils/alerts";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
@@ -44,7 +44,7 @@ export default function TeamsPage() {
       }
       setTeams(res.data);
     } catch (err) {
-      console.error("Gagal mengambil tim", err);
+      handleAxiosError(err, "Gagal mengambil tim");
     } finally {
       setLoading(false);
     }
@@ -77,8 +77,7 @@ export default function TeamsPage() {
       fetchTeams();
       showSuccess("Berhasil", "Tim disimpan");
     } catch (err) {
-      console.error("Gagal menyimpan tim", err);
-      showError("Error", "Gagal menyimpan tim");
+      handleAxiosError(err, "Gagal menyimpan tim");
     }
   };
 
@@ -90,8 +89,7 @@ export default function TeamsPage() {
       fetchTeams();
       showSuccess("Dihapus", "Tim berhasil dihapus");
     } catch (err) {
-      console.error("Gagal menghapus tim", err);
-      showError("Error", "Gagal menghapus tim");
+      handleAxiosError(err, "Gagal menghapus tim");
     }
   }, []);
 
@@ -131,6 +129,7 @@ export default function TeamsPage() {
         </Button>
       </div>
 
+      <div className="overflow-x-auto md:overflow-x-visible">
       <Table>
         <thead>
           <tr className={tableStyles.headerRow}>
@@ -184,6 +183,7 @@ export default function TeamsPage() {
           )}
         </tbody>
       </Table>
+      </div>
 
       <div className="flex items-center justify-between mt-4">
         <SelectDataShow

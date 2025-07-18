@@ -3,9 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   showSuccess,
-  showError,
   confirmDelete,
   confirmCancel,
+  handleAxiosError,
 } from "../../utils/alerts";
 import { Pencil, Trash2 } from "lucide-react";
 import Select from "react-select";
@@ -50,8 +50,7 @@ export default function TugasTambahanDetailPage() {
         deskripsi: dRes.data.deskripsi || "",
       });
     } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal mengambil data");
+      handleAxiosError(err, "Gagal mengambil data");
     }
   }, [id]);
 
@@ -70,8 +69,7 @@ export default function TugasTambahanDetailPage() {
       setEditing(false);
       fetchDetail();
     } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal menyimpan");
+      handleAxiosError(err, "Gagal menyimpan");
     }
   };
 
@@ -91,8 +89,7 @@ export default function TugasTambahanDetailPage() {
       });
       fetchDetail();
     } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal menambah laporan");
+      handleAxiosError(err, "Gagal menambah laporan");
     }
   };
 
@@ -104,8 +101,7 @@ export default function TugasTambahanDetailPage() {
       showSuccess("Dihapus", "Kegiatan dihapus");
       navigate(-1);
     } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal menghapus");
+      handleAxiosError(err, "Gagal menghapus");
     }
   };
 

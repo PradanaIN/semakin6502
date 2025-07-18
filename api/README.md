@@ -55,7 +55,9 @@ Buat file `.env` dan isi (nilai `JWT_SECRET` wajib diisi, server akan gagal star
 DATABASE_URL="mysql://root:password@localhost:3306/semakin_6502"
 JWT_SECRET="your_jwt_secret_here"  # wajib diisi
 PORT=3000  # opsional, default 3000
-CORS_ORIGIN="http://localhost:5173"   
+CORS_ORIGIN="http://localhost:5173"
+# COOKIE_DOMAIN=localhost       # opsional
+# COOKIE_SAMESITE=lax           # opsional
 ```
 Jika `JWT_SECRET` tidak diatur, aplikasi akan langsung keluar dengan error.
 `CORS_ORIGIN` opsional, isi dengan satu atau beberapa origin (pisahkan koma)
@@ -79,6 +81,11 @@ npm run start:dev
 ```
 
 Server berjalan di: `http://localhost:${PORT}` (default 3000)
+
+## ⏱️ Rate Limiting
+
+Aplikasi menerapkan rate limit global menggunakan `@nestjs/throttler`.
+Setiap IP dibatasi **100 request** setiap **15 menit**.
 
 ---
 
@@ -111,6 +118,13 @@ Server berjalan di: `http://localhost:${PORT}` (default 3000)
 | GET    | `/monitoring/bulanan/matrix` | Matriks bulanan per user (query: `year`, `teamId` opsional) | admin, pimpinan, ketua tim |
 
 Format hasil: array per pengguna, masing-masing memiliki array 12 objek bulan.
+
+## 🕒 Zona Waktu
+
+Semua kalkulasi tanggal pada backend mengasumsikan server berjalan dalam
+timezone **UTC**. Pastikan data `tanggal` yang dikirim menggunakan format ISO
+`YYYY-MM-DD` sehingga diparse sebagai waktu UTC oleh Node.js. Apabila server
+dijalankan dengan timezone berbeda, hasil perhitungan tanggal bisa bergeser.
 
 ---
 
