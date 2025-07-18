@@ -6,6 +6,20 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.headerRow {
+  background-color: var(--th-bg);
+}
+
+.row {
+  text-align: center;
+}
+
+.cell {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
 :root {
   /* Default theme (dark root) */
   --table-bg: #111827;
@@ -19,7 +33,7 @@
 }
 
 /* Override for light mode via .light class on body or html */
-.light {
+:global(.light) {
   --table-bg: #f9fafb;
   --text-color: #111827;
   --th-bg: #f3f4f6;

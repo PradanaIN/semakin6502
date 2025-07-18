@@ -504,10 +504,7 @@ export default function PenugasanDetailPage() {
                 </tr>
               ) : (
                 laporan.map((l, idx) => (
-                  <tr
-                    key={l.id}
-                    className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
-                  >
+                  <tr key={l.id} className={tableStyles.row}>
                     <td className={tableStyles.cell}>{idx + 1}</td>
                     <td className={tableStyles.cell}>{l.deskripsi}</td>
                     <td className={tableStyles.cell}>{formatDMY(l.tanggal)}</td>

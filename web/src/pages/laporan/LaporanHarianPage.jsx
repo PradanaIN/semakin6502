@@ -67,10 +67,8 @@ export default function LaporanHarianPage() {
     }
   };
 
-
-  useEffect(() => {
-    if (user) fetchData();
-  }, [user]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (user) fetchData(); }, [user]);
 
   const filtered = laporan.filter((l) => {
     const peg = l.pegawai?.nama?.toLowerCase() || "";
@@ -175,10 +173,7 @@ export default function LaporanHarianPage() {
                 </tr>
               ) : (
                 paginated.map((item, idx) => (
-                  <tr
-                    key={item.id}
-                    className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
-                  >
+                  <tr key={item.id} className={tableStyles.row}>
                     <td className={tableStyles.cell}>
                       {(currentPage - 1) * pageSize + idx + 1}
                     </td>
