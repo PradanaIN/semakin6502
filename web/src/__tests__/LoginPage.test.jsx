@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
-import LoginPage from '../pages/auth/LoginPage';
-import { AuthProvider } from '../pages/auth/useAuth';
+import LoginPage from '../features/auth/pages/LoginPage';
+import { AuthProvider } from '../features/auth/hooks/useAuth';
 
 function renderPage() {
   return render(

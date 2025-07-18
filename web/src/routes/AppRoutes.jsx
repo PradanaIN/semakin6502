@@ -1,33 +1,33 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import React, { Suspense } from "react";
-import { useAuth } from "../pages/auth/useAuth";
+import { useAuth } from "../features/auth/hooks/useAuth";
 import Loading from "../components/Loading";
 
-const LoginPage = React.lazy(() => import("../pages/auth/LoginPage"));
-const Dashboard = React.lazy(() => import("../pages/dashboard/Dashboard"));
+const LoginPage = React.lazy(() => import("../features/auth/pages/LoginPage"));
+const Dashboard = React.lazy(() => import("../features/dashboard/pages/Dashboard"));
 const Layout = React.lazy(() => import("../pages/layout/Layout"));
-const UsersPage = React.lazy(() => import("../pages/users/UsersPage"));
-const TeamsPage = React.lazy(() => import("../pages/teams/TeamsPage"));
+const UsersPage = React.lazy(() => import("../features/users/pages/UsersPage"));
+const TeamsPage = React.lazy(() => import("../features/teams/pages/TeamsPage"));
 const MasterKegiatanPage = React.lazy(() =>
-  import("../pages/master/MasterKegiatanPage")
+  import("../features/master/pages/MasterKegiatanPage")
 );
 const PenugasanPage = React.lazy(() =>
-  import("../pages/penugasan/PenugasanPage")
+  import("../features/penugasan/pages/PenugasanPage")
 );
 const PenugasanDetailPage = React.lazy(() =>
-  import("../pages/penugasan/PenugasanDetailPage")
+  import("../features/penugasan/pages/PenugasanDetailPage")
 );
 const LaporanHarianPage = React.lazy(() =>
-  import("../pages/laporan/LaporanHarianPage")
+  import("../features/laporan/pages/LaporanHarianPage")
 );
 const TugasTambahanPage = React.lazy(() =>
-  import("../pages/tambahan/TugasTambahanPage")
+  import("../features/tambahan/pages/TugasTambahanPage")
 );
 const TugasTambahanDetailPage = React.lazy(() =>
-  import("../pages/tambahan/TugasTambahanDetailPage")
+  import("../features/tambahan/pages/TugasTambahanDetailPage")
 );
 const MonitoringPage = React.lazy(() =>
-  import("../pages/monitoring/MonitoringPage")
+  import("../features/monitoring/pages/MonitoringPage")
 );
 const NotFound = React.lazy(() => import("../pages/NotFound"));
 

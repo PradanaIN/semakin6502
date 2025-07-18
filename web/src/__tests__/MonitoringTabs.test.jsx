@@ -1,9 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import MonitoringTabs from '../components/dashboard/MonitoringTabs';
+import MonitoringTabs from '../features/dashboard/components/MonitoringTabs';
 
-jest.mock('../components/dashboard/DailyOverview', () => () => <div>Daily content</div>);
-jest.mock('../components/dashboard/WeeklyOverview', () => () => <div>Weekly content</div>);
-jest.mock('../components/dashboard/MonthlyOverview', () => () => <div>Monthly content</div>);
+jest.mock('../features/dashboard/components/DailyOverview', () => () => <div>Daily content</div>);
+jest.mock('../features/dashboard/components/WeeklyOverview', () => () => <div>Weekly content</div>);
+jest.mock('../features/dashboard/components/MonthlyOverview', () => () => <div>Monthly content</div>);
 
 test('switches between monitoring tabs', () => {
   render(

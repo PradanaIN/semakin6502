@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import AppRoutes from '../routes/AppRoutes';
-import { AuthProvider } from '../pages/auth/useAuth';
+import { AuthProvider } from '../features/auth/hooks/useAuth';
 
 beforeEach(() => {
   localStorage.clear();
