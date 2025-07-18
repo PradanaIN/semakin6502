@@ -131,7 +131,7 @@ export default function UsersPage() {
       { Header: "Email", accessor: "email" },
       {
         Header: "Tim",
-        accessor: (row) => row.members?.[0]?.team?.nama_tim || "-",
+        accessor: (row) => row.members?.[0]?.team?.namaTim || "-",
 
       },
       { Header: "Role", accessor: "role" },

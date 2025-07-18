@@ -52,6 +52,7 @@ export default function PenugasanDetailPage() {
     deskripsi: "",
     status: STATUS.BELUM, // Belum, Sedang Dikerjakan, Selesai Dikerjakan
     catatan: "",
+    buktiLink: "",
   });
 
   const closeLaporanForm = useCallback(() => {
@@ -136,7 +137,7 @@ export default function PenugasanDetailPage() {
       }
       if (
         laporanForm.status === STATUS.SELESAI_DIKERJAKAN &&
-        !laporanForm.buktiLink
+        !laporanForm.buktiLink.trim()
       ) {
         showWarning("Lengkapi data", "Link bukti wajib diisi");
         return;

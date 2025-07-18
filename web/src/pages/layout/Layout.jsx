@@ -246,7 +246,6 @@ export default function Layout() {
                             } ${
                               user?.team ||
                               user?.teamName ||
-                              user?.team_name ||
                               user?.namaTim ||
                               user?.members?.[0]?.team?.namaTim ||
                               ""
