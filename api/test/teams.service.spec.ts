@@ -28,10 +28,10 @@ describe('TeamsService findOne', () => {
 describe('TeamsService addMember', () => {
   it('creates member with given data', async () => {
     prisma.member.create.mockResolvedValue({ id: 2 });
-    const data = { user_id: 3, is_leader: true };
+    const data = { user_id: 3, isLeader: true };
     const res = await service.addMember(1, data);
     expect(prisma.member.create).toHaveBeenCalledWith({
-      data: { teamId: 1, userId: 3, is_leader: true },
+      data: { teamId: 1, userId: 3, isLeader: true },
     });
     expect(res).toEqual({ id: 2 });
   });
