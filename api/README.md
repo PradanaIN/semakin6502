@@ -80,6 +80,11 @@ npm run start:dev
 
 Server berjalan di: `http://localhost:${PORT}` (default 3000)
 
+## ⏱️ Rate Limiting
+
+Aplikasi menerapkan rate limit global menggunakan `@nestjs/throttler`.
+Setiap IP dibatasi **100 request** setiap **15 menit**.
+
 ---
 
 ## 🔐 Role & Akses
