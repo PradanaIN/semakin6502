@@ -213,9 +213,9 @@ export default function MasterKegiatanPage() {
                   {item.team?.namaTim || item.teamId}
                 </td>
                 <td className={tableStyles.cell}>{item.namaKegiatan}</td>
-                <th className={tableStyles.cell}>
+                <td className={tableStyles.cell}>
                   {!item.deskripsi ? "-" : item.deskripsi}
-                </th>
+                </td>
                 <td className={`${tableStyles.cell} space-x-2`}>
                   <Button
                     onClick={() => openEdit(item)}
