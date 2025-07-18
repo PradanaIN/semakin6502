@@ -1,4 +1,5 @@
 import React from "react";
+import { FixedSizeList as List } from "react-window";
 import {
   flexRender,
   getCoreRowModel,
@@ -14,6 +15,9 @@ import SelectDataShow from "./SelectDataShow";
 import SearchInput from "../SearchInput";
 import Input from "./Input";
 import tableStyles from "./Table.module.css";
+
+const TBody = React.forwardRef((props, ref) => <tbody ref={ref} {...props} />);
+const ROW_HEIGHT = 48;
 
 function GlobalFilter({ table }) {
   return (
@@ -167,8 +171,8 @@ export default function DataTable({
             </tr>
           ))}
         </thead>
-        <tbody>
-          {table.getRowModel().rows.length === 0 ? (
+        {table.getRowModel().rows.length === 0 ? (
+          <tbody>
             <tr>
               <td
                 colSpan={table.getAllColumns().length}
@@ -177,21 +181,38 @@ export default function DataTable({
                 Data tidak ditemukan
               </td>
             </tr>
-          ) : (
-            table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className={tableStyles.row}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className={tableStyles.cell}>
-                    {flexRender(
-                      cell.column.columnDef.cell ?? cell.getValue(),
-                      cell.getContext()
-                    )}
-                  </td>
-                ))}
-              </tr>
-            ))
-          )}
-        </tbody>
+          </tbody>
+        ) : (
+          <List
+            height={
+              Math.min(
+                table.getRowModel().rows.length,
+                table.getState().pagination.pageSize || table.getRowModel().rows.length
+              ) * ROW_HEIGHT
+            }
+            itemCount={table.getRowModel().rows.length}
+            itemSize={ROW_HEIGHT}
+            width="100%"
+            outerElementType={TBody}
+            itemData={table.getRowModel().rows}
+          >
+            {({ index, style, data }) => {
+              const row = data[index];
+              return (
+                <tr key={row.id} className={tableStyles.row} style={style}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className={tableStyles.cell}>
+                      {flexRender(
+                        cell.column.columnDef.cell ?? cell.getValue(),
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              );
+            }}
+          </List>
+        )}
       </Table>
       {showPagination && (
         <div className="flex items-center justify-between mt-4">
