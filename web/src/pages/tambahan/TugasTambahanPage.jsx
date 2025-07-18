@@ -1,6 +1,10 @@
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { showSuccess, confirmDelete, handleAxiosError } from "../../utils/alerts";
+import {
+  showSuccess,
+  confirmDelete,
+  handleAxiosError,
+} from "../../utils/alerts";
 import { Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import Table from "../../components/ui/Table";
 import tableStyles from "../../components/ui/Table.module.css";
@@ -181,124 +185,123 @@ export default function TugasTambahanPage() {
       </div>
 
       <div className="overflow-x-auto md:overflow-x-visible">
-      <Table>
-        <thead>
-          <tr className={tableStyles.headerRow}>
-            <th className={tableStyles.cell}>No</th>
-            <th className={tableStyles.cell}>Kegiatan</th>
-            <th className={tableStyles.cell}>Tim</th>
-            <th className={tableStyles.cell}>Tanggal</th>
-            <th className={tableStyles.cell}>Deskripsi</th>
-            <th className={tableStyles.cell}>Status</th>
-            <th className={tableStyles.cell}>Bukti Dukung</th>
-            <th className={tableStyles.cell}>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td
-                colSpan="7"
-                className="py-6 text-center text-gray-600 dark:text-gray-300"
-              >
-                <div className="flex flex-col items-center space-y-2">
-                  <svg
-                    className="animate-spin h-6 w-6 text-blue-600"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 
+        <Table>
+          <thead>
+            <tr className={tableStyles.headerRow}>
+              <th className={tableStyles.cell}>No</th>
+              <th className={tableStyles.cell}>Kegiatan</th>
+              <th className={tableStyles.cell}>Tim</th>
+              <th className={tableStyles.cell}>Tanggal</th>
+              <th className={tableStyles.cell}>Deskripsi</th>
+              <th className={tableStyles.cell}>Status</th>
+              <th className={tableStyles.cell}>Bukti Dukung</th>
+              <th className={tableStyles.cell}>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td
+                  colSpan="7"
+                  className="py-6 text-center text-gray-600 dark:text-gray-300"
+                >
+                  <div className="flex flex-col items-center space-y-2">
+                    <svg
+                      className="animate-spin h-6 w-6 text-blue-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 
             6.364A8.001 8.001 0 0112 20v4c-6.627 
             0-12-5.373-12-12h4a8.001 8.001 
             0 006.364 2.93z"
-                    ></path>
-                  </svg>
-                  <span className="text-sm font-medium tracking-wide">
-                    Memuat data...
-                  </span>
-                </div>
-              </td>
-            </tr>
-          ) : paginatedItems.length === 0 ? (
-            <tr>
-              <td
-                colSpan="7"
-                className="py-6 text-center text-gray-600 dark:text-gray-300"
-              >
-                <div className="flex flex-col items-center space-y-1">
-                  <span className="text-xl">🫰🫰🤟🤟😜☝☝</span>
-                  <span className="text-sm font-medium tracking-wide">
-                    Data tidak ditemukan.
-                  </span>
-                </div>
-              </td>
-            </tr>
-          ) : (
-            paginatedItems.map((item, idx) => (
-              <tr key={item.id} className={tableStyles.row}>
-                <td className={tableStyles.cell}>
-                  {(currentPage - 1) * pageSize + idx + 1}
-                </td>
-                <td className={tableStyles.cell}>{item.nama}</td>
-                <td className={tableStyles.cell}>
-                  {item.kegiatan.team?.namaTim || "-"}
-                </td>
-                <td className={tableStyles.cell}>
-                  {item.tanggal.slice(0, 10)}
-                </td>
-                <td className={tableStyles.cell}>{item.deskripsi || "-"}</td>
-                <td className={tableStyles.cell}>
-                  <StatusBadge status={item.status} />
-                </td>
-                <td className={tableStyles.cell}>
-                  {item.buktiLink ? (
-                    <Check className="w-4 h-4 text-green-600" />
-                  ) : (
-                    <X className="w-4 h-4 text-red-600" />
-                  )}
-                </td>
-                <td className={`${tableStyles.cell} space-x-2`}>
-                  <Button
-                    onClick={() => openDetail(item.id)}
-                    icon
-                    aria-label="Detail"
-                  >
-                    <Eye size={16} />
-                  </Button>
-                  <Button
-                    onClick={() => openEdit(item)}
-                    variant="warning"
-                    icon
-                    aria-label="Edit"
-                  >
-                    <Pencil size={16} />
-                  </Button>
-                  <Button
-                    onClick={() => remove(item)}
-                    variant="danger"
-                    icon
-                    aria-label="Hapus"
-                  >
-                    <Trash2 size={16} />
-                  </Button>
+                      ></path>
+                    </svg>
+                    <span className="text-sm font-medium tracking-wide">
+                      Memuat data...
+                    </span>
+                  </div>
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </Table>
+            ) : paginatedItems.length === 0 ? (
+              <tr>
+                <td
+                  colSpan="7"
+                  className="py-6 text-center text-gray-600 dark:text-gray-300"
+                >
+                  <div className="flex flex-col items-center space-y-1">
+                    <span className="text-sm font-medium tracking-wide">
+                      ✊🙏✊✊🙏✊🙏 Data tidak ditemukan 🫰🫰🤟🤟☝☝
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              paginatedItems.map((item, idx) => (
+                <tr key={item.id} className={tableStyles.row}>
+                  <td className={tableStyles.cell}>
+                    {(currentPage - 1) * pageSize + idx + 1}
+                  </td>
+                  <td className={tableStyles.cell}>{item.nama}</td>
+                  <td className={tableStyles.cell}>
+                    {item.kegiatan.team?.namaTim || "-"}
+                  </td>
+                  <td className={tableStyles.cell}>
+                    {item.tanggal.slice(0, 10)}
+                  </td>
+                  <td className={tableStyles.cell}>{item.deskripsi || "-"}</td>
+                  <td className={tableStyles.cell}>
+                    <StatusBadge status={item.status} />
+                  </td>
+                  <td className={tableStyles.cell}>
+                    {item.buktiLink ? (
+                      <Check className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <X className="w-4 h-4 text-red-600" />
+                    )}
+                  </td>
+                  <td className={`${tableStyles.cell} space-x-2`}>
+                    <Button
+                      onClick={() => openDetail(item.id)}
+                      icon
+                      aria-label="Detail"
+                    >
+                      <Eye size={16} />
+                    </Button>
+                    <Button
+                      onClick={() => openEdit(item)}
+                      variant="warning"
+                      icon
+                      aria-label="Edit"
+                    >
+                      <Pencil size={16} />
+                    </Button>
+                    <Button
+                      onClick={() => remove(item)}
+                      variant="danger"
+                      icon
+                      aria-label="Hapus"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </Table>
       </div>
 
       <div className="flex items-center justify-between mt-4">
@@ -445,7 +448,9 @@ export default function TugasTambahanPage() {
             focus:outline-none focus:ring-2 focus:ring-blue-500 
             shadow-sm transition duration-150 ease-in-out"
               >
-                <option value={STATUS.BELUM}>{formatStatus(STATUS.BELUM)}</option>
+                <option value={STATUS.BELUM}>
+                  {formatStatus(STATUS.BELUM)}
+                </option>
                 <option value={STATUS.SEDANG_DIKERJAKAN}>
                   {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
                 </option>

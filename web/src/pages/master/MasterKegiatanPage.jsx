@@ -178,65 +178,65 @@ export default function MasterKegiatanPage() {
       </div>
 
       <div className="overflow-x-auto md:overflow-x-visible">
-      <Table>
-        <thead>
-          <tr className={tableStyles.headerRow}>
-            <th className={tableStyles.cell}>No</th>
-            <th className={tableStyles.cell}>Tim</th>
-            <th className={tableStyles.cell}>Nama Kegiatan</th>
-            <th className={tableStyles.cell}>Deskripsi</th>
-            <th className={tableStyles.cell}>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan="5" className="py-4 text-center">
-                <Spinner className="h-6 w-6 mx-auto" />
-              </td>
+        <Table>
+          <thead>
+            <tr className={tableStyles.headerRow}>
+              <th className={tableStyles.cell}>No</th>
+              <th className={tableStyles.cell}>Tim</th>
+              <th className={tableStyles.cell}>Nama Kegiatan</th>
+              <th className={tableStyles.cell}>Deskripsi</th>
+              <th className={tableStyles.cell}>Aksi</th>
             </tr>
-          ) : items.length === 0 ? (
-            <tr>
-              <td colSpan="5" className="py-4 text-center">
-                Data tidak ditemukan
-              </td>
-            </tr>
-          ) : (
-            items.map((item, idx) => (
-              <tr key={item.id} className={tableStyles.row}>
-                <td className={tableStyles.cell}>
-                  {(page - 1) * perPage + idx + 1}
-                </td>
-                <td className={tableStyles.cell}>
-                  {item.team?.namaTim || item.teamId}
-                </td>
-                <td className={tableStyles.cell}>{item.namaKegiatan}</td>
-                <td className={tableStyles.cell}>
-                  {!item.deskripsi ? "-" : item.deskripsi}
-                </td>
-                <td className={`${tableStyles.cell} space-x-2`}>
-                  <Button
-                    onClick={() => openEdit(item)}
-                    variant="warning"
-                    icon
-                    aria-label="Edit"
-                  >
-                    <Pencil size={16} />
-                  </Button>
-                  <Button
-                    onClick={() => deleteItem(item)}
-                    variant="danger"
-                    icon
-                    aria-label="Hapus"
-                  >
-                    <Trash2 size={16} />
-                  </Button>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan="5" className="py-4 text-center">
+                  <Spinner className="h-6 w-6 mx-auto" />
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </Table>
+            ) : items.length === 0 ? (
+              <tr>
+                <td colSpan="5" className="py-4 text-center">
+                  ✊🙏✊✊🙏✊🙏 Data tidak ditemukan 🫰🫰🤟🤟☝☝
+                </td>
+              </tr>
+            ) : (
+              items.map((item, idx) => (
+                <tr key={item.id} className={tableStyles.row}>
+                  <td className={tableStyles.cell}>
+                    {(page - 1) * perPage + idx + 1}
+                  </td>
+                  <td className={tableStyles.cell}>
+                    {item.team?.namaTim || item.teamId}
+                  </td>
+                  <td className={tableStyles.cell}>{item.namaKegiatan}</td>
+                  <td className={tableStyles.cell}>
+                    {!item.deskripsi ? "-" : item.deskripsi}
+                  </td>
+                  <td className={`${tableStyles.cell} space-x-2`}>
+                    <Button
+                      onClick={() => openEdit(item)}
+                      variant="warning"
+                      icon
+                      aria-label="Edit"
+                    >
+                      <Pencil size={16} />
+                    </Button>
+                    <Button
+                      onClick={() => deleteItem(item)}
+                      variant="danger"
+                      icon
+                      aria-label="Hapus"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </Table>
       </div>
 
       <div className="flex items-center justify-between mt-4">
@@ -257,10 +257,7 @@ export default function MasterKegiatanPage() {
       </div>
 
       {showForm && (
-        <Modal
-          onClose={closeForm}
-          titleId="master-kegiatan-form-title"
-        >
+        <Modal onClose={closeForm} titleId="master-kegiatan-form-title">
           <div className="flex items-center justify-between mb-3">
             <h2
               id="master-kegiatan-form-title"
@@ -325,10 +322,7 @@ export default function MasterKegiatanPage() {
             </div>
 
             <div className="flex justify-end space-x-2 pt-2">
-              <Button
-                variant="secondary"
-                onClick={closeForm}
-              >
+              <Button variant="secondary" onClick={closeForm}>
                 Batal
               </Button>
               <Button onClick={saveItem}>Simpan</Button>

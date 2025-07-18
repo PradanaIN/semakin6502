@@ -52,7 +52,6 @@ export default function LaporanHarianPage() {
     }
   };
 
-
   const saveForm = async () => {
     try {
       if (form.id) {
@@ -67,7 +66,9 @@ export default function LaporanHarianPage() {
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { if (user) fetchData(); }, [user]);
+  useEffect(() => {
+    if (user) fetchData();
+  }, [user]);
 
   const filtered = laporan.filter((l) => {
     const peg = l.pegawai?.nama?.toLowerCase() || "";
@@ -163,9 +164,8 @@ export default function LaporanHarianPage() {
                     className="py-6 text-center text-gray-600 dark:text-gray-300"
                   >
                     <div className="flex flex-col items-center space-y-1">
-                      <span className="text-xl">🫰🫰🤟🤟😜☝☝</span>
                       <span className="text-sm font-medium tracking-wide">
-                        Data tidak ditemukan.
+                        ✊🙏✊✊🙏✊🙏 Data tidak ditemukan 🫰🫰🤟🤟☝☝
                       </span>
                     </div>
                   </td>
@@ -201,7 +201,7 @@ export default function LaporanHarianPage() {
                           />
                         </a>
                       ) : (
-                        <X className="w-4 h-4 text-red-600" />
+                        <X className="w-4 h-4 text-red-600 text" />
                       )}
                     </td>
                     <td className={tableStyles.cell}>{item.catatan || "-"}</td>
@@ -274,7 +274,9 @@ export default function LaporanHarianPage() {
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
               >
-                <option value={STATUS.BELUM}>{formatStatus(STATUS.BELUM)}</option>
+                <option value={STATUS.BELUM}>
+                  {formatStatus(STATUS.BELUM)}
+                </option>
                 <option value={STATUS.SEDANG_DIKERJAKAN}>
                   {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
                 </option>

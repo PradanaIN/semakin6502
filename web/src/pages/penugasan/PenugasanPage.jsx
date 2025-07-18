@@ -26,10 +26,7 @@ import months from "../../utils/months";
 import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
 
-const EXCLUDED_TB_NAMES = [
-  "Ayu Pinta Gabina Siregar",
-  "Elly Astutik",
-];
+const EXCLUDED_TB_NAMES = ["Ayu Pinta Gabina Siregar", "Elly Astutik"];
 
 const getCurrentWeek = () => {
   const today = new Date();
@@ -52,13 +49,7 @@ export default function PenugasanPage() {
   const [kegiatan, setKegiatan] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const {
-    showForm,
-    form,
-    setForm,
-    openCreate,
-    closeForm,
-  } = useModalForm({
+  const { showForm, form, setForm, openCreate, closeForm } = useModalForm({
     kegiatanId: "",
     pegawaiIds: [],
     deskripsi: "",
@@ -132,7 +123,6 @@ export default function PenugasanPage() {
     fetchData();
   }, [fetchData]);
 
-
   const save = async () => {
     if (!form.kegiatanId || form.pegawaiIds.length === 0) {
       showWarning("Lengkapi data", "Kegiatan dan pegawai wajib dipilih");
@@ -198,105 +188,104 @@ export default function PenugasanPage() {
       </div>
 
       <div className="overflow-x-auto md:overflow-x-visible">
-      <Table>
-        <thead>
-          <tr className={tableStyles.headerRow}>
-            <th className={tableStyles.cell}>No</th>
-            <th className={tableStyles.cell}>Kegiatan</th>
-            <th className={tableStyles.cell}>Tim</th>
-            <th className={tableStyles.cell}>Pegawai</th>
-            <th className={tableStyles.cell}>Minggu</th>
-            <th className={tableStyles.cell}>Bulan</th>
-            <th className={tableStyles.cell}>Status</th>
-            <th className={tableStyles.cell}>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td
-                colSpan="7"
-                className="py-6 text-center text-gray-600 dark:text-gray-300"
-              >
-                <div className="flex flex-col items-center space-y-2">
-                  <svg
-                    className="animate-spin h-6 w-6 text-blue-600"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 
+        <Table>
+          <thead>
+            <tr className={tableStyles.headerRow}>
+              <th className={tableStyles.cell}>No</th>
+              <th className={tableStyles.cell}>Kegiatan</th>
+              <th className={tableStyles.cell}>Tim</th>
+              <th className={tableStyles.cell}>Pegawai</th>
+              <th className={tableStyles.cell}>Minggu</th>
+              <th className={tableStyles.cell}>Bulan</th>
+              <th className={tableStyles.cell}>Status</th>
+              <th className={tableStyles.cell}>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td
+                  colSpan="7"
+                  className="py-6 text-center text-gray-600 dark:text-gray-300"
+                >
+                  <div className="flex flex-col items-center space-y-2">
+                    <svg
+                      className="animate-spin h-6 w-6 text-blue-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 
             6.364A8.001 8.001 0 0112 20v4c-6.627 
             0-12-5.373-12-12h4a8.001 8.001 
             0 006.364 2.93z"
-                    ></path>
-                  </svg>
-                  <span className="text-sm font-medium tracking-wide">
-                    Memuat data...
-                  </span>
-                </div>
-              </td>
-            </tr>
-          ) : filtered.length === 0 ? (
-            <tr>
-              <td
-                colSpan="7"
-                className="py-6 text-center text-gray-600 dark:text-gray-300"
-              >
-                <div className="flex flex-col items-center space-y-1">
-                  <span className="text-xl">🫰🫰🤟🤟😜☝☝</span>
-                  <span className="text-sm font-medium tracking-wide">
-                    Data tidak ditemukan.
-                  </span>
-                </div>
-              </td>
-            </tr>
-          ) : (
-            paginated.map((p, idx) => (
-              <tr key={p.id} className={tableStyles.row}>
-                <td className={tableStyles.cell}>
-                  {(currentPage - 1) * pageSize + idx + 1}
-                </td>
-                <td className={tableStyles.cell}>
-                  {p.kegiatan?.namaKegiatan || "-"}
-                </td>
-                <td className={tableStyles.cell}>
-                  {p.kegiatan?.team?.namaTim || "-"}
-                </td>
-                <td className={tableStyles.cell}>{p.pegawai?.nama || "-"}</td>
-                <td className={tableStyles.cell}>{p.minggu}</td>
-                <td className={tableStyles.cell}>
-                  {months[p.bulan - 1]} {p.tahun}
-                </td>
-                <td className={tableStyles.cell}>
-                  <StatusBadge status={p.status} />
-                </td>
-                <td className={tableStyles.cell}>
-                  <Button
-                    onClick={() => navigate(`/tugas-mingguan/${p.id}`)}
-                    variant="icon"
-                    icon
-                    aria-label="Detail"
-                  >
-                    <Eye size={16} />
-                  </Button>
+                      ></path>
+                    </svg>
+                    <span className="text-sm font-medium tracking-wide">
+                      Memuat data...
+                    </span>
+                  </div>
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </Table>
+            ) : filtered.length === 0 ? (
+              <tr>
+                <td
+                  colSpan="7"
+                  className="py-6 text-center text-gray-600 dark:text-gray-300"
+                >
+                  <div className="flex flex-col items-center space-y-1">
+                    <span className="text-sm font-medium tracking-wide">
+                      ✊🙏✊✊🙏✊🙏 Data tidak ditemukan 🫰🫰🤟🤟☝☝
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              paginated.map((p, idx) => (
+                <tr key={p.id} className={tableStyles.row}>
+                  <td className={tableStyles.cell}>
+                    {(currentPage - 1) * pageSize + idx + 1}
+                  </td>
+                  <td className={tableStyles.cell}>
+                    {p.kegiatan?.namaKegiatan || "-"}
+                  </td>
+                  <td className={tableStyles.cell}>
+                    {p.kegiatan?.team?.namaTim || "-"}
+                  </td>
+                  <td className={tableStyles.cell}>{p.pegawai?.nama || "-"}</td>
+                  <td className={tableStyles.cell}>{p.minggu}</td>
+                  <td className={tableStyles.cell}>
+                    {months[p.bulan - 1]} {p.tahun}
+                  </td>
+                  <td className={tableStyles.cell}>
+                    <StatusBadge status={p.status} />
+                  </td>
+                  <td className={tableStyles.cell}>
+                    <Button
+                      onClick={() => navigate(`/tugas-mingguan/${p.id}`)}
+                      variant="icon"
+                      icon
+                      aria-label="Detail"
+                    >
+                      <Eye size={16} />
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </Table>
       </div>
 
       <div className="flex items-center justify-between mt-4">
@@ -315,10 +304,7 @@ export default function PenugasanPage() {
       </div>
 
       {canManage && showForm && (
-        <Modal
-          onClose={closeForm}
-          titleId="penugasan-form-title"
-        >
+        <Modal onClose={closeForm} titleId="penugasan-form-title">
           <div className="flex items-center justify-between mb-3">
             <h2
               id="penugasan-form-title"

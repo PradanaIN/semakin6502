@@ -15,11 +15,9 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post(
-        "/auth/login",
-        form,
-        { withCredentials: true }
-      );
+      const res = await axios.post("/auth/login", form, {
+        withCredentials: true,
+      });
 
       setUser(res.data.user);
       localStorage.setItem("user", JSON.stringify(res.data.user));
@@ -39,9 +37,16 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-200 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 p-4">
       <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md shadow-xl rounded-2xl ring-1 ring-zinc-200 dark:ring-zinc-800 w-full max-w-md p-8 space-y-6">
-        <h1 className="text-2xl font-bold text-center text-zinc-800 dark:text-white">
-          SEMAKIN 6502
-        </h1>
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <img
+            src="/logo.png"
+            alt="Logo SEMAKIN 6502"
+            className="h-10 w-10 object-contain"
+          />
+          <h1 className="text-2xl font-bold text-center text-zinc-800 dark:text-white">
+            SEMAKIN 6502
+          </h1>
+        </div>
         <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
           Masuk untuk melanjutkan
         </p>
@@ -54,7 +59,10 @@ export default function LoginPage() {
           className="space-y-4"
         >
           <div>
-            <label htmlFor="identifier" className="block text-sm text-zinc-700 dark:text-zinc-300 mb-1">
+            <label
+              htmlFor="identifier"
+              className="block text-sm text-zinc-700 dark:text-zinc-300 mb-1"
+            >
               Email atau Username
             </label>
             <input
@@ -68,7 +76,10 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm text-zinc-700 dark:text-zinc-300 mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm text-zinc-700 dark:text-zinc-300 mb-1"
+            >
               Password
             </label>
             <div className="relative">

@@ -130,59 +130,59 @@ export default function TeamsPage() {
       </div>
 
       <div className="overflow-x-auto md:overflow-x-visible">
-      <Table>
-        <thead>
-          <tr className={tableStyles.headerRow}>
-            <th className={tableStyles.cell}>No</th>
-            <th className={tableStyles.cell}>Nama Tim</th>
-            <th className={tableStyles.cell}>Jumlah Anggota</th>
-            <th className={tableStyles.cell}>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan="4" className="py-4 text-center">
-                Memuat data...
-              </td>
+        <Table>
+          <thead>
+            <tr className={tableStyles.headerRow}>
+              <th className={tableStyles.cell}>No</th>
+              <th className={tableStyles.cell}>Nama Tim</th>
+              <th className={tableStyles.cell}>Jumlah Anggota</th>
+              <th className={tableStyles.cell}>Aksi</th>
             </tr>
-          ) : paginated.length === 0 ? (
-            <tr>
-              <td colSpan="4" className="py-4 text-center">
-                Data tidak ditemukan
-              </td>
-            </tr>
-          ) : (
-            paginated.map((t, idx) => (
-              <tr key={t.id} className={tableStyles.row}>
-                <td className={tableStyles.cell}>
-                  {(currentPage - 1) * pageSize + idx + 1}
-                </td>
-                <td className={tableStyles.cell}>{t.namaTim}</td>
-                <td className={tableStyles.cell}>{t.members?.length || 0}</td>
-                <td className={`${tableStyles.cell} space-x-2`}>
-                  <Button
-                    onClick={() => openEdit(t)}
-                    variant="warning"
-                    icon
-                    aria-label="Edit"
-                  >
-                    <Pencil size={16} />
-                  </Button>
-                  <Button
-                    onClick={() => deleteTeam(t.id)}
-                    variant="danger"
-                    icon
-                    aria-label="Hapus"
-                  >
-                    <Trash2 size={16} />
-                  </Button>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan="4" className="py-4 text-center">
+                  Memuat data...
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </Table>
+            ) : paginated.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="py-4 text-center">
+                  ✊🙏✊✊🙏✊🙏 Data tidak ditemukan 🫰🫰🤟🤟☝☝
+                </td>
+              </tr>
+            ) : (
+              paginated.map((t, idx) => (
+                <tr key={t.id} className={tableStyles.row}>
+                  <td className={tableStyles.cell}>
+                    {(currentPage - 1) * pageSize + idx + 1}
+                  </td>
+                  <td className={tableStyles.cell}>{t.namaTim}</td>
+                  <td className={tableStyles.cell}>{t.members?.length || 0}</td>
+                  <td className={`${tableStyles.cell} space-x-2`}>
+                    <Button
+                      onClick={() => openEdit(t)}
+                      variant="warning"
+                      icon
+                      aria-label="Edit"
+                    >
+                      <Pencil size={16} />
+                    </Button>
+                    <Button
+                      onClick={() => deleteTeam(t.id)}
+                      variant="danger"
+                      icon
+                      aria-label="Hapus"
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </Table>
       </div>
 
       <div className="flex items-center justify-between mt-4">
