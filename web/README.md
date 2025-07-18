@@ -48,7 +48,7 @@ When filtering results by team you may supply optional query parameters such as
 
 ## DataTable Component
 
-Reusable tables are built with `react-table` through the `DataTable` component
+Reusable tables are built with `@tanstack/react-table` through the `DataTable` component
 located in `src/components/ui`. It provides:
 
 - Global search across all columns
