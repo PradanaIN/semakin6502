@@ -222,6 +222,7 @@ export default function UsersPage() {
           columns={columns}
           data={paginated}
           showGlobalFilter={false}
+          showColumnFilters={false}
           showPagination={false}
           selectable={false}
         />
