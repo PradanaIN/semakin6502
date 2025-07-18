@@ -15,8 +15,7 @@ import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import useModalForm from "../../hooks/useModalForm";
-import Table from "../../components/ui/Table";
-import tableStyles from "../../components/ui/Table.module.css";
+import DataTable from "../../components/ui/DataTable";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
@@ -163,6 +162,59 @@ export default function PenugasanPage() {
   );
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
+  const columns = useMemo(
+    () => [
+      {
+        Header: "No",
+        accessor: (_row, i) => (currentPage - 1) * pageSize + i + 1,
+        disableFilters: true,
+      },
+      {
+        Header: "Kegiatan",
+        accessor: (row) => row.kegiatan?.namaKegiatan || "-",
+        disableFilters: true,
+      },
+      {
+        Header: "Tim",
+        accessor: (row) => row.kegiatan?.team?.namaTim || "-",
+        disableFilters: true,
+      },
+      {
+        Header: "Pegawai",
+        accessor: (row) => row.pegawai?.nama || "-",
+        disableFilters: true,
+      },
+      { Header: "Minggu", accessor: "minggu", disableFilters: true },
+      {
+        Header: "Bulan",
+        accessor: (row) => `${months[row.bulan - 1]} ${row.tahun}`,
+        disableFilters: true,
+      },
+      {
+        Header: "Status",
+        accessor: "status",
+        Cell: ({ row }) => <StatusBadge status={row.original.status} />,
+        disableFilters: true,
+      },
+      {
+        Header: "Aksi",
+        accessor: "id",
+        Cell: ({ row }) => (
+          <Button
+            onClick={() => navigate(`/tugas-mingguan/${row.original.id}`)}
+            variant="icon"
+            icon
+            aria-label="Detail"
+          >
+            <Eye size={16} />
+          </Button>
+        ),
+        disableFilters: true,
+      },
+    ],
+    [currentPage, pageSize, navigate]
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap justify-between items-center gap-2">
@@ -198,105 +250,19 @@ export default function PenugasanPage() {
       </div>
 
       <div className="overflow-x-auto md:overflow-x-visible">
-      <Table>
-        <thead>
-          <tr className={tableStyles.headerRow}>
-            <th className={tableStyles.cell}>No</th>
-            <th className={tableStyles.cell}>Kegiatan</th>
-            <th className={tableStyles.cell}>Tim</th>
-            <th className={tableStyles.cell}>Pegawai</th>
-            <th className={tableStyles.cell}>Minggu</th>
-            <th className={tableStyles.cell}>Bulan</th>
-            <th className={tableStyles.cell}>Status</th>
-            <th className={tableStyles.cell}>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td
-                colSpan="7"
-                className="py-6 text-center text-gray-600 dark:text-gray-300"
-              >
-                <div className="flex flex-col items-center space-y-2">
-                  <svg
-                    className="animate-spin h-6 w-6 text-blue-600"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 
-            6.364A8.001 8.001 0 0112 20v4c-6.627 
-            0-12-5.373-12-12h4a8.001 8.001 
-            0 006.364 2.93z"
-                    ></path>
-                  </svg>
-                  <span className="text-sm font-medium tracking-wide">
-                    Memuat data...
-                  </span>
-                </div>
-              </td>
-            </tr>
-          ) : filtered.length === 0 ? (
-            <tr>
-              <td
-                colSpan="7"
-                className="py-6 text-center text-gray-600 dark:text-gray-300"
-              >
-                <div className="flex flex-col items-center space-y-1">
-                  <span className="text-xl">🫰🫰🤟🤟😜☝☝</span>
-                  <span className="text-sm font-medium tracking-wide">
-                    Data tidak ditemukan.
-                  </span>
-                </div>
-              </td>
-            </tr>
-          ) : (
-            paginated.map((p, idx) => (
-              <tr key={p.id} className={tableStyles.row}>
-                <td className={tableStyles.cell}>
-                  {(currentPage - 1) * pageSize + idx + 1}
-                </td>
-                <td className={tableStyles.cell}>
-                  {p.kegiatan?.namaKegiatan || "-"}
-                </td>
-                <td className={tableStyles.cell}>
-                  {p.kegiatan?.team?.namaTim || "-"}
-                </td>
-                <td className={tableStyles.cell}>{p.pegawai?.nama || "-"}</td>
-                <td className={tableStyles.cell}>{p.minggu}</td>
-                <td className={tableStyles.cell}>
-                  {months[p.bulan - 1]} {p.tahun}
-                </td>
-                <td className={tableStyles.cell}>
-                  <StatusBadge status={p.status} />
-                </td>
-                <td className={tableStyles.cell}>
-                  <Button
-                    onClick={() => navigate(`/tugas-mingguan/${p.id}`)}
-                    variant="icon"
-                    icon
-                    aria-label="Detail"
-                  >
-                    <Eye size={16} />
-                  </Button>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </Table>
+        {loading ? (
+          <div className="py-6 text-center text-gray-600 dark:text-gray-300">
+            <div className="flex flex-col items-center space-y-2">
+              <svg className="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 6.364A8.001 8.001 0 0112 20v4c-6.627 0-12-5.373-12-12h4a8.001 8.001 0 006.364 2.93z"></path>
+              </svg>
+              <span className="text-sm font-medium tracking-wide">Memuat data...</span>
+            </div>
+          </div>
+        ) : (
+          <DataTable columns={columns} data={paginated} showGlobalFilter={false} showPagination={false} selectable={false} />
+        )}
       </div>
 
       <div className="flex items-center justify-between mt-4">

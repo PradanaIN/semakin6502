@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -17,8 +17,7 @@ import { ROLES } from "../../utils/roles";
 import { STATUS, formatStatus } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Modal from "../../components/ui/Modal";
-import Table from "../../components/ui/Table";
-import tableStyles from "../../components/ui/Table.module.css";
+import DataTable from "../../components/ui/DataTable";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
@@ -191,6 +190,80 @@ export default function PenugasanDetailPage() {
       handleAxiosError(err, "Gagal menghapus laporan");
     }
   };
+
+  const columns = useMemo(
+    () => [
+      {
+        Header: "No",
+        accessor: (_row, i) => i + 1,
+        disableFilters: true,
+      },
+      { Header: "Deskripsi", accessor: "deskripsi", disableFilters: true },
+      {
+        Header: "Tanggal",
+        accessor: (row) => formatDMY(row.tanggal),
+        disableFilters: true,
+      },
+      {
+        Header: "Status",
+        accessor: "status",
+        Cell: ({ row }) => <StatusBadge status={row.original.status} />,
+        disableFilters: true,
+      },
+      {
+        Header: "Bukti",
+        accessor: "buktiLink",
+        Cell: ({ row }) =>
+          row.original.buktiLink ? (
+            <a
+              href={row.original.buktiLink}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Lihat bukti dukung"
+            >
+              <ExternalLink
+                size={16}
+                className="mx-auto text-blue-600 dark:text-blue-400 hover:scale-110 transition-transform"
+              />
+            </a>
+          ) : (
+            "-"
+          ),
+        disableFilters: true,
+      },
+      {
+        Header: "Catatan",
+        accessor: (row) => row.catatan || "-",
+        disableFilters: true,
+      },
+      {
+        Header: "Aksi",
+        accessor: "id",
+        Cell: ({ row }) => (
+          <div className="space-x-2">
+            <Button
+              onClick={() => editLaporan(row.original)}
+              variant="warning"
+              icon
+              aria-label="Edit laporan"
+            >
+              <Pencil size={14} />
+            </Button>
+            <Button
+              onClick={() => deleteLaporan(row.original.id)}
+              variant="danger"
+              icon
+              aria-label="Hapus laporan"
+            >
+              <Trash2 size={14} />
+            </Button>
+          </div>
+        ),
+        disableFilters: true,
+      },
+    ],
+    [editLaporan, deleteLaporan]
+  );
 
   const remove = async () => {
     const r = await confirmDelete("Hapus penugasan ini?");
@@ -475,78 +548,7 @@ export default function PenugasanDetailPage() {
         </div>
 
         <div className="overflow-x-auto md:overflow-x-visible rounded-lg border dark:border-gray-700">
-          <Table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead>
-              <tr className={tableStyles.headerRow}>
-                <th className={tableStyles.cell}>No</th>
-                <th className={tableStyles.cell}>Deskripsi</th>
-                <th className={tableStyles.cell}>Tanggal</th>
-                <th className={tableStyles.cell}>Status</th>
-                <th className={tableStyles.cell}>Bukti</th>
-                <th className={tableStyles.cell}>Catatan</th>
-                <th className={tableStyles.cell}>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {laporan.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan="7"
-                    className="py-6 text-center text-gray-500 dark:text-gray-400"
-                  >
-                    Belum ada laporan
-                  </td>
-                </tr>
-              ) : (
-                laporan.map((l, idx) => (
-                  <tr key={l.id} className={tableStyles.row}>
-                    <td className={tableStyles.cell}>{idx + 1}</td>
-                    <td className={tableStyles.cell}>{l.deskripsi}</td>
-                    <td className={tableStyles.cell}>{formatDMY(l.tanggal)}</td>
-                    <td className={tableStyles.cell}>
-                      <StatusBadge status={l.status} />
-                    </td>
-                    <td className={tableStyles.cell}>
-                      {l.buktiLink ? (
-                        <a
-                          href={l.buktiLink}
-                          target="_blank"
-                          rel="noreferrer"
-                          aria-label="Lihat bukti dukung"
-                        >
-                          <ExternalLink
-                            size={16}
-                            className="mx-auto text-blue-600 dark:text-blue-400 hover:scale-110 transition-transform"
-                          />
-                        </a>
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                    <td className={tableStyles.cell}>{l.catatan || "-"}</td>
-                    <td className={`${tableStyles.cell} space-x-2`}>
-                      <Button
-                        onClick={() => editLaporan(l)}
-                        variant="warning"
-                        icon
-                        aria-label="Edit laporan"
-                      >
-                        <Pencil size={14} />
-                      </Button>
-                      <Button
-                        onClick={() => deleteLaporan(l.id)}
-                        variant="danger"
-                        icon
-                        aria-label="Hapus laporan"
-                      >
-                        <Trash2 size={14} />
-                      </Button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </Table>
+          <DataTable columns={columns} data={laporan} showGlobalFilter={false} showPagination={false} selectable={false} />
         </div>
       </div>
 
