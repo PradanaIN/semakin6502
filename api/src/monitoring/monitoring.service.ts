@@ -3,6 +3,8 @@ import { PrismaService } from "../prisma.service";
 import MONTHS from "../common/months";
 import { STATUS } from "../common/status.constants";
 
+// Tanggal pada service monitoring diasumsikan diproses dalam timezone UTC.
+
 @Injectable()
 export class MonitoringService {
   constructor(private readonly prisma: PrismaService) {}
