@@ -5,7 +5,7 @@ import { getHolidays } from "../src/utils/holidays";
 
 const prisma = new PrismaClient();
 
-// Base date used for demo users below – set to current UTC date
+// Base date used for generating late-reporting sample data – set to current UTC date
 const BASE_DATE = new Date();
 BASE_DATE.setUTCHours(0, 0, 0, 0);
 
@@ -543,59 +543,45 @@ async function main() {
     }
   }
 
-  // Create demo users with last laporan_harian 1, 3 and 7 days before BASE_DATE
-  const demoOffsets = [1, 3, 7];
-  const umumId = teamMap.get("Umum");
-  const umumKegiatan = umumId
-    ? await prisma.masterKegiatan.findFirst({ where: { teamId: umumId } })
-    : null;
+  // Assign existing employees a last laporan_harian exactly 1, 3 and 7 days
+  // before BASE_DATE to simulate late reports
+  const lateOffsets = [1, 3, 7];
+  const eligibleMembers = members.filter(
+    (m) => m.user.role !== "admin" && m.user.role !== "pimpinan",
+  );
 
-  if (umumId && umumKegiatan) {
-    for (const daysAgo of demoOffsets) {
-      const u = await prisma.user.upsert({
-        where: { email: `demo${daysAgo}@bps.go.id` },
-        update: {},
-        create: {
-          nama: `Demo ${daysAgo} Hari`,
-          email: `demo${daysAgo}@bps.go.id`,
-          username: `demo${daysAgo}`,
-          password: await hashPassword("password"),
-          role: "anggota",
-        },
-      });
+  for (let i = 0; i < lateOffsets.length && i < eligibleMembers.length; i++) {
+    const m = eligibleMembers[i];
+    const daysAgo = lateOffsets[i];
 
-      await prisma.member.upsert({
-        where: {
-          userId_teamId: { userId: u.id, teamId: umumId },
-        },
-        update: {},
-        create: { userId: u.id, teamId: umumId, isLeader: false },
-      });
+    const kegiatan = await prisma.masterKegiatan.findFirst({
+      where: { teamId: m.teamId },
+    });
+    if (!kegiatan) continue;
 
-      const penugasan = await prisma.penugasan.create({
-        data: {
-          kegiatanId: umumKegiatan.id,
-          pegawaiId: u.id,
-          minggu: 1,
-          bulan: "8",
-          tahun: 2025,
-          deskripsi: `Penugasan demo ${daysAgo}`,
-          status: STATUS.SELESAI_DIKERJAKAN,
-        },
-      });
+    const penugasan = await prisma.penugasan.create({
+      data: {
+        kegiatanId: kegiatan.id,
+        pegawaiId: m.userId,
+        minggu: 1,
+        bulan: "8",
+        tahun: 2025,
+        deskripsi: `Penugasan telat ${daysAgo} hari`,
+        status: STATUS.SELESAI_DIKERJAKAN,
+      },
+    });
 
-      const tanggal = new Date(BASE_DATE);
-      tanggal.setUTCDate(tanggal.getUTCDate() - daysAgo);
+    const tanggal = new Date(BASE_DATE);
+    tanggal.setUTCDate(tanggal.getUTCDate() - daysAgo);
 
-      await prisma.laporanHarian.create({
-        data: {
-          penugasanId: penugasan.id,
-          pegawaiId: u.id,
-          tanggal: tanggal.toISOString(),
-          status: STATUS.SELESAI_DIKERJAKAN,
-        },
-      });
-    }
+    await prisma.laporanHarian.create({
+      data: {
+        penugasanId: penugasan.id,
+        pegawaiId: m.userId,
+        tanggal: tanggal.toISOString(),
+        status: STATUS.SELESAI_DIKERJAKAN,
+      },
+    });
   }
 }
 
