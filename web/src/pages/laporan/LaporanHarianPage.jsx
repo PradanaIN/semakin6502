@@ -40,7 +40,9 @@ export default function LaporanHarianPage() {
     try {
       setLoading(true);
       const url =
-        user?.role === ROLES.ADMIN ? "/laporan-harian/all" : "/laporan-harian/mine";
+        user?.role === ROLES.ADMIN
+          ? "/laporan-harian/all"
+          : "/laporan-harian/mine";
       const res = await axios.get(url);
       setLaporan(res.data);
     } catch (err) {
@@ -101,9 +103,7 @@ export default function LaporanHarianPage() {
     const stat = l.status.toLowerCase();
     const txt = `${peg} ${keg} ${desc} ${cat} ${stat}`;
     const matchQuery = txt.includes(query.toLowerCase());
-    const matchDate = tanggal
-      ? l.tanggal.slice(0, 10) === tanggal
-      : true;
+    const matchDate = tanggal ? l.tanggal.slice(0, 10) === tanggal : true;
     return matchQuery && matchDate;
   });
   const paginated = filtered.slice(
@@ -140,13 +140,11 @@ export default function LaporanHarianPage() {
               <tr className={tableStyles.headerRow}>
                 <th className={tableStyles.cell}>No</th>
                 <th className={tableStyles.cell}>Kegiatan</th>
-                <th className={tableStyles.cell}>Tim</th>
                 <th className={tableStyles.cell}>Deskripsi Kegiatan</th>
-                <th className={tableStyles.cell}>Deskripsi Laporan</th>
                 <th className={tableStyles.cell}>Tanggal</th>
                 <th className={tableStyles.cell}>Status</th>
                 <th className={tableStyles.cell}>Bukti</th>
-                <th className={tableStyles.cell}>Aksi</th>
+                <th className={tableStyles.cell}>Catatan</th>
               </tr>
             </thead>
             <tbody>
@@ -216,41 +214,26 @@ export default function LaporanHarianPage() {
                     <td className={tableStyles.cell}>
                       {item.penugasan?.kegiatan?.deskripsi || "-"}
                     </td>
-                    <td className={tableStyles.cell}>{item.deskripsi}</td>
-                    <td className={tableStyles.cell}>
-                      {item.tanggal.slice(0, 10)}
-                    </td>
                     <td className={tableStyles.cell}>
                       <StatusBadge status={item.status} />
                     </td>
                     <td className={tableStyles.cell}>
-                    {item.bukti_link ? (
-                        <a href={item.bukti_link} target="_blank" rel="noreferrer">
-                          <ExternalLink size={16} className="mx-auto text-blue-600 dark:text-blue-400" />
+                      {item.bukti_link ? (
+                        <a
+                          href={item.bukti_link}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <ExternalLink
+                            size={16}
+                            className="mx-auto text-blue-600 dark:text-blue-400"
+                          />
                         </a>
                       ) : (
                         <X className="w-4 h-4 text-red-600" />
                       )}
                     </td>
                     <td className={tableStyles.cell}>{item.catatan || "-"}</td>
-                    <td className={`${tableStyles.cell} space-x-1`}>
-                      <Button
-                        onClick={() => openEdit(item)}
-                        variant="warning"
-                        icon
-                        aria-label="Edit"
-                      >
-                        <Pencil size={14} />
-                      </Button>
-                      <Button
-                        onClick={() => remove(item.id)}
-                        variant="danger"
-                        icon
-                        aria-label="Hapus"
-                      >
-                        <Trash2 size={14} />
-                      </Button>
-                    </td>
                   </tr>
                 ))
               )}
@@ -285,10 +268,10 @@ export default function LaporanHarianPage() {
             Edit Laporan Harian
           </h3>
           <div className="space-y-2">
-          <div>
-            <Label htmlFor="tanggal">
-              Tanggal<span className="text-red-500">*</span>
-            </Label>
+            <div>
+              <Label htmlFor="tanggal">
+                Tanggal<span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="tanggal"
                 type="date"
@@ -296,21 +279,23 @@ export default function LaporanHarianPage() {
                 onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
               />
-          </div>
-          <div>
-            <Label htmlFor="deskripsi">
-              Deskripsi <span className="text-red-500">*</span>
-            </Label>
-            <textarea
-              id="deskripsi"
-              value={form.deskripsi}
-              onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
-              className="form-input"
-            />
-          </div>
-          <div>
-            <Label htmlFor="status">
-              Status<span className="text-red-500">*</span>
+            </div>
+            <div>
+              <Label htmlFor="deskripsi">
+                Deskripsi <span className="text-red-500">*</span>
+              </Label>
+              <textarea
+                id="deskripsi"
+                value={form.deskripsi}
+                onChange={(e) =>
+                  setForm({ ...form, deskripsi: e.target.value })
+                }
+                className="form-input"
+              />
+            </div>
+            <div>
+              <Label htmlFor="status">
+                Status<span className="text-red-500">*</span>
               </Label>
               <select
                 id="status"
