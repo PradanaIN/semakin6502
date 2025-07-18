@@ -45,3 +45,25 @@ The Daily tab also includes a scrollable matrix table showing each user's activi
 
 When filtering results by team you may supply optional query parameters such as
 `teamId` to limit the data to a specific team.
+
+## DataTable Component
+
+Reusable tables are built with `react-table` through the `DataTable` component
+located in `src/components/ui`. It provides:
+
+- Global search across all columns
+- Optional per-column filters
+- Built-in pagination with a page size selector
+
+Example usage:
+
+```jsx
+import DataTable, { SelectColumnFilter } from "./components/ui/DataTable";
+
+const columns = [
+  { Header: "Name", accessor: "name" },
+  { Header: "Role", accessor: "role", Filter: SelectColumnFilter },
+];
+
+<DataTable columns={columns} data={data} />;
+```
