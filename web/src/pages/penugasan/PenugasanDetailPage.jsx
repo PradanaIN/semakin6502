@@ -136,6 +136,7 @@ export default function PenugasanDetailPage() {
       }
       if (
         laporanForm.status === STATUS.SELESAI_DIKERJAKAN &&
+        !laporanForm.buktiLink
       ) {
         showWarning("Lengkapi data", "Link bukti wajib diisi");
         return;
@@ -617,7 +618,9 @@ export default function PenugasanDetailPage() {
                   required
                   className="w-full mt-1 rounded-md border px-4 py-2 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value={STATUS.BELUM}>{formatStatus(STATUS.BELUM)}</option>
+                  <option value={STATUS.BELUM}>
+                    {formatStatus(STATUS.BELUM)}
+                  </option>
                   <option value={STATUS.SEDANG_DIKERJAKAN}>
                     {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
                   </option>

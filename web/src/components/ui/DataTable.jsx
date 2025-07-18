@@ -140,14 +140,11 @@ export default function DataTable({
       <Table className="min-w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr
-              key={headerGroup.id}
-              className="bg-gray-100 dark:bg-gray-800"
-            >
+            <tr key={headerGroup.id} className="bg-gray-100 dark:bg-gray-800">
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-4 py-3 font-semibold text-center border-t border-b border-gray-300 dark:border-gray-700 select-none text-left"
+                  className="px-4 py-3 font-semibold text-center border-t border-b border-gray-300 dark:border-gray-700 select-none"
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   <div className="flex items-center gap-1">
