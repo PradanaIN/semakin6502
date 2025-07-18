@@ -14,6 +14,7 @@ import { useAuth } from "../auth/useAuth";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
+import useModalForm from "../../hooks/useModalForm";
 import Table from "../../components/ui/Table";
 import tableStyles from "../../components/ui/Table.module.css";
 import Button from "../../components/ui/Button";
@@ -51,8 +52,13 @@ export default function PenugasanPage() {
   const [kegiatan, setKegiatan] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({
+  const {
+    showForm,
+    form,
+    setForm,
+    openCreate,
+    closeForm,
+  } = useModalForm({
     kegiatanId: "",
     pegawaiIds: [],
     deskripsi: "",
@@ -126,17 +132,6 @@ export default function PenugasanPage() {
     fetchData();
   }, [fetchData]);
 
-  const openCreate = () => {
-    setForm({
-      kegiatanId: "",
-      pegawaiIds: [],
-      deskripsi: "",
-      minggu: getCurrentWeek(),
-      bulan: new Date().getMonth() + 1,
-      tahun: new Date().getFullYear(),
-    });
-    setShowForm(true);
-  };
 
   const save = async () => {
     if (!form.kegiatanId || form.pegawaiIds.length === 0) {
@@ -145,7 +140,7 @@ export default function PenugasanPage() {
     }
     try {
       await axios.post("/penugasan/bulk", form);
-      setShowForm(false);
+      closeForm();
       fetchData();
       showSuccess("Berhasil", "Penugasan ditambah");
     } catch (err) {
@@ -321,9 +316,7 @@ export default function PenugasanPage() {
 
       {canManage && showForm && (
         <Modal
-          onClose={() => {
-            setShowForm(false);
-          }}
+          onClose={closeForm}
           titleId="penugasan-form-title"
         >
           <div className="flex items-center justify-between mb-3">
@@ -498,7 +491,7 @@ export default function PenugasanPage() {
                   const r = await confirmCancel(
                     "Batalkan penambahan penugasan?"
                   );
-                  if (r.isConfirmed) setShowForm(false);
+                  if (r.isConfirmed) closeForm();
                 }}
               >
                 Batal
