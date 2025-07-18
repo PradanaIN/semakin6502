@@ -26,7 +26,7 @@ export default function TeamsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingTeam, setEditingTeam] = useState(null);
-  const [form, setForm] = useState({ nama_tim: "" });
+  const [form, setForm] = useState({ namaTim: "" });
   const [query, setQuery] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,18 +52,18 @@ export default function TeamsPage() {
 
   const openCreate = () => {
     setEditingTeam(null);
-    setForm({ nama_tim: "" });
+    setForm({ namaTim: "" });
     setShowForm(true);
   };
 
   const openEdit = useCallback((t) => {
     setEditingTeam(t);
-    setForm({ nama_tim: t.nama_tim });
+    setForm({ namaTim: t.namaTim });
     setShowForm(true);
   }, []);
 
   const saveTeam = async () => {
-    if (!form.nama_tim) {
+    if (!form.namaTim) {
       showWarning("Lengkapi data", "Nama tim wajib diisi");
       return;
     }
@@ -94,7 +94,7 @@ export default function TeamsPage() {
   }, []);
 
   const filtered = teams.filter((t) =>
-    t.nama_tim.toLowerCase().includes(query.toLowerCase())
+    t.namaTim.toLowerCase().includes(query.toLowerCase())
   );
   const paginated = filtered.slice(
     (currentPage - 1) * pageSize,
@@ -158,7 +158,7 @@ export default function TeamsPage() {
                 <td className={tableStyles.cell}>
                   {(currentPage - 1) * pageSize + idx + 1}
                 </td>
-                <td className={tableStyles.cell}>{t.nama_tim}</td>
+                <td className={tableStyles.cell}>{t.namaTim}</td>
                 <td className={tableStyles.cell}>{t.members?.length || 0}</td>
                 <td className={`${tableStyles.cell} space-x-2`}>
                   <Button
@@ -225,8 +225,8 @@ export default function TeamsPage() {
               <Input
                 id="namaTim"
                 type="text"
-                value={form.nama_tim}
-                onChange={(e) => setForm({ ...form, nama_tim: e.target.value })}
+                value={form.namaTim}
+                onChange={(e) => setForm({ ...form, namaTim: e.target.value })}
                 className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               />
             </div>

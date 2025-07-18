@@ -32,7 +32,7 @@ export default function LaporanHarianPage() {
     tanggal: new Date().toISOString().slice(0, 10),
     deskripsi: "",
     status: STATUS.BELUM,
-    bukti_link: "",
+    buktiLink: "",
     catatan: "",
   });
 
@@ -71,7 +71,7 @@ export default function LaporanHarianPage() {
 
   const filtered = laporan.filter((l) => {
     const peg = l.pegawai?.nama?.toLowerCase() || "";
-    const keg = l.penugasan?.kegiatan?.nama_kegiatan?.toLowerCase() || "";
+    const keg = l.penugasan?.kegiatan?.namaKegiatan?.toLowerCase() || "";
     const desc = l.deskripsi?.toLowerCase() || "";
     const cat = l.catatan?.toLowerCase() || "";
     const stat = l.status.toLowerCase();
@@ -177,10 +177,10 @@ export default function LaporanHarianPage() {
                       {(currentPage - 1) * pageSize + idx + 1}
                     </td>
                     <td className={tableStyles.cell}>
-                      {item.penugasan?.kegiatan?.nama_kegiatan || "-"}
+                      {item.penugasan?.kegiatan?.namaKegiatan || "-"}
                     </td>
                     <td className={tableStyles.cell}>
-                      {item.penugasan?.tim?.nama_tim || "-"}
+                      {item.penugasan?.tim?.namaTim || "-"}
                     </td>
                     <td className={tableStyles.cell}>
                       {item.penugasan?.kegiatan?.deskripsi || "-"}
@@ -189,9 +189,9 @@ export default function LaporanHarianPage() {
                       <StatusBadge status={item.status} />
                     </td>
                     <td className={tableStyles.cell}>
-                      {item.bukti_link ? (
+                      {item.buktiLink ? (
                         <a
-                          href={item.bukti_link}
+                          href={item.buktiLink}
                           target="_blank"
                           rel="noreferrer"
                         >
@@ -285,13 +285,13 @@ export default function LaporanHarianPage() {
             </div>
             {form.status === STATUS.SELESAI_DIKERJAKAN && (
               <div>
-                <Label htmlFor="bukti_link">Link Bukti</Label>
+                <Label htmlFor="buktiLink">Link Bukti</Label>
                 <Input
-                  id="bukti_link"
+                  id="buktiLink"
                   type="text"
-                  value={form.bukti_link}
+                  value={form.buktiLink}
                   onChange={(e) =>
-                    setForm({ ...form, bukti_link: e.target.value })
+                    setForm({ ...form, buktiLink: e.target.value })
                   }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />

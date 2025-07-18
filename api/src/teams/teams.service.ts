@@ -12,7 +12,7 @@ export class TeamsService {
 
   findByLeader(userId: number) {
     return this.prisma.team.findMany({
-      where: { members: { some: { userId, is_leader: true } } },
+      where: { members: { some: { userId, isLeader: true } } },
       include: { members: { include: { user: true } } },
     });
   }
@@ -45,12 +45,12 @@ export class TeamsService {
     return this.prisma.team.delete({ where: { id } });
   }
 
-  addMember(teamId: number, member: { user_id: number; is_leader: boolean }) {
+  addMember(teamId: number, member: { user_id: number; isLeader: boolean }) {
     return this.prisma.member.create({
       data: {
         teamId,
         userId: member.user_id,
-        is_leader: member.is_leader,
+        isLeader: member.isLeader,
       },
     });
   }

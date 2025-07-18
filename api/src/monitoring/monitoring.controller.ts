@@ -45,7 +45,7 @@ export class MonitoringController {
           where: { teamId: tId, userId: uid },
         });
         if (!member) throw new ForbiddenException("bukan anggota tim ini");
-        if (!member.is_leader) {
+        if (!member.isLeader) {
           if (uId && uId !== uid)
             throw new ForbiddenException("bukan ketua tim");
           if (!uId) uId = uid;
@@ -76,7 +76,7 @@ export class MonitoringController {
       const member = await this.prisma.member.findFirst({
         where: { teamId: tId, userId: user.userId },
       });
-      if (!member || !member.is_leader)
+      if (!member || !member.isLeader)
         throw new ForbiddenException("bukan ketua tim");
     }
 
@@ -101,7 +101,7 @@ export class MonitoringController {
       const member = await this.prisma.member.findFirst({
         where: { teamId: tId, userId: user.userId },
       });
-      if (!member || !member.is_leader)
+      if (!member || !member.isLeader)
         throw new ForbiddenException("bukan ketua tim");
     }
 
@@ -130,7 +130,7 @@ export class MonitoringController {
           where: { teamId: tId, userId: uid },
         });
         if (!member) throw new ForbiddenException("bukan anggota tim ini");
-        if (!member.is_leader) {
+        if (!member.isLeader) {
           if (uId && uId !== uid)
             throw new ForbiddenException("bukan ketua tim");
           if (!uId) uId = uid;
@@ -161,7 +161,7 @@ export class MonitoringController {
       const member = await this.prisma.member.findFirst({
         where: { teamId: tId, userId: user.userId },
       });
-      if (!member || !member.is_leader)
+      if (!member || !member.isLeader)
         throw new ForbiddenException("bukan ketua tim");
     }
 
@@ -190,7 +190,7 @@ export class MonitoringController {
           where: { teamId: tId, userId: uid },
         });
         if (!member) throw new ForbiddenException("bukan anggota tim ini");
-        if (!member.is_leader) {
+        if (!member.isLeader) {
           if (uId && uId !== uid)
             throw new ForbiddenException("bukan ketua tim");
           if (!uId) uId = uid;
@@ -221,7 +221,7 @@ export class MonitoringController {
       const member = await this.prisma.member.findFirst({
         where: { teamId: tId, userId: user.userId },
       });
-      if (!member || !member.is_leader)
+      if (!member || !member.isLeader)
         throw new ForbiddenException("bukan ketua tim");
     }
 
@@ -250,7 +250,7 @@ export class MonitoringController {
           where: { teamId: tId, userId: uid },
         });
         if (!member) throw new ForbiddenException("bukan anggota tim ini");
-        if (!member.is_leader) {
+        if (!member.isLeader) {
           if (uId && uId !== uid)
             throw new ForbiddenException("bukan ketua tim");
           if (!uId) uId = uid;
@@ -282,7 +282,7 @@ export class MonitoringController {
       const member = await this.prisma.member.findFirst({
         where: { teamId: tId, userId: user.userId },
       });
-      if (!member || !member.is_leader)
+      if (!member || !member.isLeader)
         throw new ForbiddenException("bukan ketua tim");
     }
 
@@ -307,7 +307,7 @@ export class MonitoringController {
       const member = await this.prisma.member.findFirst({
         where: { teamId: tId, userId: user.userId },
       });
-      if (!member || !member.is_leader)
+      if (!member || !member.isLeader)
         throw new ForbiddenException("bukan ketua tim");
     }
 

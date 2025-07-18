@@ -14,7 +14,7 @@ export class AddTambahanDto {
   @IsOptional()
   @Transform(({ value }) => (value === "" ? undefined : value))
   @IsString()
-  bukti_link?: string;
+  buktiLink?: string;
 
   @IsOptional()
   @Transform(({ value }) => (value === "" ? undefined : value))
@@ -24,10 +24,10 @@ export class AddTambahanDto {
   @IsOptional()
   @Transform(({ value }) => (value === "" ? undefined : value))
   @IsDateString()
-  tanggal_selesai?: string;
+  tanggalSelesai?: string;
 
   @IsOptional()
   @Transform(({ value }) => (value === "" ? undefined : value))
   @IsDateString()
-  tanggal_selesai_akhir?: string;
+  tanggalSelesaiAkhir?: string;
 }

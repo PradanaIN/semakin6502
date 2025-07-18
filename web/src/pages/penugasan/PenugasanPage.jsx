@@ -112,7 +112,7 @@ export default function PenugasanPage() {
       setUsers(sortedUsers);
       const kData = kRes.data.data || kRes.data;
       const sortedKegiatan = [...kData].sort((a, b) =>
-        a.nama_kegiatan.localeCompare(b.nama_kegiatan)
+        a.namaKegiatan.localeCompare(b.namaKegiatan)
       );
       setKegiatan(sortedKegiatan);
     } catch (err) {
@@ -155,7 +155,7 @@ export default function PenugasanPage() {
 
   const filtered = useMemo(() => {
     return penugasan.filter((p) => {
-      const text = `${p.kegiatan?.nama_kegiatan || ""} ${
+      const text = `${p.kegiatan?.namaKegiatan || ""} ${
         p.pegawai?.nama || ""
       }`.toLowerCase();
       return text.includes(search.toLowerCase());
@@ -274,10 +274,10 @@ export default function PenugasanPage() {
                   {(currentPage - 1) * pageSize + idx + 1}
                 </td>
                 <td className={tableStyles.cell}>
-                  {p.kegiatan?.nama_kegiatan || "-"}
+                  {p.kegiatan?.namaKegiatan || "-"}
                 </td>
                 <td className={tableStyles.cell}>
-                  {p.kegiatan?.team?.nama_tim || "-"}
+                  {p.kegiatan?.team?.namaTim || "-"}
                 </td>
                 <td className={tableStyles.cell}>{p.pegawai?.nama || "-"}</td>
                 <td className={tableStyles.cell}>{p.minggu}</td>
@@ -350,14 +350,14 @@ export default function PenugasanPage() {
                 menuPortalTarget={document.body}
                 options={kegiatan.map((k) => ({
                   value: k.id,
-                  label: k.nama_kegiatan,
+                  label: k.namaKegiatan,
                 }))}
                 value={
                   form.kegiatanId
                     ? {
                         value: form.kegiatanId,
                         label: kegiatan.find((k) => k.id === form.kegiatanId)
-                          ?.nama_kegiatan,
+                          ?.namaKegiatan,
                       }
                     : null
                 }

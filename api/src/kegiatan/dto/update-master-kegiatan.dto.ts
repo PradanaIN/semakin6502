@@ -7,7 +7,7 @@ export class UpdateMasterKegiatanDto {
   teamId!: number;
 
   @IsString()
-  nama_kegiatan!: string;
+  namaKegiatan!: string;
 
   @IsOptional()
   @IsString()

@@ -23,9 +23,9 @@ export default function TugasTambahanDetailPage() {
   const [editing, setEditing] = useState(false);
   const [kegiatan, setKegiatan] = useState([]);
   const [laporanForm, setLaporanForm] = useState({
-    tanggal_selesai: "",
-    tanggal_selesai_akhir: "",
-    bukti_link: "",
+    tanggalSelesai: "",
+    tanggalSelesaiAkhir: "",
+    buktiLink: "",
     status: STATUS.SELESAI_DIKERJAKAN,
   });
   const [form, setForm] = useState({
@@ -82,9 +82,9 @@ export default function TugasTambahanDetailPage() {
       await axios.put(`/tugas-tambahan/${id}`, payload);
       showSuccess("Berhasil", "Laporan ditambah");
       setLaporanForm({
-        tanggal_selesai: "",
-        tanggal_selesai_akhir: "",
-        bukti_link: "",
+        tanggalSelesai: "",
+        tanggalSelesaiAkhir: "",
+        buktiLink: "",
         status: STATUS.SELESAI_DIKERJAKAN,
       });
       fetchDetail();
@@ -140,7 +140,7 @@ export default function TugasTambahanDetailPage() {
           </div>
           <div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Tim</div>
-            <div className="font-medium">{item.kegiatan.team?.nama_tim || "-"}</div>
+            <div className="font-medium">{item.kegiatan.team?.namaTim || "-"}</div>
           </div>
           <div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Tanggal</div>
@@ -156,21 +156,21 @@ export default function TugasTambahanDetailPage() {
               <StatusBadge status={item.status} />
             </div>
           </div>
-          {item.tanggal_selesai && (
+          {item.tanggalSelesai && (
             <div>
               <div className="text-sm text-gray-500 dark:text-gray-400">Tanggal Selesai</div>
               <div className="font-medium">
-                {item.tanggal_selesai.slice(0, 10)}
-                {item.tanggal_selesai_akhir &&
-                  ` - ${item.tanggal_selesai_akhir.slice(0, 10)}`}
+                {item.tanggalSelesai.slice(0, 10)}
+                {item.tanggalSelesaiAkhir &&
+                  ` - ${item.tanggalSelesaiAkhir.slice(0, 10)}`}
               </div>
             </div>
           )}
-          {item.bukti_link && (
+          {item.buktiLink && (
             <div>
               <div className="text-sm text-gray-500 dark:text-gray-400">Bukti</div>
               <a
-                href={item.bukti_link}
+                href={item.buktiLink}
                 target="_blank"
                 rel="noreferrer"
                 className="text-blue-600 underline dark:text-blue-400"
@@ -189,10 +189,10 @@ export default function TugasTambahanDetailPage() {
               classNamePrefix="react-select"
               styles={selectStyles}
               menuPortalTarget={document.body}
-              options={kegiatan.map((k) => ({ value: k.id, label: k.nama_kegiatan }))}
+              options={kegiatan.map((k) => ({ value: k.id, label: k.namaKegiatan }))}
               value={
                 form.kegiatanId
-                  ? { value: form.kegiatanId, label: kegiatan.find((k) => k.id === form.kegiatanId)?.nama_kegiatan }
+                  ? { value: form.kegiatanId, label: kegiatan.find((k) => k.id === form.kegiatanId)?.namaKegiatan }
                   : null
               }
               onChange={(o) => setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })}
@@ -200,7 +200,7 @@ export default function TugasTambahanDetailPage() {
             />
             {form.kegiatanId && (
               <p className="text-sm mt-1 text-gray-600 dark:text-gray-300">
-                Tim: {kegiatan.find((k) => k.id === form.kegiatanId)?.team?.nama_tim || "-"}
+                Tim: {kegiatan.find((k) => k.id === form.kegiatanId)?.team?.namaTim || "-"}
               </p>
             )}
           </div>
@@ -262,9 +262,9 @@ export default function TugasTambahanDetailPage() {
             <Input
               id="tanggalMulai"
               type="date"
-              value={laporanForm.tanggal_selesai}
+              value={laporanForm.tanggalSelesai}
               onChange={(e) =>
-                setLaporanForm({ ...laporanForm, tanggal_selesai: e.target.value })
+                setLaporanForm({ ...laporanForm, tanggalSelesai: e.target.value })
               }
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
             />
@@ -274,9 +274,9 @@ export default function TugasTambahanDetailPage() {
             <Input
               id="tanggalAkhir"
               type="date"
-              value={laporanForm.tanggal_selesai_akhir}
+              value={laporanForm.tanggalSelesaiAkhir}
               onChange={(e) =>
-                setLaporanForm({ ...laporanForm, tanggal_selesai_akhir: e.target.value })
+                setLaporanForm({ ...laporanForm, tanggalSelesaiAkhir: e.target.value })
               }
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
             />
@@ -286,9 +286,9 @@ export default function TugasTambahanDetailPage() {
             <Input
               id="buktiLink"
               type="text"
-              value={laporanForm.bukti_link}
+              value={laporanForm.buktiLink}
               onChange={(e) =>
-                setLaporanForm({ ...laporanForm, bukti_link: e.target.value })
+                setLaporanForm({ ...laporanForm, buktiLink: e.target.value })
               }
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
             />

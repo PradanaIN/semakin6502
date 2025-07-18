@@ -33,42 +33,6 @@ This repository contains both the backend API and the frontend web application.
 
 Check each subproject README for detailed configuration and feature descriptions.
 
-## Install Dependencies
+## Naming Conventions
 
-Make sure you have **Node.js** and **npm** installed. The API also requires a running **MySQL** instance.
-
-```bash
-cd api && npm install
-cd ../web && npm install
-```
-
-## Running Backend Tests
-
-Execute the Jest test suite inside the `api` folder:
-
-```bash
-cd api && npm test
-```
-
-## Linting
-
-Run ESLint for either project:
-
-```bash
-cd api && npm run lint
-# or
-cd ../web && npm run lint
-```
-
-## Building
-
-Compile the backend and build the frontend for production:
-
-```bash
-cd api && npm run build
-cd ../web && npm run build
-```
-
-## Environment Variables
-
-The API expects a `.env` file with settings such as `DATABASE_URL` and `JWT_SECRET`. The frontend reads `VITE_API_URL` from `.env` (see `web/.env.example`). Refer to each subproject README for full examples.
+Code and database fields use **camelCase**. When adding new API DTOs or Prisma models, prefer English terms and camelCase naming (e.g. `teamId`, `namaKegiatan`). Legacy snake_case columns remain for compatibility but new contributions should avoid them.

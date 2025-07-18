@@ -132,7 +132,7 @@ export default function TugasTambahanPage() {
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
       const text = `${item.nama} ${
-        item.kegiatan?.team?.nama_tim || ""
+        item.kegiatan?.team?.namaTim || ""
       }`.toLowerCase();
       const matchesSearch = text.includes(search.toLowerCase());
       const date = new Date(item.tanggal);
@@ -253,7 +253,7 @@ export default function TugasTambahanPage() {
                 </td>
                 <td className={tableStyles.cell}>{item.nama}</td>
                 <td className={tableStyles.cell}>
-                  {item.kegiatan.team?.nama_tim || "-"}
+                  {item.kegiatan.team?.namaTim || "-"}
                 </td>
                 <td className={tableStyles.cell}>
                   {item.tanggal.slice(0, 10)}
@@ -263,7 +263,7 @@ export default function TugasTambahanPage() {
                   <StatusBadge status={item.status} />
                 </td>
                 <td className={tableStyles.cell}>
-                  {item.bukti_link ? (
+                  {item.buktiLink ? (
                     <Check className="w-4 h-4 text-green-600" />
                   ) : (
                     <X className="w-4 h-4 text-red-600" />
@@ -359,10 +359,10 @@ export default function TugasTambahanPage() {
               >
                 <option value="">Pilih Tim</option>
                 {teams
-                  .filter((t) => t.nama_tim !== "Pimpinan")
+                  .filter((t) => t.namaTim !== "Pimpinan")
                   .map((t) => (
                     <option key={t.id} value={t.id}>
-                      {t.nama_tim}
+                      {t.namaTim}
                     </option>
                   ))}
               </select>
@@ -391,7 +391,7 @@ export default function TugasTambahanPage() {
                   .filter((k) => k.teamId === form.teamId)
                   .map((k) => (
                     <option key={k.id} value={k.id}>
-                      {k.nama_kegiatan}
+                      {k.namaKegiatan}
                     </option>
                   ))}
               </select>

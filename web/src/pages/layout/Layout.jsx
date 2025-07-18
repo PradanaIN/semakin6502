@@ -246,8 +246,8 @@ export default function Layout() {
                               user?.team ||
                               user?.teamName ||
                               user?.team_name ||
-                              user?.nama_tim ||
-                              user?.members?.[0]?.team?.nama_tim ||
+                              user?.namaTim ||
+                              user?.members?.[0]?.team?.namaTim ||
                               ""
                             }`}
                       </div>
