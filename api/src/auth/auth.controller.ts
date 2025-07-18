@@ -13,10 +13,18 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response
   ) {
     const result = await this.authService.login(body.identifier, body.password);
+    const domain = process.env.COOKIE_DOMAIN;
+    const sameSite =
+      (process.env.COOKIE_SAMESITE as
+        | boolean
+        | "lax"
+        | "strict"
+        | "none") || "lax";
     res.cookie("token", result.access_token, {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite,
       secure: process.env.NODE_ENV === "production",
+      ...(domain ? { domain } : {}),
     });
     return { user: result.user };
   }

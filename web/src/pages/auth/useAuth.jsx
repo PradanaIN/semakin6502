@@ -1,5 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useMemo } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useEffect,
+} from "react";
+import axios from "axios";
 
 const AuthContext = createContext();
 
@@ -8,6 +15,21 @@ export function AuthProvider({ children }) {
     const u = localStorage.getItem("user");
     return u ? JSON.parse(u) : null;
   });
+
+  const verifyToken = async () => {
+    try {
+      const res = await axios.get("/auth/me");
+      setUser(res.data.user);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+    } catch {
+      localStorage.removeItem("user");
+      setUser(null);
+    }
+  };
+
+  useEffect(() => {
+    verifyToken();
+  }, []);
 
   const value = useMemo(
     () => ({ user, setUser }),

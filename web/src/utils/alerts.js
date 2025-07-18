@@ -34,10 +34,20 @@ export const confirmCancel = (title = "Batalkan perubahan?") =>
     icon: "question",
   });
 
+export const handleAxiosError = (error, defaultMessage = "Terjadi kesalahan") => {
+  const message =
+    error?.response?.data?.message ||
+    (error?.request
+      ? "Tidak dapat terhubung ke server. Coba lagi nanti."
+      : defaultMessage);
+  showError("Error", message);
+};
+
 export default {
   showSuccess,
   showError,
   showWarning,
   confirmDelete,
   confirmCancel,
+  handleAxiosError,
 };

@@ -3,6 +3,8 @@ import { PrismaService } from "../prisma.service";
 import MONTHS from "../common/months";
 import { STATUS } from "../common/status.constants";
 
+// Tanggal pada service monitoring diasumsikan diproses dalam timezone UTC.
+
 @Injectable()
 export class MonitoringService {
   constructor(private readonly prisma: PrismaService) {}
@@ -107,10 +109,10 @@ export class MonitoringService {
       persen: number;
     }[];
 
-    let totalSelesai = tugas.filter(
+    const totalSelesai = tugas.filter(
       (t: { status: string }) => t.status === STATUS.SELESAI_DIKERJAKAN,
     ).length;
-    let totalTugas = tugas.length;
+    const totalTugas = tugas.length;
     for (let i = 0; i < 7; i++) {
       const d = new Date(start);
       d.setDate(start.getDate() + i);

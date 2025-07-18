@@ -2,9 +2,9 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import {
   showSuccess,
-  showError,
   showWarning,
   confirmCancel,
+  handleAxiosError,
 } from "../../utils/alerts";
 import { Plus, Filter as FilterIcon, Eye } from "lucide-react";
 import Select from "react-select";
@@ -116,7 +116,7 @@ export default function PenugasanPage() {
       );
       setKegiatan(sortedKegiatan);
     } catch (err) {
-      console.error("Gagal mengambil data penugasan", err);
+      handleAxiosError(err, "Gagal mengambil data penugasan");
     } finally {
       setLoading(false);
     }
@@ -149,8 +149,7 @@ export default function PenugasanPage() {
       fetchData();
       showSuccess("Berhasil", "Penugasan ditambah");
     } catch (err) {
-      console.error("Gagal menyimpan penugasan", err);
-      showError("Error", "Gagal menyimpan penugasan");
+      handleAxiosError(err, "Gagal menyimpan penugasan");
     }
   };
 

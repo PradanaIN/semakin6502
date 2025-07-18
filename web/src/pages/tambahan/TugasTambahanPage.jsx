@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { showSuccess, showError, confirmDelete } from "../../utils/alerts";
+import { showSuccess, confirmDelete, handleAxiosError } from "../../utils/alerts";
 import { Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import Table from "../../components/ui/Table";
 import tableStyles from "../../components/ui/Table.module.css";
@@ -57,7 +57,7 @@ export default function TugasTambahanPage() {
       setKegiatan(kRes.data.data || kRes.data);
       setTeams(teamRes.data);
     } catch (err) {
-      console.error(err);
+      handleAxiosError(err, "Gagal mengambil data");
     } finally {
       setLoading(false);
     }
@@ -109,8 +109,7 @@ export default function TugasTambahanPage() {
       fetchData();
       showSuccess("Berhasil", "Data disimpan");
     } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal menyimpan");
+      handleAxiosError(err, "Gagal menyimpan");
     }
   };
 
@@ -122,8 +121,7 @@ export default function TugasTambahanPage() {
       fetchData();
       showSuccess("Dihapus", "Kegiatan dihapus");
     } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal menghapus");
+      handleAxiosError(err, "Gagal menghapus");
     }
   };
 

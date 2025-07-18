@@ -2,10 +2,10 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import {
   showSuccess,
-  showError,
   showWarning,
   confirmDelete,
   confirmCancel,
+  handleAxiosError,
 } from "../../utils/alerts";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
@@ -49,7 +49,7 @@ export default function UsersPage() {
       const res = await axios.get("/users");
       setUsers(res.data);
     } catch (err) {
-      console.error("Gagal mengambil pengguna", err);
+      handleAxiosError(err, "Gagal mengambil pengguna");
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ export default function UsersPage() {
       const res = await axios.get("/roles");
       setRoles(res.data);
     } catch (err) {
-      console.error("Gagal mengambil role", err);
+      handleAxiosError(err, "Gagal mengambil role");
     }
   };
 
@@ -96,8 +96,7 @@ export default function UsersPage() {
       fetchUsers();
       showSuccess("Berhasil", "Pengguna disimpan");
     } catch (err) {
-      console.error("Gagal menyimpan pengguna", err);
-      showError("Error", "Gagal menyimpan pengguna");
+      handleAxiosError(err, "Gagal menyimpan pengguna");
     }
   };
 
@@ -109,8 +108,7 @@ export default function UsersPage() {
       fetchUsers();
       showSuccess("Dihapus", "Pengguna berhasil dihapus");
     } catch (err) {
-      console.error("Gagal menghapus pengguna", err);
-      showError("Error", "Gagal menghapus pengguna");
+      handleAxiosError(err, "Gagal menghapus pengguna");
     }
   }, []);
 

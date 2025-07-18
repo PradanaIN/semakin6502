@@ -39,6 +39,21 @@ export default function Layout() {
   const profileRef = useRef();
   const notifRef = useRef();
 
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const res = await axios.get("/notifications");
+      const data = res.data || [];
+      setNotifications(data);
+      setNotifCount(data.filter((n) => !n.read).length);
+    } catch (err) {
+      console.error("Failed to fetch notifications", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
+
   const handleLogout = async () => {
     const r = await confirmAlert({
       title: "Logout?",
@@ -52,10 +67,15 @@ export default function Layout() {
     setUser(null);
   };
 
-  const markAllAsRead = () => {
-    const updated = notifications.map((n) => ({ ...n, read: true }));
-    setNotifications(updated);
-    setNotifCount(0);
+  const markAllAsRead = async () => {
+    try {
+      await axios.post("/notifications/read-all");
+      const updated = notifications.map((n) => ({ ...n, read: true }));
+      setNotifications(updated);
+      setNotifCount(0);
+    } catch (err) {
+      console.error("Failed to mark notifications", err);
+    }
   };
 
   useEffect(() => {
