@@ -476,7 +476,7 @@ export default function PenugasanDetailPage() {
           )}
         </div>
 
-        <div className="overflow-x-auto rounded-lg border dark:border-gray-700">
+        <div className="overflow-x-auto md:overflow-x-visible rounded-lg border dark:border-gray-700">
           <Table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead>
               <tr className={tableStyles.headerRow}>

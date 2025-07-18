@@ -147,9 +147,9 @@ export default function DataTable({
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 overflow-x-auto md:overflow-x-visible">
       {showGlobalFilter && <GlobalFilter table={table} />}
-      <Table>
+      <Table className="min-w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id} className={tableStyles.headerRow}>

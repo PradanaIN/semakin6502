@@ -42,7 +42,7 @@ const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek }) => {
   };
 
   return (
-    <div className="overflow-auto">
+    <div className="overflow-auto md:overflow-visible">
       <table className="min-w-full text-xs border-collapse">
         <thead>
           <tr>

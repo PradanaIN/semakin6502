@@ -108,7 +108,7 @@ export default function LaporanHarianPage() {
         />
       </div>
       <>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto md:overflow-x-visible">
           <Table>
             <thead>
               <tr className={tableStyles.headerRow}>

@@ -180,6 +180,7 @@ export default function TugasTambahanPage() {
         </div>
       </div>
 
+      <div className="overflow-x-auto md:overflow-x-visible">
       <Table>
         <thead>
           <tr className={tableStyles.headerRow}>
@@ -298,6 +299,7 @@ export default function TugasTambahanPage() {
           )}
         </tbody>
       </Table>
+      </div>
 
       <div className="flex items-center justify-between mt-4">
         <SelectDataShow

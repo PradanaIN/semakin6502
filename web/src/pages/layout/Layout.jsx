@@ -23,9 +23,15 @@ export default function Layout() {
   const { user, setUser } = useAuth();
   const location = useLocation();
 
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [notifCount, setNotifCount] = useState(0);
-  const [notifications, setNotifications] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth >= 768 : true
+  );
+  const [notifCount, setNotifCount] = useState(3);
+  const [notifications, setNotifications] = useState([
+    { id: 1, text: "Laporan harian belum dikirim", read: false },
+    { id: 2, text: "Penugasan baru tersedia", read: false },
+    { id: 3, text: "Tim Anda telah diperbarui", read: false },
+  ]);
   const { theme, toggleTheme } = useTheme();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
@@ -83,6 +89,15 @@ export default function Layout() {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) setSidebarOpen(false);
+    };
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const displayedNotifications = notifications.slice(0, 5);
