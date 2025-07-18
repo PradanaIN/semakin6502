@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Pencil, Trash2, ExternalLink, X } from "lucide-react";
-import { showSuccess, showError } from "../../utils/alerts";
+import { showSuccess, handleAxiosError } from "../../utils/alerts";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
@@ -32,7 +32,7 @@ export default function LaporanHarianPage() {
     tanggal: new Date().toISOString().slice(0, 10),
     deskripsi: "",
     status: STATUS.BELUM,
-    bukti_link: "",
+    buktiLink: "",
     catatan: "",
   });
 
@@ -46,7 +46,7 @@ export default function LaporanHarianPage() {
       const res = await axios.get(url);
       setLaporan(res.data);
     } catch (err) {
-      console.error("Gagal mengambil laporan", err);
+      handleAxiosError(err, "Gagal mengambil laporan");
     } finally {
       setLoading(false);
     }
@@ -62,8 +62,7 @@ export default function LaporanHarianPage() {
       fetchData();
       showSuccess("Berhasil", "Laporan diperbarui");
     } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal menyimpan");
+      handleAxiosError(err, "Gagal menyimpan");
     }
   };
 
@@ -72,7 +71,7 @@ export default function LaporanHarianPage() {
 
   const filtered = laporan.filter((l) => {
     const peg = l.pegawai?.nama?.toLowerCase() || "";
-    const keg = l.penugasan?.kegiatan?.nama_kegiatan?.toLowerCase() || "";
+    const keg = l.penugasan?.kegiatan?.namaKegiatan?.toLowerCase() || "";
     const desc = l.deskripsi?.toLowerCase() || "";
     const cat = l.catatan?.toLowerCase() || "";
     const stat = l.status.toLowerCase();
@@ -109,7 +108,7 @@ export default function LaporanHarianPage() {
         />
       </div>
       <>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto md:overflow-x-visible">
           <Table>
             <thead>
               <tr className={tableStyles.headerRow}>
@@ -178,10 +177,10 @@ export default function LaporanHarianPage() {
                       {(currentPage - 1) * pageSize + idx + 1}
                     </td>
                     <td className={tableStyles.cell}>
-                      {item.penugasan?.kegiatan?.nama_kegiatan || "-"}
+                      {item.penugasan?.kegiatan?.namaKegiatan || "-"}
                     </td>
                     <td className={tableStyles.cell}>
-                      {item.penugasan?.tim?.nama_tim || "-"}
+                      {item.penugasan?.tim?.namaTim || "-"}
                     </td>
                     <td className={tableStyles.cell}>
                       {item.penugasan?.kegiatan?.deskripsi || "-"}
@@ -190,9 +189,9 @@ export default function LaporanHarianPage() {
                       <StatusBadge status={item.status} />
                     </td>
                     <td className={tableStyles.cell}>
-                      {item.bukti_link ? (
+                      {item.buktiLink ? (
                         <a
-                          href={item.bukti_link}
+                          href={item.buktiLink}
                           target="_blank"
                           rel="noreferrer"
                         >
@@ -286,13 +285,13 @@ export default function LaporanHarianPage() {
             </div>
             {form.status === STATUS.SELESAI_DIKERJAKAN && (
               <div>
-                <Label htmlFor="bukti_link">Link Bukti</Label>
+                <Label htmlFor="buktiLink">Link Bukti</Label>
                 <Input
-                  id="bukti_link"
+                  id="buktiLink"
                   type="text"
-                  value={form.bukti_link}
+                  value={form.buktiLink}
                   onChange={(e) =>
-                    setForm({ ...form, bukti_link: e.target.value })
+                    setForm({ ...form, buktiLink: e.target.value })
                   }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />

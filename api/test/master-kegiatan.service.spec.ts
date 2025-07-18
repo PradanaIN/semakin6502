@@ -23,7 +23,7 @@ describe('MasterKegiatanService findAll', () => {
 
   it('returns items containing teamId', async () => {
     prisma.masterKegiatan.findMany.mockResolvedValue([
-      { id: 1, teamId: 2, nama_kegiatan: 'Test' },
+      { id: 1, teamId: 2, namaKegiatan: 'Test' },
     ]);
     prisma.masterKegiatan.count.mockResolvedValue(1);
 

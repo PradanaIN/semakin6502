@@ -32,3 +32,21 @@ This repository contains both the backend API and the frontend web application.
    ```
 
 Check each subproject README for detailed configuration and feature descriptions.
+
+
+## Docker Compose
+
+A `docker-compose.yml` file is provided to start all services with a single command.
+Make sure Docker and Docker Compose are installed and then run:
+
+```bash
+docker-compose up --build
+```
+
+The backend is available at `http://localhost:3000` and the frontend at `http://localhost:5173`.
+MySQL data persists in the `mysql-data` volume and is initialized from `docker/mysql/init.sql`.
+
+## Naming Conventions
+
+Code and database fields use **camelCase**. When adding new API DTOs or Prisma models, prefer English terms and camelCase naming (e.g. `teamId`, `namaKegiatan`). Legacy snake_case columns remain for compatibility but new contributions should avoid them.
+

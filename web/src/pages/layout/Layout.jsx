@@ -23,7 +23,9 @@ export default function Layout() {
   const { user, setUser } = useAuth();
   const location = useLocation();
 
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth >= 768 : true
+  );
   const [notifCount, setNotifCount] = useState(3);
   const [notifications, setNotifications] = useState([
     { id: 1, text: "Laporan harian belum dikirim", read: false },
@@ -36,6 +38,21 @@ export default function Layout() {
 
   const profileRef = useRef();
   const notifRef = useRef();
+
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const res = await axios.get("/notifications");
+      const data = res.data || [];
+      setNotifications(data);
+      setNotifCount(data.filter((n) => !n.read).length);
+    } catch (err) {
+      console.error("Failed to fetch notifications", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   const handleLogout = async () => {
     const r = await confirmAlert({
@@ -50,10 +67,15 @@ export default function Layout() {
     setUser(null);
   };
 
-  const markAllAsRead = () => {
-    const updated = notifications.map((n) => ({ ...n, read: true }));
-    setNotifications(updated);
-    setNotifCount(0);
+  const markAllAsRead = async () => {
+    try {
+      await axios.post("/notifications/read-all");
+      const updated = notifications.map((n) => ({ ...n, read: true }));
+      setNotifications(updated);
+      setNotifCount(0);
+    } catch (err) {
+      console.error("Failed to mark notifications", err);
+    }
   };
 
   useEffect(() => {
@@ -67,6 +89,15 @@ export default function Layout() {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) setSidebarOpen(false);
+    };
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const displayedNotifications = notifications.slice(0, 5);
@@ -215,8 +246,8 @@ export default function Layout() {
                               user?.team ||
                               user?.teamName ||
                               user?.team_name ||
-                              user?.nama_tim ||
-                              user?.members?.[0]?.team?.nama_tim ||
+                              user?.namaTim ||
+                              user?.members?.[0]?.team?.namaTim ||
                               ""
                             }`}
                       </div>

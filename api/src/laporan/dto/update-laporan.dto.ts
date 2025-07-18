@@ -12,7 +12,7 @@ export class UpdateLaporanDto {
 
   @IsOptional()
   @IsString()
-  bukti_link?: string;
+  buktiLink?: string;
 
   @IsOptional()
   @IsString()

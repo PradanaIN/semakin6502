@@ -10,6 +10,9 @@ import { normalizeRole } from "../common/roles";
 import { ROLES } from "../common/roles.constants";
 import { STATUS } from "../common/status.constants";
 
+// Semua perhitungan tanggal pada service ini mengasumsikan server
+// berjalan dalam timezone UTC.
+
 @Injectable()
 export class LaporanService {
   constructor(private prisma: PrismaService) {}
@@ -48,7 +51,7 @@ export class LaporanService {
         targetId = pen.pegawaiId;
       } else if (role === ROLES.KETUA) {
         const leader = await this.prisma.member.findFirst({
-          where: { teamId: pen.kegiatan.teamId, userId, is_leader: true },
+          where: { teamId: pen.kegiatan.teamId, userId, isLeader: true },
         });
         if (!leader) throw new ForbiddenException("bukan penugasan anda");
         targetId = pen.pegawaiId;
@@ -63,7 +66,7 @@ export class LaporanService {
         tanggal: new Date(data.tanggal),
         status: data.status,
         deskripsi: data.deskripsi,
-        bukti_link: data.bukti_link || undefined,
+        buktiLink: data.buktiLink || undefined,
         catatan: data.catatan || undefined,
       },
     });
@@ -118,7 +121,7 @@ export class LaporanService {
           where: {
             teamId: existing.penugasan.kegiatan.teamId,
             userId,
-            is_leader: true,
+            isLeader: true,
           },
         });
         if (!leader) throw new ForbiddenException("bukan laporan anda");
@@ -132,7 +135,7 @@ export class LaporanService {
         tanggal: new Date(data.tanggal),
         status: data.status,
         deskripsi: data.deskripsi,
-        bukti_link: data.bukti_link,
+        buktiLink: data.buktiLink,
         catatan: data.catatan,
       },
     });
@@ -157,7 +160,7 @@ export class LaporanService {
           where: {
             teamId: existing.penugasan.kegiatan.teamId,
             userId,
-            is_leader: true,
+            isLeader: true,
           },
         });
         if (!leader) throw new ForbiddenException("bukan laporan anda");
@@ -184,10 +187,10 @@ export class LaporanService {
         doc
           .fontSize(10)
           .text(
-            `${d.tanggal.toISOString().slice(0, 10)} - ${d.penugasan.kegiatan.nama_kegiatan} - Minggu ${d.penugasan.minggu} ${d.penugasan.bulan}/${d.penugasan.tahun} - ${d.status}`
+            `${d.tanggal.toISOString().slice(0, 10)} - ${d.penugasan.kegiatan.namaKegiatan} - Minggu ${d.penugasan.minggu} ${d.penugasan.bulan}/${d.penugasan.tahun} - ${d.status}`
           );
         if (d.catatan) doc.text(`Catatan: ${d.catatan}`);
-        if (d.bukti_link) doc.text(`Bukti: ${d.bukti_link}`);
+        if (d.buktiLink) doc.text(`Bukti: ${d.buktiLink}`);
         doc.moveDown();
       });
       doc.end();
@@ -209,12 +212,12 @@ export class LaporanService {
       data.forEach((d: any) => {
         ws.addRow([
           d.tanggal.toISOString().slice(0, 10),
-          d.penugasan.kegiatan.nama_kegiatan,
+          d.penugasan.kegiatan.namaKegiatan,
           d.penugasan.minggu,
           d.penugasan.bulan,
           d.penugasan.tahun,
           d.status,
-          d.bukti_link || "",
+          d.buktiLink || "",
           d.catatan || "",
         ]);
       });

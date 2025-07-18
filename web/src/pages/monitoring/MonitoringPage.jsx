@@ -9,6 +9,7 @@ import WeeklyMatrix from "./WeeklyMatrix";
 import MonthlyMatrix from "../../components/monitoring/MonthlyMatrix";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
+import { handleAxiosError } from "../../utils/alerts";
 
 export default function MonitoringPage() {
   const [tab, setTab] = useState("harian");
@@ -108,7 +109,7 @@ export default function MonitoringPage() {
         const sorted = filtered.sort((a, b) => a.nama.localeCompare(b.nama));
         setAllUsers(sorted);
       } catch (err) {
-        console.error("Gagal mengambil pengguna", err);
+        handleAxiosError(err, "Gagal mengambil pengguna");
       }
     };
     fetchUsers();
@@ -121,7 +122,7 @@ export default function MonitoringPage() {
           const res = await axios.get("/teams");
           setTeams(res.data);
         } catch (err) {
-          console.error("Gagal mengambil tim", err);
+          handleAxiosError(err, "Gagal mengambil tim");
         }
       }
     };
@@ -175,7 +176,7 @@ export default function MonitoringPage() {
         });
         setDailyData(mergeMatrixWithUsers(res.data));
       } catch (err) {
-        console.error(err);
+        handleAxiosError(err, "Gagal mengambil monitoring harian");
       } finally {
         setLoading(false);
       }
@@ -193,7 +194,7 @@ export default function MonitoringPage() {
           params: { minggu, teamId: teamId || undefined },
         });
       } catch (err) {
-        console.error(err);
+        handleAxiosError(err, "Gagal mengambil monitoring mingguan");
       } finally {
         setLoading(false);
       }
@@ -213,7 +214,7 @@ export default function MonitoringPage() {
         });
         setWeeklyMonthData(mergeWeeklyMonthWithUsers(res.data));
       } catch (err) {
-        console.error(err);
+        handleAxiosError(err, "Gagal mengambil monitoring mingguan per bulan");
       } finally {
         setLoading(false);
       }
@@ -233,7 +234,7 @@ export default function MonitoringPage() {
         });
         setMonthlyData(mergeMonthlyMatrixWithUsers(res.data));
       } catch (err) {
-        console.error(err);
+        handleAxiosError(err, "Gagal mengambil monitoring bulanan");
       } finally {
         setLoading(false);
       }
@@ -421,7 +422,7 @@ export default function MonitoringPage() {
                   <option value="">Semua Tim</option>
                   {teams.map((t) => (
                     <option key={t.id} value={t.id}>
-                      {t.nama_tim}
+                      {t.namaTim}
                     </option>
                   ))}
                 </select>
