@@ -52,6 +52,7 @@ export function SelectColumnFilter({ column, options }) {
       value={column.getFilterValue() || ""}
       onChange={(e) => column.setFilterValue(e.target.value || undefined)}
       className="mt-1 w-full border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+      aria-label="Filter kolom"
     >
       <option value="">Semua</option>
       {opts.map((o) => (
@@ -146,9 +147,9 @@ export default function DataTable({
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 overflow-x-auto md:overflow-x-visible">
       {showGlobalFilter && <GlobalFilter table={table} />}
-      <Table>
+      <Table className="min-w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id} className={tableStyles.headerRow}>

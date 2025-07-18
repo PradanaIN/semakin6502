@@ -24,7 +24,7 @@ export class AuthService {
     const sanitized = {
       ...user,
       teamId: member?.teamId,
-      teamName: member?.team?.nama_tim,
+      teamName: member?.team?.namaTim,
     } as any;
     delete (sanitized as any).password;
     return {

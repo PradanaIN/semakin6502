@@ -263,12 +263,12 @@ async function main() {
 
   const teamNames = Array.from(new Set(rawUsers.map((u) => u.team)));
   await prisma.team.createMany({
-    data: teamNames.map((n) => ({ nama_tim: n })),
+    data: teamNames.map((n) => ({ namaTim: n })),
     skipDuplicates: true,
   });
 
-  const teams = await prisma.team.findMany({ where: { nama_tim: { in: teamNames } } });
-  const teamMap = new Map(teams.map((t: any) => [t.nama_tim, t.id]));
+  const teams = await prisma.team.findMany({ where: { namaTim: { in: teamNames } } });
+  const teamMap = new Map(teams.map((t: any) => [t.namaTim, t.id]));
 
   const kegiatanByTeam: Record<string, string[]> = {
     Umum: [
@@ -378,10 +378,10 @@ async function main() {
     if (!teamId) continue;
     for (const nama of kegiatan) {
       const existing = await prisma.masterKegiatan.findFirst({
-        where: { teamId, nama_kegiatan: nama },
+        where: { teamId, namaKegiatan: nama },
       });
       if (!existing) {
-        await prisma.masterKegiatan.create({ data: { teamId, nama_kegiatan: nama } });
+        await prisma.masterKegiatan.create({ data: { teamId, namaKegiatan: nama } });
       }
     }
   }
@@ -406,7 +406,7 @@ async function main() {
       memberRows.push({
         userId: user.id,
         teamId,
-        is_leader: role !== "anggota",
+        isLeader: role !== "anggota",
       });
     }
   }
@@ -442,13 +442,13 @@ async function main() {
           ? STATUS.SEDANG_DIKERJAKAN
           : STATUS.SELESAI_DIKERJAKAN;
       tambahanRows.push({
-        nama: k.nama_kegiatan,
+        nama: k.namaKegiatan,
         tanggal: date.toISOString(),
         status,
         userId: m.userId,
         kegiatanId: k.id,
         teamId: m.teamId,
-        deskripsi: `Tugas tambahan ${k.nama_kegiatan}`,
+        deskripsi: `Tugas tambahan ${k.namaKegiatan}`,
       });
     }
   }
@@ -478,7 +478,7 @@ async function main() {
             minggu: w,
             bulan: info.bulan,
             tahun: info.year,
-            deskripsi: `Tugas ${k.nama_kegiatan}`,
+            deskripsi: `Tugas ${k.namaKegiatan}`,
             status: STATUS.BELUM,
           });
         }

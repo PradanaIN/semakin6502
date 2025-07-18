@@ -8,6 +8,7 @@ export default function DateFilter({ tanggal, setTanggal, setCurrentPage }) {
       <input
         id="filterTanggal"
         type="date"
+        aria-label="Filter tanggal"
         ref={inputRef}
         value={tanggal}
         onChange={(e) => {

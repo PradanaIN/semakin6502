@@ -1,10 +1,15 @@
 import { NestFactory } from "@nestjs/core";
-import { ValidationPipe } from "@nestjs/common";
+import { ValidationPipe, LogLevel } from "@nestjs/common";
 import cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
+import { LoggingInterceptor } from "./common/logging.interceptor";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const isProd = process.env.NODE_ENV === "production";
+  const logLevels: LogLevel[] = isProd
+    ? ["log", "warn", "error"]
+    : ["log", "warn", "error", "debug", "verbose"];
+  const app = await NestFactory.create(AppModule, { logger: logLevels });
   app.use(cookieParser());
 
   const origins = (process.env.CORS_ORIGIN || "http://localhost:5173")
@@ -18,6 +23,7 @@ async function bootstrap() {
       : { credentials: true }
   );
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalInterceptors(new LoggingInterceptor());
   const port = process.env.PORT || 3000;
   await app.listen(port);
 }

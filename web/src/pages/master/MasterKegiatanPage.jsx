@@ -2,9 +2,9 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import {
   showSuccess,
-  showError,
   showWarning,
   confirmDelete,
+  handleAxiosError,
 } from "../../utils/alerts";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import Spinner from "../../components/Spinner";
@@ -27,7 +27,7 @@ export default function MasterKegiatanPage() {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     teamId: "",
-    nama_kegiatan: "",
+    namaKegiatan: "",
     deskripsi: "",
   });
   const [editing, setEditing] = useState(null);
@@ -52,7 +52,7 @@ export default function MasterKegiatanPage() {
       setItems(res.data.data);
       setLastPage(res.data.lastPage);
     } catch (err) {
-      console.error("Gagal mengambil master kegiatan", err);
+      handleAxiosError(err, "Gagal mengambil master kegiatan");
     } finally {
       setLoading(false);
     }
@@ -66,7 +66,7 @@ export default function MasterKegiatanPage() {
       }
       setTeams(res.data);
     } catch (err) {
-      console.error("Gagal mengambil tim", err);
+      handleAxiosError(err, "Gagal mengambil tim");
     }
   }, []);
 
@@ -77,7 +77,7 @@ export default function MasterKegiatanPage() {
 
   const openCreate = () => {
     setEditing(null);
-    setForm({ teamId: "", nama_kegiatan: "", deskripsi: "" });
+    setForm({ teamId: "", namaKegiatan: "", deskripsi: "" });
     setShowForm(true);
   };
 
@@ -85,14 +85,14 @@ export default function MasterKegiatanPage() {
     setEditing(item);
     setForm({
       teamId: item.teamId,
-      nama_kegiatan: item.nama_kegiatan,
+      namaKegiatan: item.namaKegiatan,
       deskripsi: item.deskripsi || "",
     });
     setShowForm(true);
   };
 
   const saveItem = async () => {
-    if (!form.teamId || isNaN(form.teamId) || !form.nama_kegiatan) {
+    if (!form.teamId || isNaN(form.teamId) || !form.namaKegiatan) {
       showWarning("Lengkapi data", "Tim dan nama kegiatan wajib diisi");
       return;
     }
@@ -107,8 +107,7 @@ export default function MasterKegiatanPage() {
       fetchItems();
       showSuccess("Berhasil", "Kegiatan disimpan");
     } catch (err) {
-      console.error("Gagal menyimpan kegiatan", err);
-      showError("Error", "Gagal menyimpan kegiatan");
+      handleAxiosError(err, "Gagal menyimpan kegiatan");
     }
   };
 
@@ -120,7 +119,7 @@ export default function MasterKegiatanPage() {
       fetchItems();
       showSuccess("Dihapus", "Kegiatan berhasil dihapus");
     } catch (err) {
-      console.error("Gagal menghapus kegiatan", err);
+      handleAxiosError(err, "Gagal menghapus kegiatan");
     }
   };
 
@@ -165,7 +164,7 @@ export default function MasterKegiatanPage() {
               <option value="">Semua</option>
               {teams.map((t) => (
                 <option key={t.id} value={t.id}>
-                  {t.nama_tim}
+                  {t.namaTim}
                 </option>
               ))}
             </select>
@@ -180,6 +179,7 @@ export default function MasterKegiatanPage() {
         </div>
       </div>
 
+      <div className="overflow-x-auto md:overflow-x-visible">
       <Table>
         <thead>
           <tr className={tableStyles.headerRow}>
@@ -210,9 +210,9 @@ export default function MasterKegiatanPage() {
                   {(page - 1) * perPage + idx + 1}
                 </td>
                 <td className={tableStyles.cell}>
-                  {item.team?.nama_tim || item.teamId}
+                  {item.team?.namaTim || item.teamId}
                 </td>
-                <td className={tableStyles.cell}>{item.nama_kegiatan}</td>
+                <td className={tableStyles.cell}>{item.namaKegiatan}</td>
                 <th className={tableStyles.cell}>
                   {!item.deskripsi ? "-" : item.deskripsi}
                 </th>
@@ -239,6 +239,7 @@ export default function MasterKegiatanPage() {
           )}
         </tbody>
       </Table>
+      </div>
 
       <div className="flex items-center justify-between mt-4">
         <SelectDataShow
@@ -293,7 +294,7 @@ export default function MasterKegiatanPage() {
                 <option value="">Pilih tim</option>
                 {teams.map((t) => (
                   <option key={t.id} value={t.id}>
-                    {t.nama_tim}
+                    {t.namaTim}
                   </option>
                 ))}
               </select>
@@ -306,9 +307,9 @@ export default function MasterKegiatanPage() {
               <Input
                 id="namaKegiatan"
                 type="text"
-                value={form.nama_kegiatan}
+                value={form.namaKegiatan}
                 onChange={(e) =>
-                  setForm({ ...form, nama_kegiatan: e.target.value })
+                  setForm({ ...form, namaKegiatan: e.target.value })
                 }
                 className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               />

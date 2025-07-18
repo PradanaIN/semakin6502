@@ -41,7 +41,7 @@ export class PenugasanService {
         {
           kegiatan: {
             team: {
-              members: { some: { userId, is_leader: true } },
+              members: { some: { userId, isLeader: true } },
             },
           },
         },
@@ -65,7 +65,7 @@ export class PenugasanService {
     }
     if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
-        where: { teamId: master.teamId, userId, is_leader: true },
+        where: { teamId: master.teamId, userId, isLeader: true },
       });
       if (!leader) {
         throw new ForbiddenException("bukan ketua tim kegiatan ini");
@@ -94,7 +94,7 @@ export class PenugasanService {
     }
     if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
-        where: { teamId: master.teamId, userId, is_leader: true },
+        where: { teamId: master.teamId, userId, isLeader: true },
       });
       if (!leader) {
         throw new ForbiddenException("bukan ketua tim kegiatan ini");
@@ -123,7 +123,7 @@ export class PenugasanService {
       where.OR = [
         {
           kegiatan: {
-            team: { members: { some: { userId, is_leader: true } } },
+            team: { members: { some: { userId, isLeader: true } } },
           },
         },
         { pegawaiId: userId },
@@ -152,7 +152,7 @@ export class PenugasanService {
     if (!existing) throw new NotFoundException("not found");
     if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
-        where: { teamId: existing.kegiatan.teamId, userId, is_leader: true },
+        where: { teamId: existing.kegiatan.teamId, userId, isLeader: true },
       });
       if (!leader) throw new ForbiddenException("bukan ketua tim kegiatan ini");
     }
@@ -180,7 +180,7 @@ export class PenugasanService {
     if (!existing) throw new NotFoundException("not found");
     if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
-        where: { teamId: existing.kegiatan.teamId, userId, is_leader: true },
+        where: { teamId: existing.kegiatan.teamId, userId, isLeader: true },
       });
       if (!leader)
         throw new ForbiddenException(

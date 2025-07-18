@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { showSuccess, showError, confirmDelete } from "../../utils/alerts";
+import { showSuccess, confirmDelete, handleAxiosError } from "../../utils/alerts";
 import { Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import Table from "../../components/ui/Table";
 import tableStyles from "../../components/ui/Table.module.css";
@@ -57,7 +57,7 @@ export default function TugasTambahanPage() {
       setKegiatan(kRes.data.data || kRes.data);
       setTeams(teamRes.data);
     } catch (err) {
-      console.error(err);
+      handleAxiosError(err, "Gagal mengambil data");
     } finally {
       setLoading(false);
     }
@@ -109,8 +109,7 @@ export default function TugasTambahanPage() {
       fetchData();
       showSuccess("Berhasil", "Data disimpan");
     } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal menyimpan");
+      handleAxiosError(err, "Gagal menyimpan");
     }
   };
 
@@ -122,8 +121,7 @@ export default function TugasTambahanPage() {
       fetchData();
       showSuccess("Dihapus", "Kegiatan dihapus");
     } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal menghapus");
+      handleAxiosError(err, "Gagal menghapus");
     }
   };
 
@@ -134,7 +132,7 @@ export default function TugasTambahanPage() {
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
       const text = `${item.nama} ${
-        item.kegiatan?.team?.nama_tim || ""
+        item.kegiatan?.team?.namaTim || ""
       }`.toLowerCase();
       const matchesSearch = text.includes(search.toLowerCase());
       const date = new Date(item.tanggal);
@@ -182,6 +180,7 @@ export default function TugasTambahanPage() {
         </div>
       </div>
 
+      <div className="overflow-x-auto md:overflow-x-visible">
       <Table>
         <thead>
           <tr className={tableStyles.headerRow}>
@@ -254,7 +253,7 @@ export default function TugasTambahanPage() {
                 </td>
                 <td className={tableStyles.cell}>{item.nama}</td>
                 <td className={tableStyles.cell}>
-                  {item.kegiatan.team?.nama_tim || "-"}
+                  {item.kegiatan.team?.namaTim || "-"}
                 </td>
                 <td className={tableStyles.cell}>
                   {item.tanggal.slice(0, 10)}
@@ -264,7 +263,7 @@ export default function TugasTambahanPage() {
                   <StatusBadge status={item.status} />
                 </td>
                 <td className={tableStyles.cell}>
-                  {item.bukti_link ? (
+                  {item.buktiLink ? (
                     <Check className="w-4 h-4 text-green-600" />
                   ) : (
                     <X className="w-4 h-4 text-red-600" />
@@ -300,6 +299,7 @@ export default function TugasTambahanPage() {
           )}
         </tbody>
       </Table>
+      </div>
 
       <div className="flex items-center justify-between mt-4">
         <SelectDataShow
@@ -359,10 +359,10 @@ export default function TugasTambahanPage() {
               >
                 <option value="">Pilih Tim</option>
                 {teams
-                  .filter((t) => t.nama_tim !== "Pimpinan")
+                  .filter((t) => t.namaTim !== "Pimpinan")
                   .map((t) => (
                     <option key={t.id} value={t.id}>
-                      {t.nama_tim}
+                      {t.namaTim}
                     </option>
                   ))}
               </select>
@@ -391,7 +391,7 @@ export default function TugasTambahanPage() {
                   .filter((k) => k.teamId === form.teamId)
                   .map((k) => (
                     <option key={k.id} value={k.id}>
-                      {k.nama_kegiatan}
+                      {k.namaKegiatan}
                     </option>
                   ))}
               </select>

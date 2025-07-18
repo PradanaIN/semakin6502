@@ -23,7 +23,7 @@ export class MasterKegiatanService {
     const skip = (page - 1) * limit;
     const where: any = {};
     if (params.teamId) where.teamId = params.teamId;
-    if (params.search) where.nama_kegiatan = { contains: params.search };
+    if (params.search) where.namaKegiatan = { contains: params.search };
 
     const [data, total] = await this.prisma.$transaction([
       this.prisma.masterKegiatan.findMany({
@@ -46,7 +46,7 @@ export class MasterKegiatanService {
   async create(data: CreateMasterKegiatanDto, userId: number, role: string) {
     if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
-        where: { teamId: data.teamId, userId, is_leader: true },
+        where: { teamId: data.teamId, userId, isLeader: true },
       });
       if (!leader) {
         throw new ForbiddenException("bukan ketua tim kegiatan ini");
@@ -67,7 +67,7 @@ export class MasterKegiatanService {
     if (!existing) throw new NotFoundException("not found");
     if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
-        where: { teamId: existing.teamId, userId, is_leader: true },
+        where: { teamId: existing.teamId, userId, isLeader: true },
       });
       if (!leader) throw new ForbiddenException("bukan ketua tim kegiatan ini");
     }
@@ -83,7 +83,7 @@ export class MasterKegiatanService {
     if (!existing) throw new NotFoundException("not found");
     if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
-        where: { teamId: existing.teamId, userId, is_leader: true },
+        where: { teamId: existing.teamId, userId, isLeader: true },
       });
       if (!leader) throw new ForbiddenException("bukan ketua tim kegiatan ini");
     }

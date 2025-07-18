@@ -22,7 +22,7 @@ model User {
 
 model Team {
   id               Int                @id @default(autoincrement())
-  nama_tim         String
+  namaTim          String
   members          Member[]
   masterKegiatan   MasterKegiatan[]
   KegiatanTambahan KegiatanTambahan[]
@@ -32,7 +32,7 @@ model Member {
   id        Int     @id @default(autoincrement())
   userId    Int
   teamId    Int
-  is_leader Boolean
+  isLeader  Boolean
   user      User    @relation(fields: [userId], references: [id])
   team      Team    @relation(fields: [teamId], references: [id])
   @@unique([userId, teamId])
@@ -41,7 +41,7 @@ model Member {
 model MasterKegiatan {
   id               Int                @id @default(autoincrement())
   teamId           Int
-  nama_kegiatan    String
+  namaKegiatan     String
   deskripsi        String?
   team             Team               @relation(fields: [teamId], references: [id])
   penugasan        Penugasan[]
@@ -68,7 +68,7 @@ model LaporanHarian {
   tanggal     DateTime
   status      String
   deskripsi   String?
-  bukti_link  String?
+  buktiLink   String?
   catatan     String?
   pegawaiId   Int
   penugasan   Penugasan @relation(fields: [penugasanId], references: [id])
@@ -80,10 +80,10 @@ model KegiatanTambahan {
   nama     String
   tanggal  DateTime
   status   String
-  bukti_link String?
+  buktiLink String?
   deskripsi String?
-  tanggal_selesai DateTime?
-  tanggal_selesai_akhir DateTime?
+  tanggalSelesai DateTime?
+  tanggalSelesaiAkhir DateTime?
   userId   Int
   kegiatanId Int
   teamId Int
