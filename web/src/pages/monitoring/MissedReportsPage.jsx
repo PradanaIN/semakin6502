@@ -21,11 +21,29 @@ export default function MissedReportsPage() {
     fetchData();
   }, []);
 
+  const formatDate = (iso) => {
+    const [y, m, d] = iso.split("-");
+    return `${d}-${m}-${y}`;
+  };
+
+  const daysLate = (iso) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const d = new Date(iso);
+    d.setHours(0, 0, 0, 0);
+    return Math.floor((today.getTime() - d.getTime()) / 86400000);
+  };
+
   const renderList = (items) =>
     items.length > 0 ? (
       <ul className="list-disc pl-5 space-y-1">
         {items.map((u) => (
-          <li key={u.userId}>{u.nama}</li>
+          <li key={u.userId}>
+            {u.nama} -
+            {u.lastDate
+              ? ` ${daysLate(u.lastDate)} hari (${formatDate(u.lastDate)})`
+              : " belum pernah"}
+          </li>
         ))}
       </ul>
     ) : (
