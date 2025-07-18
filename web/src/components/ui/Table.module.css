@@ -9,6 +9,13 @@
   background-color: var(--th-bg);
 }
 
+.headerCell {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: var(--th-color);
+  text-align: center;
+}
+
 .row {
   text-align: center;
 }

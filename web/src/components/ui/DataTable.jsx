@@ -26,17 +26,6 @@ function GlobalFilter({ table }) {
   );
 }
 
-function DefaultColumnFilter({ column }) {
-  return (
-    <Input
-      value={column.getFilterValue() || ""}
-      onChange={(e) => column.setFilterValue(e.target.value || undefined)}
-      className="mt-1 w-full"
-      placeholder="Filter..."
-    />
-  );
-}
-
 export function SelectColumnFilter({ column, options }) {
   const opts = React.useMemo(() => {
     if (options) return options;
@@ -150,7 +139,7 @@ export default function DataTable({
     <div className="space-y-4 overflow-x-auto md:overflow-x-visible">
       {showGlobalFilter && <GlobalFilter table={table} />}
       <Table className="min-w-full">
-        <thead>
+        <thead className={tableStyles.headerCell}>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id} className={tableStyles.headerRow}>
               {headerGroup.headers.map((header) => (
@@ -173,23 +162,6 @@ export default function DataTable({
                         <ArrowUpDown size={12} className="text-gray-400" />
                       ))}
                   </div>
-                  {showColumnFilters &&
-                    header.column.getCanFilter() && (
-                      <div
-                        className="mt-1"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {(() => {
-                          const FilterComp =
-                            header.column.columnDef.meta?.Filter;
-                          return FilterComp ? (
-                            <FilterComp column={header.column} />
-                          ) : (
-                            <DefaultColumnFilter column={header.column} />
-                          );
-                        })()}
-                      </div>
-                    )}
                 </th>
               ))}
             </tr>
