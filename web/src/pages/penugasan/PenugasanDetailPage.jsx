@@ -13,7 +13,7 @@ import selectStyles from "../../utils/selectStyles";
 import { Pencil, Trash2, Plus, ExternalLink } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
-import { STATUS } from "../../utils/status";
+import { STATUS, formatStatus } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
@@ -627,12 +627,12 @@ export default function PenugasanDetailPage() {
                   required
                   className="w-full mt-1 rounded-md border px-4 py-2 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
+                  <option value={STATUS.BELUM}>{formatStatus(STATUS.BELUM)}</option>
                   <option value={STATUS.SEDANG_DIKERJAKAN}>
-                    {STATUS.SEDANG_DIKERJAKAN}
+                    {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
                   </option>
                   <option value={STATUS.SELESAI_DIKERJAKAN}>
-                    {STATUS.SELESAI_DIKERJAKAN}
+                    {formatStatus(STATUS.SELESAI_DIKERJAKAN)}
                   </option>
                 </select>
               </div>

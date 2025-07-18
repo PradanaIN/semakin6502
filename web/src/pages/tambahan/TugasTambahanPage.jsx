@@ -10,7 +10,7 @@ import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import Select from "react-select";
-import { STATUS } from "../../utils/status";
+import { STATUS, formatStatus } from "../../utils/status";
 import Modal from "../../components/ui/Modal";
 import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
@@ -448,12 +448,12 @@ export default function TugasTambahanPage() {
             focus:outline-none focus:ring-2 focus:ring-blue-500 
             shadow-sm transition duration-150 ease-in-out"
               >
-                <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
+                <option value={STATUS.BELUM}>{formatStatus(STATUS.BELUM)}</option>
                 <option value={STATUS.SEDANG_DIKERJAKAN}>
-                  {STATUS.SEDANG_DIKERJAKAN}
+                  {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
                 </option>
                 <option value={STATUS.SELESAI_DIKERJAKAN}>
-                  {STATUS.SELESAI_DIKERJAKAN}
+                  {formatStatus(STATUS.SELESAI_DIKERJAKAN)}
                 </option>
               </select>
             </div>

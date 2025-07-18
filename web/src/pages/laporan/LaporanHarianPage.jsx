@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Pencil, Trash2, ExternalLink, X } from "lucide-react";
-import { showSuccess, showError, confirmDelete } from "../../utils/alerts";
+import { showSuccess, showError } from "../../utils/alerts";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
@@ -9,7 +9,7 @@ import tableStyles from "../../components/ui/Table.module.css";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
-import { STATUS } from "../../utils/status";
+import { STATUS, formatStatus } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
@@ -52,17 +52,6 @@ export default function LaporanHarianPage() {
     }
   };
 
-  const openEdit = (item) => {
-    setForm({
-      id: item.id,
-      tanggal: item.tanggal.slice(0, 10),
-      deskripsi: item.deskripsi || "",
-      status: item.status,
-      bukti_link: item.bukti_link || "",
-      catatan: item.catatan || "",
-    });
-    setShowForm(true);
-  };
 
   const saveForm = async () => {
     try {
@@ -78,18 +67,6 @@ export default function LaporanHarianPage() {
     }
   };
 
-  const remove = async (id) => {
-    const r = await confirmDelete("Hapus laporan ini?");
-    if (!r.isConfirmed) return;
-    try {
-      await axios.delete(`/laporan-harian/${id}`);
-      fetchData();
-      showSuccess("Dihapus", "Laporan dihapus");
-    } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal menghapus");
-    }
-  };
 
   useEffect(() => {
     if (user) fetchData();
@@ -303,12 +280,12 @@ export default function LaporanHarianPage() {
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
               >
-                <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
+                <option value={STATUS.BELUM}>{formatStatus(STATUS.BELUM)}</option>
                 <option value={STATUS.SEDANG_DIKERJAKAN}>
-                  {STATUS.SEDANG_DIKERJAKAN}
+                  {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
                 </option>
                 <option value={STATUS.SELESAI_DIKERJAKAN}>
-                  {STATUS.SELESAI_DIKERJAKAN}
+                  {formatStatus(STATUS.SELESAI_DIKERJAKAN)}
                 </option>
               </select>
             </div>

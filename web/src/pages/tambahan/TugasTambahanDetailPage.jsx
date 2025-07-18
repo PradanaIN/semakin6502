@@ -10,7 +10,7 @@ import {
 import { Pencil, Trash2 } from "lucide-react";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
-import { STATUS } from "../../utils/status";
+import { STATUS, formatStatus } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
@@ -235,12 +235,12 @@ export default function TugasTambahanDetailPage() {
               onChange={(e) => setForm({ ...form, status: e.target.value })}
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
             >
-              <option value={STATUS.BELUM}>{STATUS.BELUM}</option>
+              <option value={STATUS.BELUM}>{formatStatus(STATUS.BELUM)}</option>
               <option value={STATUS.SEDANG_DIKERJAKAN}>
-                {STATUS.SEDANG_DIKERJAKAN}
+                {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
               </option>
               <option value={STATUS.SELESAI_DIKERJAKAN}>
-                {STATUS.SELESAI_DIKERJAKAN}
+                {formatStatus(STATUS.SELESAI_DIKERJAKAN)}
               </option>
             </select>
           </div>
