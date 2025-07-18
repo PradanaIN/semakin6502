@@ -206,14 +206,14 @@ export default function PenugasanPage() {
       <Table>
         <thead>
           <tr className={tableStyles.headerRow}>
-            <th className="px-1 py-1 sm:px-2 sm:py-2">No</th>
+            <th className={tableStyles.cell}>No</th>
             <th className={tableStyles.cell}>Kegiatan</th>
             <th className={tableStyles.cell}>Tim</th>
             <th className={tableStyles.cell}>Pegawai</th>
             <th className={tableStyles.cell}>Minggu</th>
             <th className={tableStyles.cell}>Bulan</th>
             <th className={tableStyles.cell}>Status</th>
-            <th className="px-1 py-1 sm:px-2 sm:py-2">Aksi</th>
+            <th className={tableStyles.cell}>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -269,11 +269,8 @@ export default function PenugasanPage() {
             </tr>
           ) : (
             paginated.map((p, idx) => (
-              <tr
-                key={p.id}
-                className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
-              >
-                <td className="px-1 py-1 sm:px-2 sm:py-2">
+              <tr key={p.id} className={tableStyles.row}>
+                <td className={tableStyles.cell}>
                   {(currentPage - 1) * pageSize + idx + 1}
                 </td>
                 <td className={tableStyles.cell}>
@@ -290,7 +287,7 @@ export default function PenugasanPage() {
                 <td className={tableStyles.cell}>
                   <StatusBadge status={p.status} />
                 </td>
-                <td className="px-1 py-1 sm:px-2 sm:py-2">
+                <td className={tableStyles.cell}>
                   <Button
                     onClick={() => navigate(`/tugas-mingguan/${p.id}`)}
                     variant="icon"

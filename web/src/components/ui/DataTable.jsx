@@ -195,10 +195,7 @@ export default function DataTable({
             </tr>
           ) : (
             table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
-              >
+              <tr key={row.id} className={tableStyles.row}>
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className={tableStyles.cell}>
                     {flexRender(

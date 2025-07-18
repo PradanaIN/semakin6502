@@ -198,10 +198,7 @@ export default function UsersPage() {
             </tr>
           ) : (
             paginated.map((u, idx) => (
-              <tr
-                key={u.id}
-                className={`${tableStyles.row} border-t dark:border-gray-700 text-center`}
-              >
+              <tr key={u.id} className={tableStyles.row}>
                 <td className={tableStyles.cell}>
                   {(currentPage - 1) * pageSize + idx + 1}
                 </td>
