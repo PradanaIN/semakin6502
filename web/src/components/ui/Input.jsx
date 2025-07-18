@@ -1,6 +1,7 @@
 import React from "react";
-import styles from "./Input.module.css";
 
 export default function Input({ className = "", ...props }) {
-  return <input className={`${styles.input} ${className}`.trim()} {...props} />;
+  const baseClasses =
+    "w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200";
+  return <input className={`${baseClasses} ${className}`.trim()} {...props} />;
 }
