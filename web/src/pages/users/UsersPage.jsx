@@ -24,6 +24,7 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [_rowSelection, setRowSelection] = useState({});
   const [form, setForm] = useState({
     nama: "",
     email: "",
@@ -187,7 +188,12 @@ export default function UsersPage() {
           <Spinner className="h-6 w-6 mx-auto" />
         </div>
       ) : (
-        <DataTable columns={columns} data={users} />
+        <DataTable
+          columns={columns}
+          data={users}
+          initialSorting={[{ id: "nama", desc: false }]}
+          onRowSelectionChange={setRowSelection}
+        />
       )}
 
       {showForm && (

@@ -159,6 +159,7 @@ export default function TeamsPage() {
         <DataTable
           columns={columns}
           data={teams}
+          initialSorting={[{ id: "nama_tim", desc: false }]}
         />
       )}
 

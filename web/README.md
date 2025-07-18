@@ -54,6 +54,8 @@ located in `src/components/ui`. It provides:
 - Global search across all columns
 - Optional per-column filters
 - Built-in pagination with a page size selector
+- Column sorting with visual indicators
+- Optional row selection with checkboxes
 
 Example usage:
 
@@ -67,3 +69,8 @@ const columns = [
 
 <DataTable columns={columns} data={data} />;
 ```
+
+### Additional Props
+
+- `initialSorting` – array of sorting rules, e.g. `[{ id: 'name', desc: true }]`
+- `onRowSelectionChange` – callback receiving the current row selection state
