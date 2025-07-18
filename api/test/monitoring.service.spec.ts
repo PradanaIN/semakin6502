@@ -1,5 +1,6 @@
 import { MonitoringService } from '../src/monitoring/monitoring.service';
 import { STATUS } from '../src/common/status.constants';
+import { ROLES } from '../src/common/roles.constants';
 
 describe('MonitoringService aggregated', () => {
   const prisma = {
@@ -226,12 +227,21 @@ describe('MonitoringService aggregated', () => {
     ]);
   });
 
-  it('laporanTerlambat categorizes users by last report date', async () => {
+  it('laporanTerlambat categorizes users by last report date and excludes admin/pimpinan', async () => {
     jest.useFakeTimers().setSystemTime(new Date('2024-05-10'));
     prisma.user.findMany.mockResolvedValue([
-      { id: 1, nama: 'A', laporan: [{ tanggal: new Date('2024-05-02') }] },
-      { id: 2, nama: 'B', laporan: [{ tanggal: new Date('2024-05-05') }] },
-      { id: 3, nama: 'C', laporan: [] },
+      {
+        id: 1,
+        nama: 'A',
+        role: ROLES.ANGGOTA,
+        laporan: [{ tanggal: new Date('2024-05-02') }],
+      },
+      {
+        id: 2,
+        nama: 'B',
+        role: ROLES.KETUA,
+        laporan: [{ tanggal: new Date('2024-05-05') }],
+      },
     ]);
 
     const res = await service.laporanTerlambat();
@@ -245,5 +255,18 @@ describe('MonitoringService aggregated', () => {
     ]);
     expect(res.day1).toEqual([]);
     jest.useRealTimers();
+  });
+
+  it('laporanTerlambat merges role filter with team filter', async () => {
+    prisma.user.findMany.mockResolvedValue([]);
+    await service.laporanTerlambat(1);
+    expect(prisma.user.findMany).toHaveBeenCalledWith({
+      where: {
+        NOT: { role: { in: [ROLES.ADMIN, ROLES.PIMPINAN] } },
+        members: { some: { teamId: 1 } },
+      },
+      include: { laporan: { orderBy: { tanggal: 'desc' }, take: 1 } },
+      orderBy: { nama: 'asc' },
+    });
   });
 });

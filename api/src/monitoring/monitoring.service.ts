@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
 import MONTHS from "../common/months";
 import { STATUS } from "../common/status.constants";
+import { ROLES } from "../common/roles.constants";
 
 // Tanggal pada service monitoring diasumsikan diproses dalam timezone UTC.
 
@@ -534,7 +535,9 @@ export class MonitoringService {
   }
 
   async laporanTerlambat(teamId?: number) {
-    const whereUser: any = {};
+    const whereUser: any = {
+      NOT: { role: { in: [ROLES.ADMIN, ROLES.PIMPINAN] } },
+    };
     if (teamId) whereUser.members = { some: { teamId } };
 
     const users = await this.prisma.user.findMany({
