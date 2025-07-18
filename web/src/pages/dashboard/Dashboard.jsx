@@ -5,6 +5,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { ROLES } from "../../utils/roles";
 import Button from "../../components/ui/Button";
+import { handleAxiosError } from "../../utils/alerts";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -127,7 +128,7 @@ const Dashboard = () => {
         if (error?.response && [401, 403].includes(error.response.status)) {
           setErrorMsg("Anda tidak memiliki akses untuk melihat monitoring.");
         }
-        console.error("Gagal mengambil data monitoring:", error);
+        handleAxiosError(error, "Gagal mengambil data monitoring");
       } finally {
         setLoading(false);
       }

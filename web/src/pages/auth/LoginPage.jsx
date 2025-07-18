@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "./useAuth";
+import { handleAxiosError } from "../../utils/alerts";
 import Button from "../../components/ui/Button";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +29,7 @@ export default function LoginPage() {
     } catch (err) {
       console.error("Login failed:", err?.response?.data || err.message);
       setError("Login gagal. Periksa data login Anda.");
+      handleAxiosError(err, "Login gagal");
 
       // hanya kosongkan password
       setForm((prev) => ({ ...prev, password: "" }));

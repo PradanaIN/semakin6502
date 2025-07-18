@@ -7,6 +7,7 @@ import {
   showWarning,
   confirmDelete,
   confirmCancel,
+  handleAxiosError,
 } from "../../utils/alerts";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
@@ -79,8 +80,7 @@ export default function PenugasanDetailPage() {
         status: res.data.status,
       });
     } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal mengambil data");
+      handleAxiosError(err, "Gagal mengambil data");
     }
   }, [id]);
 
@@ -114,8 +114,7 @@ export default function PenugasanDetailPage() {
       setEditing(false);
       fetchDetail();
     } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal memperbarui");
+      handleAxiosError(err, "Gagal memperbarui");
     }
   };
 
@@ -165,8 +164,7 @@ export default function PenugasanDetailPage() {
         fetchDetail();
       }, 200);
     } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal menyimpan laporan");
+      handleAxiosError(err, "Gagal menyimpan laporan");
     }
   };
 
@@ -192,8 +190,7 @@ export default function PenugasanDetailPage() {
       fetchDetail();
       showSuccess("Dihapus", "Laporan dihapus");
     } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal menghapus laporan");
+      handleAxiosError(err, "Gagal menghapus laporan");
     }
   };
 
@@ -205,7 +202,6 @@ export default function PenugasanDetailPage() {
       showSuccess("Dihapus", "Penugasan dihapus");
       navigate(-1);
     } catch (err) {
-      console.error(err);
       if (err?.response?.status === 403) {
         showError(
           "Tidak diizinkan",
@@ -215,6 +211,7 @@ export default function PenugasanDetailPage() {
         const msg = err?.response?.data?.message || "Gagal menghapus";
         showError("Error", msg);
       }
+      handleAxiosError(err, "Gagal menghapus penugasan");
     }
   };
 
