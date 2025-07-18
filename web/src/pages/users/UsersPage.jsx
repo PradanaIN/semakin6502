@@ -10,6 +10,7 @@ import {
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useAuth } from "../auth/useAuth";
 import Modal from "../../components/ui/Modal";
+import useModalForm from "../../hooks/useModalForm";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
@@ -25,18 +26,19 @@ export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
+  const {
+    showForm,
+    form,
+    setForm,
+    editing: editingUser,
+    openCreate: openCreateForm,
+    openEdit: openEditForm,
+    closeForm,
+  } = useModalForm({ nama: "", email: "", password: "", role: "" });
   const [query, setQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [form, setForm] = useState({
-    nama: "",
-    email: "",
-    password: "",
-    role: "",
-  });
 
   useEffect(() => {
     fetchUsers();
@@ -63,18 +65,12 @@ export default function UsersPage() {
       handleAxiosError(err, "Gagal mengambil role");
     }
   };
-
-  const openCreate = () => {
-    setEditingUser(null);
-    setForm({ nama: "", email: "", password: "", role: "" });
-    setShowForm(true);
-  };
-
-  const openEdit = useCallback((u) => {
-    setEditingUser(u);
-    setForm({ nama: u.nama, email: u.email, password: "", role: u.role });
-    setShowForm(true);
-  }, []);
+  const openEdit = useCallback(
+    (u) => {
+      openEditForm(u, (v) => ({ nama: v.nama, email: v.email, password: "", role: v.role }));
+    },
+    [openEditForm]
+  );
 
   const saveUser = async () => {
     if (
@@ -92,7 +88,7 @@ export default function UsersPage() {
       } else {
         await axios.post("/users", form);
       }
-      setShowForm(false);
+      closeForm();
       fetchUsers();
       showSuccess("Berhasil", "Pengguna disimpan");
     } catch (err) {
@@ -206,7 +202,7 @@ export default function UsersPage() {
           </select>
         </div>
 
-        <Button onClick={openCreate} className="add-button">
+        <Button onClick={openCreateForm} className="add-button">
           <Plus size={16} />
           <span className="hidden sm:inline">Tambah Pengguna</span>
         </Button>
@@ -243,9 +239,7 @@ export default function UsersPage() {
 
       {showForm && (
         <Modal
-          onClose={() => {
-            setShowForm(false);
-          }}
+          onClose={closeForm}
           titleId="user-form-title"
         >
           <div className="flex items-center justify-between mb-3">
@@ -318,7 +312,7 @@ export default function UsersPage() {
                 variant="secondary"
                 onClick={async () => {
                   const r = await confirmCancel("Batalkan perubahan?");
-                  if (r.isConfirmed) setShowForm(false);
+                  if (r.isConfirmed) closeForm();
                 }}
               >
                 Batal

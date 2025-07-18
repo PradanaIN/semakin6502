@@ -11,6 +11,7 @@ import Spinner from "../../components/Spinner";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
+import useModalForm from "../../hooks/useModalForm";
 import Table from "../../components/ui/Table";
 import tableStyles from "../../components/ui/Table.module.css";
 import Button from "../../components/ui/Button";
@@ -25,13 +26,15 @@ export default function MasterKegiatanPage() {
   const [items, setItems] = useState([]);
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({
-    teamId: "",
-    namaKegiatan: "",
-    deskripsi: "",
-  });
-  const [editing, setEditing] = useState(null);
-  const [showForm, setShowForm] = useState(false);
+  const {
+    showForm,
+    form,
+    setForm,
+    editing,
+    openCreate: openCreateForm,
+    openEdit: openEditForm,
+    closeForm,
+  } = useModalForm({ teamId: "", namaKegiatan: "", deskripsi: "" });
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -76,19 +79,15 @@ export default function MasterKegiatanPage() {
   }, [fetchItems, fetchTeams]);
 
   const openCreate = () => {
-    setEditing(null);
-    setForm({ teamId: "", namaKegiatan: "", deskripsi: "" });
-    setShowForm(true);
+    openCreateForm();
   };
 
   const openEdit = (item) => {
-    setEditing(item);
-    setForm({
-      teamId: item.teamId,
-      namaKegiatan: item.namaKegiatan,
-      deskripsi: item.deskripsi || "",
-    });
-    setShowForm(true);
+    openEditForm(item, (i) => ({
+      teamId: i.teamId,
+      namaKegiatan: i.namaKegiatan,
+      deskripsi: i.deskripsi || "",
+    }));
   };
 
   const saveItem = async () => {
@@ -102,8 +101,7 @@ export default function MasterKegiatanPage() {
       } else {
         await axios.post("/master-kegiatan", form);
       }
-      setShowForm(false);
-      setEditing(null);
+      closeForm();
       fetchItems();
       showSuccess("Berhasil", "Kegiatan disimpan");
     } catch (err) {
@@ -260,10 +258,7 @@ export default function MasterKegiatanPage() {
 
       {showForm && (
         <Modal
-          onClose={() => {
-            setShowForm(false);
-            setEditing(null);
-          }}
+          onClose={closeForm}
           titleId="master-kegiatan-form-title"
         >
           <div className="flex items-center justify-between mb-3">
@@ -332,10 +327,7 @@ export default function MasterKegiatanPage() {
             <div className="flex justify-end space-x-2 pt-2">
               <Button
                 variant="secondary"
-                onClick={() => {
-                  setShowForm(false);
-                  setEditing(null);
-                }}
+                onClick={closeForm}
               >
                 Batal
               </Button>
