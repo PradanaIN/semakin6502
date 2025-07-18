@@ -6,8 +6,7 @@ import {
   handleAxiosError,
 } from "../../utils/alerts";
 import { Plus, Eye, Pencil, Trash2 } from "lucide-react";
-import Table from "../../components/ui/Table";
-import tableStyles from "../../components/ui/Table.module.css";
+import DataTable from "../../components/ui/DataTable";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
@@ -158,6 +157,78 @@ export default function TugasTambahanPage() {
   );
   const totalPages = Math.ceil(filteredItems.length / pageSize) || 1;
 
+  const columns = useMemo(
+    () => [
+      {
+        Header: "No",
+        accessor: (_row, i) => (currentPage - 1) * pageSize + i + 1,
+        disableFilters: true,
+      },
+      { Header: "Kegiatan", accessor: "nama", disableFilters: true },
+      {
+        Header: "Tim",
+        accessor: (row) => row.kegiatan.team?.namaTim || "-",
+        disableFilters: true,
+      },
+      {
+        Header: "Tanggal",
+        accessor: (row) => row.tanggal.slice(0, 10),
+        disableFilters: true,
+      },
+      {
+        Header: "Deskripsi",
+        accessor: (row) => row.deskripsi || "-",
+        disableFilters: true,
+      },
+      {
+        Header: "Status",
+        accessor: "status",
+        Cell: ({ row }) => <StatusBadge status={row.original.status} />,
+        disableFilters: true,
+      },
+      {
+        Header: "Bukti Dukung",
+        accessor: (row) => row.buktiLink,
+        Cell: ({ row }) =>
+          row.original.buktiLink ? (
+            <Check className="w-4 h-4 text-green-600" />
+          ) : (
+            <X className="w-4 h-4 text-red-600" />
+          ),
+        disableFilters: true,
+      },
+      {
+        Header: "Aksi",
+        accessor: "id",
+        Cell: ({ row }) => (
+          <div className="space-x-2">
+            <Button onClick={() => openDetail(row.original.id)} icon aria-label="Detail">
+              <Eye size={16} />
+            </Button>
+            <Button
+              onClick={() => openEdit(row.original)}
+              variant="warning"
+              icon
+              aria-label="Edit"
+            >
+              <Pencil size={16} />
+            </Button>
+            <Button
+              onClick={() => remove(row.original)}
+              variant="danger"
+              icon
+              aria-label="Hapus"
+            >
+              <Trash2 size={16} />
+            </Button>
+          </div>
+        ),
+        disableFilters: true,
+      },
+    ],
+    [currentPage, pageSize, openDetail, openEdit, remove]
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center flex-wrap gap-2">
@@ -185,123 +256,19 @@ export default function TugasTambahanPage() {
       </div>
 
       <div className="overflow-x-auto md:overflow-x-visible">
-        <Table>
-          <thead>
-            <tr className={tableStyles.headerRow}>
-              <th className={tableStyles.cell}>No</th>
-              <th className={tableStyles.cell}>Kegiatan</th>
-              <th className={tableStyles.cell}>Tim</th>
-              <th className={tableStyles.cell}>Tanggal</th>
-              <th className={tableStyles.cell}>Deskripsi</th>
-              <th className={tableStyles.cell}>Status</th>
-              <th className={tableStyles.cell}>Bukti Dukung</th>
-              <th className={tableStyles.cell}>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td
-                  colSpan="7"
-                  className="py-6 text-center text-gray-600 dark:text-gray-300"
-                >
-                  <div className="flex flex-col items-center space-y-2">
-                    <svg
-                      className="animate-spin h-6 w-6 text-blue-600"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 
-            6.364A8.001 8.001 0 0112 20v4c-6.627 
-            0-12-5.373-12-12h4a8.001 8.001 
-            0 006.364 2.93z"
-                      ></path>
-                    </svg>
-                    <span className="text-sm font-medium tracking-wide">
-                      Memuat data...
-                    </span>
-                  </div>
-                </td>
-              </tr>
-            ) : paginatedItems.length === 0 ? (
-              <tr>
-                <td
-                  colSpan="7"
-                  className="py-6 text-center text-gray-600 dark:text-gray-300"
-                >
-                  <div className="flex flex-col items-center space-y-1">
-                    <span className="text-sm font-medium tracking-wide">
-                      ✊🙏✊✊🙏✊🙏 Data tidak ditemukan 🫰🫰🤟🤟☝☝
-                    </span>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              paginatedItems.map((item, idx) => (
-                <tr key={item.id} className={tableStyles.row}>
-                  <td className={tableStyles.cell}>
-                    {(currentPage - 1) * pageSize + idx + 1}
-                  </td>
-                  <td className={tableStyles.cell}>{item.nama}</td>
-                  <td className={tableStyles.cell}>
-                    {item.kegiatan.team?.namaTim || "-"}
-                  </td>
-                  <td className={tableStyles.cell}>
-                    {item.tanggal.slice(0, 10)}
-                  </td>
-                  <td className={tableStyles.cell}>{item.deskripsi || "-"}</td>
-                  <td className={tableStyles.cell}>
-                    <StatusBadge status={item.status} />
-                  </td>
-                  <td className={tableStyles.cell}>
-                    {item.buktiLink ? (
-                      <Check className="w-4 h-4 text-green-600" />
-                    ) : (
-                      <X className="w-4 h-4 text-red-600" />
-                    )}
-                  </td>
-                  <td className={`${tableStyles.cell} space-x-2`}>
-                    <Button
-                      onClick={() => openDetail(item.id)}
-                      icon
-                      aria-label="Detail"
-                    >
-                      <Eye size={16} />
-                    </Button>
-                    <Button
-                      onClick={() => openEdit(item)}
-                      variant="warning"
-                      icon
-                      aria-label="Edit"
-                    >
-                      <Pencil size={16} />
-                    </Button>
-                    <Button
-                      onClick={() => remove(item)}
-                      variant="danger"
-                      icon
-                      aria-label="Hapus"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </Table>
+        {loading ? (
+          <div className="py-6 text-center text-gray-600 dark:text-gray-300">
+            <div className="flex flex-col items-center space-y-2">
+              <svg className="animate-spin h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 6.364A8.001 8.001 0 0112 20v4c-6.627 0-12-5.373-12-12h4a8.001 8.001 0 006.364 2.93z"></path>
+              </svg>
+              <span className="text-sm font-medium tracking-wide">Memuat data...</span>
+            </div>
+          </div>
+        ) : (
+          <DataTable columns={columns} data={paginatedItems} showGlobalFilter={false} showPagination={false} selectable={false} />
+        )}
       </div>
 
       <div className="flex items-center justify-between mt-4">

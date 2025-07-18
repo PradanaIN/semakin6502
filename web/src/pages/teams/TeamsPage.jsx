@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import {
   showSuccess,
@@ -14,8 +14,7 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import { ROLES } from "../../utils/roles";
-import Table from "../../components/ui/Table";
-import tableStyles from "../../components/ui/Table.module.css";
+import DataTable from "../../components/ui/DataTable";
 import SearchInput from "../../components/SearchInput";
 import Pagination from "../../components/Pagination";
 import SelectDataShow from "../../components/ui/SelectDataShow";
@@ -102,6 +101,48 @@ export default function TeamsPage() {
   );
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
+  const columns = useMemo(
+    () => [
+      {
+        Header: "No",
+        accessor: (_row, i) => (currentPage - 1) * pageSize + i + 1,
+        disableFilters: true,
+      },
+      { Header: "Nama Tim", accessor: "namaTim", disableFilters: true },
+      {
+        Header: "Jumlah Anggota",
+        accessor: (row) => row.members?.length || 0,
+        disableFilters: true,
+      },
+      {
+        Header: "Aksi",
+        accessor: "id",
+        Cell: ({ row }) => (
+          <div className="space-x-2">
+            <Button
+              onClick={() => openEdit(row.original)}
+              variant="warning"
+              icon
+              aria-label="Edit"
+            >
+              <Pencil size={16} />
+            </Button>
+            <Button
+              onClick={() => deleteTeam(row.original.id)}
+              variant="danger"
+              icon
+              aria-label="Hapus"
+            >
+              <Trash2 size={16} />
+            </Button>
+          </div>
+        ),
+        disableFilters: true,
+      },
+    ],
+    [currentPage, pageSize, openEdit, deleteTeam]
+  );
+
   if (user?.role !== ROLES.ADMIN) {
     return (
       <div className="p-6 text-center">
@@ -130,59 +171,11 @@ export default function TeamsPage() {
       </div>
 
       <div className="overflow-x-auto md:overflow-x-visible">
-        <Table>
-          <thead>
-            <tr className={tableStyles.headerRow}>
-              <th className={tableStyles.cell}>No</th>
-              <th className={tableStyles.cell}>Nama Tim</th>
-              <th className={tableStyles.cell}>Jumlah Anggota</th>
-              <th className={tableStyles.cell}>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="4" className="py-4 text-center">
-                  Memuat data...
-                </td>
-              </tr>
-            ) : paginated.length === 0 ? (
-              <tr>
-                <td colSpan="4" className="py-4 text-center">
-                  ✊🙏✊✊🙏✊🙏 Data tidak ditemukan 🫰🫰🤟🤟☝☝
-                </td>
-              </tr>
-            ) : (
-              paginated.map((t, idx) => (
-                <tr key={t.id} className={tableStyles.row}>
-                  <td className={tableStyles.cell}>
-                    {(currentPage - 1) * pageSize + idx + 1}
-                  </td>
-                  <td className={tableStyles.cell}>{t.namaTim}</td>
-                  <td className={tableStyles.cell}>{t.members?.length || 0}</td>
-                  <td className={`${tableStyles.cell} space-x-2`}>
-                    <Button
-                      onClick={() => openEdit(t)}
-                      variant="warning"
-                      icon
-                      aria-label="Edit"
-                    >
-                      <Pencil size={16} />
-                    </Button>
-                    <Button
-                      onClick={() => deleteTeam(t.id)}
-                      variant="danger"
-                      icon
-                      aria-label="Hapus"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </Table>
+        {loading ? (
+          <div className="py-4 text-center">Memuat data...</div>
+        ) : (
+          <DataTable columns={columns} data={paginated} showGlobalFilter={false} showPagination={false} selectable={false} />
+        )}
       </div>
 
       <div className="flex items-center justify-between mt-4">

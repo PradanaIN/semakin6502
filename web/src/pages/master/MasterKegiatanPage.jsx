@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import {
   showSuccess,
@@ -12,8 +12,7 @@ import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import useModalForm from "../../hooks/useModalForm";
-import Table from "../../components/ui/Table";
-import tableStyles from "../../components/ui/Table.module.css";
+import DataTable from "../../components/ui/DataTable";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
@@ -41,6 +40,53 @@ export default function MasterKegiatanPage() {
   const [filterTeam, setFilterTeam] = useState("");
   const [search, setSearch] = useState("");
   const totalPages = lastPage || 1;
+
+  const columns = useMemo(
+    () => [
+      {
+        Header: "No",
+        accessor: (_row, i) => (page - 1) * perPage + i + 1,
+        disableFilters: true,
+      },
+      {
+        Header: "Tim",
+        accessor: (row) => row.team?.namaTim || row.teamId,
+        disableFilters: true,
+      },
+      { Header: "Nama Kegiatan", accessor: "namaKegiatan", disableFilters: true },
+      {
+        Header: "Deskripsi",
+        accessor: (row) => row.deskripsi || "-",
+        disableFilters: true,
+      },
+      {
+        Header: "Aksi",
+        accessor: "id",
+        Cell: ({ row }) => (
+          <div className="space-x-2">
+            <Button
+              onClick={() => openEdit(row.original)}
+              variant="warning"
+              icon
+              aria-label="Edit"
+            >
+              <Pencil size={16} />
+            </Button>
+            <Button
+              onClick={() => deleteItem(row.original)}
+              variant="danger"
+              icon
+              aria-label="Hapus"
+            >
+              <Trash2 size={16} />
+            </Button>
+          </div>
+        ),
+        disableFilters: true,
+      },
+    ],
+    [page, perPage, openEdit, deleteItem]
+  );
   const fetchItems = useCallback(async () => {
     try {
       setLoading(true);
@@ -178,65 +224,13 @@ export default function MasterKegiatanPage() {
       </div>
 
       <div className="overflow-x-auto md:overflow-x-visible">
-        <Table>
-          <thead>
-            <tr className={tableStyles.headerRow}>
-              <th className={tableStyles.cell}>No</th>
-              <th className={tableStyles.cell}>Tim</th>
-              <th className={tableStyles.cell}>Nama Kegiatan</th>
-              <th className={tableStyles.cell}>Deskripsi</th>
-              <th className={tableStyles.cell}>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="5" className="py-4 text-center">
-                  <Spinner className="h-6 w-6 mx-auto" />
-                </td>
-              </tr>
-            ) : items.length === 0 ? (
-              <tr>
-                <td colSpan="5" className="py-4 text-center">
-                  ✊🙏✊✊🙏✊🙏 Data tidak ditemukan 🫰🫰🤟🤟☝☝
-                </td>
-              </tr>
-            ) : (
-              items.map((item, idx) => (
-                <tr key={item.id} className={tableStyles.row}>
-                  <td className={tableStyles.cell}>
-                    {(page - 1) * perPage + idx + 1}
-                  </td>
-                  <td className={tableStyles.cell}>
-                    {item.team?.namaTim || item.teamId}
-                  </td>
-                  <td className={tableStyles.cell}>{item.namaKegiatan}</td>
-                  <td className={tableStyles.cell}>
-                    {!item.deskripsi ? "-" : item.deskripsi}
-                  </td>
-                  <td className={`${tableStyles.cell} space-x-2`}>
-                    <Button
-                      onClick={() => openEdit(item)}
-                      variant="warning"
-                      icon
-                      aria-label="Edit"
-                    >
-                      <Pencil size={16} />
-                    </Button>
-                    <Button
-                      onClick={() => deleteItem(item)}
-                      variant="danger"
-                      icon
-                      aria-label="Hapus"
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </Table>
+        {loading ? (
+          <div className="py-4 text-center">
+            <Spinner className="h-6 w-6 mx-auto" />
+          </div>
+        ) : (
+          <DataTable columns={columns} data={items} showGlobalFilter={false} showPagination={false} selectable={false} />
+        )}
       </div>
 
       <div className="flex items-center justify-between mt-4">
