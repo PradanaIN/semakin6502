@@ -124,7 +124,7 @@ export default function LaporanHarianPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="9" className="py-10">
+                  <td colSpan="7" className="py-10">
                     <div className="flex flex-col items-center justify-center space-y-3">
                       <svg
                         className="animate-spin h-8 w-8 text-blue-600"
@@ -159,7 +159,7 @@ export default function LaporanHarianPage() {
               ) : filtered.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="9"
+                    colSpan="7"
                     className="py-6 text-center text-gray-600 dark:text-gray-300"
                   >
                     <div className="flex flex-col items-center space-y-1">
