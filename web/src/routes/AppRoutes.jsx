@@ -30,6 +30,9 @@ const TugasTambahanDetailPage = React.lazy(() =>
 const MonitoringPage = React.lazy(() =>
   import("../pages/monitoring/MonitoringPage")
 );
+const MissedReportsPage = React.lazy(() =>
+  import("../pages/monitoring/MissedReportsPage")
+);
 const NotFound = React.lazy(() => import("../pages/NotFound"));
 
 function PrivateRoute({ children }) {
@@ -73,6 +76,7 @@ export default function AppRoutes() {
           <Route path="tugas-mingguan/:id" element={<PenugasanDetailPage />} />
           <Route path="laporan-harian" element={<LaporanHarianPage />} />
           <Route path="monitoring" element={<MonitoringPage />} />
+          <Route path="laporan-terlambat" element={<MissedReportsPage />} />
           <Route path="tugas-tambahan" element={<TugasTambahanPage />} />
           <Route
             path="tugas-tambahan/:id"
