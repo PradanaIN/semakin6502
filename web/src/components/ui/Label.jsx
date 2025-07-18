@@ -1,6 +1,6 @@
 import React from "react";
-import styles from "./Label.module.css";
 
 export default function Label({ className = "", ...props }) {
-  return <label className={`${styles.label} ${className}`.trim()} {...props} />;
+  const baseClasses = "block text-sm mb-1";
+  return <label className={`${baseClasses} ${className}`.trim()} {...props} />;
 }

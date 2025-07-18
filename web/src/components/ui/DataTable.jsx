@@ -13,7 +13,6 @@ import Pagination from "../Pagination";
 import SelectDataShow from "./SelectDataShow";
 import SearchInput from "../SearchInput";
 import Input from "./Input";
-import tableStyles from "./Table.module.css";
 
 function GlobalFilter({ table }) {
   return (
@@ -139,13 +138,16 @@ export default function DataTable({
     <div className="space-y-4 overflow-x-auto md:overflow-x-visible">
       {showGlobalFilter && <GlobalFilter table={table} />}
       <Table className="min-w-full">
-        <thead className={tableStyles.headerCell}>
+        <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className={tableStyles.headerRow}>
+            <tr
+              key={headerGroup.id}
+              className="bg-gray-100 dark:bg-gray-800"
+            >
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className={`${tableStyles.cell} select-none text-left`}
+                  className="px-4 py-3 font-semibold text-center border-t border-b border-gray-300 dark:border-gray-700 select-none text-left"
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   <div className="flex items-center gap-1">
@@ -179,9 +181,15 @@ export default function DataTable({
             </tr>
           ) : (
             table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className={tableStyles.row}>
+              <tr
+                key={row.id}
+                className="text-center odd:bg-white even:bg-gray-50 dark:odd:bg-gray-900 dark:even:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
                 {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className={tableStyles.cell}>
+                  <td
+                    key={cell.id}
+                    className="px-4 py-3 border-t border-b border-gray-300 dark:border-gray-700"
+                  >
                     {flexRender(
                       cell.column.columnDef.cell ?? cell.getValue(),
                       cell.getContext()
