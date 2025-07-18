@@ -1,4 +1,4 @@
-import { STATUS } from "../../utils/status";
+import { STATUS, formatStatus } from "../../utils/status";
 
 const colorMap = {
   [STATUS.BELUM]: "bg-red-500 text-gray-100 dark:bg-red-600 dark:text-gray-100",
@@ -14,7 +14,7 @@ export default function StatusBadge({ status }) {
     "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200";
   return (
     <span className={`px-2 py-0.5 rounded text-xs font-medium ${cls}`}>
-      {status}
+      {formatStatus(status)}
     </span>
   );
 }
