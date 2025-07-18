@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import {
   showSuccess,
@@ -15,8 +15,7 @@ import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import Spinner from "../../components/Spinner";
 import { ROLES } from "../../utils/roles";
-import Table from "../../components/ui/Table";
-import tableStyles from "../../components/ui/Table.module.css";
+import DataTable from "../../components/ui/DataTable";
 import SearchInput from "../../components/SearchInput";
 import Pagination from "../../components/Pagination";
 import SelectDataShow from "../../components/ui/SelectDataShow";
@@ -128,6 +127,48 @@ export default function UsersPage() {
   );
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
+  const columns = useMemo(
+    () => [
+      {
+        Header: "No",
+        accessor: (_row, i) => (currentPage - 1) * pageSize + i + 1,
+      },
+      { Header: "Nama", accessor: "nama" },
+      { Header: "Email", accessor: "email" },
+      {
+        Header: "Tim",
+        accessor: (row) => row.members?.[0]?.team?.nama_tim || "-",
+      },
+      { Header: "Role", accessor: "role" },
+      {
+        Header: "Aksi",
+        accessor: "id",
+        Cell: ({ row }) => (
+          <div className="space-x-2">
+            <Button
+              onClick={() => openEdit(row.original)}
+              variant="warning"
+              icon
+              aria-label="Edit"
+            >
+              <Pencil size={16} />
+            </Button>
+            <Button
+              onClick={() => deleteUser(row.original.id)}
+              variant="danger"
+              icon
+              aria-label="Hapus"
+            >
+              <Trash2 size={16} />
+            </Button>
+          </div>
+        ),
+        disableFilters: true,
+      },
+    ],
+    [currentPage, pageSize, openEdit, deleteUser]
+  );
+
   if (user?.role !== ROLES.ADMIN) {
     return (
       <div className="p-6 text-center">
@@ -172,65 +213,19 @@ export default function UsersPage() {
         </Button>
       </div>
 
-      <Table>
-        <thead>
-          <tr className={tableStyles.headerRow}>
-            <th className={tableStyles.cell}>No</th>
-            <th className={tableStyles.cell}>Nama</th>
-            <th className={tableStyles.cell}>Email</th>
-            <th className={tableStyles.cell}>Tim</th>
-            <th className={tableStyles.cell}>Role</th>
-            <th className={tableStyles.cell}>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan="6" className="py-4 text-center">
-                <Spinner className="h-6 w-6 mx-auto" />
-              </td>
-            </tr>
-          ) : paginated.length === 0 ? (
-            <tr>
-              <td colSpan="6" className="py-4 text-center">
-                Data tidak ditemukan
-              </td>
-            </tr>
-          ) : (
-            paginated.map((u, idx) => (
-              <tr key={u.id} className={tableStyles.row}>
-                <td className={tableStyles.cell}>
-                  {(currentPage - 1) * pageSize + idx + 1}
-                </td>
-                <td className={tableStyles.cell}>{u.nama}</td>
-                <td className={tableStyles.cell}>{u.email}</td>
-                <td className={tableStyles.cell}>
-                  {u.members?.[0]?.team?.nama_tim || "-"}
-                </td>
-                <td className={tableStyles.cell}>{u.role}</td>
-                <td className={`${tableStyles.cell} space-x-2`}>
-                  <Button
-                    onClick={() => openEdit(u)}
-                    variant="warning"
-                    icon
-                    aria-label="Edit"
-                  >
-                    <Pencil size={16} />
-                  </Button>
-                  <Button
-                    onClick={() => deleteUser(u.id)}
-                    variant="danger"
-                    icon
-                    aria-label="Hapus"
-                  >
-                    <Trash2 size={16} />
-                  </Button>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </Table>
+      {loading ? (
+        <div className="py-4 text-center">
+          <Spinner className="h-6 w-6 mx-auto" />
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={paginated}
+          showGlobalFilter={false}
+          showPagination={false}
+          selectable={false}
+        />
+      )}
 
       <div className="flex items-center justify-between mt-4">
         <SelectDataShow

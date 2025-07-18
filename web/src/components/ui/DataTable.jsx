@@ -70,6 +70,8 @@ export default function DataTable({
   showGlobalFilter = true,
   initialSorting = [],
   onRowSelectionChange,
+  showPagination = true,
+  selectable = true,
 }) {
   const tableColumns = React.useMemo(() => {
     const base = columns.map((col) => ({
@@ -78,7 +80,10 @@ export default function DataTable({
       accessorFn: typeof col.accessor === "function" ? col.accessor : undefined,
       header: col.Header,
       cell: col.Cell
-        ? (info) => col.Cell({ row: { original: info.row.original } })
+        ? (info) =>
+            col.Cell({
+              row: { original: info.row.original, index: info.row.index },
+            })
         : undefined,
       enableColumnFilter: !col.disableFilters,
       filterFn: col.filter,
@@ -108,8 +113,8 @@ export default function DataTable({
       enableColumnFilter: false,
     };
 
-    return [selectColumn, ...base];
-  }, [columns]);
+    return selectable ? [selectColumn, ...base] : base;
+  }, [columns, selectable]);
 
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [columnFilters, setColumnFilters] = React.useState([]);
@@ -136,7 +141,7 @@ export default function DataTable({
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    enableRowSelection: true,
+    enableRowSelection: selectable,
   });
 
   return (
@@ -209,20 +214,22 @@ export default function DataTable({
           )}
         </tbody>
       </Table>
-      <div className="flex items-center justify-between mt-4">
-        <SelectDataShow
-          pageSize={table.getState().pagination.pageSize}
-          setPageSize={(size) => table.setPageSize(size)}
-          setCurrentPage={(p) => table.setPageIndex(p - 1)}
-          options={[5, 10, 25, 50]}
-          className="w-32"
-        />
-        <Pagination
-          currentPage={table.getState().pagination.pageIndex + 1}
-          totalPages={table.getPageCount() || 1}
-          onPageChange={(p) => table.setPageIndex(p - 1)}
-        />
-      </div>
+      {showPagination && (
+        <div className="flex items-center justify-between mt-4">
+          <SelectDataShow
+            pageSize={table.getState().pagination.pageSize}
+            setPageSize={(size) => table.setPageSize(size)}
+            setCurrentPage={(p) => table.setPageIndex(p - 1)}
+            options={[5, 10, 25, 50]}
+            className="w-32"
+          />
+          <Pagination
+            currentPage={table.getState().pagination.pageIndex + 1}
+            totalPages={table.getPageCount() || 1}
+            onPageChange={(p) => table.setPageIndex(p - 1)}
+          />
+        </div>
+      )}
     </div>
   );
 }

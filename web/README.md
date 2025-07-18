@@ -74,3 +74,5 @@ const columns = [
 
 - `initialSorting` – array of sorting rules, e.g. `[{ id: 'name', desc: true }]`
 - `onRowSelectionChange` – callback receiving the current row selection state
+- `showPagination` – toggle built-in pagination controls
+- `selectable` – include checkbox column for row selection
