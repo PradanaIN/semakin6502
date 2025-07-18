@@ -5,8 +5,9 @@ import { getHolidays } from "../src/utils/holidays";
 
 const prisma = new PrismaClient();
 
-// Base date used for demo users below
-const BASE_DATE = new Date(Date.UTC(2025, 7, 10)); // 10 August 2025
+// Base date used for demo users below – set to current UTC date
+const BASE_DATE = new Date();
+BASE_DATE.setUTCHours(0, 0, 0, 0);
 
 const rawUsers = [
   {

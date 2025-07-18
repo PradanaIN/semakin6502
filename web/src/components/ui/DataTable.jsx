@@ -128,7 +128,7 @@ export default function DataTable({
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    getPaginationRowModel: showPagination ? getPaginationRowModel() : undefined,
     getSortedRowModel: getSortedRowModel(),
     enableRowSelection: selectable,
   });
