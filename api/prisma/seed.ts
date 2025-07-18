@@ -5,6 +5,9 @@ import { getHolidays } from "../src/utils/holidays";
 
 const prisma = new PrismaClient();
 
+// Base date used for demo users below
+const BASE_DATE = new Date(Date.UTC(2025, 7, 10)); // 10 August 2025
+
 const rawUsers = [
   {
     nama: "Yuda Agus Irianto",
@@ -535,6 +538,61 @@ async function main() {
       await prisma.penugasan.updateMany({
         where: { id: { in: Array.from(selesaiIds) } },
         data: { status: STATUS.SELESAI_DIKERJAKAN },
+      });
+    }
+  }
+
+  // Create demo users with last laporan_harian 1, 3 and 7 days before BASE_DATE
+  const demoOffsets = [1, 3, 7];
+  const umumId = teamMap.get("Umum");
+  const umumKegiatan = umumId
+    ? await prisma.masterKegiatan.findFirst({ where: { teamId: umumId } })
+    : null;
+
+  if (umumId && umumKegiatan) {
+    for (const daysAgo of demoOffsets) {
+      const u = await prisma.user.upsert({
+        where: { email: `demo${daysAgo}@bps.go.id` },
+        update: {},
+        create: {
+          nama: `Demo ${daysAgo} Hari`,
+          email: `demo${daysAgo}@bps.go.id`,
+          username: `demo${daysAgo}`,
+          password: await hashPassword("password"),
+          role: "anggota",
+        },
+      });
+
+      await prisma.member.upsert({
+        where: {
+          userId_teamId: { userId: u.id, teamId: umumId },
+        },
+        update: {},
+        create: { userId: u.id, teamId: umumId, isLeader: false },
+      });
+
+      const penugasan = await prisma.penugasan.create({
+        data: {
+          kegiatanId: umumKegiatan.id,
+          pegawaiId: u.id,
+          minggu: 1,
+          bulan: "8",
+          tahun: 2025,
+          deskripsi: `Penugasan demo ${daysAgo}`,
+          status: STATUS.SELESAI_DIKERJAKAN,
+        },
+      });
+
+      const tanggal = new Date(BASE_DATE);
+      tanggal.setUTCDate(tanggal.getUTCDate() - daysAgo);
+
+      await prisma.laporanHarian.create({
+        data: {
+          penugasanId: penugasan.id,
+          pegawaiId: u.id,
+          tanggal: tanggal.toISOString(),
+          status: STATUS.SELESAI_DIKERJAKAN,
+        },
       });
     }
   }
