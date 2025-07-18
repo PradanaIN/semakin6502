@@ -9,6 +9,7 @@ export default function SelectDataShow({
     <div className={`space-x-2 ${className}`}>
       <select
         value={pageSize}
+        aria-label="Data per halaman"
         onChange={(e) => {
           setPageSize(parseInt(e.target.value, 10));
           setCurrentPage(1);
