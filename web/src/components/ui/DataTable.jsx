@@ -76,7 +76,9 @@ export default function DataTable({
       accessorKey: typeof col.accessor === "string" ? col.accessor : undefined,
       accessorFn: typeof col.accessor === "function" ? col.accessor : undefined,
       header: col.Header,
-      cell: col.Cell ? ((info) => col.Cell({ row: { original: info.row.original } })) : undefined,
+      cell: col.Cell
+        ? (info) => col.Cell({ row: { original: info.row.original } })
+        : undefined,
       enableColumnFilter: !col.disableFilters,
       filterFn: col.filter,
       meta: { Filter: col.Filter },
@@ -110,7 +112,10 @@ export default function DataTable({
 
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [columnFilters, setColumnFilters] = React.useState([]);
-  const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: initialPageSize });
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: initialPageSize,
+  });
   const [sorting, setSorting] = React.useState(initialSorting);
   const [rowSelection, setRowSelection] = React.useState({});
 
@@ -147,16 +152,18 @@ export default function DataTable({
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   <div className="flex items-center gap-1">
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                    {header.column.getCanSort() && (
-                      header.column.getIsSorted() === "asc" ? (
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                    {header.column.getCanSort() &&
+                      (header.column.getIsSorted() === "asc" ? (
                         <ArrowUp size={12} />
                       ) : header.column.getIsSorted() === "desc" ? (
                         <ArrowDown size={12} />
                       ) : (
                         <ArrowUpDown size={12} className="text-gray-400" />
-                      )
-                    )}
+                      ))}
                   </div>
                   {header.column.getCanFilter() && (
                     <div className="mt-1" onClick={(e) => e.stopPropagation()}>
@@ -178,7 +185,10 @@ export default function DataTable({
         <tbody>
           {table.getRowModel().rows.length === 0 ? (
             <tr>
-              <td colSpan={table.getAllColumns().length} className="py-4 text-center">
+              <td
+                colSpan={table.getAllColumns().length}
+                className="py-4 text-center"
+              >
                 Data tidak ditemukan
               </td>
             </tr>
@@ -187,7 +197,11 @@ export default function DataTable({
               <tr key={row.id} className="border-t dark:border-gray-700">
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="px-2 py-2 text-center">
-                    {flexRender(cell.column.columnDef.cell || cell.column.columnDef.header, cell.getContext())}
+                    {flexRender(
+                      cell.column.columnDef.cell ||
+                        cell.column.columnDef.header,
+                      cell.getContext()
+                    )}
                   </td>
                 ))}
               </tr>

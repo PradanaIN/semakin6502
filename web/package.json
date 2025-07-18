@@ -12,6 +12,7 @@
   "dependencies": {
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
+    "@tanstack/react-table": "^8.21.3",
     "axios": "^1.10.0",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.525.0",
@@ -20,7 +21,7 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.6.3",
     "react-select": "^5.10.2",
-    "@tanstack/react-table": "^8.21.3",
+    "react-window": "^1.8.11",
     "sweetalert2": "10.16.9"
   },
   "devDependencies": {
