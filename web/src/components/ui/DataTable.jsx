@@ -4,8 +4,10 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import Table from "./Table";
 import Pagination from "../Pagination";
 import SelectDataShow from "./SelectDataShow";
@@ -60,36 +62,75 @@ export function SelectColumnFilter({ column, options }) {
   );
 }
 
-export default function DataTable({ columns, data, initialPageSize = 10, showGlobalFilter = true }) {
-  const tableColumns = React.useMemo(
-    () =>
-      columns.map((col) => ({
-        id: col.id,
-        accessorKey: typeof col.accessor === "string" ? col.accessor : undefined,
-        accessorFn: typeof col.accessor === "function" ? col.accessor : undefined,
-        header: col.Header,
-        cell: col.Cell ? ((info) => col.Cell({ row: { original: info.row.original } })) : undefined,
-        enableColumnFilter: !col.disableFilters,
-        filterFn: col.filter,
-        meta: { Filter: col.Filter },
-      })),
-    [columns]
-  );
+export default function DataTable({
+  columns,
+  data,
+  initialPageSize = 10,
+  showGlobalFilter = true,
+  initialSorting = [],
+  onRowSelectionChange,
+}) {
+  const tableColumns = React.useMemo(() => {
+    const base = columns.map((col) => ({
+      id: col.id,
+      accessorKey: typeof col.accessor === "string" ? col.accessor : undefined,
+      accessorFn: typeof col.accessor === "function" ? col.accessor : undefined,
+      header: col.Header,
+      cell: col.Cell ? ((info) => col.Cell({ row: { original: info.row.original } })) : undefined,
+      enableColumnFilter: !col.disableFilters,
+      filterFn: col.filter,
+      meta: { Filter: col.Filter },
+    }));
+
+    const selectColumn = {
+      id: "select",
+      header: ({ table }) => (
+        <input
+          type="checkbox"
+          checked={table.getIsAllRowsSelected()}
+          onChange={table.getToggleAllRowsSelectedHandler()}
+          aria-label="Pilih semua"
+        />
+      ),
+      cell: ({ row }) => (
+        <input
+          type="checkbox"
+          checked={row.getIsSelected()}
+          disabled={!row.getCanSelect()}
+          onChange={row.getToggleSelectedHandler()}
+          aria-label="Pilih baris"
+        />
+      ),
+      enableSorting: false,
+      enableColumnFilter: false,
+    };
+
+    return [selectColumn, ...base];
+  }, [columns]);
 
   const [globalFilter, setGlobalFilter] = React.useState("");
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: initialPageSize });
+  const [sorting, setSorting] = React.useState(initialSorting);
+  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data,
     columns: tableColumns,
-    state: { globalFilter, columnFilters, pagination },
+    state: { globalFilter, columnFilters, pagination, sorting, rowSelection },
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
     onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    onRowSelectionChange: (updater) => {
+      setRowSelection(updater);
+      if (onRowSelectionChange) onRowSelectionChange(updater);
+    },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    enableRowSelection: true,
   });
 
   return (
@@ -100,10 +141,25 @@ export default function DataTable({ columns, data, initialPageSize = 10, showGlo
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className="px-2 py-2 text-left">
-                  {flexRender(header.column.columnDef.header, header.getContext())}
+                <th
+                  key={header.id}
+                  className="px-2 py-2 text-left select-none"
+                  onClick={header.column.getToggleSortingHandler()}
+                >
+                  <div className="flex items-center gap-1">
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.column.getCanSort() && (
+                      header.column.getIsSorted() === "asc" ? (
+                        <ArrowUp size={12} />
+                      ) : header.column.getIsSorted() === "desc" ? (
+                        <ArrowDown size={12} />
+                      ) : (
+                        <ArrowUpDown size={12} className="text-gray-400" />
+                      )
+                    )}
+                  </div>
                   {header.column.getCanFilter() && (
-                    <div className="mt-1">
+                    <div className="mt-1" onClick={(e) => e.stopPropagation()}>
                       {(() => {
                         const FilterComp = header.column.columnDef.meta?.Filter;
                         return FilterComp ? (
