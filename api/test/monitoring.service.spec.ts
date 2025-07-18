@@ -246,14 +246,13 @@ describe('MonitoringService aggregated', () => {
 
     const res = await service.laporanTerlambat();
 
-    expect(prisma.user.findMany).toHaveBeenCalledWith({
-      where: { NOT: { role: { in: [ROLES.ADMIN, ROLES.PIMPINAN] } } },
-      include: { laporan: { orderBy: { tanggal: 'desc' }, take: 1 } },
-      orderBy: { nama: 'asc' },
-    });
-
-    expect(res.day7).toEqual([{ userId: 1, nama: 'A' }]);
-    expect(res.day3).toEqual([{ userId: 2, nama: 'B' }]);
+    expect(res.day7).toEqual([
+      { userId: 1, nama: 'A', lastDate: '2024-05-02' },
+      { userId: 3, nama: 'C', lastDate: null },
+    ]);
+    expect(res.day3).toEqual([
+      { userId: 2, nama: 'B', lastDate: '2024-05-05' },
+    ]);
     expect(res.day1).toEqual([]);
     jest.useRealTimers();
   });
