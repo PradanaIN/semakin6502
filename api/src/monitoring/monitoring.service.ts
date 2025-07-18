@@ -505,7 +505,7 @@ export class MonitoringService {
       where,
       include: { pegawai: true },
     })).filter((t: any) => !t.pegawai?.username?.startsWith("demo"));
-
+    
     const byUser: Record<
       number,
       { nama: string; perMonth: Record<number, { selesai: number; total: number }> }
