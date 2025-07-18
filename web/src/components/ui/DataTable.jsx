@@ -58,7 +58,6 @@ export default function DataTable({
   data,
   initialPageSize = 10,
   showGlobalFilter = true,
-  showColumnFilters = true,
   initialSorting = [],
   onRowSelectionChange,
   showPagination = true,
