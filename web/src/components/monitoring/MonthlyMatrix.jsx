@@ -1,7 +1,7 @@
 import React from "react";
 
-export const MonthlyMatrixRow = ({ user, progressColor, style }) => (
-  <tr className="text-center" style={style}>
+export const MonthlyMatrixRow = ({ user, progressColor }) => (
+  <tr className="text-center">
     <td className="p-2 border text-left whitespace-nowrap text-sm">{user.nama}</td>
     {(user.months || []).map((b, idx) => (
       <td key={idx} className="p-1 border space-y-1">
