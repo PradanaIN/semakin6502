@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Pencil, Trash2, ExternalLink, X } from "lucide-react";
-import { showSuccess, showError } from "../../utils/alerts";
+import { showSuccess, handleAxiosError } from "../../utils/alerts";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import Table from "../../components/ui/Table";
@@ -46,7 +46,7 @@ export default function LaporanHarianPage() {
       const res = await axios.get(url);
       setLaporan(res.data);
     } catch (err) {
-      console.error("Gagal mengambil laporan", err);
+      handleAxiosError(err, "Gagal mengambil laporan");
     } finally {
       setLoading(false);
     }
@@ -62,8 +62,7 @@ export default function LaporanHarianPage() {
       fetchData();
       showSuccess("Berhasil", "Laporan diperbarui");
     } catch (err) {
-      console.error(err);
-      showError("Error", "Gagal menyimpan");
+      handleAxiosError(err, "Gagal menyimpan");
     }
   };
 

@@ -2,9 +2,9 @@ import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import {
   showSuccess,
-  showError,
   showWarning,
   confirmDelete,
+  handleAxiosError,
 } from "../../utils/alerts";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import Spinner from "../../components/Spinner";
@@ -52,7 +52,7 @@ export default function MasterKegiatanPage() {
       setItems(res.data.data);
       setLastPage(res.data.lastPage);
     } catch (err) {
-      console.error("Gagal mengambil master kegiatan", err);
+      handleAxiosError(err, "Gagal mengambil master kegiatan");
     } finally {
       setLoading(false);
     }
@@ -66,7 +66,7 @@ export default function MasterKegiatanPage() {
       }
       setTeams(res.data);
     } catch (err) {
-      console.error("Gagal mengambil tim", err);
+      handleAxiosError(err, "Gagal mengambil tim");
     }
   }, []);
 
@@ -107,8 +107,7 @@ export default function MasterKegiatanPage() {
       fetchItems();
       showSuccess("Berhasil", "Kegiatan disimpan");
     } catch (err) {
-      console.error("Gagal menyimpan kegiatan", err);
-      showError("Error", "Gagal menyimpan kegiatan");
+      handleAxiosError(err, "Gagal menyimpan kegiatan");
     }
   };
 
@@ -120,7 +119,7 @@ export default function MasterKegiatanPage() {
       fetchItems();
       showSuccess("Dihapus", "Kegiatan berhasil dihapus");
     } catch (err) {
-      console.error("Gagal menghapus kegiatan", err);
+      handleAxiosError(err, "Gagal menghapus kegiatan");
     }
   };
 
