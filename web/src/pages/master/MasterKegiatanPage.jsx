@@ -235,11 +235,9 @@ export default function MasterKegiatanPage() {
 
       <div className="flex items-center justify-between mt-4">
         <SelectDataShow
-          value={perPage}
-          onChange={(e) => {
-            setPerPage(Number(e.target.value));
-            setPage(1);
-          }}
+          pageSize={perPage}
+          setPageSize={setPerPage}
+          setCurrentPage={setPage}
           options={[5, 10, 25, 50]}
           className="w-32"
         />

@@ -273,8 +273,9 @@ export default function TugasTambahanPage() {
 
       <div className="flex items-center justify-between mt-4">
         <SelectDataShow
-          value={pageSize}
-          onChange={setPageSize}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          setCurrentPage={setCurrentPage}
           options={[5, 10, 25, 50]}
           className="w-32"
         />

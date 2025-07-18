@@ -174,11 +174,9 @@ export default function LaporanHarianPage() {
           )}
           <div className="flex items-center justify-between mt-2">
             <SelectDataShow
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setCurrentPage(1);
-              }}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              setCurrentPage={setCurrentPage}
               options={[5, 10, 25, 50]}
               className="w-32"
             />
