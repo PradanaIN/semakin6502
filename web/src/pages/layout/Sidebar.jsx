@@ -7,6 +7,7 @@ import {
   FileText,
   FilePlus,
   BarChart2,
+  AlertCircle,
   List,
   Users,
   UserCog,
@@ -23,6 +24,12 @@ const mainLinks = [
     label: "Monitoring",
     icon: BarChart2,
     roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN],
+  },
+  {
+    to: "/laporan-terlambat",
+    label: "Keterlambatan",
+    icon: AlertCircle,
+    roles: [ROLES.ADMIN, ROLES.PIMPINAN],
   },
 ];
 

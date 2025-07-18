@@ -532,6 +532,41 @@ export class MonitoringService {
       })
       .sort((a, b) => a.nama.localeCompare(b.nama));
   }
+
+  async laporanTerlambat(teamId?: number) {
+    const whereUser: any = {};
+    if (teamId) whereUser.members = { some: { teamId } };
+
+    const users = await this.prisma.user.findMany({
+      where: whereUser,
+      include: { laporan: { orderBy: { tanggal: 'desc' }, take: 1 } },
+      orderBy: { nama: 'asc' },
+    });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const result = { day1: [], day3: [], day7: [] } as Record<
+      'day1' | 'day3' | 'day7',
+      { userId: number; nama: string }[]
+    >;
+
+    for (const u of users) {
+      const last = u.laporan[0]?.tanggal;
+      let diff = Infinity;
+      if (last) {
+        const d = new Date(last);
+        d.setHours(0, 0, 0, 0);
+        diff = Math.floor((today.getTime() - d.getTime()) / 86400000);
+      }
+
+      if (diff >= 7) result.day7.push({ userId: u.id, nama: u.nama });
+      else if (diff >= 3) result.day3.push({ userId: u.id, nama: u.nama });
+      else if (diff >= 1) result.day1.push({ userId: u.id, nama: u.nama });
+    }
+
+    return result;
+  }
 }
 
 function monthName(date: Date) {

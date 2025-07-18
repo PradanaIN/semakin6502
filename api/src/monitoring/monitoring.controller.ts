@@ -313,4 +313,25 @@ export class MonitoringController {
 
     return this.monitoringService.bulananMatrix(year, tId);
   }
+
+  @Get("laporan/terlambat")
+  async laporanTerlambat(
+    @Req() req?: Request,
+    @Query("teamId") teamId?: string,
+  ) {
+    const user = req?.user as AuthRequestUser;
+    const role = user?.role;
+    const tId = teamId ? parseInt(teamId, 10) : undefined;
+
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
+      if (!tId) throw new ForbiddenException("bukan admin");
+      const member = await this.prisma.member.findFirst({
+        where: { teamId: tId, userId: user.userId },
+      });
+      if (!member || !member.isLeader)
+        throw new ForbiddenException("bukan ketua tim");
+    }
+
+    return this.monitoringService.laporanTerlambat(tId);
+  }
 }

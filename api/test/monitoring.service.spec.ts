@@ -5,6 +5,7 @@ describe('MonitoringService aggregated', () => {
   const prisma = {
     laporanHarian: { findMany: jest.fn() },
     penugasan: { findMany: jest.fn() },
+    user: { findMany: jest.fn() },
   } as any;
   const service = new MonitoringService(prisma);
 
@@ -223,5 +224,24 @@ describe('MonitoringService aggregated', () => {
         ],
       },
     ]);
+  });
+
+  it('laporanTerlambat categorizes users by last report date', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2024-05-10'));
+    prisma.user.findMany.mockResolvedValue([
+      { id: 1, nama: 'A', laporan: [{ tanggal: new Date('2024-05-02') }] },
+      { id: 2, nama: 'B', laporan: [{ tanggal: new Date('2024-05-05') }] },
+      { id: 3, nama: 'C', laporan: [] },
+    ]);
+
+    const res = await service.laporanTerlambat();
+
+    expect(res.day7).toEqual([
+      { userId: 1, nama: 'A' },
+      { userId: 3, nama: 'C' },
+    ]);
+    expect(res.day3).toEqual([{ userId: 2, nama: 'B' }]);
+    expect(res.day1).toEqual([]);
+    jest.useRealTimers();
   });
 });
