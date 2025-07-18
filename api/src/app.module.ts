@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
-import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+import { ThrottlerGuard, ThrottlerModule, minutes } from "@nestjs/throttler";
 import { PrismaService } from "./prisma.service";
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
@@ -13,7 +13,7 @@ import { NotificationsModule } from "./notifications/notifications.module";
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot({ ttl: 900, limit: 100 }),
+    ThrottlerModule.forRoot([{ ttl: minutes(15), limit: 100 }]),
     AuthModule,
     UsersModule,
     TeamsModule,
