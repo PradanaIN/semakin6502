@@ -24,18 +24,29 @@ export default function Layout() {
   const location = useLocation();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [notifCount, setNotifCount] = useState(3);
-  const [notifications, setNotifications] = useState([
-    { id: 1, text: "Laporan harian belum dikirim", read: false },
-    { id: 2, text: "Penugasan baru tersedia", read: false },
-    { id: 3, text: "Tim Anda telah diperbarui", read: false },
-  ]);
+  const [notifCount, setNotifCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
   const { theme, toggleTheme } = useTheme();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
 
   const profileRef = useRef();
   const notifRef = useRef();
+
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const res = await axios.get("/notifications");
+      const data = res.data || [];
+      setNotifications(data);
+      setNotifCount(data.filter((n) => !n.read).length);
+    } catch (err) {
+      console.error("Failed to fetch notifications", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   const handleLogout = async () => {
     const r = await confirmAlert({
@@ -50,10 +61,15 @@ export default function Layout() {
     setUser(null);
   };
 
-  const markAllAsRead = () => {
-    const updated = notifications.map((n) => ({ ...n, read: true }));
-    setNotifications(updated);
-    setNotifCount(0);
+  const markAllAsRead = async () => {
+    try {
+      await axios.post("/notifications/read-all");
+      const updated = notifications.map((n) => ({ ...n, read: true }));
+      setNotifications(updated);
+      setNotifCount(0);
+    } catch (err) {
+      console.error("Failed to mark notifications", err);
+    }
   };
 
   useEffect(() => {

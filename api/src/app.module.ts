@@ -7,6 +7,7 @@ import { KegiatanModule } from "./kegiatan/kegiatan.module";
 import { LaporanModule } from "./laporan/laporan.module";
 import { MonitoringModule } from "./monitoring/monitoring.module";
 import { RolesModule } from "./roles/roles.module";
+import { NotificationsModule } from "./notifications/notifications.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { RolesModule } from "./roles/roles.module";
     LaporanModule,
     MonitoringModule,
     RolesModule,
+    NotificationsModule,
   ],
   providers: [PrismaService],
   exports: [PrismaService],
