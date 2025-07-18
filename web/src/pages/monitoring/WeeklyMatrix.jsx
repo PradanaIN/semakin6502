@@ -1,7 +1,7 @@
 import React from "react";
 
-export const WeeklyMatrixRow = ({ user, progressColor, style }) => (
-  <tr className="text-center" style={style}>
+export const WeeklyMatrixRow = ({ user, progressColor }) => (
+  <tr className="text-center">
     <td className="p-2 border text-left whitespace-nowrap text-sm">{user.nama}</td>
     {user.weeks.map((w, i) => (
       <td key={i} className="p-1 border space-y-1">

@@ -1,7 +1,7 @@
 import { getHolidays } from "../../utils/holidays";
 
-export const DailyMatrixRow = ({ user, boxClass, style }) => (
-  <tr className="text-center" style={style}>
+export const DailyMatrixRow = ({ user, boxClass }) => (
+  <tr className="text-center">
     <td className="p-2 border text-left whitespace-nowrap text-sm">{user.nama}</td>
     {user.detail.map((day, i) => (
       <td key={i} className={`p-1 border ${boxClass(day)}`}>{day.count || ""}</td>
