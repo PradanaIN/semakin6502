@@ -116,6 +116,9 @@ Setiap IP dibatasi **100 request** setiap **15 menit**.
 | GET    | `/monitoring/mingguan/bulan` | Rekap mingguan per pegawai dalam sebulan (query: `tanggal`, `teamId` opsional) | admin, pimpinan, ketua tim |
 | GET    | `/monitoring/bulanan/all`  | Monitoring bulanan semua pegawai (query: `year`, `bulan` opsional, `teamId` opsional) | admin, pimpinan, ketua tim |
 | GET    | `/monitoring/bulanan/matrix` | Matriks bulanan per user (query: `year`, `teamId` opsional) | admin, pimpinan, ketua tim |
+| GET    | `/monitoring/laporan/terlambat` | Daftar pegawai terlambat mengisi laporan (query: `teamId` opsional) | admin, pimpinan, ketua tim |
+
+Format hasil: objek `{ day1, day3, day7 }`. Akun admin dan pimpinan tidak ditampilkan.
 
 Format hasil: array per pengguna, masing-masing memiliki array 12 objek bulan.
 
