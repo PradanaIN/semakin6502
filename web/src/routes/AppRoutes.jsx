@@ -33,6 +33,7 @@ const MonitoringPage = React.lazy(() =>
 const MissedReportsPage = React.lazy(() =>
   import("../pages/monitoring/MissedReportsPage")
 );
+const ProfilePage = React.lazy(() => import("../pages/profile/ProfilePage"));
 const NotFound = React.lazy(() => import("../pages/NotFound"));
 
 function PrivateRoute({ children }) {
@@ -69,6 +70,7 @@ export default function AppRoutes() {
         >
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="profile" element={<ProfilePage />} />
           <Route path="users" element={<UsersPage />} />
           <Route path="teams" element={<TeamsPage />} />
           <Route path="master-kegiatan" element={<MasterKegiatanPage />} />

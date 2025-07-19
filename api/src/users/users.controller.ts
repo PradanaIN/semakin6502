@@ -8,6 +8,7 @@ import {
   Body,
   UseGuards,
   ParseIntPipe,
+  Req,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
@@ -16,6 +17,8 @@ import { Roles } from "../common/guards/roles.decorator";
 import { ROLES } from "../common/roles.constants";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { Request } from "express";
+import { AuthRequestUser } from "../common/auth-request-user.interface";
 
 @Controller("users")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -32,6 +35,20 @@ export class UsersController {
   @Roles(ROLES.ADMIN)
   findOne(@Param("id", ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
+  }
+
+  @Get("profile")
+  getProfile(@Req() req: Request) {
+    const { userId } = req.user as AuthRequestUser;
+    return this.usersService.findProfile(userId);
+  }
+
+  @Put("profile")
+  updateProfile(@Req() req: Request, @Body() body: UpdateUserDto) {
+    const { userId, role } = req.user as AuthRequestUser;
+    const data = { ...body } as any;
+    if (role !== ROLES.ADMIN) delete data.role;
+    return this.usersService.updateProfile(userId, data);
   }
 
   @Post()
