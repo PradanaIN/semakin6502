@@ -274,7 +274,9 @@ async function main() {
     skipDuplicates: true,
   });
 
-  const teams = await prisma.team.findMany({ where: { namaTim: { in: teamNames } } });
+  const teams = await prisma.team.findMany({
+    where: { namaTim: { in: teamNames } },
+  });
   const teamMap = new Map(teams.map((t: any) => [t.namaTim, t.id]));
 
   const kegiatanByTeam: Record<string, string[]> = {
@@ -388,7 +390,9 @@ async function main() {
         where: { teamId, namaKegiatan: nama },
       });
       if (!existing) {
-        await prisma.masterKegiatan.create({ data: { teamId, namaKegiatan: nama } });
+        await prisma.masterKegiatan.create({
+          data: { teamId, namaKegiatan: nama },
+        });
       }
     }
   }
@@ -434,7 +438,9 @@ async function main() {
   const tambahanRows: any[] = [];
   for (const m of members) {
     if (m.user.role === "admin") continue;
-    const masters = await prisma.masterKegiatan.findMany({ where: { teamId: m.teamId } });
+    const masters = await prisma.masterKegiatan.findMany({
+      where: { teamId: m.teamId },
+    });
     if (!masters.length) continue;
 
     for (let i = 0; i < 3; i++) {
@@ -471,7 +477,9 @@ async function main() {
 
   for (const m of members) {
     if (m.user.role === "admin") continue;
-    const masters = await prisma.masterKegiatan.findMany({ where: { teamId: m.teamId } });
+    const masters = await prisma.masterKegiatan.findMany({
+      where: { teamId: m.teamId },
+    });
     if (!masters.length) continue;
 
     for (const info of months) {
@@ -496,7 +504,10 @@ async function main() {
   }
 
   if (penugasanRows.length) {
-    await prisma.penugasan.createMany({ data: penugasanRows, skipDuplicates: true });
+    await prisma.penugasan.createMany({
+      data: penugasanRows,
+      skipDuplicates: true,
+    });
   }
 
   // seed laporan harian based on penugasan
@@ -519,7 +530,7 @@ async function main() {
             (p) =>
               p.pegawaiId === m.userId &&
               p.bulan === info.bulan &&
-              p.minggu === w,
+              p.minggu === w
           );
           if (!tugas.length) continue;
           const start = 1 + (w - 1) * 7;
@@ -547,7 +558,10 @@ async function main() {
     }
 
     if (laporanRows.length) {
-      await prisma.laporanHarian.createMany({ data: laporanRows, skipDuplicates: true });
+      await prisma.laporanHarian.createMany({
+        data: laporanRows,
+        skipDuplicates: true,
+      });
     }
     if (selesaiIds.size) {
       await prisma.penugasan.updateMany({
@@ -565,7 +579,7 @@ async function main() {
     { offset: 7, count: 3 },
   ];
   const eligibleMembers = members.filter(
-    (m) => m.user.role !== "admin" && m.user.role !== "pimpinan",
+    (m) => m.user.role !== "admin" && m.user.role !== "pimpinan"
   );
 
   // Shuffle members to ensure random selection
@@ -583,45 +597,46 @@ async function main() {
       const m = eligibleMembers[idx++];
       const daysAgo = group.offset;
 
-    const kegiatan = await prisma.masterKegiatan.findFirst({
-      where: { teamId: m.teamId },
-    });
-    if (!kegiatan) continue;
+      const kegiatan = await prisma.masterKegiatan.findFirst({
+        where: { teamId: m.teamId },
+      });
+      if (!kegiatan) continue;
 
-    const penugasan = await prisma.penugasan.create({
-      data: {
-        kegiatanId: kegiatan.id,
-        pegawaiId: m.userId,
-        minggu: 1,
-        bulan: "8",
-        tahun: 2025,
-        deskripsi: `Penugasan telat ${daysAgo} hari`,
-        status: STATUS.SELESAI_DIKERJAKAN,
-      },
-    });
+      const penugasan = await prisma.penugasan.create({
+        data: {
+          kegiatanId: kegiatan.id,
+          pegawaiId: m.userId,
+          minggu: 1,
+          bulan: "8",
+          tahun: 2025,
+          deskripsi: `Penugasan telat ${daysAgo} hari`,
+          status: STATUS.SELESAI_DIKERJAKAN,
+        },
+      });
 
-    const tanggal = new Date(BASE_DATE);
-    tanggal.setUTCDate(tanggal.getUTCDate() - daysAgo);
+      const tanggal = new Date(BASE_DATE);
+      tanggal.setUTCDate(tanggal.getUTCDate() - daysAgo);
 
-    await prisma.laporanHarian.deleteMany({
-      where: { pegawaiId: m.userId, tanggal: { gt: tanggal.toISOString() } },
-    });
+      await prisma.laporanHarian.deleteMany({
+        where: { pegawaiId: m.userId, tanggal: { gt: tanggal.toISOString() } },
+      });
 
-    await prisma.laporanHarian.create({
-      data: {
-        penugasanId: penugasan.id,
-        pegawaiId: m.userId,
-        tanggal: tanggal.toISOString(),
-        status: STATUS.SELESAI_DIKERJAKAN,
-      },
+      await prisma.laporanHarian.create({
+        data: {
+          penugasanId: penugasan.id,
+          pegawaiId: m.userId,
+          tanggal: tanggal.toISOString(),
+          status: STATUS.SELESAI_DIKERJAKAN,
+        },
+      });
+    }
+  } // <-- Correct closing brace for the outer for loop
+
+  main()
+    .then(() => prisma.$disconnect())
+    .catch(async (e) => {
+      console.error(e);
+      await prisma.$disconnect();
+      process.exit(1);
     });
-  }
 }
-
-main()
-  .then(() => prisma.$disconnect())
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });

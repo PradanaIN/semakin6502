@@ -29,12 +29,13 @@ model Team {
 }
 
 model Member {
-  id        Int     @id @default(autoincrement())
-  userId    Int
-  teamId    Int
-  isLeader  Boolean
-  user      User    @relation(fields: [userId], references: [id])
-  team      Team    @relation(fields: [teamId], references: [id])
+  id       Int     @id @default(autoincrement())
+  userId   Int
+  teamId   Int
+  isLeader Boolean
+  user     User    @relation(fields: [userId], references: [id])
+  team     Team    @relation(fields: [teamId], references: [id])
+
   @@unique([userId, teamId])
 }
 
@@ -76,20 +77,20 @@ model LaporanHarian {
 }
 
 model KegiatanTambahan {
-  id       Int      @id @default(autoincrement())
-  nama     String
-  tanggal  DateTime
-  status   String
-  buktiLink String?
-  deskripsi String?
-  tanggalSelesai DateTime?
+  id                  Int            @id @default(autoincrement())
+  nama                String
+  tanggal             DateTime
+  status              String
+  buktiLink           String?
+  deskripsi           String?
+  tanggalSelesai      DateTime?
   tanggalSelesaiAkhir DateTime?
-  userId   Int
-  kegiatanId Int
-  teamId Int
-  user     User     @relation(fields: [userId], references: [id])
-  kegiatan MasterKegiatan @relation(fields: [kegiatanId], references: [id])
-  team     Team  @relation(fields: [teamId], references: [id])
+  userId              Int
+  kegiatanId          Int
+  teamId              Int
+  user                User           @relation(fields: [userId], references: [id])
+  kegiatan            MasterKegiatan @relation(fields: [kegiatanId], references: [id])
+  team                Team           @relation(fields: [teamId], references: [id])
 }
 
 model Role {
