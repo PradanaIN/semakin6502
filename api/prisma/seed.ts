@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { PrismaClient } from "@prisma/client";
 import { hashPassword } from "../src/common/hash";
 import { STATUS } from "../src/common/status.constants";
