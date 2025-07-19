@@ -10,6 +10,7 @@ import { LaporanModule } from "./laporan/laporan.module";
 import { MonitoringModule } from "./monitoring/monitoring.module";
 import { RolesModule } from "./roles/roles.module";
 import { NotificationsModule } from "./notifications/notifications.module";
+import { HealthController } from "./health.controller";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { NotificationsModule } from "./notifications/notifications.module";
     RolesModule,
     NotificationsModule,
   ],
+  controllers: [HealthController],
   providers: [
     PrismaService,
     {

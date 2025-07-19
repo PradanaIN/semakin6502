@@ -82,6 +82,13 @@ npm run start:dev
 
 Server berjalan di: `http://localhost:${PORT}` (default 3000)
 
+Untuk pengecekan cepat, buka `/health`:
+
+```bash
+curl http://localhost:${PORT}/health
+# {"status":"ok"}
+```
+
 ## ⏱️ Rate Limiting
 
 Aplikasi menerapkan rate limit global menggunakan `@nestjs/throttler`.
@@ -102,6 +109,7 @@ Setiap IP dibatasi **100 request** setiap **15 menit**.
 
 | Method | Endpoint                   | Deskripsi                    | Role     |
 |--------|----------------------------|------------------------------|----------|
+| GET    | `/health`                  | Cek apakah backend hidup    | semua    |
 | POST   | `/auth/login`              | Login user & dapatkan token (body: `{ identifier, password }`) | semua    |
 | GET    | `/users`                   | Lihat semua user             | admin    |
 | GET    | `/teams`                   | Daftar tim                   | admin    |
