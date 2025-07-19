@@ -117,6 +117,7 @@ Setiap IP dibatasi **100 request** setiap **15 menit**.
 | POST   | `/penugasan`               | Assign penugasan             | ketua tim    |
 | POST   | `/laporan-harian`          | Laporan kegiatan harian      | anggota tim |
 | POST   | `/tugas-tambahan`          | Laporan tugas tambahan       | anggota tim |
+| GET    | `/tugas-tambahan/all`     | Lihat semua tugas tambahan (query: `teamId`, `userId` opsional) | admin |
 | GET    | `/monitoring/harian`       | Monitoring harian            | semua    |
 | GET    | `/monitoring/harian/all`   | Monitoring harian semua pegawai (query: `tanggal`, `teamId` opsional) | admin, pimpinan, ketua tim |
 | GET    | `/monitoring/harian/bulan` | Rekap harian sebulan penuh per pegawai (query: `tanggal`, `teamId` opsional) | admin, pimpinan, ketua tim |
@@ -125,6 +126,9 @@ Setiap IP dibatasi **100 request** setiap **15 menit**.
 | GET    | `/monitoring/bulanan/all`  | Monitoring bulanan semua pegawai (query: `year`, `bulan` opsional, `teamId` opsional) | admin, pimpinan, ketua tim |
 | GET    | `/monitoring/bulanan/matrix` | Matriks bulanan per user (query: `year`, `teamId` opsional) | admin, pimpinan, ketua tim |
 | GET    | `/monitoring/laporan/terlambat` | Daftar pegawai terlambat mengisi laporan (query: `teamId` opsional) | admin, pimpinan, ketua tim |
+
+Endpoint `/tugas-tambahan/all` memungkinkan admin melihat seluruh laporan tugas tambahan.
+Gunakan parameter opsional `teamId` atau `userId` untuk memfilter hasil.
 
 Format hasil: objek `{ day1, day3, day7 }`. Akun admin dan pimpinan tidak ditampilkan.
 

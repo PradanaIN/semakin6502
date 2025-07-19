@@ -42,7 +42,7 @@ export class TambahanService {
     if (filter.userId) where.userId = filter.userId;
     return this.prisma.kegiatanTambahan.findMany({
       where,
-      include: { kegiatan: { include: { team: true } } },
+      include: { kegiatan: { include: { team: true } }, user: true },
       orderBy: { tanggal: "desc" },
     });
   }

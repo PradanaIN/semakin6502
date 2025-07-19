@@ -5,7 +5,7 @@ import {
   confirmDelete,
   handleAxiosError,
 } from "../../utils/alerts";
-import { Plus, Eye, Pencil, Trash2 } from "lucide-react";
+import { Plus, Eye, Pencil, Trash2, Check, X } from "lucide-react";
 import DataTable from "../../components/ui/DataTable";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
@@ -20,6 +20,8 @@ import SearchInput from "../../components/SearchInput";
 import Pagination from "../../components/Pagination";
 import SelectDataShow from "../../components/ui/SelectDataShow";
 import { useRef } from "react";
+import { useAuth } from "../auth/useAuth";
+import { ROLES } from "../../utils/roles";
 
 export default function TugasTambahanPage() {
   const [items, setItems] = useState([]);
@@ -28,6 +30,8 @@ export default function TugasTambahanPage() {
   const [editing, setEditing] = useState(null);
   const [teams, setTeams] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+  const [users, setUsers] = useState([]);
   const [form, setForm] = useState({
     teamId: "",
     kegiatanId: "",
@@ -42,12 +46,23 @@ export default function TugasTambahanPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   const tanggalRef = useRef(null);
+  const { user } = useAuth();
+  const [filterTeam, setFilterTeam] = useState("");
+  const [filterUser, setFilterUser] = useState("");
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [tRes, kRes, teamRes] = await Promise.all([
-        axios.get("/tugas-tambahan"),
+      const params = {};
+      if (filterTeam) params.teamId = filterTeam;
+      if (filterUser) params.userId = filterUser;
+      const tugasReq =
+        user?.role === ROLES.ADMIN
+          ? axios.get("/tugas-tambahan/all", { params })
+          : axios.get("/tugas-tambahan");
+
+      const [tRes, kRes, teamRes, userRes] = await Promise.all([
+        tugasReq,
         axios.get("/master-kegiatan?limit=1000"),
         axios.get("/teams").then(async (res) => {
           if (Array.isArray(res.data) && res.data.length === 0) {
@@ -55,10 +70,18 @@ export default function TugasTambahanPage() {
           }
           return res;
         }),
+        user?.role === ROLES.ADMIN ? axios.get("/users") : Promise.resolve({ data: [] }),
       ]);
       setItems(tRes.data);
       setKegiatan(kRes.data.data || kRes.data);
       setTeams(teamRes.data);
+      if (user?.role === ROLES.ADMIN) {
+        const sorted = userRes.data
+          .filter((u) => u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN)
+          .sort((a, b) => a.nama.localeCompare(b.nama));
+        setAllUsers(sorted);
+        setUsers(sorted);
+      }
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil data");
     } finally {
@@ -68,7 +91,22 @@ export default function TugasTambahanPage() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [filterTeam, filterUser, user?.role]);
+
+  useEffect(() => {
+    if (filterTeam && user?.role === ROLES.ADMIN) {
+      const t = teams.find((tm) => tm.id === parseInt(filterTeam, 10));
+      if (t) {
+        const mem = t.members
+          .map((m) => m.user)
+          .filter((u) => u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN);
+        const sorted = mem.sort((a, b) => a.nama.localeCompare(b.nama));
+        setUsers(sorted);
+      }
+    } else {
+      setUsers(allUsers);
+    }
+  }, [filterTeam, teams, allUsers, user?.role]);
 
   const openCreate = () => {
     setEditing(null);
@@ -147,9 +185,21 @@ export default function TugasTambahanPage() {
       const matchTahun = filterTahun
         ? tahun === parseInt(filterTahun, 10)
         : true;
-      return matchesSearch && matchBulan && matchTahun;
+      const matchTeam = filterTeam
+        ? item.teamId === parseInt(filterTeam, 10)
+        : true;
+      const matchUser = filterUser
+        ? item.userId === parseInt(filterUser, 10)
+        : true;
+      return (
+        matchesSearch &&
+        matchBulan &&
+        matchTahun &&
+        matchTeam &&
+        matchUser
+      );
     });
-  }, [items, search, filterBulan, filterTahun]);
+  }, [items, search, filterBulan, filterTahun, filterTeam, filterUser]);
 
   const paginatedItems = filteredItems.slice(
     (currentPage - 1) * pageSize,
@@ -170,6 +220,15 @@ export default function TugasTambahanPage() {
         accessor: (row) => row.kegiatan.team?.namaTim || "-",
         disableFilters: true,
       },
+      ...(user?.role === ROLES.ADMIN
+        ? [
+            {
+              Header: "Nama",
+              accessor: (row) => row.user?.nama || "-",
+              disableFilters: true,
+            },
+          ]
+        : []),
       {
         Header: "Tanggal",
         accessor: (row) => row.tanggal.slice(0, 10),
@@ -226,7 +285,7 @@ export default function TugasTambahanPage() {
         disableFilters: true,
       },
     ],
-    [currentPage, pageSize, openDetail, openEdit, remove]
+    [currentPage, pageSize, openDetail, openEdit, remove, user?.role]
   );
 
   return (
@@ -245,6 +304,41 @@ export default function TugasTambahanPage() {
             onMonthChange={setFilterBulan}
             onYearChange={setFilterTahun}
           />
+          {user?.role === ROLES.ADMIN && (
+            <>
+              <select
+                value={filterTeam}
+                onChange={(e) => {
+                  setFilterTeam(e.target.value);
+                  setFilterUser("");
+                  setCurrentPage(1);
+                }}
+                className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out"
+              >
+                <option value="">Semua Tim</option>
+                {teams.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.namaTim}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={filterUser}
+                onChange={(e) => {
+                  setFilterUser(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out"
+              >
+                <option value="">Semua Pegawai</option>
+                {users.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.nama}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
         </div>
 
         <div className="flex justify-between items-center">
