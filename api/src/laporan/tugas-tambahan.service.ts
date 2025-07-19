@@ -36,6 +36,17 @@ export class TambahanService {
     });
   }
 
+  getAll(filter: { teamId?: number; userId?: number } = {}) {
+    const where: any = {};
+    if (filter.teamId) where.teamId = filter.teamId;
+    if (filter.userId) where.userId = filter.userId;
+    return this.prisma.kegiatanTambahan.findMany({
+      where,
+      include: { kegiatan: { include: { team: true } } },
+      orderBy: { tanggal: "desc" },
+    });
+  }
+
   getOne(id: number, userId: number) {
     return this.prisma.kegiatanTambahan.findFirst({
       where: { id, userId },
