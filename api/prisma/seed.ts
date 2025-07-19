@@ -8,6 +8,10 @@ const prisma = new PrismaClient();
 const BASE_DATE = new Date();
 BASE_DATE.setUTCHours(0, 0, 0, 0);
 
+function randomInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 const rawUsers = [
   {
     nama: "Yuda Agus Irianto",
@@ -472,9 +476,11 @@ async function main() {
 
     for (const info of months) {
       const weeks = Math.ceil(info.days / 7);
-      for (let w = 1; w <= weeks; w++) {
-        for (let i = 0; i < 10; i++) {
-          const k = masters[(w * 10 + i) % masters.length];
+      const maxWeeks = info.bulan === "7" ? Math.min(3, weeks) : weeks;
+      for (let w = 1; w <= maxWeeks; w++) {
+        const taskCount = randomInt(5, 7);
+        for (let i = 0; i < taskCount; i++) {
+          const k = masters[(w * i + i) % masters.length];
           penugasanRows.push({
             kegiatanId: k.id,
             pegawaiId: m.userId,
@@ -503,34 +509,43 @@ async function main() {
     const selesaiIds = new Set<number>();
     const holidays = new Set(getHolidays(2025));
 
-    for (const p of penugasans) {
-      const info = months.find((m) => m.bulan === p.bulan);
-      if (!info) continue;
-      const start = 1 + (p.minggu - 1) * 7;
-      const end = Math.min(start + 6, info.days);
+    for (const m of members) {
+      if (m.user.role === "admin") continue;
+      for (const info of months) {
+        const weeks = Math.ceil(info.days / 7);
+        const maxWeeks = info.bulan === "7" ? Math.min(3, weeks) : weeks;
+        for (let w = 1; w <= maxWeeks; w++) {
+          const tugas = penugasans.filter(
+            (p) =>
+              p.pegawaiId === m.userId &&
+              p.bulan === info.bulan &&
+              p.minggu === w,
+          );
+          if (!tugas.length) continue;
+          const start = 1 + (w - 1) * 7;
+          const end = Math.min(start + 6, info.days);
+          for (let d = start; d <= end; d++) {
+            const date = new Date(Date.UTC(info.year, info.monthIndex, d));
+            const day = date.getDay();
+            const dateStr = date.toISOString().slice(0, 10);
+            if (day === 0 || day === 6 || holidays.has(dateStr)) continue;
 
-      for (let d = start; d <= end; d++) {
-        const date = new Date(Date.UTC(info.year, info.monthIndex, d));
-        const day = date.getDay();
-        const dateStr = date.toISOString().slice(0, 10);
-        if (day === 0 || day === 6 || holidays.has(dateStr)) continue;
-        if (Math.random() < 0.5) continue;
-
-        const status =
-          Math.random() < 0.5
-            ? STATUS.SEDANG_DIKERJAKAN
-            : STATUS.SELESAI_DIKERJAKAN;
-
-        if (status === STATUS.SELESAI_DIKERJAKAN) selesaiIds.add(p.id);
-
-        laporanRows.push({
-          penugasanId: p.id,
-          pegawaiId: p.pegawaiId,
-          tanggal: date.toISOString(),
-          status,
-        });
+            const laporanCount = randomInt(1, 3);
+            for (let i = 0; i < laporanCount; i++) {
+              const p = tugas[(d + i) % tugas.length];
+              laporanRows.push({
+                penugasanId: p.id,
+                pegawaiId: m.userId,
+                tanggal: date.toISOString(),
+                status: STATUS.SELESAI_DIKERJAKAN,
+              });
+              selesaiIds.add(p.id);
+            }
+          }
+        }
       }
     }
+
     if (laporanRows.length) {
       await prisma.laporanHarian.createMany({ data: laporanRows, skipDuplicates: true });
     }
