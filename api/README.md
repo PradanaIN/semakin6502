@@ -71,7 +71,7 @@ npx prisma db push
 
 5. **Seed data dummy**
 ```bash
-npm run seed
+npm run seed  # menjalankan `prisma db seed` dan otomatis memuat variabel `.env`
 ```
 Script ini juga menambahkan pengguna demo dengan laporan terakhir 1, 3, dan 7 hari sebelum tanggal `BASE_DATE` di `prisma/seed.ts`.
 
