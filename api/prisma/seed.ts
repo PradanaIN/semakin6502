@@ -5,7 +5,6 @@ import { getHolidays } from "../src/utils/holidays";
 
 const prisma = new PrismaClient();
 
-// Base date used for generating late-reporting sample data – set to current UTC date
 const BASE_DATE = new Date();
 BASE_DATE.setUTCHours(0, 0, 0, 0);
 

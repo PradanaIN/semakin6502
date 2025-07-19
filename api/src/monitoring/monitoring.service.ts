@@ -490,7 +490,7 @@ export class MonitoringService {
     ).filter((t: { pegawai?: { username?: string } }) =>
       !t.pegawai?.username?.startsWith("demo"),
     );
-
+    
     const byUser: Record<
       number,
       { nama: string; selesai: number; total: number }
