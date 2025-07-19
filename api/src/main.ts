@@ -4,6 +4,12 @@ import cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
 import { LoggingInterceptor } from "./common/logging.interceptor";
 
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) {
+  // Fail fast when DATABASE_URL is missing
+  throw new Error("DATABASE_URL environment variable is required");
+}
+
 async function bootstrap() {
   const isProd = process.env.NODE_ENV === "production";
   const logLevels: LogLevel[] = isProd
