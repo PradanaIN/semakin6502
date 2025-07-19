@@ -573,6 +573,10 @@ async function main() {
     const tanggal = new Date(BASE_DATE);
     tanggal.setUTCDate(tanggal.getUTCDate() - daysAgo);
 
+    await prisma.laporanHarian.deleteMany({
+      where: { pegawaiId: m.userId, tanggal: { gt: tanggal.toISOString() } },
+    });
+
     await prisma.laporanHarian.create({
       data: {
         penugasanId: penugasan.id,
