@@ -10,7 +10,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint . --ext .ts",
     "test": "jest",
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "prisma db seed"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -27,6 +27,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
     "cookie-parser": "^1.4.6",
+    "dotenv": "^17.2.0",
     "exceljs": "^4.3.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
