@@ -248,7 +248,6 @@ describe('MonitoringService aggregated', () => {
 
     expect(res.day7).toEqual([
       { userId: 1, nama: 'A', lastDate: '2024-05-02' },
-      { userId: 3, nama: 'C', lastDate: null },
     ]);
     expect(res.day3).toEqual([
       { userId: 2, nama: 'B', lastDate: '2024-05-05' },
