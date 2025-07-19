@@ -557,16 +557,31 @@ async function main() {
     }
   }
 
-  // Assign existing employees a last laporan_harian exactly 1, 3 and 7 days
-  // before BASE_DATE to simulate late reports
-  const lateOffsets = [1, 3, 7];
+  // Assign some members late laporan_harian before BASE_DATE to simulate
+  // late reports. Members are randomly selected to be late by 1, 3 or 7 days.
+  const lateGroups = [
+    { offset: 1, count: 10 },
+    { offset: 3, count: 5 },
+    { offset: 7, count: 3 },
+  ];
   const eligibleMembers = members.filter(
     (m) => m.user.role !== "admin" && m.user.role !== "pimpinan",
   );
 
-  for (let i = 0; i < lateOffsets.length && i < eligibleMembers.length; i++) {
-    const m = eligibleMembers[i];
-    const daysAgo = lateOffsets[i];
+  // Shuffle members to ensure random selection
+  for (let i = eligibleMembers.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [eligibleMembers[i], eligibleMembers[j]] = [
+      eligibleMembers[j],
+      eligibleMembers[i],
+    ];
+  }
+
+  let idx = 0;
+  for (const group of lateGroups) {
+    for (let c = 0; c < group.count && idx < eligibleMembers.length; c++) {
+      const m = eligibleMembers[idx++];
+      const daysAgo = group.offset;
 
     const kegiatan = await prisma.masterKegiatan.findFirst({
       where: { teamId: m.teamId },
