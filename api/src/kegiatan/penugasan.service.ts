@@ -197,4 +197,49 @@ export class PenugasanService {
     await this.prisma.penugasan.delete({ where: { id } });
     return { success: true };
   }
+
+  async byWeekGrouped(minggu: string) {
+    const start = new Date(minggu);
+    const offset = (start.getDay() + 6) % 7;
+    start.setDate(start.getDate() - offset);
+    if (isNaN(start.getTime()))
+      throw new BadRequestException("minggu tidak valid");
+
+    const where = {
+      minggu: getWeekOfMonth(start),
+      bulan: String(start.getMonth() + 1),
+      tahun: start.getFullYear(),
+    };
+
+    const tugas = await this.prisma.penugasan.findMany({
+      where,
+      include: { pegawai: true, kegiatan: true },
+      orderBy: { pegawai: { nama: "asc" } },
+    });
+
+    const byUser: Record<
+      number,
+      { nama: string; tugas: { tugas: string; deskripsi?: string; status: string }[] }
+    > = {};
+
+    for (const t of tugas) {
+      if (!byUser[t.pegawaiId])
+        byUser[t.pegawaiId] = { nama: t.pegawai.nama, tugas: [] };
+      byUser[t.pegawaiId].tugas.push({
+        tugas: t.kegiatan.namaKegiatan,
+        deskripsi: t.deskripsi || "",
+        status: t.status,
+      });
+    }
+
+    return Object.entries(byUser)
+      .map(([id, v]) => ({ userId: Number(id), nama: v.nama, tugas: v.tugas }))
+      .sort((a, b) => a.nama.localeCompare(b.nama));
+  }
+}
+
+function getWeekOfMonth(date: Date) {
+  const first = new Date(date.getFullYear(), date.getMonth(), 1);
+  const offset = (first.getDay() + 6) % 7;
+  return Math.floor((date.getDate() + offset - 1) / 7) + 1;
 }
