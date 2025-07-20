@@ -1,11 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import {
-  showSuccess,
-  confirmDelete,
-  handleAxiosError,
-} from "../../utils/alerts";
-import { Plus, Eye, Pencil, Trash2, Check, X } from "lucide-react";
+import { showSuccess, handleAxiosError } from "../../utils/alerts";
+import { Plus, Eye, Check, X } from "lucide-react";
 import DataTable from "../../components/ui/DataTable";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
@@ -28,7 +24,6 @@ export default function TugasTambahanPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editing, setEditing] = useState(null);
   const [teams, setTeams] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
@@ -110,25 +105,12 @@ export default function TugasTambahanPage() {
   }, [filterTeam, teams, allUsers, user?.role]);
 
   const openCreate = () => {
-    setEditing(null);
     setForm({
       teamId: "",
       kegiatanId: "",
       tanggal: new Date().toISOString().slice(0, 10),
       status: STATUS.BELUM,
       deskripsi: "",
-    });
-    setShowForm(true);
-  };
-
-  const openEdit = (item) => {
-    setEditing(item);
-    setForm({
-      teamId: item.teamId,
-      kegiatanId: item.kegiatanId,
-      tanggal: item.tanggal.slice(0, 10),
-      status: item.status,
-      deskripsi: item.deskripsi || "",
     });
     setShowForm(true);
   };
@@ -141,13 +123,8 @@ export default function TugasTambahanPage() {
       Object.keys(payload).forEach((k) => {
         if (payload[k] === "") delete payload[k];
       });
-      if (editing) {
-        await axios.put(`/tugas-tambahan/${editing.id}`, payload);
-      } else {
-        await axios.post("/tugas-tambahan", payload);
-      }
+      await axios.post("/tugas-tambahan", payload);
       setShowForm(false);
-      setEditing(null);
       fetchData();
       showSuccess("Berhasil", "Data disimpan");
     } catch (err) {
@@ -155,17 +132,6 @@ export default function TugasTambahanPage() {
     }
   };
 
-  const remove = async (item) => {
-    const r = await confirmDelete("Hapus kegiatan ini?");
-    if (!r.isConfirmed) return;
-    try {
-      await axios.delete(`/tugas-tambahan/${item.id}`);
-      fetchData();
-      showSuccess("Dihapus", "Kegiatan dihapus");
-    } catch (err) {
-      handleAxiosError(err, "Gagal menghapus");
-    }
-  };
 
   const openDetail = (id) => {
     navigate(`/tugas-tambahan/${id}`);
@@ -247,17 +213,6 @@ export default function TugasTambahanPage() {
         disableFilters: true,
       },
       {
-        Header: "Bukti Dukung",
-        accessor: (row) => row.buktiLink,
-        Cell: ({ row }) =>
-          row.original.buktiLink ? (
-            <Check className="w-4 h-4 text-green-600" />
-          ) : (
-            <X className="w-4 h-4 text-red-600" />
-          ),
-        disableFilters: true,
-      },
-      {
         Header: "Aksi",
         accessor: "id",
         Cell: ({ row }) => (
@@ -265,28 +220,12 @@ export default function TugasTambahanPage() {
             <Button onClick={() => openDetail(row.original.id)} icon aria-label="Detail">
               <Eye size={16} />
             </Button>
-            <Button
-              onClick={() => openEdit(row.original)}
-              variant="warning"
-              icon
-              aria-label="Edit"
-            >
-              <Pencil size={16} />
-            </Button>
-            <Button
-              onClick={() => remove(row.original)}
-              variant="danger"
-              icon
-              aria-label="Hapus"
-            >
-              <Trash2 size={16} />
-            </Button>
           </div>
         ),
         disableFilters: true,
       },
     ],
-    [currentPage, pageSize, openDetail, openEdit, remove, user?.role]
+    [currentPage, pageSize, openDetail, user?.role]
   );
 
   return (
@@ -386,7 +325,6 @@ export default function TugasTambahanPage() {
         <Modal
           onClose={() => {
             setShowForm(false);
-            setEditing(null);
           }}
           titleId="tugas-tambahan-modal-title"
         >
@@ -395,7 +333,7 @@ export default function TugasTambahanPage() {
               id="tugas-tambahan-modal-title"
               className="text-xl font-semibold"
             >
-              {editing ? "Edit Kegiatan" : "Tambah Kegiatan"}
+              Tambah Kegiatan
             </h2>
             <p className="text-xs text-red-600 dark:text-red-500">
               * Fardu 'Ain
@@ -528,7 +466,6 @@ export default function TugasTambahanPage() {
                 variant="secondary"
                 onClick={() => {
                   setShowForm(false);
-                  setEditing(null);
                 }}
               >
                 Batal

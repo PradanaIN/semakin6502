@@ -573,7 +573,7 @@ async function main() {
   }
 
   // Assign some members late laporan_harian before BASE_DATE to simulate
-  // late reports. Members are randomly selected to be late by 1, 3 or 7 days.
+  // late reports using existing penugasan. Members are randomly selected to be late by 1, 3 or 7 days.
   const lateGroups = [
     { offset: 1, count: 10 },
     { offset: 3, count: 5 },
@@ -598,22 +598,14 @@ async function main() {
       const m = eligibleMembers[idx++];
       const daysAgo = group.offset;
 
-      const kegiatan = await prisma.masterKegiatan.findFirst({
-        where: { teamId: m.teamId },
-      });
-      if (!kegiatan) continue;
-
-      const penugasan = await prisma.penugasan.create({
-        data: {
-          kegiatanId: kegiatan.id,
+      const penugasan = await prisma.penugasan.findFirst({
+        where: {
           pegawaiId: m.userId,
-          minggu: 1,
-          bulan: "8",
           tahun: 2025,
-          deskripsi: `Penugasan telat ${daysAgo} hari`,
-          status: STATUS.SELESAI_DIKERJAKAN,
+          bulan: { in: ["6", "7"] },
         },
       });
+      if (!penugasan) continue;
 
       const tanggal = new Date(BASE_DATE);
       tanggal.setUTCDate(tanggal.getUTCDate() - daysAgo);
