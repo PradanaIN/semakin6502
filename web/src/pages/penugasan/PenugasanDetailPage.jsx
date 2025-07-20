@@ -22,6 +22,7 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import months from "../../utils/months";
+import formatDate from "../../utils/formatDate";
 
 export default function PenugasanDetailPage() {
   const { id } = useParams();
@@ -60,10 +61,6 @@ export default function PenugasanDetailPage() {
 
   const dateRef = useRef(null);
 
-  const formatDMY = (iso) => {
-    const [y, m, d] = iso.slice(0, 10).split("-");
-    return `${d}-${m}-${y}`;
-  };
 
   const fetchDetail = useCallback(async () => {
     try {
@@ -201,7 +198,7 @@ export default function PenugasanDetailPage() {
       { Header: "Deskripsi", accessor: "deskripsi", disableFilters: true },
       {
         Header: "Tanggal",
-        accessor: (row) => formatDMY(row.tanggal),
+        accessor: (row) => formatDate(row.tanggal),
         disableFilters: true,
       },
       {

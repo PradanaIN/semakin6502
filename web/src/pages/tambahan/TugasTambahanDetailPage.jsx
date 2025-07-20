@@ -14,6 +14,7 @@ import { STATUS, formatStatus } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import formatDate from "../../utils/formatDate";
 
 
 export default function TugasTambahanDetailPage() {
@@ -146,7 +147,7 @@ export default function TugasTambahanDetailPage() {
           </div>
           <div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Tanggal</div>
-            <div className="font-medium">{item.tanggal.slice(0, 10)}</div>
+            <div className="font-medium">{formatDate(item.tanggal)}</div>
           </div>
           <div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Deskripsi</div>
@@ -162,9 +163,9 @@ export default function TugasTambahanDetailPage() {
             <div>
               <div className="text-sm text-gray-500 dark:text-gray-400">Tanggal Selesai</div>
               <div className="font-medium">
-                {item.tanggalSelesai.slice(0, 10)}
+                {formatDate(item.tanggalSelesai)}
                 {item.tanggalSelesaiAkhir &&
-                  ` - ${item.tanggalSelesaiAkhir.slice(0, 10)}`}
+                  ` - ${formatDate(item.tanggalSelesaiAkhir)}`}
               </div>
             </div>
           )}
