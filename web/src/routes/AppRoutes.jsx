@@ -18,6 +18,9 @@ const PenugasanPage = React.lazy(() =>
 const PenugasanDetailPage = React.lazy(() =>
   import("../pages/penugasan/PenugasanDetailPage")
 );
+const WeeklyTasksPage = React.lazy(() =>
+  import("../pages/penugasan/WeeklyTasksPage")
+);
 const LaporanHarianPage = React.lazy(() =>
   import("../pages/laporan/LaporanHarianPage")
 );
@@ -75,6 +78,7 @@ export default function AppRoutes() {
           <Route path="teams" element={<TeamsPage />} />
           <Route path="master-kegiatan" element={<MasterKegiatanPage />} />
           <Route path="tugas-mingguan" element={<PenugasanPage />} />
+          <Route path="tugas-mingguan/all" element={<WeeklyTasksPage />} />
           <Route path="tugas-mingguan/:id" element={<PenugasanDetailPage />} />
           <Route path="laporan-harian" element={<LaporanHarianPage />} />
           <Route path="monitoring" element={<MonitoringPage />} />

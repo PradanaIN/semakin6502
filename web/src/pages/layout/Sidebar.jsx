@@ -17,6 +17,7 @@ import { ROLES } from "../../utils/roles";
 const mainLinks = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/tugas-mingguan", label: "Tugas Mingguan", icon: ClipboardList },
+  { to: "/tugas-mingguan/all", label: "Tugas Minggu Ini", icon: List },
   { to: "/tugas-tambahan", label: "Tugas Tambahan", icon: FilePlus },
   { to: "/laporan-harian", label: "Laporan Harian", icon: FileText },
   {
