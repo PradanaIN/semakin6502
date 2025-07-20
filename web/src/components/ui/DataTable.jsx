@@ -172,7 +172,7 @@ export default function DataTable({
                 colSpan={table.getAllColumns().length}
                 className="py-4 text-center"
               >
-                ✊🙏✊✊🙏✊🙏 Data tidak ditemukan 🫰🫰🤟🤟☝☝
+                Data tidak ditemukan
               </td>
             </tr>
           ) : (
