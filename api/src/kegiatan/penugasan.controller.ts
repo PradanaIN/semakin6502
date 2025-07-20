@@ -42,11 +42,13 @@ export class PenugasanController {
     @Req() req: Request,
     @Query("bulan") bulan?: string,
     @Query("tahun") tahun?: string,
+    @Query("minggu") minggu?: string,
   ) {
     const u = req.user as AuthRequestUser;
     const filter: any = {};
     if (bulan) filter.bulan = bulan;
     if (tahun) filter.tahun = parseInt(tahun, 10);
+    if (minggu) filter.minggu = parseInt(minggu, 10);
     return this.penugasanService.findAll(u.role, u.userId, filter);
   }
 

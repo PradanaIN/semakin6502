@@ -59,15 +59,38 @@ export default function PenugasanPage() {
   const [search, setSearch] = useState("");
   const [filterBulan, setFilterBulan] = useState("");
   const [filterTahun, setFilterTahun] = useState(new Date().getFullYear());
+  const [filterMinggu, setFilterMinggu] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    const initWeek = async () => {
+      try {
+        const params = {};
+        if (filterBulan) params.bulan = filterBulan;
+        if (filterTahun) params.tahun = filterTahun;
+        const res = await axios.get("/penugasan", { params });
+        const weeks = (res.data || []).map((p) => p.minggu);
+        if (weeks.length) {
+          const latest = Math.max(...weeks);
+          setFilterMinggu(String(latest));
+        }
+      } catch (err) {
+        // ignore init errors
+      }
+    };
+    if (!filterMinggu) initWeek();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterBulan, filterTahun]);
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const penugasanReq = axios.get(
-        `/penugasan?bulan=${filterBulan || ""}&tahun=${filterTahun || ""}`
-      );
+      const params = {};
+      if (filterBulan) params.bulan = filterBulan;
+      if (filterTahun) params.tahun = filterTahun;
+      if (filterMinggu) params.minggu = filterMinggu;
+      const penugasanReq = axios.get("/penugasan", { params });
       const teamsReq = axios.get("/teams").then(async (res) => {
         if (Array.isArray(res.data) && res.data.length === 0) {
           return axios.get("/teams/member");
@@ -116,7 +139,7 @@ export default function PenugasanPage() {
     } finally {
       setLoading(false);
     }
-  }, [user, filterBulan, filterTahun, canManage]);
+  }, [user, filterBulan, filterTahun, filterMinggu, canManage]);
 
   useEffect(() => {
     fetchData();
@@ -223,13 +246,30 @@ export default function PenugasanPage() {
             year={filterTahun}
             onMonthChange={(val) => {
               setFilterBulan(val);
+              setFilterMinggu("");
               setCurrentPage(1);
             }}
             onYearChange={(val) => {
               setFilterTahun(val);
+              setFilterMinggu("");
               setCurrentPage(1);
             }}
           />
+          <select
+            value={filterMinggu}
+            onChange={(e) => {
+              setFilterMinggu(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
+          >
+            <option value="">Minggu</option>
+            {[1, 2, 3, 4, 5].map((m) => (
+              <option key={m} value={m}>
+                Minggu {m}
+              </option>
+            ))}
+          </select>
         </div>
         {canManage && (
           <Button onClick={openCreate} className="add-button">

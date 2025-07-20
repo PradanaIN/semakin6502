@@ -18,7 +18,7 @@ export class PenugasanService {
   findAll(
     role: string,
     userId: number,
-    filter: { bulan?: string; tahun?: number }
+    filter: { bulan?: string; tahun?: number; minggu?: number }
   ) {
     role = normalizeRole(role);
     const opts: any = {
@@ -31,6 +31,7 @@ export class PenugasanService {
 
     if (filter.bulan) opts.where.bulan = filter.bulan;
     if (filter.tahun) opts.where.tahun = filter.tahun;
+    if (filter.minggu) opts.where.minggu = filter.minggu;
 
     if (role === ROLES.ADMIN || role === ROLES.PIMPINAN) {
       // admins and top management can see all assignments
