@@ -43,11 +43,13 @@ const mainLinks = [
     to: "/monitoring",
     label: "Monitoring",
     icon: BarChart2,
+    roles: [ROLES.PIMPINAN],
   },
   {
     to: "/laporan-terlambat",
     label: "Keterlambatan",
     icon: AlertCircle,
+    roles: [ROLES.PIMPINAN],
   },
 ];
 

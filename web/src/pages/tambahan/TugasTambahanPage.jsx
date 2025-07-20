@@ -22,6 +22,7 @@ import SelectDataShow from "../../components/ui/SelectDataShow";
 import { useRef } from "react";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
+import formatDate from "../../utils/formatDate";
 
 export default function TugasTambahanPage() {
   const [items, setItems] = useState([]);
@@ -231,7 +232,7 @@ export default function TugasTambahanPage() {
         : []),
       {
         Header: "Tanggal",
-        accessor: (row) => row.tanggal.slice(0, 10),
+        accessor: (row) => formatDate(row.tanggal),
         disableFilters: true,
       },
       {
