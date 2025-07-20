@@ -28,6 +28,17 @@ export class LaporanService {
   }
 
   private async syncPenugasanStatus(penugasanId: number) {
+    const finished = await this.prisma.laporanHarian.findFirst({
+      where: { penugasanId, status: STATUS.SELESAI_DIKERJAKAN },
+    });
+    if (finished) {
+      await this.prisma.penugasan.update({
+        where: { id: penugasanId },
+        data: { status: STATUS.SELESAI_DIKERJAKAN },
+      });
+      return;
+    }
+
     const latest = await this.prisma.laporanHarian.findFirst({
       where: { penugasanId },
       orderBy: { tanggal: 'desc' },
