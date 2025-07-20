@@ -50,3 +50,11 @@ MySQL data persists in the `mysql-data` volume and is initialized from `docker/m
 
 Code and database fields use **camelCase**. When adding new API DTOs or Prisma models, prefer English terms and camelCase naming (e.g. `teamId`, `namaKegiatan`). Legacy snake_case columns remain for compatibility but new contributions should avoid them.
 
+## Role-Based Navigation
+
+Available sidebar links depend on the authenticated user's role:
+
+- **Admin** – access to all pages.
+- **Ketua Tim** – Dashboard, Tugas Mingguan, Tugas Tambahan, Laporan Harian and Master Kegiatan.
+- **Pimpinan** – Monitoring dan Keterlambatan saja.
+

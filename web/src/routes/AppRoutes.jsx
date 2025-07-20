@@ -3,6 +3,7 @@ import React, { Suspense } from "react";
 import { useAuth } from "../pages/auth/useAuth";
 import Loading from "../components/Loading";
 import ErrorBoundary from "../components/ErrorBoundary";
+import { ROLES } from "../utils/roles";
 
 const LoginPage = React.lazy(() => import("../pages/auth/LoginPage"));
 const Dashboard = React.lazy(() => import("../pages/dashboard/Dashboard"));
@@ -44,6 +45,19 @@ function PrivateRoute({ children }) {
   return children;
 }
 
+function RoleRoute({ roles, children }) {
+  const { user } = useAuth();
+  if (roles && !roles.includes(user?.role)) {
+    return (
+      <Navigate
+        to={user?.role === ROLES.PIMPINAN ? "/monitoring" : "/dashboard"}
+        replace
+      />
+    );
+  }
+  return children;
+}
+
 export default function AppRoutes() {
   const { user } = useAuth();
 
@@ -69,20 +83,94 @@ export default function AppRoutes() {
           }
         >
           <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
+          <Route
+            path="dashboard"
+            element={
+              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
+                <Dashboard />
+              </RoleRoute>
+            }
+          />
           <Route path="profile" element={<ProfilePage />} />
-          <Route path="users" element={<UsersPage />} />
-          <Route path="teams" element={<TeamsPage />} />
-          <Route path="master-kegiatan" element={<MasterKegiatanPage />} />
-          <Route path="tugas-mingguan" element={<PenugasanPage />} />
-          <Route path="tugas-mingguan/:id" element={<PenugasanDetailPage />} />
-          <Route path="laporan-harian" element={<LaporanHarianPage />} />
-          <Route path="monitoring" element={<MonitoringPage />} />
-          <Route path="laporan-terlambat" element={<MissedReportsPage />} />
-          <Route path="tugas-tambahan" element={<TugasTambahanPage />} />
+          <Route
+            path="users"
+            element={
+              <RoleRoute roles={[ROLES.ADMIN]}>
+                <UsersPage />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="teams"
+            element={
+              <RoleRoute roles={[ROLES.ADMIN]}>
+                <TeamsPage />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="master-kegiatan"
+            element={
+              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA]}>
+                <MasterKegiatanPage />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="tugas-mingguan"
+            element={
+              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
+                <PenugasanPage />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="tugas-mingguan/:id"
+            element={
+              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
+                <PenugasanDetailPage />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="laporan-harian"
+            element={
+              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
+                <LaporanHarianPage />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="monitoring"
+            element={
+              <RoleRoute roles={[ROLES.ADMIN, ROLES.PIMPINAN]}>
+                <MonitoringPage />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="laporan-terlambat"
+            element={
+              <RoleRoute roles={[ROLES.ADMIN, ROLES.PIMPINAN]}>
+                <MissedReportsPage />
+              </RoleRoute>
+            }
+          />
+          <Route
+            path="tugas-tambahan"
+            element={
+              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA]}>
+                <TugasTambahanPage />
+              </RoleRoute>
+            }
+          />
           <Route
             path="tugas-tambahan/:id"
-            element={<TugasTambahanDetailPage />}
+            element={
+              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA]}>
+                <TugasTambahanDetailPage />
+              </RoleRoute>
+            }
           />
           <Route path="*" element={<NotFound />} />
         </Route>

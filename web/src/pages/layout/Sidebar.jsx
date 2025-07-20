@@ -15,15 +15,35 @@ import {
 import { ROLES } from "../../utils/roles";
 
 const mainLinks = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/tugas-mingguan", label: "Tugas Mingguan", icon: ClipboardList },
-  { to: "/tugas-tambahan", label: "Tugas Tambahan", icon: FilePlus },
-  { to: "/laporan-harian", label: "Laporan Harian", icon: FileText },
+  {
+    to: "/dashboard",
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA],
+  },
+  {
+    to: "/tugas-mingguan",
+    label: "Tugas Mingguan",
+    icon: ClipboardList,
+    roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA],
+  },
+  {
+    to: "/tugas-tambahan",
+    label: "Tugas Tambahan",
+    icon: FilePlus,
+    roles: [ROLES.ADMIN, ROLES.KETUA],
+  },
+  {
+    to: "/laporan-harian",
+    label: "Laporan Harian",
+    icon: FileText,
+    roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA],
+  },
   {
     to: "/monitoring",
     label: "Monitoring",
     icon: BarChart2,
-    roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN],
+    roles: [ROLES.ADMIN, ROLES.PIMPINAN],
   },
   {
     to: "/laporan-terlambat",
