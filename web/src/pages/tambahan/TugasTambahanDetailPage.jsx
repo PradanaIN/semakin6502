@@ -22,6 +22,7 @@ export default function TugasTambahanDetailPage() {
   const [item, setItem] = useState(null);
   const [editing, setEditing] = useState(false);
   const [kegiatan, setKegiatan] = useState([]);
+  const [showUpload, setShowUpload] = useState(false);
   const [laporanForm, setLaporanForm] = useState({
     tanggalSelesai: "",
     tanggalSelesaiAkhir: "",
@@ -87,6 +88,7 @@ export default function TugasTambahanDetailPage() {
         buktiLink: "",
         status: STATUS.SELESAI_DIKERJAKAN,
       });
+      setShowUpload(false);
       fetchDetail();
     } catch (err) {
       handleAxiosError(err, "Gagal menambah laporan");
@@ -256,47 +258,66 @@ export default function TugasTambahanDetailPage() {
       )}
       <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
         <h3 className="text-lg font-semibold">Bukti / Laporan Selesai</h3>
-        <div className="space-y-2">
-          <div>
-            <label htmlFor="tanggalMulai" className="block text-sm mb-1">Tanggal Mulai</label>
-            <Input
-              id="tanggalMulai"
-              type="date"
-              value={laporanForm.tanggalSelesai}
-              onChange={(e) =>
-                setLaporanForm({ ...laporanForm, tanggalSelesai: e.target.value })
-              }
-              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-            />
+        {!showUpload ? (
+          <div className="flex justify-end">
+            <Button onClick={() => setShowUpload(true)}>Tambah Bukti</Button>
           </div>
-          <div>
-            <label htmlFor="tanggalAkhir" className="block text-sm mb-1">Tanggal Akhir</label>
-            <Input
-              id="tanggalAkhir"
-              type="date"
-              value={laporanForm.tanggalSelesaiAkhir}
-              onChange={(e) =>
-                setLaporanForm({ ...laporanForm, tanggalSelesaiAkhir: e.target.value })
-              }
-              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-            />
-          </div>
-          <div>
-            <label htmlFor="buktiLink" className="block text-sm mb-1">Link Bukti</label>
-            <Input
-              id="buktiLink"
-              type="text"
-              value={laporanForm.buktiLink}
-              onChange={(e) =>
-                setLaporanForm({ ...laporanForm, buktiLink: e.target.value })
-              }
-              className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-            />
-          </div>
-        </div>
-        <div className="flex justify-end pt-2">
-          <Button onClick={addLaporan}>Simpan Bukti</Button>
-        </div>
+        ) : (
+          <>
+            <div className="space-y-2">
+              <div>
+                <label htmlFor="tanggalMulai" className="block text-sm mb-1">Tanggal Mulai</label>
+                <Input
+                  id="tanggalMulai"
+                  type="date"
+                  value={laporanForm.tanggalSelesai}
+                  onChange={(e) =>
+                    setLaporanForm({ ...laporanForm, tanggalSelesai: e.target.value })
+                  }
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                />
+              </div>
+              <div>
+                <label htmlFor="tanggalAkhir" className="block text-sm mb-1">Tanggal Akhir</label>
+                <Input
+                  id="tanggalAkhir"
+                  type="date"
+                  value={laporanForm.tanggalSelesaiAkhir}
+                  onChange={(e) =>
+                    setLaporanForm({ ...laporanForm, tanggalSelesaiAkhir: e.target.value })
+                  }
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                />
+              </div>
+              <div>
+                <label htmlFor="buktiLink" className="block text-sm mb-1">Link Bukti</label>
+                <Input
+                  id="buktiLink"
+                  type="text"
+                  value={laporanForm.buktiLink}
+                  onChange={(e) =>
+                    setLaporanForm({ ...laporanForm, buktiLink: e.target.value })
+                  }
+                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                />
+              </div>
+            </div>
+            <div className="flex justify-end pt-2 space-x-2">
+              <Button
+                variant="secondary"
+                onClick={async () => {
+                  const r = await confirmCancel("Batalkan menambah bukti?");
+                  if (r.isConfirmed) {
+                    setShowUpload(false);
+                  }
+                }}
+              >
+                Batal
+              </Button>
+              <Button onClick={addLaporan}>Simpan Bukti</Button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
