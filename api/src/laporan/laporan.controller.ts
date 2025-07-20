@@ -51,14 +51,28 @@ export class LaporanController {
     return this.laporanService.getByUser(userId);
   }
 
+  @Get("mine/filter")
+  myReportsFiltered(
+    @Req() req: Request,
+    @Query("bulan") bulan?: string,
+    @Query("minggu") minggu?: string,
+  ) {
+    const userId = (req.user as AuthRequestUser).userId;
+    const week = minggu ? parseInt(minggu, 10) : undefined;
+    return this.laporanService.getByMonthWeek(userId, bulan, week);
+  }
+
   @Get("mine/export")
   async export(
     @Req() req: Request,
     @Res() res: Response,
     @Query("format") format = "xlsx",
+    @Query("bulan") bulan?: string,
+    @Query("minggu") minggu?: string,
   ) {
     const userId = (req.user as AuthRequestUser).userId;
-    const buf = await this.laporanService.export(userId, format);
+    const week = minggu ? parseInt(minggu, 10) : undefined;
+    const buf = await this.laporanService.export(userId, format, bulan, week);
     if (format === "pdf") {
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader("Content-Disposition", "attachment; filename=laporan.pdf");

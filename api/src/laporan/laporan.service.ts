@@ -175,8 +175,27 @@ export class LaporanService {
     return { success: true };
   }
 
-  async export(userId: number, format: string) {
-    const data = await this.getByUser(userId);
+  getByMonthWeek(userId: number, bulan?: string, minggu?: number) {
+    const where: any = { pegawaiId: userId };
+    if (bulan || minggu) {
+      where.penugasan = {};
+      if (bulan) where.penugasan.bulan = bulan;
+      if (minggu) where.penugasan.minggu = minggu;
+    }
+    return this.prisma.laporanHarian.findMany({
+      where,
+      orderBy: { tanggal: "desc" },
+      include: { penugasan: { include: { kegiatan: true } } },
+    });
+  }
+
+  async export(
+    userId: number,
+    format: string,
+    bulan?: string,
+    minggu?: number,
+  ) {
+    const data = await this.getByMonthWeek(userId, bulan, minggu);
     if (format === "pdf") {
       const doc = new PDFDocument({ margin: 30 });
       const buffers: Buffer[] = [];
@@ -199,26 +218,21 @@ export class LaporanService {
     } else {
       const wb = new Workbook();
       const ws = wb.addWorksheet("laporan");
-      ws.addRow([
-        "Tanggal",
-        "Kegiatan",
-        "Minggu",
-        "Bulan",
-        "Tahun",
-        "Status",
-        "Bukti",
-        "Catatan",
-      ]);
-      data.forEach((d: any) => {
+      ws.columns = [
+        { header: "No", width: 5 },
+        { header: "Tugas", width: 25 },
+        { header: "Tanggal Laporan", width: 15 },
+        { header: "Deskripsi Kegiatan", width: 40 },
+        { header: "Bukti Dukung", width: 30 },
+      ];
+      ws.getRow(1).font = { bold: true };
+      data.forEach((d: any, idx: number) => {
         ws.addRow([
-          d.tanggal.toISOString().slice(0, 10),
+          idx + 1,
           d.penugasan.kegiatan.namaKegiatan,
-          d.penugasan.minggu,
-          d.penugasan.bulan,
-          d.penugasan.tahun,
-          d.status,
+          d.tanggal.toISOString().slice(0, 10),
+          d.deskripsi || "",
           d.buktiLink || "",
-          d.catatan || "",
         ]);
       });
       return await wb.xlsx.writeBuffer();
