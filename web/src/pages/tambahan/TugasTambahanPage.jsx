@@ -212,17 +212,6 @@ export default function TugasTambahanPage() {
         disableFilters: true,
       },
       {
-        Header: "Bukti Dukung",
-        accessor: (row) => row.buktiLink,
-        Cell: ({ row }) =>
-          row.original.buktiLink ? (
-            <Check className="w-4 h-4 text-green-600" />
-          ) : (
-            <X className="w-4 h-4 text-red-600" />
-          ),
-        disableFilters: true,
-      },
-      {
         Header: "Aksi",
         accessor: "id",
         Cell: ({ row }) => (

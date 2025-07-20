@@ -57,7 +57,30 @@ describe('LaporanService submit', () => {
 
     expect(res).toEqual({ id: 10 });
     expect(prisma.laporanHarian.create).toHaveBeenCalled();
-    expect(prisma.penugasan.update).toHaveBeenCalled();
+    expect(prisma.penugasan.update).toHaveBeenCalledWith({
+      where: { id: 1 },
+      data: { status: STATUS.BELUM },
+    });
+  });
+
+  it('sets assignment status to selesai when any report finished', async () => {
+    prisma.penugasan.findUnique.mockResolvedValue({
+      id: 1,
+      pegawaiId: 1,
+      kegiatan: { teamId: 1 },
+    });
+    prisma.laporanHarian.create.mockResolvedValue({ id: 11 });
+    prisma.laporanHarian.findFirst.mockResolvedValueOnce({
+      status: STATUS.SELESAI_DIKERJAKAN,
+    });
+    prisma.penugasan.update.mockResolvedValue({});
+
+    await service.submit(data as any, 1, ROLES.ANGGOTA);
+
+    expect(prisma.penugasan.update).toHaveBeenCalledWith({
+      where: { id: 1 },
+      data: { status: STATUS.SELESAI_DIKERJAKAN },
+    });
   });
 });
 

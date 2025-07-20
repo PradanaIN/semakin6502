@@ -43,6 +43,10 @@ export default function PenugasanPage() {
   const canManage = [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(
     user?.role
   );
+  const showPegawaiColumn = useMemo(
+    () => [ROLES.ADMIN, ROLES.KETUA].includes(user?.role),
+    [user]
+  );
   const navigate = useNavigate();
   const [penugasan, setPenugasan] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
@@ -59,15 +63,39 @@ export default function PenugasanPage() {
   const [search, setSearch] = useState("");
   const [filterBulan, setFilterBulan] = useState("");
   const [filterTahun, setFilterTahun] = useState(new Date().getFullYear());
+  const [filterMinggu, setFilterMinggu] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [viewTab, setViewTab] = useState("all"); // all | mine | anggota
+
+  useEffect(() => {
+    const initWeek = async () => {
+      try {
+        const params = {};
+        if (filterBulan) params.bulan = filterBulan;
+        if (filterTahun) params.tahun = filterTahun;
+        const res = await axios.get("/penugasan", { params });
+        const weeks = (res.data || []).map((p) => p.minggu);
+        if (weeks.length) {
+          const latest = Math.max(...weeks);
+          setFilterMinggu(String(latest));
+        }
+      } catch (err) {
+        // ignore init errors
+      }
+    };
+    if (!filterMinggu) initWeek();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterBulan, filterTahun]);
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const penugasanReq = axios.get(
-        `/penugasan?bulan=${filterBulan || ""}&tahun=${filterTahun || ""}`
-      );
+      const params = {};
+      if (filterBulan) params.bulan = filterBulan;
+      if (filterTahun) params.tahun = filterTahun;
+      if (filterMinggu) params.minggu = filterMinggu;
+      const penugasanReq = axios.get("/penugasan", { params });
       const teamsReq = axios.get("/teams").then(async (res) => {
         if (Array.isArray(res.data) && res.data.length === 0) {
           return axios.get("/teams/member");
@@ -116,7 +144,7 @@ export default function PenugasanPage() {
     } finally {
       setLoading(false);
     }
-  }, [user, filterBulan, filterTahun, canManage]);
+  }, [user, filterBulan, filterTahun, filterMinggu, canManage]);
 
   useEffect(() => {
     fetchData();
@@ -137,14 +165,23 @@ export default function PenugasanPage() {
     }
   };
 
+  const myTasks = useMemo(
+    () => penugasan.filter((p) => p.pegawaiId === user?.id),
+    [penugasan, user?.id],
+  );
+
   const filtered = useMemo(() => {
     return penugasan.filter((p) => {
       const text = `${p.kegiatan?.namaKegiatan || ""} ${
         p.pegawai?.nama || ""
       }`.toLowerCase();
-      return text.includes(search.toLowerCase());
+      const matchesSearch = text.includes(search.toLowerCase());
+      if (viewTab === "mine") return matchesSearch && p.pegawaiId === user?.id;
+      if (viewTab === "anggota")
+        return matchesSearch && p.pegawaiId !== user?.id;
+      return matchesSearch;
     });
-  }, [penugasan, search]);
+  }, [penugasan, search, viewTab, user?.id]);
 
   const paginated = useMemo(
     () => filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize),
@@ -152,8 +189,8 @@ export default function PenugasanPage() {
   );
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const cols = [
       {
         Header: "No",
         accessor: (_row, i) => (currentPage - 1) * pageSize + i + 1,
@@ -169,11 +206,17 @@ export default function PenugasanPage() {
         accessor: (row) => row.kegiatan?.team?.namaTim || "-",
         disableFilters: true,
       },
-      {
+    ];
+
+    if (showPegawaiColumn) {
+      cols.push({
         Header: "Pegawai",
         accessor: (row) => row.pegawai?.nama || "-",
         disableFilters: true,
-      },
+      });
+    }
+
+    cols.push(
       { Header: "Minggu", accessor: "minggu", disableFilters: true },
       {
         Header: "Bulan",
@@ -200,10 +243,11 @@ export default function PenugasanPage() {
           </Button>
         ),
         disableFilters: true,
-      },
-    ],
-    [currentPage, pageSize, navigate]
-  );
+      }
+    );
+
+    return cols;
+  }, [currentPage, pageSize, navigate, showPegawaiColumn]);
 
   return (
     <div className="space-y-6">
@@ -223,13 +267,30 @@ export default function PenugasanPage() {
             year={filterTahun}
             onMonthChange={(val) => {
               setFilterBulan(val);
+              setFilterMinggu("");
               setCurrentPage(1);
             }}
             onYearChange={(val) => {
               setFilterTahun(val);
+              setFilterMinggu("");
               setCurrentPage(1);
             }}
           />
+          <select
+            value={filterMinggu}
+            onChange={(e) => {
+              setFilterMinggu(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
+          >
+            <option value="">Minggu</option>
+            {[1, 2, 3, 4, 5].map((m) => (
+              <option key={m} value={m}>
+                Minggu {m}
+              </option>
+            ))}
+          </select>
         </div>
         {canManage && (
           <Button onClick={openCreate} className="add-button">
@@ -237,6 +298,40 @@ export default function PenugasanPage() {
             <span className="hidden sm:inline">Tugas Mingguan</span>
           </Button>
         )}
+      </div>
+
+      {myTasks.length > 0 && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow">
+          <h2 className="font-semibold mb-2">Tugas untuk Saya</h2>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            {myTasks.map((t) => (
+              <li key={t.id}>
+                {t.kegiatan?.namaKegiatan || "-"} - Minggu {t.minggu}, {months[t.bulan - 1]} {t.tahun}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="flex flex-wrap gap-2" role="tablist">
+        {[
+          { id: "all", label: "Semua" },
+          { id: "mine", label: "Tugas untuk Saya" },
+          { id: "anggota", label: "Tugas Anggota" },
+        ].map((t) => (
+          <button
+            key={t.id}
+            onClick={() => {
+              setViewTab(t.id);
+              setCurrentPage(1);
+            }}
+            role="tab"
+            aria-selected={viewTab === t.id}
+            className={`px-4 py-2 rounded-lg font-semibold ${viewTab === t.id ? "bg-blue-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100"}`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
       <div className="overflow-x-auto md:overflow-x-visible">
