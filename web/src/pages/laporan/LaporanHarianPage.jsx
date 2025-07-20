@@ -12,7 +12,6 @@ import { STATUS, formatStatus } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
-import DateFilter from "../../components/ui/DateFilter";
 import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
@@ -22,10 +21,10 @@ export default function LaporanHarianPage() {
   const [laporan, setLaporan] = useState([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
-  // default to empty string so all laporan are shown initially
-  const [tanggal, setTanggal] = useState("");
+  // filter state
   const [bulan, setBulan] = useState("");
   const [minggu, setMinggu] = useState("");
+  const [weekOptions, setWeekOptions] = useState([]);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
@@ -37,6 +36,26 @@ export default function LaporanHarianPage() {
     buktiLink: "",
     catatan: "",
   });
+
+  // regenerate week options when month changes
+  useEffect(() => {
+    if (!bulan) {
+      setWeekOptions([]);
+      return;
+    }
+    const year = new Date().getFullYear();
+    const monthIdx = bulan - 1;
+    const firstOfMonth = new Date(year, monthIdx, 1);
+    const monthEnd = new Date(year, monthIdx + 1, 0);
+    const firstMonday = new Date(firstOfMonth);
+    firstMonday.setDate(firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7));
+    const opts = [];
+    for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+      opts.push(opts.length + 1);
+    }
+    setWeekOptions(opts);
+    if (minggu && minggu > opts.length) setMinggu("");
+  }, [bulan, minggu]);
 
   const fetchData = async () => {
     try {
@@ -106,8 +125,7 @@ export default function LaporanHarianPage() {
     const stat = l.status.toLowerCase();
     const txt = `${peg} ${keg} ${desc} ${cat} ${stat}`;
     const matchQuery = txt.includes(query.toLowerCase());
-    const matchDate = tanggal ? l.tanggal.slice(0, 10) === tanggal : true;
-    return matchQuery && matchDate;
+    return matchQuery;
   });
   const paginated = filtered.slice(
     (currentPage - 1) * pageSize,
@@ -177,14 +195,6 @@ export default function LaporanHarianPage() {
           placeholder="Cari..."
           ariaLabel="Cari"
         />
-        <DateFilter
-          tanggal={tanggal}
-          setTanggal={(date) => {
-            setTanggal(date);
-            setCurrentPage(1);
-          }}
-          setCurrentPage={setCurrentPage}
-        />
         <MonthYearPicker
           month={bulan}
           onMonthChange={(val) => {
@@ -201,7 +211,7 @@ export default function LaporanHarianPage() {
           className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
         >
           <option value="">Minggu</option>
-          {[1, 2, 3, 4, 5].map((m) => (
+          {weekOptions.map((m) => (
             <option key={m} value={m}>
               Minggu {m}
             </option>
