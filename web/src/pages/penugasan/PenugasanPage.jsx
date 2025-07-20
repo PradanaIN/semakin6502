@@ -61,6 +61,7 @@ export default function PenugasanPage() {
   const [filterTahun, setFilterTahun] = useState(new Date().getFullYear());
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [viewTab, setViewTab] = useState("all"); // all | mine | anggota
 
   const fetchData = useCallback(async () => {
     try {
@@ -137,14 +138,23 @@ export default function PenugasanPage() {
     }
   };
 
+  const myTasks = useMemo(
+    () => penugasan.filter((p) => p.pegawaiId === user?.id),
+    [penugasan, user?.id],
+  );
+
   const filtered = useMemo(() => {
     return penugasan.filter((p) => {
       const text = `${p.kegiatan?.namaKegiatan || ""} ${
         p.pegawai?.nama || ""
       }`.toLowerCase();
-      return text.includes(search.toLowerCase());
+      const matchesSearch = text.includes(search.toLowerCase());
+      if (viewTab === "mine") return matchesSearch && p.pegawaiId === user?.id;
+      if (viewTab === "anggota")
+        return matchesSearch && p.pegawaiId !== user?.id;
+      return matchesSearch;
     });
-  }, [penugasan, search]);
+  }, [penugasan, search, viewTab, user?.id]);
 
   const paginated = useMemo(
     () => filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize),
@@ -237,6 +247,40 @@ export default function PenugasanPage() {
             <span className="hidden sm:inline">Tugas Mingguan</span>
           </Button>
         )}
+      </div>
+
+      {myTasks.length > 0 && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow">
+          <h2 className="font-semibold mb-2">Tugas untuk Saya</h2>
+          <ul className="list-disc pl-5 space-y-1 text-sm">
+            {myTasks.map((t) => (
+              <li key={t.id}>
+                {t.kegiatan?.namaKegiatan || "-"} - Minggu {t.minggu}, {months[t.bulan - 1]} {t.tahun}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="flex flex-wrap gap-2" role="tablist">
+        {[
+          { id: "all", label: "Semua" },
+          { id: "mine", label: "Tugas untuk Saya" },
+          { id: "anggota", label: "Tugas Anggota" },
+        ].map((t) => (
+          <button
+            key={t.id}
+            onClick={() => {
+              setViewTab(t.id);
+              setCurrentPage(1);
+            }}
+            role="tab"
+            aria-selected={viewTab === t.id}
+            className={`px-4 py-2 rounded-lg font-semibold ${viewTab === t.id ? "bg-blue-600 text-white" : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100"}`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
       <div className="overflow-x-auto md:overflow-x-visible">
