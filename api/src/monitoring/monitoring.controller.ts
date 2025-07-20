@@ -71,13 +71,11 @@ export class MonitoringController {
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
 
-    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
-      if (!tId) throw new ForbiddenException("bukan admin");
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
       const member = await this.prisma.member.findFirst({
         where: { teamId: tId, userId: user.userId },
       });
-      if (!member || !member.isLeader)
-        throw new ForbiddenException("bukan ketua tim");
+      if (!member) throw new ForbiddenException("bukan anggota tim ini");
     }
 
     return this.monitoringService.harianAll(tanggal, tId);
@@ -96,13 +94,11 @@ export class MonitoringController {
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
 
-    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
-      if (!tId) throw new ForbiddenException("bukan admin");
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
       const member = await this.prisma.member.findFirst({
         where: { teamId: tId, userId: user.userId },
       });
-      if (!member || !member.isLeader)
-        throw new ForbiddenException("bukan ketua tim");
+      if (!member) throw new ForbiddenException("bukan anggota tim ini");
     }
 
     return this.monitoringService.harianBulan(tanggal, tId);
@@ -156,13 +152,11 @@ export class MonitoringController {
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
 
-    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
-      if (!tId) throw new ForbiddenException("bukan admin");
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
       const member = await this.prisma.member.findFirst({
         where: { teamId: tId, userId: user.userId },
       });
-      if (!member || !member.isLeader)
-        throw new ForbiddenException("bukan ketua tim");
+      if (!member) throw new ForbiddenException("bukan anggota tim ini");
     }
 
     return this.monitoringService.mingguanAll(minggu, tId);
@@ -216,13 +210,11 @@ export class MonitoringController {
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
 
-    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
-      if (!tId) throw new ForbiddenException("bukan admin");
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
       const member = await this.prisma.member.findFirst({
         where: { teamId: tId, userId: user.userId },
       });
-      if (!member || !member.isLeader)
-        throw new ForbiddenException("bukan ketua tim");
+      if (!member) throw new ForbiddenException("bukan anggota tim ini");
     }
 
     return this.monitoringService.mingguanBulan(tanggal, tId);
@@ -277,13 +269,11 @@ export class MonitoringController {
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
 
-    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
-      if (!tId) throw new ForbiddenException("bukan admin");
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
       const member = await this.prisma.member.findFirst({
         where: { teamId: tId, userId: user.userId },
       });
-      if (!member || !member.isLeader)
-        throw new ForbiddenException("bukan ketua tim");
+      if (!member) throw new ForbiddenException("bukan anggota tim ini");
     }
 
     return this.monitoringService.bulananAll(year, tId, bulan);
@@ -302,13 +292,11 @@ export class MonitoringController {
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
 
-    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
-      if (!tId) throw new ForbiddenException("bukan admin");
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
       const member = await this.prisma.member.findFirst({
         where: { teamId: tId, userId: user.userId },
       });
-      if (!member || !member.isLeader)
-        throw new ForbiddenException("bukan ketua tim");
+      if (!member) throw new ForbiddenException("bukan anggota tim ini");
     }
 
     return this.monitoringService.bulananMatrix(year, tId);
@@ -323,13 +311,11 @@ export class MonitoringController {
     const role = user?.role;
     const tId = teamId ? parseInt(teamId, 10) : undefined;
 
-    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
-      if (!tId) throw new ForbiddenException("bukan admin");
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
       const member = await this.prisma.member.findFirst({
         where: { teamId: tId, userId: user.userId },
       });
-      if (!member || !member.isLeader)
-        throw new ForbiddenException("bukan ketua tim");
+      if (!member) throw new ForbiddenException("bukan anggota tim ini");
     }
 
     return this.monitoringService.laporanTerlambat(tId);

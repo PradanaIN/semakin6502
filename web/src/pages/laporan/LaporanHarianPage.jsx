@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Pencil, Trash2, ExternalLink, X } from "lucide-react";
+import { Pencil, Trash2, ExternalLink, X, Download } from "lucide-react";
 import { showSuccess, handleAxiosError } from "../../utils/alerts";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
@@ -13,6 +13,7 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
 import DateFilter from "../../components/ui/DateFilter";
+import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 
@@ -23,6 +24,8 @@ export default function LaporanHarianPage() {
   const [query, setQuery] = useState("");
   // default to empty string so all laporan are shown initially
   const [tanggal, setTanggal] = useState("");
+  const [bulan, setBulan] = useState("");
+  const [minggu, setMinggu] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
@@ -38,11 +41,16 @@ export default function LaporanHarianPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const url =
-        user?.role === ROLES.ADMIN
-          ? "/laporan-harian/all"
-          : "/laporan-harian/mine";
-      const res = await axios.get(url);
+      const isAdmin = user?.role === ROLES.ADMIN;
+      const url = isAdmin
+        ? "/laporan-harian/all"
+        : "/laporan-harian/mine/filter";
+      const params = {};
+      if (!isAdmin) {
+        if (bulan) params.bulan = bulan;
+        if (minggu) params.minggu = minggu;
+      }
+      const res = await axios.get(url, { params });
       setLaporan(res.data);
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil laporan");
@@ -64,10 +72,31 @@ export default function LaporanHarianPage() {
     }
   };
 
+  const exportExcel = async () => {
+    try {
+      const params = {};
+      if (bulan) params.bulan = bulan;
+      if (minggu) params.minggu = minggu;
+      const res = await axios.get("/laporan-harian/mine/export", {
+        params,
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "laporan.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      handleAxiosError(err, "Gagal mengekspor");
+    }
+  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (user) fetchData();
-  }, [user]);
+  }, [user, bulan, minggu]);
 
   const filtered = laporan.filter((l) => {
     const peg = l.pegawai?.nama?.toLowerCase() || "";
@@ -156,6 +185,32 @@ export default function LaporanHarianPage() {
           }}
           setCurrentPage={setCurrentPage}
         />
+        <MonthYearPicker
+          month={bulan}
+          onMonthChange={(val) => {
+            setBulan(val);
+            setCurrentPage(1);
+          }}
+        />
+        <select
+          value={minggu}
+          onChange={(e) => {
+            setMinggu(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
+        >
+          <option value="">Minggu</option>
+          {[1, 2, 3, 4, 5].map((m) => (
+            <option key={m} value={m}>
+              Minggu {m}
+            </option>
+          ))}
+        </select>
+        <Button onClick={exportExcel} className="add-button" variant="primary">
+          <Download size={16} />
+          <span className="hidden sm:inline">Export</span>
+        </Button>
       </div>
       <>
         <div className="overflow-x-auto md:overflow-x-visible">

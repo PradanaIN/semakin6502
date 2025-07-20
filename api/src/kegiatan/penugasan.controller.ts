@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   Put,
   Delete,
+  BadRequestException,
 } from "@nestjs/common";
 import { Request } from "express";
 import { PenugasanService } from "./penugasan.service";
@@ -69,5 +70,13 @@ export class PenugasanController {
   remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
     const u = req.user as AuthRequestUser;
     return this.penugasanService.remove(id, u.userId, u.role);
+  }
+
+  @Get("minggu/all")
+  async getWeekAll(@Query("minggu") minggu?: string) {
+    if (!minggu) {
+      throw new BadRequestException("query 'minggu' diperlukan");
+    }
+    return this.penugasanService.byWeekGrouped(minggu);
   }
 }

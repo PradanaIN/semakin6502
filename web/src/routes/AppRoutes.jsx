@@ -19,6 +19,9 @@ const PenugasanPage = React.lazy(() =>
 const PenugasanDetailPage = React.lazy(() =>
   import("../pages/penugasan/PenugasanDetailPage")
 );
+const WeeklyTasksPage = React.lazy(() =>
+  import("../pages/penugasan/WeeklyTasksPage")
+);
 const LaporanHarianPage = React.lazy(() =>
   import("../pages/laporan/LaporanHarianPage")
 );
@@ -92,6 +95,7 @@ export default function AppRoutes() {
             }
           />
           <Route path="profile" element={<ProfilePage />} />
+
           <Route
             path="users"
             element={
@@ -143,7 +147,7 @@ export default function AppRoutes() {
           <Route
             path="monitoring"
             element={
-              <RoleRoute roles={[ROLES.ADMIN, ROLES.PIMPINAN]}>
+              <RoleRoute roles={[ROLES.ADMIN, ROLES.PIMPINAN, ROLES.KETUA, ROLES.ANGGOTA]}>
                 <MonitoringPage />
               </RoleRoute>
             }
@@ -151,7 +155,7 @@ export default function AppRoutes() {
           <Route
             path="laporan-terlambat"
             element={
-              <RoleRoute roles={[ROLES.ADMIN, ROLES.PIMPINAN]}>
+              <RoleRoute roles={[ROLES.ADMIN, ROLES.PIMPINAN, ROLES.KETUA, ROLES.ANGGOTA]}>
                 <MissedReportsPage />
               </RoleRoute>
             }
@@ -159,7 +163,7 @@ export default function AppRoutes() {
           <Route
             path="tugas-tambahan"
             element={
-              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA]}>
+              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
                 <TugasTambahanPage />
               </RoleRoute>
             }
@@ -167,7 +171,7 @@ export default function AppRoutes() {
           <Route
             path="tugas-tambahan/:id"
             element={
-              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA]}>
+              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
                 <TugasTambahanDetailPage />
               </RoleRoute>
             }
