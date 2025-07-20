@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Pencil, Trash2, ExternalLink, X, Download } from "lucide-react";
+import { Pencil, Trash2, ExternalLink, Minus, Download } from "lucide-react";
 import { showSuccess, handleAxiosError } from "../../utils/alerts";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
@@ -154,9 +154,10 @@ export default function LaporanHarianPage() {
             />
           </a>
         ) : (
-          <X className="w-4 h-4 text-red-600" />
+          <Minus className="w-4 h-4 mx-auto text-gray-500" />
         ),
       disableFilters: true,
+      cellClassName: "text-center",
     },
     {
       Header: "Catatan",

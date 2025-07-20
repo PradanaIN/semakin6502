@@ -76,7 +76,7 @@ export default function DataTable({
         : undefined,
       enableColumnFilter: !col.disableFilters,
       filterFn: col.filter,
-      meta: { Filter: col.Filter },
+      meta: { Filter: col.Filter, cellClassName: col.cellClassName },
     }));
 
     const selectColumn = {
