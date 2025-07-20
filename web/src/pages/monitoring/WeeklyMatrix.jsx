@@ -1,4 +1,5 @@
 import React from "react";
+import getProgressColor from "../../utils/progressColor";
 
 export const WeeklyMatrixRow = ({ user, progressColor }) => (
   <tr className="text-center">
@@ -25,21 +26,7 @@ export const WeeklyMatrixRow = ({ user, progressColor }) => (
 
 const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek }) => {
   if (!Array.isArray(data) || data.length === 0) return null;
-
-  const colorFor = (p) => {
-    if (p >= 80) return "green";
-    if (p >= 50) return "yellow";
-    return "red";
-  };
-
-  const progressColor = (p) => {
-    const c = colorFor(p);
-    return c === "green"
-      ? "bg-green-500"
-      : c === "yellow"
-      ? "bg-yellow-500"
-      : "bg-red-500";
-  };
+  const progressColor = getProgressColor;
 
   return (
     <div className="overflow-auto md:overflow-visible">

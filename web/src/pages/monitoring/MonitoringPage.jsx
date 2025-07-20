@@ -11,24 +11,11 @@ import MonthlyMatrix from "../../components/monitoring/MonthlyMatrix";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 import { handleAxiosError } from "../../utils/alerts";
+import getProgressColor from "../../utils/progressColor";
 
 const WeeklyProgressTable = ({ data = [] }) => {
   if (!Array.isArray(data) || data.length === 0) return null;
-
-  const colorFor = (p) => {
-    if (p >= 80) return "green";
-    if (p >= 50) return "yellow";
-    return "red";
-  };
-
-  const progressColor = (p) => {
-    const c = colorFor(p);
-    return c === "green"
-      ? "bg-green-500"
-      : c === "yellow"
-      ? "bg-yellow-500"
-      : "bg-red-500";
-  };
+  const progressColor = getProgressColor;
 
   return (
     <div className="overflow-auto md:overflow-visible mt-4">
