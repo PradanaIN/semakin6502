@@ -43,6 +43,10 @@ export default function PenugasanPage() {
   const canManage = [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(
     user?.role
   );
+  const showPegawaiColumn = useMemo(
+    () => [ROLES.ADMIN, ROLES.KETUA].includes(user?.role),
+    [user]
+  );
   const navigate = useNavigate();
   const [penugasan, setPenugasan] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
@@ -152,8 +156,8 @@ export default function PenugasanPage() {
   );
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const cols = [
       {
         Header: "No",
         accessor: (_row, i) => (currentPage - 1) * pageSize + i + 1,
@@ -169,11 +173,17 @@ export default function PenugasanPage() {
         accessor: (row) => row.kegiatan?.team?.namaTim || "-",
         disableFilters: true,
       },
-      {
+    ];
+
+    if (showPegawaiColumn) {
+      cols.push({
         Header: "Pegawai",
         accessor: (row) => row.pegawai?.nama || "-",
         disableFilters: true,
-      },
+      });
+    }
+
+    cols.push(
       { Header: "Minggu", accessor: "minggu", disableFilters: true },
       {
         Header: "Bulan",
@@ -200,10 +210,11 @@ export default function PenugasanPage() {
           </Button>
         ),
         disableFilters: true,
-      },
-    ],
-    [currentPage, pageSize, navigate]
-  );
+      }
+    );
+
+    return cols;
+  }, [currentPage, pageSize, navigate, showPegawaiColumn]);
 
   return (
     <div className="space-y-6">
