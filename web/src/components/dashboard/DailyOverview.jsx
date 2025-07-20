@@ -2,8 +2,9 @@ import { getHolidays } from "../../utils/holidays";
 import Legend from "../ui/Legend";
 
 const DailyOverview = ({ data = [] }) => {
-  if (!Array.isArray(data))
-    return <p>✊🙏✊✊🙏✊🙏 Data tidak tersedia 🫰🫰🤟🤟☝☝</p>;
+  if (!Array.isArray(data)) {
+    return <p>Data tidak tersedia</p>;
+  }
 
   const today = new Date().toISOString().slice(0, 10);
   const currentYear = new Date(today).getFullYear();
