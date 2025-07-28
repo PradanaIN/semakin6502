@@ -4,7 +4,13 @@ export const DailyMatrixRow = ({ user, boxClass }) => (
   <tr className="text-center">
     <td className="p-2 border text-left whitespace-nowrap text-sm">{user.nama}</td>
     {user.detail.map((day, i) => (
-      <td key={i} className={`p-1 border ${boxClass(day)}`}>{day.count || ""}</td>
+      <td
+        key={i}
+        title={day.count ? `${day.count} laporan` : undefined}
+        className={`p-1 border ${boxClass(day)}`}
+      >
+        {day.count || ""}
+      </td>
     ))}
   </tr>
 );
@@ -58,6 +64,9 @@ const DailyMatrix = ({ data = [] }) => {
           ))}
         </tbody>
       </table>
+      <p className="mt-1 text-xs text-gray-500 italic">
+        Angka menunjukkan jumlah laporan pada tanggal tersebut.
+      </p>
     </div>
   );
 };
