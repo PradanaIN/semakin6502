@@ -24,7 +24,7 @@ export const WeeklyMatrixRow = ({ user, progressColor }) => (
   </tr>
 );
 
-const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek }) => {
+const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek, selectedWeek }) => {
   if (!Array.isArray(data) || data.length === 0) return null;
   const progressColor = getProgressColor;
 
@@ -38,7 +38,9 @@ const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek }) => {
               <th
                 key={i}
                 onClick={() => onSelectWeek && onSelectWeek(i)}
-                className="p-2 border text-center cursor-pointer"
+                className={`p-2 border text-center cursor-pointer ${
+                  selectedWeek === i ? "bg-blue-200 dark:bg-blue-600" : ""
+                }`}
               >
                 Minggu {i + 1}
               </th>
