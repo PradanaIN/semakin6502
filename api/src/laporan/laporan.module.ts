@@ -4,8 +4,10 @@ import { LaporanService } from "./laporan.service";
 import { TambahanController } from "./tugas-tambahan.controller";
 import { TambahanService } from "./tugas-tambahan.service";
 import { PrismaService } from "../prisma.service";
+import { NotificationsModule } from "../notifications/notifications.module";
 
 @Module({
+  imports: [NotificationsModule],
   controllers: [LaporanController, TambahanController],
   providers: [PrismaService, LaporanService, TambahanService],
 })

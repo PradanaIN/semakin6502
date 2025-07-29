@@ -1,24 +1,34 @@
 import { Injectable } from "@nestjs/common";
-
-interface Notification {
-  id: number;
-  text: string;
-  read: boolean;
-}
+import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class NotificationsService {
-  private notifications: Notification[] = [
-    { id: 1, text: "Laporan harian belum dikirim", read: false },
-    { id: 2, text: "Penugasan baru tersedia", read: false },
-    { id: 3, text: "Tim Anda telah diperbarui", read: false },
-  ];
+  constructor(private prisma: PrismaService) {}
 
-  findAll() {
-    return this.notifications;
+  create(userId: number, text: string, link?: string) {
+    return this.prisma.notification.create({
+      data: { userId, text, link },
+    });
   }
 
-  markAllAsRead() {
-    this.notifications = this.notifications.map((n) => ({ ...n, read: true }));
+  findByUser(userId: number) {
+    return this.prisma.notification.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  markAsRead(id: number, userId: number) {
+    return this.prisma.notification.updateMany({
+      where: { id, userId },
+      data: { isRead: true },
+    });
+  }
+
+  markAllAsRead(userId: number) {
+    return this.prisma.notification.updateMany({
+      where: { userId, isRead: false },
+      data: { isRead: true },
+    });
   }
 }

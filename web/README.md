@@ -89,3 +89,9 @@ const columns = [
 - `selectable` – include checkbox column for row selection
 - `showColumnFilters` – whether to display per-column filter dropdowns (default `true`); disabling it hides the filters
 
+## Notifications
+
+Header bell icon menampilkan daftar notifikasi terbaru. Klik notifikasi untuk
+menandainya sebagai telah dibaca dan langsung membuka tautan terkait. Tombol
+"Tandai sudah dibaca" akan menandai semua notifikasi sebagai selesai.
+
