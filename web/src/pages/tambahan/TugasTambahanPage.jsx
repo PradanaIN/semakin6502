@@ -44,6 +44,7 @@ export default function TugasTambahanPage() {
   const navigate = useNavigate();
   const tanggalRef = useRef(null);
   const { user } = useAuth();
+  const canManage = user?.role !== ROLES.PIMPINAN;
   const [filterTeam, setFilterTeam] = useState("");
   const [filterUser, setFilterUser] = useState("");
 
@@ -54,7 +55,7 @@ export default function TugasTambahanPage() {
       if (filterTeam) params.teamId = filterTeam;
       if (filterUser) params.userId = filterUser;
       const tugasReq =
-        user?.role === ROLES.ADMIN
+        user?.role === ROLES.ADMIN || user?.role === ROLES.PIMPINAN
           ? axios.get("/tugas-tambahan/all", { params })
           : axios.get("/tugas-tambahan");
 
@@ -188,7 +189,7 @@ export default function TugasTambahanPage() {
         accessor: (row) => row.kegiatan.team?.namaTim || "-",
         disableFilters: true,
       },
-      ...(user?.role === ROLES.ADMIN
+      ...([ROLES.ADMIN, ROLES.PIMPINAN].includes(user?.role)
         ? [
             {
               Header: "Nama",
@@ -282,12 +283,14 @@ export default function TugasTambahanPage() {
           )}
         </div>
 
-        <div className="flex justify-between items-center">
-          <Button onClick={openCreate} className="add-button">
-            <Plus size={16} />
-            <span className="hidden sm:inline">Tugas Tambahan</span>
-          </Button>
-        </div>
+        {canManage && (
+          <div className="flex justify-between items-center">
+            <Button onClick={openCreate} className="add-button">
+              <Plus size={16} />
+              <span className="hidden sm:inline">Tugas Tambahan</span>
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="overflow-x-auto md:overflow-x-visible">
@@ -314,7 +317,7 @@ export default function TugasTambahanPage() {
         />
       </div>
 
-      {showForm && (
+      {canManage && showForm && (
         <Modal
           onClose={() => {
             setShowForm(false);
