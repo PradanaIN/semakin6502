@@ -6,16 +6,22 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
+const formatWita = (iso) =>
+  new Date(iso).toLocaleString("id-ID", { timeZone: "Asia/Makassar" });
+
 export default function MissedReportsPage() {
   const [data, setData] = useState({ day1: [], day3: [], day7: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await axios.get("/monitoring/laporan/terlambat");
         setData(res.data);
+        const last = await axios.get('/monitoring/last-update');
+        setLastUpdate(last.data.lastUpdate);
       } catch {
         setError(true);
       } finally {
@@ -203,6 +209,11 @@ export default function MissedReportsPage() {
           </button>
         </div>
       </div>
+      {lastUpdate && (
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          Data terakhir diperbarui: {formatWita(lastUpdate)}
+        </p>
+      )}
 
       {/* Error State */}
       {error && (

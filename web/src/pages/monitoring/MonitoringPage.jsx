@@ -8,6 +8,9 @@ import axios from "axios";
 import { ROLES } from "../../utils/roles";
 import { handleAxiosError } from "../../utils/alerts";
 
+const formatWita = (iso) =>
+  new Date(iso).toLocaleString("id-ID", { timeZone: "Asia/Makassar" });
+
 export default function MonitoringPage() {
   const [tab, setTab] = useState("harian");
   const [monthIndex, setMonthIndex] = useState(new Date().getMonth());
@@ -16,6 +19,7 @@ export default function MonitoringPage() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [teamId, setTeamId] = useState("");
   const [teams, setTeams] = useState([]);
+  const [lastUpdate, setLastUpdate] = useState("");
 
   const headings = {
     harian: "Daftar Laporan Harian",
@@ -39,6 +43,16 @@ export default function MonitoringPage() {
     };
     fetchTeams();
   }, [user?.role]);
+
+  useEffect(() => {
+    const getUpdate = async () => {
+      try {
+        const res = await axios.get('/monitoring/last-update');
+        setLastUpdate(res.data.lastUpdate);
+      } catch {}
+    };
+    getUpdate();
+  }, []);
 
   // Generate minggu setiap bulan berubah
   useEffect(() => {
@@ -85,6 +99,11 @@ export default function MonitoringPage() {
             userRole={user?.role}
           />
         </div>
+        {lastUpdate && (
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Data terakhir diperbarui: {formatWita(lastUpdate)}
+          </p>
+        )}
 
         <AnimatePresence mode="wait">
           <motion.div
