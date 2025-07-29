@@ -47,6 +47,8 @@ export default function TugasTambahanPage() {
   const canManage = user?.role !== ROLES.PIMPINAN;
   const [filterTeam, setFilterTeam] = useState("");
   const [filterUser, setFilterUser] = useState("");
+  const [filterMinggu, setFilterMinggu] = useState("");
+  const [weekOptions, setWeekOptions] = useState([]);
 
   const fetchData = async () => {
     try {
@@ -112,6 +114,26 @@ export default function TugasTambahanPage() {
     }
   }, [filterTeam, teams, allUsers, user?.role]);
 
+  useEffect(() => {
+    if (!filterBulan || !filterTahun) {
+      setWeekOptions([]);
+      setFilterMinggu("");
+      return;
+    }
+    const year = parseInt(filterTahun, 10);
+    const monthIdx = parseInt(filterBulan, 10) - 1;
+    const firstOfMonth = new Date(year, monthIdx, 1);
+    const monthEnd = new Date(year, monthIdx + 1, 0);
+    const firstMonday = new Date(firstOfMonth);
+    firstMonday.setDate(firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7));
+    const opts = [];
+    for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+      opts.push(opts.length + 1);
+    }
+    setWeekOptions(opts);
+    if (filterMinggu && filterMinggu > opts.length) setFilterMinggu("");
+  }, [filterBulan, filterTahun, filterMinggu]);
+
   const openCreate = () => {
     setForm({
       teamId: "",
@@ -166,15 +188,27 @@ export default function TugasTambahanPage() {
       const matchUser = filterUser
         ? item.userId === parseInt(filterUser, 10)
         : true;
+      let matchMinggu = true;
+      if (filterMinggu && filterBulan && filterTahun) {
+        const year = parseInt(filterTahun, 10);
+        const monthIdx = parseInt(filterBulan, 10) - 1;
+        const firstOfMonth = new Date(year, monthIdx, 1);
+        const firstMonday = new Date(firstOfMonth);
+        firstMonday.setDate(firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7));
+        const diffDays = Math.floor((date - firstMonday) / (7 * 24 * 60 * 60 * 1000));
+        const weekNum = diffDays + 1;
+        matchMinggu = weekNum === parseInt(filterMinggu, 10);
+      }
       return (
         matchesSearch &&
         matchBulan &&
         matchTahun &&
         matchTeam &&
-        matchUser
+        matchUser &&
+        matchMinggu
       );
     });
-  }, [items, search, filterBulan, filterTahun, filterTeam, filterUser]);
+  }, [items, search, filterBulan, filterTahun, filterTeam, filterUser, filterMinggu]);
 
   const paginatedItems = filteredItems.slice(
     (currentPage - 1) * pageSize,
@@ -246,57 +280,74 @@ export default function TugasTambahanPage() {
             placeholder="Cari kegiatan..."
             ariaLabel="Cari kegiatan"
           />
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          {[ROLES.ADMIN, ROLES.PIMPINAN].includes(user?.role) && (
+            <select
+              value={filterTeam}
+              onChange={(e) => {
+                setFilterTeam(e.target.value);
+                setFilterUser("");
+                setCurrentPage(1);
+              }}
+              className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out"
+            >
+              <option value="">Semua Tim</option>
+              {teams.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.namaTim}
+                </option>
+              ))}
+            </select>
+          )}
           <MonthYearPicker
             month={filterBulan}
             year={filterTahun}
-            onMonthChange={setFilterBulan}
-            onYearChange={setFilterTahun}
+            onMonthChange={(val) => {
+              setFilterBulan(val);
+              setFilterMinggu("");
+            }}
+            onYearChange={(val) => {
+              setFilterTahun(val);
+              setFilterMinggu("");
+            }}
           />
+          <select
+            value={filterMinggu}
+            onChange={(e) => setFilterMinggu(e.target.value)}
+            className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out"
+          >
+            <option value="">Minggu</option>
+            {weekOptions.map((w) => (
+              <option key={w} value={w}>
+                Minggu {w}
+              </option>
+            ))}
+          </select>
           {[ROLES.ADMIN, ROLES.PIMPINAN].includes(user?.role) && (
-            <>
-              <select
-                value={filterTeam}
-                onChange={(e) => {
-                  setFilterTeam(e.target.value);
-                  setFilterUser("");
-                  setCurrentPage(1);
-                }}
-                className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out"
-              >
-                <option value="">Semua Tim</option>
-                {teams.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.namaTim}
-                  </option>
-                ))}
-              </select>
-              <select
-                value={filterUser}
-                onChange={(e) => {
-                  setFilterUser(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out"
-              >
-                <option value="">Semua Pegawai</option>
-                {users.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.nama}
-                  </option>
-                ))}
-              </select>
-            </>
+            <select
+              value={filterUser}
+              onChange={(e) => {
+                setFilterUser(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out"
+            >
+              <option value="">Semua Pegawai</option>
+              {users.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.nama}
+                </option>
+              ))}
+            </select>
           )}
-        </div>
-
-        {canManage && (
-          <div className="flex justify-between items-center">
+          {canManage && (
             <Button onClick={openCreate} className="add-button">
               <Plus size={16} />
               <span className="hidden sm:inline">Tugas Tambahan</span>
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <div className="overflow-x-auto md:overflow-x-visible">
