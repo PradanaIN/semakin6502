@@ -6,6 +6,7 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import formatDate from "../../utils/formatDate";
+import exportFileName from "../../utils/exportFileName";
 
 const formatWita = (iso) =>
   new Date(iso).toLocaleString("id-ID", { timeZone: "Asia/Makassar" });
@@ -99,8 +100,8 @@ export default function MissedReportsPage() {
 
         currentY = doc.lastAutoTable.finalY + 10;
       });
-
-      doc.save("status_pelaporan_harian.pdf");
+      const name = `${exportFileName("LaporanTerlambat")}.pdf`;
+      doc.save(name);
     };
   };
 
@@ -114,7 +115,8 @@ export default function MissedReportsPage() {
     const ws = XLSX.utils.json_to_sheet(sheetData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Status_Pelaporan");
-    XLSX.writeFile(wb, "status_pelaporan_harian.xlsx");
+    const name = `${exportFileName("LaporanTerlambat")}.xlsx`;
+    XLSX.writeFile(wb, name);
   };
 
   const renderList = (users) => (
