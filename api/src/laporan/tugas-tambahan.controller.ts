@@ -27,6 +27,7 @@ export class TambahanController {
   constructor(private readonly tambahanService: TambahanService) {}
 
   @Post()
+  @Roles(ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA)
   add(@Body() body: AddTambahanDto, @Req() req: Request) {
     const userId = (req.user as AuthRequestUser).userId;
     return this.tambahanService.add({ ...body, userId });
@@ -39,7 +40,7 @@ export class TambahanController {
   }
 
   @Get('all')
-  @Roles(ROLES.ADMIN)
+  @Roles(ROLES.ADMIN, ROLES.PIMPINAN)
   getAll(
     @Query('teamId') teamId?: string,
     @Query('userId') userId?: string,
@@ -51,11 +52,12 @@ export class TambahanController {
 
   @Get(":id")
   detail(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
-    const userId = (req.user as AuthRequestUser).userId;
-    return this.tambahanService.getOne(id, userId);
+    const { userId, role } = req.user as AuthRequestUser;
+    return this.tambahanService.getOne(id, userId, role);
   }
 
   @Put(":id")
+  @Roles(ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA)
   update(
     @Param("id", ParseIntPipe) id: number,
     @Body() body: UpdateTambahanDto,
@@ -66,6 +68,7 @@ export class TambahanController {
   }
 
   @Delete(":id")
+  @Roles(ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA)
   remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
     const userId = (req.user as AuthRequestUser).userId;
     return this.tambahanService.remove(id, userId);
