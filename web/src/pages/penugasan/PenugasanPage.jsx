@@ -290,27 +290,21 @@ export default function PenugasanPage() {
             onMonthChange={(val) => {
               setFilterBulan(val);
               setFilterMinggu("");
-              setCurrentPage(1);
             }}
             onYearChange={(val) => {
               setFilterTahun(val);
               setFilterMinggu("");
-              setCurrentPage(1);
             }}
           />
           <select
             value={filterMinggu}
-            onChange={(e) => {
-              setFilterMinggu(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
-            aria-label="Filter Minggu"
+            onChange={(e) => setFilterMinggu(e.target.value)}
+            className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out"
           >
             <option value="">Minggu</option>
-            {[1, 2, 3, 4, 5].map((m) => (
-              <option key={m} value={m}>
-                Minggu {m}
+            {weekOptions.map((w) => (
+              <option key={w} value={w}>
+                Minggu {w}
               </option>
             ))}
           </select>

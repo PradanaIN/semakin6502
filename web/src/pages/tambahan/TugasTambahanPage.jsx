@@ -72,7 +72,9 @@ export default function TugasTambahanPage() {
           }
           return res;
         }),
-        user?.role === ROLES.ADMIN ? axios.get("/users") : Promise.resolve({ data: [] }),
+        user?.role === ROLES.ADMIN
+          ? axios.get("/users")
+          : Promise.resolve({ data: [] }),
       ]);
       setItems(tRes.data);
       setKegiatan(kRes.data.data || kRes.data);
@@ -125,9 +127,15 @@ export default function TugasTambahanPage() {
     const firstOfMonth = new Date(year, monthIdx, 1);
     const monthEnd = new Date(year, monthIdx + 1, 0);
     const firstMonday = new Date(firstOfMonth);
-    firstMonday.setDate(firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7));
+    firstMonday.setDate(
+      firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
+    );
     const opts = [];
-    for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+    for (
+      let d = new Date(firstMonday);
+      d <= monthEnd;
+      d.setDate(d.getDate() + 7)
+    ) {
       opts.push(opts.length + 1);
     }
     setWeekOptions(opts);
@@ -162,7 +170,6 @@ export default function TugasTambahanPage() {
     }
   };
 
-
   const openDetail = (id) => {
     navigate(`/tugas-tambahan/${id}`);
   };
@@ -194,8 +201,12 @@ export default function TugasTambahanPage() {
         const monthIdx = parseInt(filterBulan, 10) - 1;
         const firstOfMonth = new Date(year, monthIdx, 1);
         const firstMonday = new Date(firstOfMonth);
-        firstMonday.setDate(firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7));
-        const diffDays = Math.floor((date - firstMonday) / (7 * 24 * 60 * 60 * 1000));
+        firstMonday.setDate(
+          firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
+        );
+        const diffDays = Math.floor(
+          (date - firstMonday) / (7 * 24 * 60 * 60 * 1000)
+        );
         const weekNum = diffDays + 1;
         matchMinggu = weekNum === parseInt(filterMinggu, 10);
       }
@@ -208,7 +219,15 @@ export default function TugasTambahanPage() {
         matchMinggu
       );
     });
-  }, [items, search, filterBulan, filterTahun, filterTeam, filterUser, filterMinggu]);
+  }, [
+    items,
+    search,
+    filterBulan,
+    filterTahun,
+    filterTeam,
+    filterUser,
+    filterMinggu,
+  ]);
 
   const paginatedItems = filteredItems.slice(
     (currentPage - 1) * pageSize,
@@ -259,7 +278,11 @@ export default function TugasTambahanPage() {
         accessor: "id",
         Cell: ({ row }) => (
           <div className="space-x-2">
-            <Button onClick={() => openDetail(row.original.id)} icon aria-label="Detail">
+            <Button
+              onClick={() => openDetail(row.original.id)}
+              icon
+              aria-label="Detail"
+            >
               <Eye size={16} />
             </Button>
           </div>
@@ -324,23 +347,6 @@ export default function TugasTambahanPage() {
               </option>
             ))}
           </select>
-          {[ROLES.ADMIN, ROLES.PIMPINAN].includes(user?.role) && (
-            <select
-              value={filterUser}
-              onChange={(e) => {
-                setFilterUser(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out"
-            >
-              <option value="">Semua Pegawai</option>
-              {users.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.nama}
-                </option>
-              ))}
-            </select>
-          )}
           {canManage && (
             <Button onClick={openCreate} className="add-button">
               <Plus size={16} />
@@ -354,7 +360,13 @@ export default function TugasTambahanPage() {
         {loading ? (
           <TableSkeleton cols={columns.length} />
         ) : (
-          <DataTable columns={columns} data={paginatedItems} showGlobalFilter={false} showPagination={false} selectable={false} />
+          <DataTable
+            columns={columns}
+            data={paginatedItems}
+            showGlobalFilter={false}
+            showPagination={false}
+            selectable={false}
+          />
         )}
       </div>
 
