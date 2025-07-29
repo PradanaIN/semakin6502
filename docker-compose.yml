@@ -27,6 +27,8 @@ services:
       JWT_SECRET: supersecret
       PORT: 3000
       CORS_ORIGIN: http://localhost:5173
+      THROTTLE_TTL: 900
+      THROTTLE_LIMIT: 500
     ports:
       - "3000:3000"
     depends_on:

@@ -12,9 +12,17 @@ import { RolesModule } from "./roles/roles.module";
 import { NotificationsModule } from "./notifications/notifications.module";
 import { HealthController } from "./health.controller";
 
+const ttl = process.env.THROTTLE_TTL
+  ? parseInt(process.env.THROTTLE_TTL, 10)
+  : minutes(15);
+
+const limit = process.env.THROTTLE_LIMIT
+  ? parseInt(process.env.THROTTLE_LIMIT, 10)
+  : 100;
+
 @Module({
   imports: [
-    ThrottlerModule.forRoot([{ ttl: minutes(15), limit: 100 }]),
+    ThrottlerModule.forRoot([{ ttl, limit }]),
     AuthModule,
     UsersModule,
     TeamsModule,
