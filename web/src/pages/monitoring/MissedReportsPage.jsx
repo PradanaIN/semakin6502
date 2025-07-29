@@ -21,7 +21,7 @@ export default function MissedReportsPage() {
       try {
         const res = await axios.get("/monitoring/laporan/terlambat");
         setData(res.data);
-        const last = await axios.get('/monitoring/last-update');
+        const last = await axios.get("/monitoring/last-update");
         setLastUpdate(last.data.lastUpdate);
       } catch {
         setError(true);
@@ -31,7 +31,6 @@ export default function MissedReportsPage() {
     };
     fetchData();
   }, []);
-
 
   const formatToday = () => {
     const today = new Date();
@@ -124,7 +123,7 @@ export default function MissedReportsPage() {
         <thead className="bg-gray-100 dark:bg-gray-700 text-xs uppercase font-semibold">
           <tr>
             <th className="px-4 py-2">Nama</th>
-            <th className="px-4 py-2 text-right">Status</th>
+            <th className="px-4 py-2 text-right">Terakhir Melapor</th>
           </tr>
         </thead>
         <tbody>
@@ -137,7 +136,7 @@ export default function MissedReportsPage() {
               <td className="px-4 py-2 text-right">
                 {u.lastDate ? (
                   <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">
-                    {formatDate(u.lastDate)} • {daysSince(u.lastDate)} hari
+                    {formatDate(u.lastDate)} • {daysSince(u.lastDate)} hari lalu
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-gray-200 text-gray-700 rounded-full">
