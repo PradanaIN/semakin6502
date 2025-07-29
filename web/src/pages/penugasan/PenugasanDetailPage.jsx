@@ -23,6 +23,7 @@ import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import months from "../../utils/months";
 import formatDate from "../../utils/formatDate";
+import Loading from "../../components/Loading";
 
 export default function PenugasanDetailPage() {
   const { id } = useParams();
@@ -283,33 +284,9 @@ export default function PenugasanDetailPage() {
     }
   };
 
-  if (!item) return;
-
-  <div className="flex flex-col justify-center items-center h-72 space-y-3">
-    <svg
-      className="animate-spin h-10 w-10 text-blue-600"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      ></circle>
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 6.364A8.001 8.001 0 0112 20v4c-6.627 0-12-5.373-12-12h4a8.001 8.001 0 006.364 2.93zM20 12a8 8 0 01-8 8v4c6.627 0 12-5.373 12-12h-4zm-2.93-6.364A8.001 8.001 0 0112 4V0c6.627 0 12 5.373 12 12h-4a8.001 8.001 0 00-6.364-2.93z"
-      ></path>
-    </svg>
-    <span className="text-lg font-medium text-gray-600 dark:text-gray-300">
-      Memuat data penugasan...
-    </span>
-  </div>;
+  if (!item) {
+    return <Loading fullScreen />;
+  }
 
   return (
     <div className="p-3 space-y-4">

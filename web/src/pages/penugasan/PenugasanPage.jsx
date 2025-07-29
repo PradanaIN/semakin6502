@@ -26,6 +26,7 @@ import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
 import Skeleton from "../../components/ui/Skeleton";
 import { AnimatePresence, motion } from "framer-motion";
+import Spinner from "../../components/Spinner";
 
 const EXCLUDED_TB_NAMES = ["Ayu Pinta Gabina Siregar", "Elly Astutik"];
 
@@ -334,26 +335,7 @@ export default function PenugasanPage() {
           <div className="py-6 text-center text-gray-600 dark:text-gray-300">
             <Skeleton width={100} height={32} count={5} className="mb-2" />
             <div className="flex flex-col items-center space-y-2">
-              <svg
-                className="animate-spin h-6 w-6 text-blue-600"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 6.364A8.001 8.001 0 0112 20v4c-6.627 0-12-5.373-12-12h4a8.001 8.001 0 006.364 2.93z"
-                />
-              </svg>
+              <Spinner className="h-6 w-6 text-blue-600" />
               <span className="text-sm font-medium tracking-wide">
                 Memuat data...
               </span>
