@@ -8,7 +8,7 @@ jest.mock('../pages/auth/useAuth');
 const mockedUseAuth = useAuth;
 
 describe('Sidebar role visibility', () => {
-  test('pimpinan sees tugas mingguan and monitoring links', () => {
+  test('pimpinan sees only monitoring related links', () => {
     mockedUseAuth.mockReturnValue({ user: { role: 'pimpinan' } });
     render(
       <MemoryRouter>
@@ -19,7 +19,11 @@ describe('Sidebar role visibility', () => {
     expect(screen.getByText(/Keterlambatan/i)).toBeInTheDocument();
     expect(screen.getByText(/Tugas Mingguan/i)).toBeInTheDocument();
     expect(screen.queryByText(/Dashboard/i)).toBeNull();
+    expect(screen.queryByText(/Tugas Tambahan/i)).toBeNull();
+    expect(screen.queryByText(/Laporan Harian/i)).toBeNull();
     expect(screen.queryByText(/Master Kegiatan/i)).toBeNull();
+    expect(screen.queryByText(/Kelola Pengguna/i)).toBeNull();
+    expect(screen.queryByText(/Kelola Tim/i)).toBeNull();
   });
 
   test('ketua sees all main links', () => {
