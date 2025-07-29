@@ -145,17 +145,8 @@ export default function TabContent({
     );
   }
 
-  const headings = {
-    harian: "Monitoring Harian: Jumlah Laporan Pekerjaan",
-    mingguan: "Monitoring Mingguan: Ringkasan Minggu",
-    bulanan: "Monitoring Bulanan: Progress Tahunan",
-  };
-
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">
-        {headings[activeTab]}
-      </h2>
 
       {activeTab === "harian" && (
         <>
