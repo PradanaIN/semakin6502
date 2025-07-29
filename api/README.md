@@ -92,7 +92,9 @@ curl http://localhost:${PORT}/health
 ## ⏱️ Rate Limiting
 
 Aplikasi menerapkan rate limit global menggunakan `@nestjs/throttler`.
-Setiap IP dibatasi **100 request** setiap **15 menit**.
+Secara bawaan setiap IP dibatasi **100 request** setiap **15 menit**.
+Nilai batas ini dapat diubah lewat variabel lingkungan `THROTTLE_TTL`
+(dalam detik) dan `THROTTLE_LIMIT`.
 
 ---
 
