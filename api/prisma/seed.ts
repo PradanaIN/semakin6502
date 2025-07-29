@@ -434,6 +434,10 @@ async function main() {
   ];
 
   const members = await prisma.member.findMany({ include: { user: true } });
+  const leaderByTeam = new Map<number, number>();
+  for (const m of members) {
+    if (m.isLeader) leaderByTeam.set(m.teamId, m.userId);
+  }
 
   // seed tugas tambahan linked to master kegiatan
   const tambahanRows: any[] = [];
@@ -493,6 +497,7 @@ async function main() {
           penugasanRows.push({
             kegiatanId: k.id,
             pegawaiId: m.userId,
+            creatorId: leaderByTeam.get(m.teamId) || m.userId,
             minggu: w,
             bulan: info.bulan,
             tahun: info.year,

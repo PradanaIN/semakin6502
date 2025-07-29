@@ -22,7 +22,8 @@ export class PenugasanService {
   findAll(
     role: string,
     userId: number,
-    filter: { bulan?: string; tahun?: number; minggu?: number }
+    filter: { bulan?: string; tahun?: number; minggu?: number },
+    creatorId?: number,
   ) {
     role = normalizeRole(role);
     const opts: any = {
@@ -36,6 +37,7 @@ export class PenugasanService {
     if (filter.bulan) opts.where.bulan = filter.bulan;
     if (filter.tahun) opts.where.tahun = filter.tahun;
     if (filter.minggu) opts.where.minggu = filter.minggu;
+    if (creatorId) opts.where.creatorId = creatorId;
 
     if (role === ROLES.ADMIN || role === ROLES.PIMPINAN) {
       // admins and top management can see all assignments
@@ -80,6 +82,7 @@ export class PenugasanService {
       data: {
         kegiatanId: data.kegiatanId,
         pegawaiId: data.pegawaiId,
+        creatorId: userId,
         minggu: data.minggu,
         bulan: String(data.bulan),
         tahun: data.tahun,
@@ -116,6 +119,7 @@ export class PenugasanService {
     const rows = data.pegawaiIds.map((pid: number) => ({
       kegiatanId: data.kegiatanId,
       pegawaiId: pid,
+      creatorId: userId,
       minggu: data.minggu,
       bulan: String(data.bulan),
       tahun: data.tahun,

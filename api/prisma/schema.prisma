@@ -16,6 +16,7 @@ model User {
   role      String
   members   Member[]
   penugasan Penugasan[]        @relation("PenugasanUser")
+  createdPenugasan Penugasan[] @relation("PenugasanCreator")
   laporan   LaporanHarian[]
   tambahan  KegiatanTambahan[]
   notifications Notification[]
@@ -54,6 +55,7 @@ model Penugasan {
   id         Int             @id @default(autoincrement())
   kegiatanId Int
   pegawaiId  Int
+  creatorId  Int
   minggu     Int
   bulan      String
   tahun      Int
@@ -61,6 +63,7 @@ model Penugasan {
   status     String          @default("Belum")
   kegiatan   MasterKegiatan  @relation(fields: [kegiatanId], references: [id])
   pegawai    User            @relation(name: "PenugasanUser", fields: [pegawaiId], references: [id])
+  creator    User            @relation(name: "PenugasanCreator", fields: [creatorId], references: [id])
   laporan    LaporanHarian[]
 }
 
