@@ -56,5 +56,5 @@ Available sidebar links depend on the authenticated user's role:
 
 - **Admin** – access to all pages.
 - **Ketua Tim** – Dashboard, Tugas Mingguan, Tugas Tambahan, Laporan Harian and Master Kegiatan.
-- **Pimpinan** – Monitoring dan Keterlambatan saja.
+- **Pimpinan** – Access to Monitoring and Keterlambatan. Read-only access to “Tugas Mingguan” and “Tugas Tambahan” (labelled “Data Pegawai” in the sidebar).
 
