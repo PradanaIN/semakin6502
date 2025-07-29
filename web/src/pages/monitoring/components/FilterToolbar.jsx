@@ -21,7 +21,7 @@ export default function FilterToolbar({
   const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
 
   return (
-    <div className="flex flex-wrap items-center gap-4 ml-auto mt-4 sm:mt-0">
+    <div className="flex flex-wrap items-center gap-4">
       {/* Filter bulan */}
       {(tab === "harian" || tab === "mingguan") && (
         <div className="w-36">
@@ -150,7 +150,9 @@ export default function FilterToolbar({
             className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out text-center w-full"
           >
             <option value="">Semua Tim</option>
-            {teams.map((t) => (
+            {teams
+              .filter((t) => t.namaTim !== "Pimpinan")
+              .map((t) => (
               <option key={t.id} value={t.id}>
                 {t.namaTim}
               </option>
