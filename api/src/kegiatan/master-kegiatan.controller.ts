@@ -17,9 +17,12 @@ import { CreateMasterKegiatanDto } from "./dto/create-master-kegiatan.dto";
 import { UpdateMasterKegiatanDto } from "./dto/update-master-kegiatan.dto";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
+import { Roles } from "../common/guards/roles.decorator";
+import { ROLES } from "../common/roles.constants";
 
 @Controller("master-kegiatan")
 @UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(ROLES.ADMIN, ROLES.KETUA)
 export class MasterKegiatanController {
   constructor(private readonly masterService: MasterKegiatanService) {}
 
