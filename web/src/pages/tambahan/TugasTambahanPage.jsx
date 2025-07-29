@@ -61,7 +61,9 @@ export default function TugasTambahanPage() {
 
       const [tRes, kRes, teamRes, userRes] = await Promise.all([
         tugasReq,
-        axios.get("/master-kegiatan?limit=1000"),
+        user?.role === ROLES.ADMIN || user?.role === ROLES.KETUA
+          ? axios.get("/master-kegiatan?limit=1000")
+          : Promise.resolve({ data: [] }),
         axios.get("/teams").then(async (res) => {
           if (Array.isArray(res.data) && res.data.length === 0) {
             return axios.get("/teams/member");
@@ -246,7 +248,7 @@ export default function TugasTambahanPage() {
             onMonthChange={setFilterBulan}
             onYearChange={setFilterTahun}
           />
-          {user?.role === ROLES.ADMIN && (
+          {[ROLES.ADMIN, ROLES.PIMPINAN].includes(user?.role) && (
             <>
               <select
                 value={filterTeam}

@@ -50,6 +50,9 @@ export class LaporanService {
   }
   async submit(data: any, userId: number, role: string) {
     role = normalizeRole(role);
+    if (role === ROLES.PIMPINAN) {
+      throw new ForbiddenException('pimpinan tidak diizinkan');
+    }
     const pen = await this.prisma.penugasan.findUnique({
       where: { id: data.penugasanId },
       include: { kegiatan: true },
@@ -119,6 +122,9 @@ export class LaporanService {
 
   async update(id: number, data: any, userId: number, role: string) {
     role = normalizeRole(role);
+    if (role === ROLES.PIMPINAN) {
+      throw new ForbiddenException('pimpinan tidak diizinkan');
+    }
     const existing = await this.prisma.laporanHarian.findUnique({
       where: { id },
       include: { penugasan: { include: { kegiatan: true } } },
@@ -158,6 +164,9 @@ export class LaporanService {
 
   async remove(id: number, userId: number, role: string) {
     role = normalizeRole(role);
+    if (role === ROLES.PIMPINAN) {
+      throw new ForbiddenException('pimpinan tidak diizinkan');
+    }
     const existing = await this.prisma.laporanHarian.findUnique({
       where: { id },
       include: { penugasan: { include: { kegiatan: true } } },
