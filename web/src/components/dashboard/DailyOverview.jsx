@@ -1,5 +1,6 @@
 import { getHolidays } from "../../utils/holidays";
 import Legend from "../ui/Legend";
+import months from "../../utils/months";
 
 const DailyOverview = ({ data = [] }) => {
   if (!Array.isArray(data)) {
@@ -10,8 +11,9 @@ const DailyOverview = ({ data = [] }) => {
   const currentYear = new Date(today).getFullYear();
 
   const formatDate = (iso) => {
-    const [y, m, d] = iso.split("-");
-    return `${d}-${m}-${y}`;
+    const d = new Date(iso);
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
   };
 
   const HOLIDAYS = getHolidays(currentYear);
