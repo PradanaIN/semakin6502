@@ -68,116 +68,144 @@ export default function AppRoutes() {
     <ErrorBoundary>
       <Suspense fallback={<Loading fullScreen />}>
         <Routes>
-        {/* Login tidak pakai layout */}
-        <Route
-          path="/login"
-          element={
-            user ? <Navigate to="/dashboard" replace /> : <LoginPage />
-          }
-        />
+          {/* Login tidak pakai layout */}
+          <Route
+            path="/login"
+            element={
+              user ? <Navigate to="/dashboard" replace /> : <LoginPage />
+            }
+          />
 
-        {/* Halaman lain pakai layout */}
-        <Route
-          path="/"
-          element={
-            <PrivateRoute>
-              <Layout />
-            </PrivateRoute>
-          }
-        >
-          <Route index element={<Navigate to="/dashboard" replace />} />
+          {/* Halaman lain pakai layout */}
           <Route
-            path="dashboard"
+            path="/"
             element={
-              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
-                <Dashboard />
-              </RoleRoute>
+              <PrivateRoute>
+                <Layout />
+              </PrivateRoute>
             }
-          />
-          <Route path="profile" element={<ProfilePage />} />
+          >
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route
+              path="dashboard"
+              element={
+                <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
+                  <Dashboard />
+                </RoleRoute>
+              }
+            />
+            <Route path="profile" element={<ProfilePage />} />
 
-          <Route
-            path="users"
-            element={
-              <RoleRoute roles={[ROLES.ADMIN]}>
-                <UsersPage />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="teams"
-            element={
-              <RoleRoute roles={[ROLES.ADMIN]}>
-                <TeamsPage />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="master-kegiatan"
-            element={
-              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA]}>
-                <MasterKegiatanPage />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="tugas-mingguan"
-            element={
-              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
-                <PenugasanPage />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="tugas-mingguan/:id"
-            element={
-              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
-                <PenugasanDetailPage />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="laporan-harian"
-            element={
-              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
-                <LaporanHarianPage />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="monitoring"
-            element={
-              <RoleRoute roles={[ROLES.ADMIN, ROLES.PIMPINAN, ROLES.KETUA, ROLES.ANGGOTA]}>
-                <MonitoringPage />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="laporan-terlambat"
-            element={
-              <RoleRoute roles={[ROLES.ADMIN, ROLES.PIMPINAN, ROLES.KETUA, ROLES.ANGGOTA]}>
-                <MissedReportsPage />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="tugas-tambahan"
-            element={
-              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
-                <TugasTambahanPage />
-              </RoleRoute>
-            }
-          />
-          <Route
-            path="tugas-tambahan/:id"
-            element={
-              <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
-                <TugasTambahanDetailPage />
-              </RoleRoute>
-            }
-          />
-          <Route path="*" element={<NotFound />} />
-        </Route>
+            <Route
+              path="users"
+              element={
+                <RoleRoute roles={[ROLES.ADMIN]}>
+                  <UsersPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="teams"
+              element={
+                <RoleRoute roles={[ROLES.ADMIN]}>
+                  <TeamsPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="master-kegiatan"
+              element={
+                <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA]}>
+                  <MasterKegiatanPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="tugas-mingguan"
+              element={
+                <RoleRoute
+                  roles={[
+                    ROLES.ADMIN,
+                    ROLES.KETUA,
+                    ROLES.ANGGOTA,
+                    ROLES.PIMPINAN,
+                  ]}
+                >
+                  <PenugasanPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="tugas-mingguan/:id"
+              element={
+                <RoleRoute
+                  roles={[
+                    ROLES.ADMIN,
+                    ROLES.KETUA,
+                    ROLES.ANGGOTA,
+                    ROLES.PIMPINAN,
+                  ]}
+                >
+                  <PenugasanDetailPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="laporan-harian"
+              element={
+                <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
+                  <LaporanHarianPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="monitoring"
+              element={
+                <RoleRoute
+                  roles={[
+                    ROLES.ADMIN,
+                    ROLES.PIMPINAN,
+                    ROLES.KETUA,
+                    ROLES.ANGGOTA,
+                  ]}
+                >
+                  <MonitoringPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="laporan-terlambat"
+              element={
+                <RoleRoute
+                  roles={[
+                    ROLES.ADMIN,
+                    ROLES.PIMPINAN,
+                    ROLES.KETUA,
+                    ROLES.ANGGOTA,
+                  ]}
+                >
+                  <MissedReportsPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="tugas-tambahan"
+              element={
+                <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
+                  <TugasTambahanPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="tugas-tambahan/:id"
+              element={
+                <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
+                  <TugasTambahanDetailPage />
+                </RoleRoute>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Route>
         </Routes>
       </Suspense>
     </ErrorBoundary>

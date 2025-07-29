@@ -11,9 +11,9 @@ const WeeklyProgressTable = ({ data = [] }) => {
         <thead>
           <tr>
             <th className="p-2 border text-left">Nama</th>
-            <th className="p-2 border text-center">Selesai</th>
-            <th className="p-2 border text-center">Total</th>
-            <th className="p-2 border text-center">Progress</th>
+            <th className="p-2 border text-center">Tugas Selesai</th>
+            <th className="p-2 border text-center">Total Tugas</th>
+            <th className="p-2 border text-center">Capaian</th>
           </tr>
         </thead>
         <tbody>
