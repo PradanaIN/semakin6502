@@ -17,6 +17,7 @@ import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import TableSkeleton from "../../components/ui/TableSkeleton";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
+import ExportModal from "../../components/ExportModal";
 
 export default function LaporanHarianPage() {
   const { user } = useAuth();
@@ -30,6 +31,7 @@ export default function LaporanHarianPage() {
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
+  const [showExport, setShowExport] = useState(false);
   const [form, setForm] = useState({
     id: null,
     tanggal: new Date().toISOString().slice(0, 10),
@@ -93,11 +95,8 @@ export default function LaporanHarianPage() {
     }
   };
 
-  const exportExcel = async () => {
+  const exportExcel = async (params) => {
     try {
-      const params = {};
-      if (bulan) params.bulan = bulan;
-      if (minggu) params.minggu = minggu;
       const res = await axios.get("/laporan-harian/mine/export", {
         params,
         responseType: "blob",
@@ -112,6 +111,15 @@ export default function LaporanHarianPage() {
     } catch (err) {
       handleAxiosError(err, "Gagal mengekspor");
     }
+  };
+
+  const openExportModal = () => {
+    setShowExport(true);
+  };
+
+  const handleExportConfirm = (params) => {
+    exportExcel(params);
+    setShowExport(false);
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -220,7 +228,7 @@ export default function LaporanHarianPage() {
             </option>
           ))}
         </select>
-        <Button onClick={exportExcel} className="add-button" variant="primary">
+        <Button onClick={openExportModal} className="add-button" variant="primary">
           <Download size={16} />
           <span className="hidden sm:inline">Export</span>
         </Button>
@@ -336,6 +344,12 @@ export default function LaporanHarianPage() {
             <Button onClick={saveForm}>Simpan</Button>
           </div>
         </Modal>
+      )}
+      {showExport && (
+        <ExportModal
+          onClose={() => setShowExport(false)}
+          onConfirm={handleExportConfirm}
+        />
       )}
     </div>
   );

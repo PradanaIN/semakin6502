@@ -126,6 +126,14 @@ export class LaporanService {
     });
   }
 
+  getByUserTanggal(userId: number, tanggal: string) {
+    return this.prisma.laporanHarian.findMany({
+      where: { pegawaiId: userId, tanggal: new Date(tanggal) },
+      include: { penugasan: { include: { kegiatan: true } } },
+      orderBy: { tanggal: 'desc' },
+    });
+  }
+
   getByPenugasan(penugasanId: number) {
     return this.prisma.laporanHarian.findMany({
       where: { penugasanId },
@@ -240,8 +248,11 @@ export class LaporanService {
     format: string,
     bulan?: string,
     minggu?: number,
+    tanggal?: string,
   ) {
-    const data = await this.getByMonthWeek(userId, bulan, minggu);
+    const data = tanggal
+      ? await this.getByUserTanggal(userId, tanggal)
+      : await this.getByMonthWeek(userId, bulan, minggu);
     if (format === "pdf") {
       const doc = new PDFDocument({ margin: 30 });
       const buffers: Buffer[] = [];

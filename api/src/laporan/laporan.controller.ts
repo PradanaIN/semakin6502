@@ -73,10 +73,17 @@ export class LaporanController {
     @Query("format") format = "xlsx",
     @Query("bulan") bulan?: string,
     @Query("minggu") minggu?: string,
+    @Query("tanggal") tanggal?: string,
   ) {
     const userId = (req.user as AuthRequestUser).userId;
     const week = minggu ? parseInt(minggu, 10) : undefined;
-    const buf = await this.laporanService.export(userId, format, bulan, week);
+    const buf = await this.laporanService.export(
+      userId,
+      format,
+      bulan,
+      week,
+      tanggal,
+    );
     if (format === "pdf") {
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader("Content-Disposition", "attachment; filename=laporan.pdf");
