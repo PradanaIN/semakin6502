@@ -6,6 +6,7 @@ import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import { showSuccess, showWarning, handleAxiosError } from "../../utils/alerts";
 import { User } from "lucide-react";
+import Spinner from "../../components/Spinner";
 
 export default function ProfilePage() {
   const { user, setUser } = useAuth();
@@ -40,8 +41,8 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="p-6 text-center animate-pulse text-gray-500">
-        Memuat data pengguna...
+      <div className="p-6 text-center">
+        <Spinner className="h-6 w-6 mx-auto" />
       </div>
     );
   }
