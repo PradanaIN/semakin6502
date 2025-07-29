@@ -17,10 +17,13 @@ const prisma = {
   },
   member: {
     findFirst: jest.fn(),
+    findMany: jest.fn(),
   },
 } as any;
 
-const service = new LaporanService(prisma);
+const notifications = { create: jest.fn() } as any;
+
+const service = new LaporanService(prisma, notifications);
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -69,6 +72,7 @@ describe('LaporanService submit', () => {
       pegawaiId: 1,
       kegiatan: { teamId: 1 },
     });
+    prisma.member.findMany.mockResolvedValue([]);
     prisma.laporanHarian.create.mockResolvedValue({ id: 11 });
     prisma.laporanHarian.findFirst.mockResolvedValueOnce({
       status: STATUS.SELESAI_DIKERJAKAN,

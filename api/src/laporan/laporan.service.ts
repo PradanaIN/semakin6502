@@ -53,7 +53,7 @@ export class LaporanService {
           select: { userId: true },
         });
         await Promise.all(
-          leaders.map((l) =>
+          leaders.map((l: { userId: number }) =>
             this.notifications.create(
               l.userId,
               `Penugasan ${pen.kegiatan.namaKegiatan} selesai`,

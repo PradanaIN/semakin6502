@@ -18,6 +18,7 @@ model User {
   penugasan Penugasan[]        @relation("PenugasanUser")
   laporan   LaporanHarian[]
   tambahan  KegiatanTambahan[]
+  notifications Notification[]
 }
 
 model Team {
