@@ -121,11 +121,13 @@ export default function PenugasanPage() {
       let kRes;
       if (user?.role === ROLES.ADMIN) {
         kRes = await axios.get("/master-kegiatan?limit=1000");
-      } else {
+      } else if (user?.role === ROLES.KETUA) {
         const tId = tRes.data[0]?.id;
         kRes = tId
           ? await axios.get(`/master-kegiatan?team=${tId}`)
           : { data: { data: [] } };
+      } else {
+        kRes = { data: { data: [] } };
       }
       setPenugasan(pRes.data);
       setUsers([...uRes.data].sort((a, b) => a.nama.localeCompare(b.nama)));
