@@ -46,7 +46,9 @@ export default function TugasTambahanDetailPage() {
     try {
       const [dRes, kRes] = await Promise.all([
         axios.get(`/tugas-tambahan/${id}`),
-        axios.get("/master-kegiatan?limit=1000"),
+        user?.role === ROLES.ADMIN || user?.role === ROLES.KETUA
+          ? axios.get("/master-kegiatan?limit=1000")
+          : Promise.resolve({ data: [] }),
       ]);
       setItem(dRes.data);
       setKegiatan(kRes.data.data || kRes.data);
