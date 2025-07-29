@@ -1,4 +1,4 @@
-import { Outlet, useLocation, Link } from "react-router-dom";
+import { Outlet, useLocation, Link, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../auth/useAuth";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -23,16 +23,13 @@ import { ROLES } from "../../utils/roles";
 export default function Layout() {
   const { user, setUser } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [sidebarOpen, setSidebarOpen] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth >= 768 : true
   );
-  const [notifCount, setNotifCount] = useState(3);
-  const [notifications, setNotifications] = useState([
-    { id: 1, text: "Laporan harian belum dikirim", read: false },
-    { id: 2, text: "Penugasan baru tersedia", read: false },
-    { id: 3, text: "Tim Anda telah diperbarui", read: false },
-  ]);
+  const [notifCount, setNotifCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
   const { theme, toggleTheme } = useTheme();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifMenu, setShowNotifMenu] = useState(false);
@@ -45,7 +42,7 @@ export default function Layout() {
       const res = await axios.get("/notifications");
       const data = res.data || [];
       setNotifications(data);
-      setNotifCount(data.filter((n) => !n.read).length);
+      setNotifCount(data.filter((n) => !n.isRead).length);
     } catch (err) {
       console.error("Failed to fetch notifications", err);
     }
@@ -71,11 +68,24 @@ export default function Layout() {
   const markAllAsRead = async () => {
     try {
       await axios.post("/notifications/read-all");
-      const updated = notifications.map((n) => ({ ...n, read: true }));
+      const updated = notifications.map((n) => ({ ...n, isRead: true }));
       setNotifications(updated);
       setNotifCount(0);
     } catch (err) {
       console.error("Failed to mark notifications", err);
+    }
+  };
+
+  const markAsRead = async (id, link) => {
+    try {
+      await axios.post(`/notifications/${id}/read`);
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
+      );
+      setNotifCount((c) => Math.max(0, c - 1));
+      if (link) navigate(link);
+    } catch (err) {
+      console.error("Failed to mark notification", err);
     }
   };
 
@@ -179,15 +189,16 @@ export default function Layout() {
                   {displayedNotifications.map((notif) => (
                     <div
                       key={notif.id}
-                      className={`px-4 py-2 text-sm flex items-start gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                        notif.read
+                      onClick={() => markAsRead(notif.id, notif.link)}
+                      className={`px-4 py-2 text-sm flex items-start gap-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                        notif.isRead
                           ? "text-gray-400"
                           : "text-gray-800 dark:text-gray-100"
                       }`}
                     >
                       <FaCheckCircle
                         className={`mt-1 ${
-                          notif.read ? "text-green-400" : "text-gray-400"
+                          notif.isRead ? "text-green-400" : "text-gray-400"
                         }`}
                       />
                       <span>{notif.text}</span>
