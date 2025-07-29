@@ -71,6 +71,7 @@ export default function PenugasanPage() {
   const [filterBulan, setFilterBulan] = useState("");
   const [filterTahun, setFilterTahun] = useState(new Date().getFullYear());
   const [filterMinggu, setFilterMinggu] = useState("");
+  const [weekOptions, setWeekOptions] = useState([]);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewTab, setViewTab] = useState("all");
@@ -97,6 +98,28 @@ export default function PenugasanPage() {
     if (!filterMinggu) initWeek();
     // eslint-disable-next-line
   }, [filterBulan, filterTahun]);
+
+  useEffect(() => {
+    if (!filterBulan || !filterTahun) {
+      setWeekOptions([]);
+      setFilterMinggu("");
+      return;
+    }
+    const year = parseInt(filterTahun, 10);
+    const monthIdx = parseInt(filterBulan, 10) - 1;
+    const firstOfMonth = new Date(year, monthIdx, 1);
+    const monthEnd = new Date(year, monthIdx + 1, 0);
+    const firstMonday = new Date(firstOfMonth);
+    firstMonday.setDate(
+      firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
+    );
+    const opts = [];
+    for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+      opts.push(opts.length + 1);
+    }
+    setWeekOptions(opts);
+    if (filterMinggu && filterMinggu > opts.length) setFilterMinggu("");
+  }, [filterBulan, filterTahun, filterMinggu]);
 
   const fetchData = useCallback(async () => {
     try {
