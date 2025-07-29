@@ -29,9 +29,7 @@ export default function PenugasanDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const canManage = [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(
-    user?.role
-  );
+  const canManage = [ROLES.ADMIN, ROLES.KETUA].includes(user?.role);
   const [item, setItem] = useState(null);
   const [kegiatan, setKegiatan] = useState([]);
   const [users, setUsers] = useState([]);
