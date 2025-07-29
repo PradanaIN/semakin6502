@@ -10,7 +10,7 @@ import formatDate from "../../utils/formatDate";
 const formatWita = (iso) =>
   new Date(iso).toLocaleString("id-ID", { timeZone: "Asia/Makassar" });
 
-export default function MissedReportsPage() {
+const MissedReportsPage = () => {
   const [data, setData] = useState({ day1: [], day3: [], day7: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -19,10 +19,12 @@ export default function MissedReportsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("/monitoring/laporan/terlambat");
-        setData(res.data);
-        const last = await axios.get("/monitoring/last-update");
-        setLastUpdate(last.data.lastUpdate);
+        const [reportRes, updateRes] = await Promise.all([
+          axios.get("/monitoring/laporan/terlambat"),
+          axios.get("/monitoring/last-update"),
+        ]);
+        setData(reportRes.data);
+        setLastUpdate(updateRes.data.lastUpdate);
       } catch {
         setError(true);
       } finally {
@@ -32,32 +34,29 @@ export default function MissedReportsPage() {
     fetchData();
   }, []);
 
-  const formatToday = () => {
-    const today = new Date();
-    return today.toLocaleDateString("id-ID", {
+  const formatToday = () =>
+    new Date().toLocaleDateString("id-ID", {
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
     });
-  };
 
   const daysSince = (iso) => {
     const today = new Date();
+    const date = new Date(iso);
     today.setHours(0, 0, 0, 0);
-    const d = new Date(iso);
-    d.setHours(0, 0, 0, 0);
-    return Math.floor((today - d) / 86400000);
+    date.setHours(0, 0, 0, 0);
+    return Math.floor((today - date) / 86400000);
   };
 
   const exportToPDF = () => {
     const doc = new jsPDF();
+    const logo = new Image();
+    logo.src = "/logo.png";
 
-    const logoImg = new Image();
-    logoImg.src = "/logo.png";
-
-    logoImg.onload = () => {
-      doc.addImage(logoImg, "PNG", 15, 10, 20, 20);
+    logo.onload = () => {
+      doc.addImage(logo, "PNG", 15, 10, 20, 20);
       doc.setFontSize(12);
       doc.text("BADAN PUSAT STATISTIK", 40, 16);
       doc.text("KABUPATEN BULUNGAN", 40, 22);
@@ -66,14 +65,20 @@ export default function MissedReportsPage() {
       doc.setFontSize(10);
       doc.text(`Dicetak pada: ${formatToday()}`, 105, 36, { align: "center" });
 
-      const kategori = [
+      let y = 42;
+      [
         { title: "Belum Melapor 1+ Hari", data: data.day1 },
         { title: "Belum Melapor 3+ Hari", data: data.day3 },
         { title: "Belum Melapor 7+ Hari", data: data.day7 },
-      ];
+      ].forEach((group) => {
+        autoTable(doc, {
+          startY: y,
+          head: [[group.title]],
+          theme: "plain",
+          styles: { fontStyle: "bold", fontSize: 11 },
+          headStyles: { textColor: [33, 37, 41] },
+        });
 
-      let currentY = 42;
-      kategori.forEach((group) => {
         const rows = group.data.map((u) => [
           u.nama,
           u.lastDate ? `${daysSince(u.lastDate)} hari` : "-",
@@ -81,23 +86,14 @@ export default function MissedReportsPage() {
         ]);
 
         autoTable(doc, {
-          startY: currentY,
-          head: [[group.title]],
-          theme: "plain",
-          styles: { fontStyle: "bold", fontSize: 11 },
-          headStyles: { textColor: [33, 37, 41] },
-        });
-
-        autoTable(doc, {
           startY: doc.lastAutoTable.finalY + 2,
           head: [["Nama", "Belum Melapor", "Terakhir Melapor"]],
           body: rows,
-          styles: { fontSize: 9, cellPadding: 3 },
+          styles: { fontSize: 9 },
           headStyles: { fillColor: [63, 81, 181], textColor: 255 },
-          margin: { top: 10 },
         });
 
-        currentY = doc.lastAutoTable.finalY + 10;
+        y = doc.lastAutoTable.finalY + 10;
       });
 
       doc.save("status_pelaporan_harian.pdf");
@@ -105,51 +101,16 @@ export default function MissedReportsPage() {
   };
 
   const exportToExcel = () => {
-    const allUsers = [...data.day1, ...data.day3, ...data.day7];
-    const sheetData = allUsers.map((u) => ({
+    const all = [...data.day1, ...data.day3, ...data.day7].map((u) => ({
       Nama: u.nama,
-      Hari_Tidak_Melapor: u.lastDate ? daysSince(u.lastDate) : "Belum pernah",
+      Hari_Tidak_Melapor: u.lastDate ? daysSince(u.lastDate) : "Belum Pernah",
       Tanggal_Terakhir_Lapor: u.lastDate ? formatDate(u.lastDate) : "-",
     }));
-    const ws = XLSX.utils.json_to_sheet(sheetData);
+    const sheet = XLSX.utils.json_to_sheet(all);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Status_Pelaporan");
+    XLSX.utils.book_append_sheet(wb, sheet, "Status_Pelaporan");
     XLSX.writeFile(wb, "status_pelaporan_harian.xlsx");
   };
-
-  const renderList = (users) => (
-    <div className="overflow-x-auto">
-      <table className="min-w-full table-auto text-sm text-left text-gray-700 dark:text-gray-300">
-        <thead className="bg-gray-100 dark:bg-gray-700 text-xs uppercase font-semibold">
-          <tr>
-            <th className="px-4 py-2">Nama</th>
-            <th className="px-4 py-2 text-right">Terakhir Melapor</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((u) => (
-            <tr
-              key={u.userId}
-              className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-            >
-              <td className="px-4 py-2 font-medium">{u.nama}</td>
-              <td className="px-4 py-2 text-right">
-                {u.lastDate ? (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">
-                    {formatDate(u.lastDate)} • {daysSince(u.lastDate)} hari lalu
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-gray-200 text-gray-700 rounded-full">
-                    Belum pernah melapor
-                  </span>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
 
   const Card = ({ title, count, color, children }) => (
     <div
@@ -176,6 +137,40 @@ export default function MissedReportsPage() {
     </div>
   );
 
+  const renderList = (users) => (
+    <div className="overflow-x-auto">
+      <table className="min-w-full text-sm text-left text-gray-700 dark:text-gray-300">
+        <thead className="bg-gray-100 dark:bg-gray-700 text-xs font-semibold">
+          <tr>
+            <th className="px-4 py-2">Nama</th>
+            <th className="px-4 py-2 text-right">Terakhir Melapor</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((u) => (
+            <tr
+              key={u.userId}
+              className="border-b hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+              <td className="px-4 py-2 font-medium">{u.nama}</td>
+              <td className="px-4 py-2 text-right">
+                {u.lastDate ? (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">
+                    {formatDate(u.lastDate)} • {daysSince(u.lastDate)} hari lalu
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-gray-200 text-gray-700 rounded-full">
+                    Belum pernah melapor
+                  </span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
   return (
     <div className="p-6 space-y-8">
       {/* Header */}
@@ -199,6 +194,7 @@ export default function MissedReportsPage() {
           </button>
         </div>
       </div>
+
       {lastUpdate && (
         <p className="text-xs text-gray-500 dark:text-gray-400">
           Data terakhir diperbarui: {formatWita(lastUpdate)}
@@ -212,7 +208,7 @@ export default function MissedReportsPage() {
         </div>
       )}
 
-      {/* Loading / Data */}
+      {/* Content */}
       {loading ? (
         <div className="flex justify-center items-center h-40">
           <Spinner className="w-6 h-6 text-gray-500" />
@@ -220,21 +216,21 @@ export default function MissedReportsPage() {
       ) : (
         <div className="grid md:grid-cols-3 gap-6">
           <Card
-            title="Belum Melapor Selama 1 Hari atau Lebih"
+            title="Belum Melapor 1 Hari +"
             count={data.day1.length}
             color="#facc15"
           >
             {renderList(data.day1)}
           </Card>
           <Card
-            title="Belum Melapor Selama 3 Hari atau Lebih"
+            title="Belum Melapor 3 Hari +"
             count={data.day3.length}
             color="#f97316"
           >
             {renderList(data.day3)}
           </Card>
           <Card
-            title="Belum Melapor Selama 7 Hari atau Lebih"
+            title="Belum Melapor 7 Hari +"
             count={data.day7.length}
             color="#dc2626"
           >
@@ -244,4 +240,6 @@ export default function MissedReportsPage() {
       )}
     </div>
   );
-}
+};
+
+export default MissedReportsPage;
