@@ -1,10 +1,10 @@
 import React from "react";
 import getProgressColor from "../../utils/progressColor";
 
-export const WeeklyMatrixRow = ({ user, progressColor }) => (
+export const WeeklyMatrixRow = ({ user, progressColor, weekCount }) => (
   <tr className="text-center">
     <td className="p-2 border text-left whitespace-nowrap text-sm">{user.nama}</td>
-    {user.weeks.map((w, i) => (
+    {user.weeks.slice(0, weekCount).map((w, i) => (
       <td key={i} className="p-1 border space-y-1">
         <div
           role="progressbar"
@@ -49,7 +49,12 @@ const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek, selectedWeek }) => 
         </thead>
         <tbody>
           {data.map((u) => (
-            <WeeklyMatrixRow key={u.userId} user={u} progressColor={progressColor} />
+            <WeeklyMatrixRow
+              key={u.userId}
+              user={u}
+              progressColor={progressColor}
+              weekCount={weeks.length}
+            />
           ))}
         </tbody>
       </table>

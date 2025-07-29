@@ -134,17 +134,6 @@ export default function TabContent({
           <div className="flex flex-wrap gap-2 mb-4" role="tablist">
             <button
               type="button"
-              onClick={() => setWeeklyMode("matrix")}
-              className={`px-4 py-1.5 rounded-lg font-semibold text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out ${
-                weeklyMode === "matrix"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600"
-              }`}
-            >
-              Progress per Minggu
-            </button>
-            <button
-              type="button"
               onClick={() => setWeeklyMode("summary")}
               className={`px-4 py-1.5 rounded-lg font-semibold text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out ${
                 weeklyMode === "summary"
@@ -152,7 +141,18 @@ export default function TabContent({
                   : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600"
               }`}
             >
-              Ringkasan Minggu
+              Ringkasan Minggu Ini
+            </button>
+            <button
+              type="button"
+              onClick={() => setWeeklyMode("matrix")}
+              className={`px-4 py-1.5 rounded-lg font-semibold text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out ${
+                weeklyMode === "matrix"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600"
+              }`}
+            >
+              Ringkasan per Minggu
             </button>
           </div>
 

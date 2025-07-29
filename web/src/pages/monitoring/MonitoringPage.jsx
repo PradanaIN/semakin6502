@@ -25,10 +25,14 @@ export default function MonitoringPage() {
 
   const { user } = useAuth();
 
-  // Fetch daftar tim jika admin/ketua
+  // Fetch daftar tim jika admin/ketua/pimpinan
   useEffect(() => {
     const fetchTeams = async () => {
-      if (user?.role === ROLES.ADMIN || user?.role === ROLES.KETUA) {
+      if (
+        user?.role === ROLES.ADMIN ||
+        user?.role === ROLES.KETUA ||
+        user?.role === ROLES.PIMPINAN
+      ) {
         try {
           const res = await axios.get("/teams");
           setTeams(res.data);
