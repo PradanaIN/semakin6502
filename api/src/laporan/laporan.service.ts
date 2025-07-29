@@ -132,6 +132,14 @@ export class LaporanService {
     });
   }
 
+  getByUserTanggal(userId: number, tanggal: string) {
+    return this.prisma.laporanHarian.findMany({
+      where: { pegawaiId: userId, tanggal: new Date(tanggal) },
+      include: { penugasan: { include: { kegiatan: true } } },
+      orderBy: { tanggal: 'desc' },
+    });
+  }
+
   getByPenugasan(penugasanId: number) {
     return this.prisma.laporanHarian.findMany({
       where: { penugasanId },
@@ -289,60 +297,74 @@ export class LaporanService {
     );
   }
 
-  async export(
-    userId: number,
-    format: string,
-    bulan?: string,
-    minggu?: number,
-    includeTambahan = false,
-  ) {
-    const data = await this.getByMonthWeek(userId, bulan, minggu, includeTambahan);
-    if (format === "pdf") {
-      const doc = new PDFDocument({ margin: 30 });
-      const buffers: Buffer[] = [];
-      doc.on("data", (b: Buffer) => buffers.push(b));
-      doc.text("Laporan Harian", { align: "center" });
+async export(
+  userId: number,
+  format: string,
+  bulan?: string,
+  minggu?: number,
+  includeTambahan = false,
+  tanggal?: string,
+) {
+  const data = tanggal
+    ? await this.getByUserTanggal(userId, tanggal)
+    : await this.getByMonthWeek(userId, bulan, minggu, includeTambahan);
+
+  if (format === "pdf") {
+    const doc = new PDFDocument({ margin: 30 });
+    const buffers: Buffer[] = [];
+
+    doc.on("data", (b: Buffer) => buffers.push(b));
+
+    doc.text("Laporan Harian", { align: "center" });
+    doc.moveDown();
+
+    data.forEach((d: any) => {
+      const label =
+        d.type === "tambahan"
+          ? `Tugas Tambahan - ${d.status}`
+          : `Minggu ${d.penugasan.minggu} ${d.penugasan.bulan}/${d.penugasan.tahun} - ${d.status}`;
+
+      doc
+        .fontSize(10)
+        .text(
+          `${d.tanggal.toISOString().slice(0, 10)} - ${d.penugasan.kegiatan.namaKegiatan} - ${label}`
+        );
+      if (d.catatan) doc.text(`Catatan: ${d.catatan}`);
+      if (d.buktiLink) doc.text(`Bukti: ${d.buktiLink}`);
       doc.moveDown();
-      data.forEach((d: any) => {
-        const label =
-          d.type === "tambahan"
-            ? `Tugas Tambahan - ${d.status}`
-            : `Minggu ${d.penugasan.minggu} ${d.penugasan.bulan}/${d.penugasan.tahun} - ${d.status}`;
-        doc
-          .fontSize(10)
-          .text(
-            `${d.tanggal.toISOString().slice(0, 10)} - ${d.penugasan.kegiatan.namaKegiatan} - ${label}`
-          );
-        if (d.catatan) doc.text(`Catatan: ${d.catatan}`);
-        if (d.buktiLink) doc.text(`Bukti: ${d.buktiLink}`);
-        doc.moveDown();
-      });
-      doc.end();
-      await new Promise((resolve) => doc.on("end", resolve));
-      return Buffer.concat(buffers);
-    } else {
-      const wb = new Workbook();
-      const ws = wb.addWorksheet("laporan");
-      ws.columns = [
-        { header: "No", width: 5 },
-        { header: "Jenis", width: 15 },
-        { header: "Tugas", width: 25 },
-        { header: "Tanggal Laporan", width: 15 },
-        { header: "Deskripsi Kegiatan", width: 40 },
-        { header: "Bukti Dukung", width: 30 },
-      ];
-      ws.getRow(1).font = { bold: true };
-      data.forEach((d: any, idx: number) => {
-        ws.addRow([
-          idx + 1,
-          d.type === "tambahan" ? "Tambahan" : "Mingguan",
-          d.penugasan.kegiatan.namaKegiatan,
-          d.tanggal.toISOString().slice(0, 10),
-          d.deskripsi || "",
-          d.buktiLink || "",
-        ]);
-      });
-      return await wb.xlsx.writeBuffer();
-    }
+    });
+
+    doc.end();
+    await new Promise((resolve) => doc.on("end", resolve));
+    return Buffer.concat(buffers);
+  } else {
+    const wb = new Workbook();
+    const ws = wb.addWorksheet("laporan");
+
+    ws.columns = [
+      { header: "No", width: 5 },
+      { header: "Jenis", width: 15 },
+      { header: "Tugas", width: 25 },
+      { header: "Tanggal Laporan", width: 15 },
+      { header: "Deskripsi Kegiatan", width: 40 },
+      { header: "Bukti Dukung", width: 30 },
+    ];
+
+    ws.getRow(1).font = { bold: true };
+
+    data.forEach((d: any, idx: number) => {
+      ws.addRow([
+        idx + 1,
+        d.type === "tambahan" ? "Tambahan" : "Mingguan",
+        d.penugasan.kegiatan.namaKegiatan,
+        d.tanggal.toISOString().slice(0, 10),
+        d.deskripsi || "",
+        d.buktiLink || "",
+      ]);
+    });
+
+    return await wb.xlsx.writeBuffer();
   }
+}
+
 }

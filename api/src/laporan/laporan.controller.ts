@@ -21,6 +21,7 @@ import { ROLES } from "../common/roles.constants";
 import { SubmitLaporanDto } from "./dto/submit-laporan.dto";
 import { UpdateLaporanDto } from "./dto/update-laporan.dto";
 import { AuthRequestUser } from "../common/auth-request-user.interface";
+import exportFileName from "../utils/exportFileName";
 
 @Controller("laporan-harian")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -80,6 +81,7 @@ export class LaporanController {
     @Query("bulan") bulan?: string,
     @Query("minggu") minggu?: string,
     @Query("tambahan") tambahan?: string,
+    @Query("tanggal") tanggal?: string,
   ) {
     const userId = (req.user as AuthRequestUser).userId;
     const week = minggu ? parseInt(minggu, 10) : undefined;
@@ -89,10 +91,16 @@ export class LaporanController {
       bulan,
       week,
       tambahan === "true",
+      tanggal,
     );
+    const monthIdx = bulan ? parseInt(bulan, 10) : undefined;
+    const fileName = exportFileName("LaporanHarian", monthIdx);
     if (format === "pdf") {
       res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", "attachment; filename=laporan.pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=${fileName}.pdf`,
+      );
     } else {
       res.setHeader(
         "Content-Type",
@@ -100,7 +108,7 @@ export class LaporanController {
       );
       res.setHeader(
         "Content-Disposition",
-        "attachment; filename=laporan.xlsx",
+        `attachment; filename=${fileName}.xlsx`,
       );
     }
     res.send(buf);

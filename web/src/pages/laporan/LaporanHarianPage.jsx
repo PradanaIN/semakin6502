@@ -17,19 +17,21 @@ import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import TableSkeleton from "../../components/ui/TableSkeleton";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
+import ExportModal from "../../components/ExportModal";
+import exportFileName from "../../utils/exportFileName";
 
 export default function LaporanHarianPage() {
   const { user } = useAuth();
   const [laporan, setLaporan] = useState([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
-  // filter state
   const [bulan, setBulan] = useState("");
   const [minggu, setMinggu] = useState("");
   const [weekOptions, setWeekOptions] = useState([]);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
+  const [showExport, setShowExport] = useState(false);
   const [form, setForm] = useState({
     id: null,
     tanggal: new Date().toISOString().slice(0, 10),
@@ -39,7 +41,6 @@ export default function LaporanHarianPage() {
     catatan: "",
   });
 
-  // regenerate week options when month changes
   useEffect(() => {
     if (!bulan) {
       setWeekOptions([]);
@@ -63,9 +64,7 @@ export default function LaporanHarianPage() {
     try {
       setLoading(true);
       const isAdmin = user?.role === ROLES.ADMIN;
-      const url = isAdmin
-        ? "/laporan-harian/all"
-        : "/laporan-harian/mine/filter";
+      const url = isAdmin ? "/laporan-harian/all" : "/laporan-harian/mine/filter";
       const params = {};
       if (!isAdmin) {
         if (bulan) params.bulan = bulan;
@@ -95,28 +94,38 @@ export default function LaporanHarianPage() {
   };
 
   const exportExcel = async () => {
-    try {
-      const params = {};
-      if (bulan) params.bulan = bulan;
-      if (minggu) params.minggu = minggu;
-      params.tambahan = true;
-      const res = await axios.get("/laporan-harian/mine/export", {
-        params,
-        responseType: "blob",
-      });
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "laporan.xlsx");
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (err) {
-      handleAxiosError(err, "Gagal mengekspor");
-    }
+  try {
+    const params = {};
+    if (bulan) params.bulan = bulan;
+    if (minggu) params.minggu = minggu;
+    params.tambahan = true;
+
+    const res = await axios.get("/laporan-harian/mine/export", {
+      params,
+      responseType: "blob",
+    });
+
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    const idx = bulan ? parseInt(bulan, 10) : undefined;
+    const name = `${exportFileName("LaporanHarian", idx)}.xlsx`;
+    link.setAttribute("download", name);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (err) {
+    handleAxiosError(err, "Gagal mengekspor");
+  }
+};
+
+
+  const openExportModal = () => setShowExport(true);
+  const handleExportConfirm = (params) => {
+    exportExcel(params);
+    setShowExport(false);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (user) fetchData();
   }, [user, bulan, minggu]);
@@ -129,9 +138,9 @@ export default function LaporanHarianPage() {
     const cat = l.catatan?.toLowerCase() || "";
     const stat = l.status.toLowerCase();
     const txt = `${peg} ${keg} ${desc} ${cat} ${stat}`;
-    const matchQuery = txt.includes(query.toLowerCase());
-    return matchQuery;
+    return txt.includes(query.toLowerCase());
   });
+
   const paginated = filtered.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
@@ -180,10 +189,7 @@ export default function LaporanHarianPage() {
       Cell: ({ row }) =>
         row.original.buktiLink ? (
           <a href={row.original.buktiLink} target="_blank" rel="noreferrer">
-            <ExternalLink
-              size={16}
-              className="mx-auto text-blue-600 dark:text-blue-400"
-            />
+            <ExternalLink size={16} className="mx-auto text-blue-600 dark:text-blue-400" />
           </a>
         ) : (
           <Minus className="w-4 h-4 mx-auto text-gray-500" />
@@ -232,39 +238,43 @@ export default function LaporanHarianPage() {
             </option>
           ))}
         </select>
-        <Button onClick={exportExcel} className="add-button" variant="primary">
+        <Button onClick={openExportModal} className="add-button" variant="primary">
           <Download size={16} />
           <span className="hidden sm:inline">Export</span>
         </Button>
       </div>
-      <>
-        <div className="overflow-x-auto md:overflow-x-visible">
-          {loading ? (
-            <TableSkeleton cols={columns.length} />
-          ) : (
-            <DataTable columns={columns} data={paginated} showGlobalFilter={false} showPagination={false} selectable={false} />
-          )}
-          <div className="flex items-center justify-between mt-2">
-            <SelectDataShow
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-              setCurrentPage={setCurrentPage}
-              options={[5, 10, 25, 50]}
-              className="w-32"
-            />
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </div>
+
+      <div className="overflow-x-auto md:overflow-x-visible">
+        {loading ? (
+          <TableSkeleton cols={columns.length} />
+        ) : (
+          <DataTable
+            columns={columns}
+            data={paginated}
+            showGlobalFilter={false}
+            showPagination={false}
+            selectable={false}
+          />
+        )}
+        <div className="flex items-center justify-between mt-2">
+          <SelectDataShow
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            setCurrentPage={setCurrentPage}
+            options={[5, 10, 25, 50]}
+            className="w-32"
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </div>
-      </>
+      </div>
+
       {showForm && (
         <Modal
-          onClose={() => {
-            setShowForm(false);
-          }}
+          onClose={() => setShowForm(false)}
           titleId="laporan-harian-form-title"
         >
           <h3 id="laporan-harian-form-title" className="text-lg font-semibold">
@@ -272,49 +282,34 @@ export default function LaporanHarianPage() {
           </h3>
           <div className="space-y-2">
             <div>
-              <Label htmlFor="tanggal">
-                Tanggal<span className="text-red-500">*</span>
-              </Label>
+              <Label htmlFor="tanggal">Tanggal<span className="text-red-500">*</span></Label>
               <Input
                 id="tanggal"
                 type="date"
                 value={form.tanggal}
                 onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
               />
             </div>
             <div>
-              <Label htmlFor="deskripsi">
-                Deskripsi <span className="text-red-500">*</span>
-              </Label>
+              <Label htmlFor="deskripsi">Deskripsi <span className="text-red-500">*</span></Label>
               <textarea
                 id="deskripsi"
                 value={form.deskripsi}
-                onChange={(e) =>
-                  setForm({ ...form, deskripsi: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
                 className="form-input"
               />
             </div>
             <div>
-              <Label htmlFor="status">
-                Status<span className="text-red-500">*</span>
-              </Label>
+              <Label htmlFor="status">Status<span className="text-red-500">*</span></Label>
               <select
                 id="status"
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                className="form-input"
               >
-                <option value={STATUS.BELUM}>
-                  {formatStatus(STATUS.BELUM)}
-                </option>
-                <option value={STATUS.SEDANG_DIKERJAKAN}>
-                  {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
-                </option>
-                <option value={STATUS.SELESAI_DIKERJAKAN}>
-                  {formatStatus(STATUS.SELESAI_DIKERJAKAN)}
-                </option>
+                <option value={STATUS.BELUM}>{formatStatus(STATUS.BELUM)}</option>
+                <option value={STATUS.SEDANG_DIKERJAKAN}>{formatStatus(STATUS.SEDANG_DIKERJAKAN)}</option>
+                <option value={STATUS.SELESAI_DIKERJAKAN}>{formatStatus(STATUS.SELESAI_DIKERJAKAN)}</option>
               </select>
             </div>
             {form.status === STATUS.SELESAI_DIKERJAKAN && (
@@ -324,10 +319,7 @@ export default function LaporanHarianPage() {
                   id="buktiLink"
                   type="text"
                   value={form.buktiLink}
-                  onChange={(e) =>
-                    setForm({ ...form, buktiLink: e.target.value })
-                  }
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                  onChange={(e) => setForm({ ...form, buktiLink: e.target.value })}
                 />
               </div>
             )}
@@ -342,12 +334,17 @@ export default function LaporanHarianPage() {
             </div>
           </div>
           <div className="flex justify-end space-x-2 pt-2">
-            <Button variant="secondary" onClick={() => setShowForm(false)}>
-              Batal
-            </Button>
+            <Button variant="secondary" onClick={() => setShowForm(false)}>Batal</Button>
             <Button onClick={saveForm}>Simpan</Button>
           </div>
         </Modal>
+      )}
+
+      {showExport && (
+        <ExportModal
+          onClose={() => setShowExport(false)}
+          onConfirm={handleExportConfirm}
+        />
       )}
     </div>
   );
