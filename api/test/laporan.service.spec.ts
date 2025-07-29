@@ -8,9 +8,11 @@ const prisma = {
     findFirst: jest.fn(),
     create: jest.fn(),
     findUnique: jest.fn(),
+    findMany: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
   },
+  kegiatanTambahan: { findMany: jest.fn() },
   penugasan: {
     findUnique: jest.fn(),
     update: jest.fn(),
@@ -122,5 +124,37 @@ describe('LaporanService remove', () => {
     const res = await service.remove(1, 3, ROLES.KETUA);
     expect(prisma.laporanHarian.delete).toHaveBeenCalledWith({ where: { id: 1 } });
     expect(res).toEqual({ success: true });
+  });
+});
+
+describe('LaporanService getByMonthWeek', () => {
+  it('merges additional tasks when requested', async () => {
+    prisma.laporanHarian.findMany.mockResolvedValue([
+      {
+        id: 1,
+        tanggal: new Date('2024-05-01'),
+        status: STATUS.BELUM,
+        deskripsi: 'laporan',
+        penugasan: { kegiatan: { team: { namaTim: 'A' } } },
+      },
+    ]);
+    prisma.kegiatanTambahan.findMany.mockResolvedValue([
+      {
+        id: 2,
+        tanggal: new Date('2024-05-02'),
+        status: STATUS.BELUM,
+        nama: 'tambahan',
+        deskripsi: 'desc',
+        buktiLink: null,
+        kegiatan: { deskripsi: 'd', team: { namaTim: 'A' } },
+      },
+    ]);
+
+    const res = await service.getByMonthWeek(1, '5', undefined, true);
+
+    expect(prisma.kegiatanTambahan.findMany).toHaveBeenCalled();
+    expect(res.length).toBe(2);
+    const tambahan = res.find((r: any) => r.id === 2);
+    expect(tambahan.type).toBe('tambahan');
   });
 });
