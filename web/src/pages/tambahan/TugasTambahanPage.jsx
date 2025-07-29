@@ -15,7 +15,7 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
 import Pagination from "../../components/Pagination";
 import SelectDataShow from "../../components/ui/SelectDataShow";
-import Spinner from "../../components/Spinner";
+import TableSkeleton from "../../components/ui/TableSkeleton";
 import { useRef } from "react";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
@@ -292,12 +292,7 @@ export default function TugasTambahanPage() {
 
       <div className="overflow-x-auto md:overflow-x-visible">
         {loading ? (
-          <div className="py-6 text-center text-gray-600 dark:text-gray-300">
-            <div className="flex flex-col items-center space-y-2">
-              <Spinner className="h-6 w-6 text-blue-600" />
-              <span className="text-sm font-medium tracking-wide">Memuat data...</span>
-            </div>
-          </div>
+          <TableSkeleton cols={columns.length} />
         ) : (
           <DataTable columns={columns} data={paginatedItems} showGlobalFilter={false} showPagination={false} selectable={false} />
         )}

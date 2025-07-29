@@ -24,7 +24,7 @@ import { ROLES } from "../../utils/roles";
 import months from "../../utils/months";
 import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
-import Skeleton from "../../components/ui/Skeleton";
+import TableSkeleton from "../../components/ui/TableSkeleton";
 import { AnimatePresence, motion } from "framer-motion";
 import Spinner from "../../components/Spinner";
 
@@ -331,16 +331,8 @@ export default function PenugasanPage() {
 
       {/* TABLE */}
       <div className="overflow-x-auto md:overflow-x-visible min-h-[120px]">
-        {loading ? (
-          <div className="py-6 text-center text-gray-600 dark:text-gray-300">
-            <Skeleton width={100} height={32} count={5} className="mb-2" />
-            <div className="flex flex-col items-center space-y-2">
-              <Spinner className="h-6 w-6 text-blue-600" />
-              <span className="text-sm font-medium tracking-wide">
-                Memuat data...
-              </span>
-            </div>
-          </div>
+        {loading ? (s
+          <TableSkeleton cols={columns.length} />
         ) : error ? (
           <div className="py-10 flex flex-col items-center text-red-600 dark:text-red-400">
             <span className="mb-3 text-xl">⚠️</span>

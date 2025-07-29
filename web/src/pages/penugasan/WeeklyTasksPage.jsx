@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import DataTable from "../../components/ui/DataTable";
 import StatusBadge from "../../components/ui/StatusBadge";
-import Spinner from "../../components/Spinner";
+import TableSkeleton from "../../components/ui/TableSkeleton";
 
 export default function WeeklyTasksPage() {
   const [rows, setRows] = useState([]);
@@ -51,9 +51,7 @@ export default function WeeklyTasksPage() {
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Tugas Minggu Ini</h1>
       {loading ? (
-        <div className="py-4 text-center">
-          <Spinner className="h-6 w-6 mx-auto" />
-        </div>
+        <TableSkeleton cols={columns.length} />
       ) : (
         <DataTable columns={columns} data={rows} showGlobalFilter={false} showPagination={false} selectable={false} />
       )}
