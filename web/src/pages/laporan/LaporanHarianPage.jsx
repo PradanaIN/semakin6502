@@ -191,42 +191,46 @@ export default function LaporanHarianPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-end gap-2">
-        <SearchInput
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setCurrentPage(1);
-          }}
-          placeholder="Cari..."
-          ariaLabel="Cari"
-        />
-        <MonthYearPicker
-          month={bulan}
-          onMonthChange={(val) => {
-            setBulan(val);
-            setCurrentPage(1);
-          }}
-        />
-        <select
-          value={minggu}
-          onChange={(e) => {
-            setMinggu(e.target.value);
-            setCurrentPage(1);
-          }}
-          className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
-        >
-          <option value="">Minggu</option>
-          {weekOptions.map((m) => (
-            <option key={m} value={m}>
-              Minggu {m}
-            </option>
-          ))}
-        </select>
-        <Button onClick={exportExcel} className="add-button" variant="primary">
-          <Download size={16} />
-          <span className="hidden sm:inline">Export</span>
-        </Button>
+      <div className="flex justify-between flex-wrap items-end gap-2">
+        <div>
+          <SearchInput
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            placeholder="Cari..."
+            ariaLabel="Cari"
+          />
+        </div>
+        <div className="flex gap-2 ml-auto items-end">
+          <MonthYearPicker
+            month={bulan}
+            onMonthChange={(val) => {
+              setBulan(val);
+              setCurrentPage(1);
+            }}
+          />
+          <select
+            value={minggu}
+            onChange={(e) => {
+              setMinggu(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
+          >
+            <option value="">Minggu</option>
+            {weekOptions.map((m) => (
+              <option key={m} value={m}>
+                Minggu {m}
+              </option>
+            ))}
+          </select>
+          <Button onClick={exportExcel} className="add-button" variant="primary">
+            <Download size={16} />
+            <span className="hidden sm:inline">Export</span>
+          </Button>
+        </div>
       </div>
       <>
         <div className="overflow-x-auto md:overflow-x-visible">
