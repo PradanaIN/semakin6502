@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import DailyMatrix from "../DailyMatrix";
 import WeeklyMatrix from "../WeeklyMatrix";
 import MonthlyMatrix from "./MonthlyMatrix";
@@ -7,8 +7,6 @@ import Skeleton from "../../../components/ui/Skeleton";
 import Legend from "../../../components/ui/Legend";
 import axios from "axios";
 import { handleAxiosError } from "../../../utils/alerts";
-import getProgressColor from "../../../utils/progressColor";
-import months from "../../../utils/months";
 
 export default function TabContent({
   activeTab,
@@ -140,8 +138,18 @@ export default function TabContent({
     );
   }
 
+  const headings = {
+    harian: "Monitoring Harian: Jumlah Laporan Pekerjaan",
+    mingguan: "Monitoring Mingguan: Ringkasan Minggu",
+    bulanan: "Monitoring Bulanan: Progress Tahunan",
+  };
+
   return (
     <div>
+      <h2 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-200">
+        {headings[activeTab]}
+      </h2>
+
       {activeTab === "harian" && (
         <>
           <DailyMatrix data={dailyData} />
@@ -150,18 +158,20 @@ export default function TabContent({
       )}
 
       {activeTab === "mingguan" && (
-        <>
+        <div className="grid md:grid-cols-2 gap-4">
           <WeeklyMatrix
             data={weeklyMonthData}
             weeks={weekStarts}
             selectedWeek={weekIndex}
             onSelectWeek={() => {}}
           />
-          <h3 className="font-semibold mt-4 mb-2 text-blue-600 dark:text-blue-400">
-            Ringkasan Minggu {weekIndex + 1}
-          </h3>
-          <WeeklyProgressTable data={weeklyData} />
-        </>
+          <div>
+            <h3 className="font-semibold mb-2 text-blue-600 dark:text-blue-400">
+              Ringkasan Minggu {weekIndex + 1}
+            </h3>
+            <WeeklyProgressTable data={weeklyData} />
+          </div>
+        </div>
       )}
 
       {activeTab === "bulanan" &&
