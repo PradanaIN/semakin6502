@@ -18,8 +18,9 @@ describe('Sidebar role visibility', () => {
     expect(screen.getByText(/Monitoring/i)).toBeInTheDocument();
     expect(screen.getByText(/Keterlambatan/i)).toBeInTheDocument();
     expect(screen.getByText(/Tugas Mingguan/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tugas Tambahan/i)).toBeInTheDocument();
+    expect(screen.getByText(/Data Pegawai/i)).toBeInTheDocument();
     expect(screen.queryByText(/Dashboard/i)).toBeNull();
-    expect(screen.queryByText(/Tugas Tambahan/i)).toBeNull();
     expect(screen.queryByText(/Laporan Harian/i)).toBeNull();
     expect(screen.queryByText(/Master Kegiatan/i)).toBeNull();
     expect(screen.queryByText(/Kelola Pengguna/i)).toBeNull();

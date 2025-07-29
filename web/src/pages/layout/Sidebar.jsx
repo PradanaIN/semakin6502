@@ -31,7 +31,7 @@ const mainLinks = [
     to: "/tugas-tambahan",
     label: "Tugas Tambahan",
     icon: FilePlus,
-    roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA],
+    roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA, ROLES.PIMPINAN],
   },
   {
     to: "/laporan-harian",
@@ -80,6 +80,13 @@ export default function Sidebar({ setSidebarOpen }) {
   const isLinkVisible = (link) => !link.roles || link.roles.includes(user?.role);
   const visibleMainLinks = mainLinks.filter(isLinkVisible);
   const visibleManageLinks = manageLinks.filter(isLinkVisible);
+  const isPimpinan = user?.role === ROLES.PIMPINAN;
+
+  const getLink = (path) => visibleMainLinks.find((l) => l.to === path);
+  const monitoringLink = getLink("/monitoring");
+  const terlambatLink = getLink("/laporan-terlambat");
+  const mingguanLink = getLink("/tugas-mingguan");
+  const tambahanLink = getLink("/tugas-tambahan");
 
   const renderLink = (link) => {
     const Icon = link.icon;
@@ -115,7 +122,20 @@ export default function Sidebar({ setSidebarOpen }) {
       </div>
 
       <nav className="space-y-2">
-        {visibleMainLinks.map(renderLink)}
+        {isPimpinan ? (
+          <>
+            {monitoringLink && renderLink(monitoringLink)}
+            {terlambatLink && renderLink(terlambatLink)}
+            <hr className="my-4 border-gray-200 dark:border-gray-700" />
+            <div className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Data Pegawai
+            </div>
+            {mingguanLink && renderLink(mingguanLink)}
+            {tambahanLink && renderLink(tambahanLink)}
+          </>
+        ) : (
+          visibleMainLinks.map(renderLink)
+        )}
         {visibleManageLinks.length > 0 && (
           <hr className="my-4 border-gray-200 dark:border-gray-700" />
         )}
