@@ -21,6 +21,20 @@ import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 import formatDate from "../../utils/formatDate";
 
+function sortTambahan(list, teamId) {
+  return [...list].sort((a, b) => {
+    if (a.status === STATUS.BELUM && b.status !== STATUS.BELUM) return -1;
+    if (b.status === STATUS.BELUM && a.status !== STATUS.BELUM) return 1;
+    const dateDiff = new Date(b.tanggal) - new Date(a.tanggal);
+    if (dateDiff !== 0) return dateDiff;
+    const aOwn = teamId && a.teamId === teamId;
+    const bOwn = teamId && b.teamId === teamId;
+    if (aOwn && !bOwn) return -1;
+    if (bOwn && !aOwn) return 1;
+    return 0;
+  });
+}
+
 export default function TugasTambahanPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -76,7 +90,7 @@ export default function TugasTambahanPage() {
           ? axios.get("/users")
           : Promise.resolve({ data: [] }),
       ]);
-      setItems(tRes.data);
+      setItems(sortTambahan(tRes.data, user?.teamId));
       setKegiatan(kRes.data.data || kRes.data);
       setTeams(
         teamRes.data.filter(
