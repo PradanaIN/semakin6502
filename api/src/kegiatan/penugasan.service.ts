@@ -5,6 +5,7 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
+import { NotificationsService } from "../notifications/notifications.service";
 import { ROLES } from "../common/roles.constants";
 import { STATUS } from "../common/status.constants";
 import { normalizeRole } from "../common/roles";
@@ -13,7 +14,10 @@ import { AssignPenugasanBulkDto } from "./dto/assign-penugasan-bulk.dto";
 
 @Injectable()
 export class PenugasanService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notifications: NotificationsService,
+  ) {}
 
   findAll(
     role: string,
@@ -72,7 +76,7 @@ export class PenugasanService {
         throw new ForbiddenException("bukan ketua tim kegiatan ini");
       }
     }
-    return this.prisma.penugasan.create({
+    const penugasan = await this.prisma.penugasan.create({
       data: {
         kegiatanId: data.kegiatanId,
         pegawaiId: data.pegawaiId,
@@ -83,6 +87,14 @@ export class PenugasanService {
         status: data.status || STATUS.BELUM,
       },
     });
+
+    await this.notifications.create(
+      data.pegawaiId,
+      "Penugasan baru tersedia",
+      `/tugas-mingguan/${penugasan.id}`,
+    );
+
+    return penugasan;
   }
 
   async assignBulk(data: AssignPenugasanBulkDto, userId: number, role: string) {
@@ -110,8 +122,22 @@ export class PenugasanService {
       deskripsi: data.deskripsi,
       status: data.status || STATUS.BELUM,
     }));
-    await this.prisma.penugasan.createMany({ data: rows });
-    return { count: rows.length };
+
+    const created = await this.prisma.$transaction(
+      rows.map((r) => this.prisma.penugasan.create({ data: r })),
+    );
+
+    await Promise.all(
+      created.map((p) =>
+        this.notifications.create(
+          p.pegawaiId,
+          "Penugasan baru tersedia",
+          `/tugas-mingguan/${p.id}`,
+        ),
+      ),
+    );
+
+    return { count: created.length };
   }
 
   async findOne(id: number, role: string, userId: number) {
