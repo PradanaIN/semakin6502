@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { ROLES } from "../../utils/roles";
 import Button from "../../components/ui/Button";
 import { handleAxiosError } from "../../utils/alerts";
+import Loading from "../../components/Loading";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -138,36 +139,7 @@ const Dashboard = () => {
   }, [user?.id, user?.role, user?.teamId, monthIndex]);
 
   if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full w-full min-h-[60vh] space-y-3">
-        <svg
-          className="animate-spin h-6 w-6 text-blue-600 drop-shadow"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          ></circle>
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 
-      6.364A8.001 8.001 0 0112 20v4c-6.627 
-      0-12-5.373-12-12h4a8.001 8.001 
-      0 006.364 2.93z"
-          ></path>
-        </svg>
-        <p className="text-lg font-medium text-gray-600 dark:text-gray-300 tracking-wide">
-          Memuat data...
-        </p>
-      </div>
-    );
+    return <Loading fullScreen />;
   }
 
   if (errorMsg) {
