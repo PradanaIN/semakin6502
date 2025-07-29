@@ -17,6 +17,12 @@ export default function MonitoringPage() {
   const [teamId, setTeamId] = useState("");
   const [teams, setTeams] = useState([]);
 
+  const headings = {
+    harian: "Daftar Laporan Harian",
+    mingguan: "Capaian Mingguan Pegawai",
+    bulanan: "Capaian Bulanan Pegawai",
+  };
+
   const { user } = useAuth();
 
   // Fetch daftar tim jika admin/ketua
@@ -57,9 +63,13 @@ export default function MonitoringPage() {
 
   return (
     <div className="space-y-4">
-      <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow">
-        <TabNavigation activeTab={tab} onChange={setTab} />
-        <div className="mt-4">
+      <TabNavigation activeTab={tab} onChange={setTab} />
+
+      <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow space-y-4">
+        <div className="flex flex-wrap justify-between items-start gap-4">
+          <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+            {headings[tab]}
+          </h2>
           <FilterToolbar
             tab={tab}
             monthIndex={monthIndex}
