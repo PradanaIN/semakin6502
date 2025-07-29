@@ -134,6 +134,7 @@ export default function PenugasanPage() {
       if (filterBulan) params.bulan = filterBulan;
       if (filterTahun) params.tahun = filterTahun;
       if (filterMinggu) params.minggu = filterMinggu;
+      if (viewTab === "dariSaya") params.creator = user?.id;
       const penugasanReq = axios.get("/penugasan", { params });
       const teamsReq = axios.get("/teams").then(async (res) => {
         if (Array.isArray(res.data) && res.data.length === 0)
@@ -176,7 +177,7 @@ export default function PenugasanPage() {
     } finally {
       setLoading(false);
     }
-  }, [user, filterBulan, filterTahun, filterMinggu, canManage]);
+  }, [user, filterBulan, filterTahun, filterMinggu, canManage, viewTab]);
 
   useEffect(() => {
     fetchData();
@@ -215,8 +216,8 @@ export default function PenugasanPage() {
         ? p.kegiatan?.teamId === parseInt(filterTeam, 10)
         : true;
       if (viewTab === "mine") return matchesSearch && p.pegawaiId === user?.id;
-      if (viewTab === "anggota")
-        return matchesSearch && matchTeam && p.pegawaiId !== user?.id;
+      if (viewTab === "dariSaya")
+        return matchesSearch && matchTeam;
       return matchesSearch && matchTeam;
     });
   }, [penugasan, search, viewTab, user?.id, filterTeam]);
@@ -286,7 +287,7 @@ export default function PenugasanPage() {
         >
           {[
             { id: "mine", label: "Tugas Saya" },
-            ...(canManage ? [{ id: "anggota", label: "Dari Saya" }] : []),
+            ...(canManage ? [{ id: "dariSaya", label: "Dari Saya" }] : []),
             { id: "all", label: "Semua" },
           ].map((t) => (
             <button
