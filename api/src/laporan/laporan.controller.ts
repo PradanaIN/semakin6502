@@ -74,10 +74,17 @@ export class LaporanController {
     @Query("format") format = "xlsx",
     @Query("bulan") bulan?: string,
     @Query("minggu") minggu?: string,
+    @Query("tanggal") tanggal?: string,
   ) {
     const userId = (req.user as AuthRequestUser).userId;
     const week = minggu ? parseInt(minggu, 10) : undefined;
-    const buf = await this.laporanService.export(userId, format, bulan, week);
+    const buf = await this.laporanService.export(
+      userId,
+      format,
+      bulan,
+      week,
+      tanggal,
+    );
     const monthIdx = bulan ? parseInt(bulan, 10) : undefined;
     const fileName = exportFileName("LaporanHarian", monthIdx);
     if (format === "pdf") {
