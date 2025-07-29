@@ -15,16 +15,16 @@ describe('Sidebar role visibility', () => {
         <Sidebar setSidebarOpen={() => {}} />
       </MemoryRouter>
     );
-    expect(screen.getByText(/Monitoring/i)).toBeInTheDocument();
-    expect(screen.getByText(/Keterlambatan/i)).toBeInTheDocument();
-    expect(screen.getByText(/Tugas Mingguan/i)).toBeInTheDocument();
-    expect(screen.getByText(/Tugas Tambahan/i)).toBeInTheDocument();
-    expect(screen.getByText(/Data Pegawai/i)).toBeInTheDocument();
-    expect(screen.queryByText(/Dashboard/i)).toBeNull();
-    expect(screen.queryByText(/Laporan Harian/i)).toBeNull();
-    expect(screen.queryByText(/Master Kegiatan/i)).toBeNull();
-    expect(screen.queryByText(/Kelola Pengguna/i)).toBeNull();
-    expect(screen.queryByText(/Kelola Tim/i)).toBeNull();
+    expect(screen.getByText(/Monitoring/i)).toBeVisible();
+    expect(screen.getByText(/Keterlambatan/i)).toBeVisible();
+    expect(screen.getByText(/Tugas Mingguan/i)).toBeVisible();
+    expect(screen.getByText(/Tugas Tambahan/i)).toBeVisible();
+    expect(screen.getByText(/Data Pegawai/i)).toBeVisible();
+    expect(screen.queryByText(/Dashboard/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Laporan Harian/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Master Kegiatan/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Kelola Pengguna/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Kelola Tim/i)).not.toBeInTheDocument();
   });
 
   test('ketua sees all main links', () => {
