@@ -15,16 +15,20 @@ import {
 import { Request, Response } from "express";
 import { LaporanService } from "./laporan.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
+import { RolesGuard } from "../common/guards/roles.guard";
+import { Roles } from "../common/guards/roles.decorator";
+import { ROLES } from "../common/roles.constants";
 import { SubmitLaporanDto } from "./dto/submit-laporan.dto";
 import { UpdateLaporanDto } from "./dto/update-laporan.dto";
 import { AuthRequestUser } from "../common/auth-request-user.interface";
 
 @Controller("laporan-harian")
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class LaporanController {
   constructor(private readonly laporanService: LaporanService) {}
 
   @Get('all')
+  @Roles(ROLES.ADMIN)
   getAll() {
     return this.laporanService.getAll();
   }
