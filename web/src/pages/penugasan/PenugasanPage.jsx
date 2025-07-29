@@ -27,8 +27,25 @@ import SelectDataShow from "../../components/ui/SelectDataShow";
 import TableSkeleton from "../../components/ui/TableSkeleton";
 import { AnimatePresence, motion } from "framer-motion";
 import Spinner from "../../components/Spinner";
+import { STATUS } from "../../utils/status";
 
 const EXCLUDED_TB_NAMES = ["Ayu Pinta Gabina Siregar", "Elly Astutik"];
+
+function sortPenugasan(list, teamId) {
+  const dateVal = (p) =>
+    p.tahun * 10000 + parseInt(p.bulan, 10) * 100 + p.minggu;
+  return [...list].sort((a, b) => {
+    if (a.status === STATUS.BELUM && b.status !== STATUS.BELUM) return -1;
+    if (b.status === STATUS.BELUM && a.status !== STATUS.BELUM) return 1;
+    const diff = dateVal(b) - dateVal(a);
+    if (diff !== 0) return diff;
+    const aOwn = teamId && a.kegiatan?.teamId === teamId;
+    const bOwn = teamId && b.kegiatan?.teamId === teamId;
+    if (aOwn && !bOwn) return -1;
+    if (bOwn && !aOwn) return 1;
+    return 0;
+  });
+}
 
 const getCurrentWeek = () => {
   const today = new Date();
@@ -160,7 +177,7 @@ export default function PenugasanPage() {
       } else {
         kRes = { data: { data: [] } };
       }
-      setPenugasan(pRes.data);
+      setPenugasan(sortPenugasan(pRes.data, user?.teamId));
       setTeams(
         tRes.data.filter(
           (t) => t.namaTim !== "Admin" && t.namaTim !== "Pimpinan"
