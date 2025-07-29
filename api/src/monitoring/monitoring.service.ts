@@ -9,6 +9,14 @@ import { ROLES } from "../common/roles.constants";
 @Injectable()
 export class MonitoringService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async lastUpdate() {
+    const latest = await this.prisma.laporanHarian.findFirst({
+      orderBy: { tanggal: 'desc' },
+      select: { tanggal: true },
+    });
+    return latest?.tanggal || null;
+  }
   async harian(tanggal: string, teamId?: number, userId?: number) {
     const base = new Date(tanggal);
     if (isNaN(base.getTime()))

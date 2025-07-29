@@ -58,3 +58,11 @@ Available sidebar links depend on the authenticated user's role:
 - **Ketua Tim** – Dashboard, Tugas Mingguan, Tugas Tambahan, Laporan Harian and Master Kegiatan.
 - **Pimpinan** – Access to Monitoring and Keterlambatan. Read-only access to “Tugas Mingguan” and “Tugas Tambahan” (labelled “Data Pegawai” in the sidebar).
 
+## Monitoring
+
+The monitoring pages show aggregated progress reports. A new endpoint
+`GET /monitoring/last-update` returns the most recent `tanggal` from
+`laporanHarian` as an ISO timestamp. Both the Monitoring and Keterlambatan
+pages display this value with a note "Data terakhir diperbarui" formatted
+in WITA (UTC+8).
+

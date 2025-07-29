@@ -23,6 +23,12 @@ export class MonitoringController {
     private readonly prisma: PrismaService,
   ) {}
 
+  @Get('last-update')
+  async lastUpdate() {
+    const date = await this.monitoringService.lastUpdate();
+    return { lastUpdate: date ? date.toISOString() : null };
+  }
+
   @Get("harian")
   async harian(
     @Query("tanggal") tanggal?: string,
