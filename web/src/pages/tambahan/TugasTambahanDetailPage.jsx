@@ -16,11 +16,15 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import formatDate from "../../utils/formatDate";
 import Spinner from "../../components/Spinner";
+import { useAuth } from "../auth/useAuth";
+import { ROLES } from "../../utils/roles";
 
 
 export default function TugasTambahanDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const canManage = [ROLES.ADMIN, ROLES.KETUA].includes(user?.role);
   const [item, setItem] = useState(null);
   const [editing, setEditing] = useState(false);
   const [kegiatan, setKegiatan] = useState([]);
@@ -120,7 +124,7 @@ export default function TugasTambahanDetailPage() {
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Detail Tugas Tambahan</h2>
-        {!editing && (
+        {canManage && !editing && (
           <div className="space-x-2">
             <Button
               onClick={() => setEditing(true)}
@@ -265,12 +269,13 @@ export default function TugasTambahanDetailPage() {
       )}
       <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
         <h3 className="text-lg font-semibold">Bukti / Laporan Selesai</h3>
-        {!showUpload ? (
-          <div className="flex justify-end">
-            <Button onClick={() => setShowUpload(true)}>Tambah Bukti</Button>
-          </div>
-        ) : (
-          <>
+        {canManage && (
+          !showUpload ? (
+            <div className="flex justify-end">
+              <Button onClick={() => setShowUpload(true)}>Tambah Bukti</Button>
+            </div>
+          ) : (
+            <>
             <div className="space-y-2">
               <div>
                 <label htmlFor="tanggalMulai" className="block text-sm mb-1">Tanggal Mulai</label>
@@ -323,7 +328,8 @@ export default function TugasTambahanDetailPage() {
               </Button>
               <Button onClick={addLaporan}>Simpan Bukti</Button>
             </div>
-          </>
+            </>
+          )
         )}
       </div>
     </div>
