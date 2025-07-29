@@ -21,6 +21,13 @@ export default function TabContent({
   const [weeklyMonthData, setWeeklyMonthData] = useState([]);
   const [weeklyData, setWeeklyData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
+  const [weeklyMode, setWeeklyMode] = useState("matrix");
+
+  useEffect(() => {
+    if (activeTab === "mingguan") {
+      setWeeklyMode("matrix");
+    }
+  }, [activeTab]);
 
   const skeletonCols =
     activeTab === "harian" ? 7 : activeTab === "mingguan" ? 4 : 12;
@@ -158,20 +165,48 @@ export default function TabContent({
       )}
 
       {activeTab === "mingguan" && (
-        <div className="grid md:grid-cols-2 gap-4">
-          <WeeklyMatrix
-            data={weeklyMonthData}
-            weeks={weekStarts}
-            selectedWeek={weekIndex}
-            onSelectWeek={() => {}}
-          />
-          <div>
-            <h3 className="font-semibold mb-2 text-blue-600 dark:text-blue-400">
-              Ringkasan Minggu {weekIndex + 1}
-            </h3>
-            <WeeklyProgressTable data={weeklyData} />
+        <>
+          <div className="flex flex-wrap gap-2 mb-4" role="tablist">
+            <button
+              type="button"
+              onClick={() => setWeeklyMode("matrix")}
+              className={`px-4 py-1.5 rounded-lg font-semibold text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out ${
+                weeklyMode === "matrix"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600"
+              }`}
+            >
+              Progress per Minggu
+            </button>
+            <button
+              type="button"
+              onClick={() => setWeeklyMode("summary")}
+              className={`px-4 py-1.5 rounded-lg font-semibold text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out ${
+                weeklyMode === "summary"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600"
+              }`}
+            >
+              Ringkasan Minggu
+            </button>
           </div>
-        </div>
+
+          {weeklyMode === "matrix" ? (
+            <WeeklyMatrix
+              data={weeklyMonthData}
+              weeks={weekStarts}
+              selectedWeek={weekIndex}
+              onSelectWeek={() => {}}
+            />
+          ) : (
+            <div>
+              <h3 className="font-semibold mb-2 text-blue-600 dark:text-blue-400">
+                Ringkasan Minggu {weekIndex + 1}
+              </h3>
+              <WeeklyProgressTable data={weeklyData} />
+            </div>
+          )}
+        </>
       )}
 
       {activeTab === "bulanan" &&
