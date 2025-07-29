@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { AlertCircle, Loader2, Download } from "lucide-react";
+import { AlertCircle, Download } from "lucide-react";
+import Spinner from "../../components/Spinner";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -213,7 +214,7 @@ export default function MissedReportsPage() {
       {/* Loading / Data */}
       {loading ? (
         <div className="flex justify-center items-center h-40">
-          <Loader2 className="animate-spin w-6 h-6 text-gray-500" />
+          <Spinner className="w-6 h-6 text-gray-500" />
         </div>
       ) : (
         <div className="grid md:grid-cols-3 gap-6">
