@@ -74,7 +74,8 @@ export default function PenugasanPage() {
   const [weekOptions, setWeekOptions] = useState([]);
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewTab, setViewTab] = useState("all");
+  // Default tab is "Tugas Saya" to show the current user's tasks first
+  const [viewTab, setViewTab] = useState("mine");
   const [formTouched, setFormTouched] = useState(false); // for validation
 
   // --- Refs for autofocus
