@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Pencil, Trash2, ExternalLink, Minus, Download } from "lucide-react";
+import Spinner from "../../components/Spinner";
 import { showSuccess, handleAxiosError } from "../../utils/alerts";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";

@@ -7,6 +7,7 @@ import Label from "../../components/ui/Label";
 import Skeleton from "../../components/ui/Skeleton";
 import { showSuccess, showWarning, handleAxiosError } from "../../utils/alerts";
 import { User } from "lucide-react";
+import Spinner from "../../components/Spinner";
 
 export default function ProfilePage() {
   const { user, setUser } = useAuth();

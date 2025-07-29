@@ -26,6 +26,7 @@ import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
 import TableSkeleton from "../../components/ui/TableSkeleton";
 import { AnimatePresence, motion } from "framer-motion";
+import Spinner from "../../components/Spinner";
 
 const EXCLUDED_TB_NAMES = ["Ayu Pinta Gabina Siregar", "Elly Astutik"];
 
@@ -330,7 +331,7 @@ export default function PenugasanPage() {
 
       {/* TABLE */}
       <div className="overflow-x-auto md:overflow-x-visible min-h-[120px]">
-        {loading ? (
+        {loading ? (s
           <TableSkeleton cols={columns.length} />
         ) : error ? (
           <div className="py-10 flex flex-col items-center text-red-600 dark:text-red-400">
