@@ -7,7 +7,6 @@ import {
   handleAxiosError,
 } from "../../utils/alerts";
 import { Pencil, Plus, Trash2 } from "lucide-react";
-import Spinner from "../../components/Spinner";
 import { useAuth } from "../auth/useAuth";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
@@ -19,6 +18,7 @@ import Label from "../../components/ui/Label";
 import { ROLES } from "../../utils/roles";
 import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
+import TableSkeleton from "../../components/ui/TableSkeleton";
 
 export default function MasterKegiatanPage() {
   const { user } = useAuth();
@@ -225,9 +225,7 @@ export default function MasterKegiatanPage() {
 
       <div className="overflow-x-auto md:overflow-x-visible">
         {loading ? (
-          <div className="py-4 text-center">
-            <Spinner className="h-6 w-6 mx-auto" />
-          </div>
+          <TableSkeleton cols={columns.length} />
         ) : (
           <DataTable columns={columns} data={items} showGlobalFilter={false} showPagination={false} selectable={false} />
         )}

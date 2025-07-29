@@ -4,8 +4,10 @@ import { useAuth } from "../auth/useAuth";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
+import Skeleton from "../../components/ui/Skeleton";
 import { showSuccess, showWarning, handleAxiosError } from "../../utils/alerts";
 import { User } from "lucide-react";
+import Spinner from "../../components/Spinner";
 
 export default function ProfilePage() {
   const { user, setUser } = useAuth();
@@ -40,8 +42,8 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="p-6 text-center animate-pulse text-gray-500">
-        Memuat data pengguna...
+      <div className="p-6 text-center text-gray-500">
+        <Skeleton className="mx-auto h-4 w-40" />
       </div>
     );
   }
