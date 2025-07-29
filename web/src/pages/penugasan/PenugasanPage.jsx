@@ -43,9 +43,7 @@ const getCurrentWeek = () => {
 
 export default function PenugasanPage() {
   const { user } = useAuth();
-  const canManage = [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(
-    user?.role
-  );
+  const canManage = [ROLES.ADMIN, ROLES.KETUA].includes(user?.role);
   const showPegawaiColumn = useMemo(
     () => [ROLES.ADMIN, ROLES.KETUA].includes(user?.role),
     [user]
