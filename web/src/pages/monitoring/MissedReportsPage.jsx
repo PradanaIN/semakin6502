@@ -165,7 +165,7 @@ export default function MissedReportsPage() {
           {title}
         </h2>
         <span className="text-2xl font-bold" style={{ color }}>
-          {count}
+          {count} Pegawai
         </span>
       </div>
       <div className="max-h-72 overflow-y-auto pr-1 custom-scrollbar">
