@@ -248,7 +248,7 @@ export default function TugasTambahanPage() {
             onMonthChange={setFilterBulan}
             onYearChange={setFilterTahun}
           />
-          {user?.role === ROLES.ADMIN && (
+          {[ROLES.ADMIN, ROLES.PIMPINAN].includes(user?.role) && (
             <>
               <select
                 value={filterTeam}

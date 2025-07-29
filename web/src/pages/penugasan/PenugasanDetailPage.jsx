@@ -30,6 +30,7 @@ export default function PenugasanDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const canManage = [ROLES.ADMIN, ROLES.KETUA].includes(user?.role);
+  const canManageLaporan = user?.role !== ROLES.PIMPINAN;
   const [item, setItem] = useState(null);
   const [kegiatan, setKegiatan] = useState([]);
   const [users, setUsers] = useState([]);
@@ -188,7 +189,8 @@ export default function PenugasanDetailPage() {
   };
 
   const columns = useMemo(
-    () => [
+    () => {
+      const cols = [
       {
         Header: "No",
         accessor: (_row, i) => i + 1,
@@ -231,34 +233,37 @@ export default function PenugasanDetailPage() {
         Header: "Catatan",
         accessor: (row) => row.catatan || "-",
         disableFilters: true,
-      },
-      {
-        Header: "Aksi",
-        accessor: "id",
-        Cell: ({ row }) => (
-          <div className="space-x-2">
-            <Button
-              onClick={() => editLaporan(row.original)}
-              variant="warning"
-              icon
-              aria-label="Edit laporan"
-            >
-              <Pencil size={14} />
-            </Button>
-            <Button
-              onClick={() => deleteLaporan(row.original.id)}
-              variant="danger"
-              icon
-              aria-label="Hapus laporan"
-            >
-              <Trash2 size={14} />
-            </Button>
-          </div>
-        ),
-        disableFilters: true,
-      },
-    ],
-    [editLaporan, deleteLaporan]
+      }];
+      if (canManageLaporan) {
+        cols.push({
+          Header: "Aksi",
+          accessor: "id",
+          Cell: ({ row }) => (
+            <div className="space-x-2">
+              <Button
+                onClick={() => editLaporan(row.original)}
+                variant="warning"
+                icon
+                aria-label="Edit laporan"
+              >
+                <Pencil size={14} />
+              </Button>
+              <Button
+                onClick={() => deleteLaporan(row.original.id)}
+                variant="danger"
+                icon
+                aria-label="Hapus laporan"
+              >
+                <Trash2 size={14} />
+              </Button>
+            </div>
+          ),
+          disableFilters: true,
+        });
+      }
+      return cols;
+    },
+    [editLaporan, deleteLaporan, canManageLaporan]
   );
 
   const remove = async () => {
@@ -507,7 +512,7 @@ export default function PenugasanDetailPage() {
           <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
             Laporan Harian
           </h3>
-          {item.status !== STATUS.SELESAI_DIKERJAKAN && (
+          {item.status !== STATUS.SELESAI_DIKERJAKAN && user?.role !== ROLES.PIMPINAN && (
             <Button
               onClick={openLaporan}
               className="flex items-center gap-2 px-3 py-2 sm:px-4"

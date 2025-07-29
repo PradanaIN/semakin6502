@@ -52,6 +52,8 @@ export default function PenugasanPage() {
 
   // --- State
   const [penugasan, setPenugasan] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [filterTeam, setFilterTeam] = useState("");
   const [kegiatan, setKegiatan] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -130,6 +132,7 @@ export default function PenugasanPage() {
         kRes = { data: { data: [] } };
       }
       setPenugasan(pRes.data);
+      setTeams(tRes.data);
       setUsers([...uRes.data].sort((a, b) => a.nama.localeCompare(b.nama)));
       const kData = kRes.data.data || kRes.data;
       setKegiatan(
@@ -176,12 +179,15 @@ export default function PenugasanPage() {
         p.pegawai?.nama || ""
       }`.toLowerCase();
       const matchesSearch = text.includes(search.toLowerCase());
+      const matchTeam = filterTeam
+        ? p.kegiatan?.teamId === parseInt(filterTeam, 10)
+        : true;
       if (viewTab === "mine") return matchesSearch && p.pegawaiId === user?.id;
       if (viewTab === "anggota")
-        return matchesSearch && p.pegawaiId !== user?.id;
-      return matchesSearch;
+        return matchesSearch && matchTeam && p.pegawaiId !== user?.id;
+      return matchesSearch && matchTeam;
     });
-  }, [penugasan, search, viewTab, user?.id]);
+  }, [penugasan, search, viewTab, user?.id, filterTeam]);
   const paginated = useMemo(
     () => filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize),
     [filtered, currentPage, pageSize]
@@ -255,6 +261,25 @@ export default function PenugasanPage() {
             placeholder="Cari penugasan..."
             ariaLabel="Cari penugasan"
           />
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          {user?.role === ROLES.PIMPINAN && (
+            <select
+              value={filterTeam}
+              onChange={(e) => {
+                setFilterTeam(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
+            >
+              <option value="">Semua Tim</option>
+              {teams.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.namaTim}
+                </option>
+              ))}
+            </select>
+          )}
           <MonthYearPicker
             month={filterBulan}
             year={filterTahun}
@@ -285,49 +310,51 @@ export default function PenugasanPage() {
               </option>
             ))}
           </select>
+          {canManage && (
+            <Button
+              onClick={openCreate}
+              className="flex gap-2 items-center shadow-sm"
+              variant="primary"
+            >
+              <Plus size={16} />
+              <span className="hidden sm:inline">Tugas Mingguan</span>
+            </Button>
+          )}
         </div>
-        {canManage && (
-          <Button
-            onClick={openCreate}
-            className="flex gap-2 items-center shadow-sm"
-            variant="primary"
-          >
-            <Plus size={16} />
-            <span className="hidden sm:inline">Tugas Mingguan</span>
-          </Button>
-        )}
       </motion.div>
 
       {/* TABS */}
-      <div
-        className="flex flex-wrap gap-2"
-        role="tablist"
-        aria-label="View Tabs"
-      >
-        {[
-          { id: "all", label: "Semua" },
-          { id: "mine", label: "Tugas untuk Saya" },
-          { id: "anggota", label: "Tugas Anggota" },
-        ].map((t) => (
-          <Button
-            as="button"
-            type="button"
-            key={t.id}
-            onClick={() => {
-              setViewTab(t.id);
-              setCurrentPage(1);
-            }}
-            role="tab"
-            aria-selected={viewTab === t.id}
-            variant={viewTab === t.id ? "primary" : "ghost"}
-            className={`px-4 py-2 rounded-lg font-semibold transition ${
-              viewTab === t.id ? "shadow" : ""
-            }`}
-          >
-            {t.label}
-          </Button>
-        ))}
-      </div>
+      {user?.role !== ROLES.PIMPINAN && (
+        <div
+          className="flex flex-wrap gap-2"
+          role="tablist"
+          aria-label="View Tabs"
+        >
+          {[
+            { id: "all", label: "Semua" },
+            { id: "mine", label: "Tugas untuk Saya" },
+            { id: "anggota", label: "Tugas Anggota" },
+          ].map((t) => (
+            <Button
+              as="button"
+              type="button"
+              key={t.id}
+              onClick={() => {
+                setViewTab(t.id);
+                setCurrentPage(1);
+              }}
+              role="tab"
+              aria-selected={viewTab === t.id}
+              variant={viewTab === t.id ? "primary" : "ghost"}
+              className={`px-4 py-2 rounded-lg font-semibold transition ${
+                viewTab === t.id ? "shadow" : ""
+              }`}
+            >
+              {t.label}
+            </Button>
+          ))}
+        </div>
+      )}
 
       {/* TABLE */}
       <div className="overflow-x-auto md:overflow-x-visible min-h-[120px]">
