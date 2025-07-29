@@ -7,7 +7,9 @@ const prisma = {
   laporanHarian: { count: jest.fn() },
 } as any;
 
-const service = new PenugasanService(prisma);
+const notifications = { create: jest.fn() } as any;
+
+const service = new PenugasanService(prisma, notifications);
 
 describe("PenugasanService remove", () => {
   beforeEach(() => {

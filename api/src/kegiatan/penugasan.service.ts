@@ -128,7 +128,7 @@ export class PenugasanService {
     );
 
     await Promise.all(
-      created.map((p) =>
+      created.map((p: { pegawaiId: number; id: number }) =>
         this.notifications.create(
           p.pegawaiId,
           "Penugasan baru tersedia",
