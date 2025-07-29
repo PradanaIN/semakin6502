@@ -160,6 +160,19 @@ const Dashboard = () => {
         Selamat datang, {user?.nama || "Pengguna"}! 👋
       </h1>
 
+      {!hasReportedToday && (
+        <div className="bg-yellow-50 dark:bg-yellow-900 p-6 rounded-xl shadow text-center">
+          <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-200 mb-3">
+            Hari ini Anda belum melakukan laporan kegiatan harian Anda!
+          </h2>
+          <Link to="/tugas-mingguan">
+            <Button variant="primary" className="font-semibold w-fit mx-auto">
+              Isi Laporan Sekarang
+            </Button>
+          </Link>
+        </div>
+      )}
+
       <StatsSummary weeklyData={weeklyList[weekIndex]} />
 
       <MonitoringTabs
@@ -171,19 +184,6 @@ const Dashboard = () => {
         onMonthChange={setMonthIndex}
         monthlyData={monthlyData}
       />
-
-      {!hasReportedToday && (
-        <div className="bg-yellow-50 dark:bg-yellow-900 p-6 rounded-xl shadow text-center">
-          <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-200 mb-3">
-            Hari ini Anda belum melakukan laporan kegiatan harian Anda!
-          </h2>
-          <Link to="/laporan-harian">
-            <Button variant="primary" className="font-semibold w-fit mx-auto">
-              Isi Laporan Sekarang
-            </Button>
-          </Link>
-        </div>
-      )}
     </div>
   );
 };
