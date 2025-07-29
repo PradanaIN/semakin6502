@@ -18,6 +18,7 @@ import DataTable from "../../components/ui/DataTable";
 import SearchInput from "../../components/SearchInput";
 import Pagination from "../../components/Pagination";
 import SelectDataShow from "../../components/ui/SelectDataShow";
+import TableSkeleton from "../../components/ui/TableSkeleton";
 
 export default function TeamsPage() {
   const { user } = useAuth();
@@ -172,7 +173,7 @@ export default function TeamsPage() {
 
       <div className="overflow-x-auto md:overflow-x-visible">
         {loading ? (
-          <div className="py-4 text-center">Memuat data...</div>
+          <TableSkeleton cols={columns.length} />
         ) : (
           <DataTable columns={columns} data={paginated} showGlobalFilter={false} showPagination={false} selectable={false} />
         )}

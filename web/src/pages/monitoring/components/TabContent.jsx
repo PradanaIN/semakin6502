@@ -4,6 +4,7 @@ import WeeklyMatrix from "../WeeklyMatrix";
 import MonthlyMatrix from "./MonthlyMatrix";
 import WeeklyProgressTable from "./WeeklyProgressTable";
 import Skeleton from "../../../components/ui/Skeleton";
+import TableSkeleton from "../../../components/ui/TableSkeleton";
 import Legend from "../../../components/ui/Legend";
 import axios from "axios";
 import { handleAxiosError } from "../../../utils/alerts";
@@ -111,38 +112,7 @@ export default function TabContent({
   }, [activeTab, year, teamId]);
 
   if (loading) {
-    return (
-      <div className="overflow-auto">
-        <table className="min-w-full text-xs border-collapse">
-          <thead>
-            <tr>
-              <th className="p-2 border text-left">
-                <Skeleton className="h-4 w-20" />
-              </th>
-              {Array.from({ length: skeletonCols }).map((_, i) => (
-                <th key={i} className="p-1 border">
-                  <Skeleton className="h-4 w-full" />
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <tr key={i}>
-                <td className="p-2 border">
-                  <Skeleton className="h-4 w-32" />
-                </td>
-                {Array.from({ length: skeletonCols }).map((_, j) => (
-                  <td key={j} className="p-1 border">
-                    <Skeleton className="h-4 w-full" />
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
+    return <TableSkeleton cols={skeletonCols + 1} />;
   }
 
   return (
