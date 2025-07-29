@@ -14,6 +14,7 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
 import MonthYearPicker from "../../components/ui/MonthYearPicker";
+import TableSkeleton from "../../components/ui/TableSkeleton";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 
@@ -227,14 +228,7 @@ export default function LaporanHarianPage() {
       <>
         <div className="overflow-x-auto md:overflow-x-visible">
           {loading ? (
-            <div className="py-10">
-              <div className="flex flex-col items-center justify-center space-y-3">
-                <Spinner className="h-8 w-8 text-blue-600" />
-                <p className="text-gray-600 dark:text-gray-300 text-sm font-medium tracking-wide">
-                  Memuat data laporan...
-                </p>
-              </div>
-            </div>
+            <TableSkeleton cols={columns.length} />
           ) : (
             <DataTable columns={columns} data={paginated} showGlobalFilter={false} showPagination={false} selectable={false} />
           )}

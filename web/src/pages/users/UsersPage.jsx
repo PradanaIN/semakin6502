@@ -14,12 +14,12 @@ import useModalForm from "../../hooks/useModalForm";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
-import Spinner from "../../components/Spinner";
 import { ROLES } from "../../utils/roles";
 import DataTable from "../../components/ui/DataTable";
 import SearchInput from "../../components/SearchInput";
 import Pagination from "../../components/Pagination";
 import SelectDataShow from "../../components/ui/SelectDataShow";
+import TableSkeleton from "../../components/ui/TableSkeleton";
 
 export default function UsersPage() {
   const { user } = useAuth();
@@ -209,9 +209,7 @@ export default function UsersPage() {
       </div>
 
       {loading ? (
-        <div className="py-4 text-center">
-          <Spinner className="h-6 w-6 mx-auto" />
-        </div>
+        <TableSkeleton cols={columns.length} />
       ) : (
         <DataTable
           columns={columns}
