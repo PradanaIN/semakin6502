@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma.service";
+import { NotificationsService } from "../notifications/notifications.service";
 import { Workbook } from "exceljs";
 import PDFDocument from "pdfkit";
 import { normalizeRole } from "../common/roles";
@@ -15,7 +16,10 @@ import { STATUS } from "../common/status.constants";
 
 @Injectable()
 export class LaporanService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notifications: NotificationsService,
+  ) {}
 
   getAll() {
     return this.prisma.laporanHarian.findMany({
@@ -28,14 +32,36 @@ export class LaporanService {
   }
 
   private async syncPenugasanStatus(penugasanId: number) {
+    const pen = await this.prisma.penugasan.findUnique({
+      where: { id: penugasanId },
+      include: { kegiatan: true },
+    });
+    if (!pen) return;
+
     const finished = await this.prisma.laporanHarian.findFirst({
       where: { penugasanId, status: STATUS.SELESAI_DIKERJAKAN },
     });
     if (finished) {
-      await this.prisma.penugasan.update({
-        where: { id: penugasanId },
-        data: { status: STATUS.SELESAI_DIKERJAKAN },
-      });
+      if (pen.status !== STATUS.SELESAI_DIKERJAKAN) {
+        await this.prisma.penugasan.update({
+          where: { id: penugasanId },
+          data: { status: STATUS.SELESAI_DIKERJAKAN },
+        });
+
+        const leaders = await this.prisma.member.findMany({
+          where: { teamId: pen.kegiatan.teamId, isLeader: true },
+          select: { userId: true },
+        });
+        await Promise.all(
+          leaders.map((l) =>
+            this.notifications.create(
+              l.userId,
+              `Penugasan ${pen.kegiatan.namaKegiatan} selesai`,
+              `/tugas-mingguan/${pen.id}`,
+            ),
+          ),
+        );
+      }
       return;
     }
 

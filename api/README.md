@@ -63,6 +63,9 @@ Jika `JWT_SECRET` tidak diatur, aplikasi akan langsung keluar dengan error.
 `CORS_ORIGIN` opsional, isi dengan satu atau beberapa origin (pisahkan koma)
 untuk membatasi akses CORS.
 
+Fitur notifikasi tidak memerlukan variabel tambahan. Jadwal pengingat harian
+aktif secara otomatis setiap pagi.
+
 4. **Setup database**
 ```bash
 npx prisma generate
@@ -128,6 +131,9 @@ Nilai batas ini dapat diubah lewat variabel lingkungan `THROTTLE_TTL`
 | GET    | `/monitoring/bulanan/all`  | Monitoring bulanan semua pegawai (query: `year`, `bulan` opsional, `teamId` opsional) | admin, pimpinan, ketua tim |
 | GET    | `/monitoring/bulanan/matrix` | Matriks bulanan per user (query: `year`, `teamId` opsional) | admin, pimpinan, ketua tim |
 | GET    | `/monitoring/laporan/terlambat` | Daftar pegawai terlambat mengisi laporan (query: `teamId` opsional) | admin, pimpinan, ketua tim |
+| GET    | `/notifications`           | Daftar notifikasi user       | login |
+| POST   | `/notifications/read-all`  | Tandai semua notifikasi user | login |
+| POST   | `/notifications/:id/read`  | Tandai satu notifikasi       | login |
 
 Endpoint `/tugas-tambahan/all` memungkinkan admin melihat seluruh laporan tugas tambahan.
 Gunakan parameter opsional `teamId` atau `userId` untuk memfilter hasil.
