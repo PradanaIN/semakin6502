@@ -18,6 +18,7 @@ import DataTable from "../../components/ui/DataTable";
 import SearchInput from "../../components/SearchInput";
 import Pagination from "../../components/Pagination";
 import SelectDataShow from "../../components/ui/SelectDataShow";
+import Spinner from "../../components/Spinner";
 
 export default function TeamsPage() {
   const { user } = useAuth();
@@ -172,7 +173,9 @@ export default function TeamsPage() {
 
       <div className="overflow-x-auto md:overflow-x-visible">
         {loading ? (
-          <div className="py-4 text-center">Memuat data...</div>
+          <div className="py-4 text-center">
+            <Spinner className="h-6 w-6 mx-auto" />
+          </div>
         ) : (
           <DataTable columns={columns} data={paginated} showGlobalFilter={false} showPagination={false} selectable={false} />
         )}
