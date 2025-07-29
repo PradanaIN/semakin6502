@@ -2,12 +2,14 @@ import Spinner from "./Spinner";
 
 export default function Loading({
   fullScreen = false,
-  size = 40,
   message = "Sabar, ambil nafas dulu...",
+  size = "h-10 w-10",
 }) {
   const content = (
     <div className="flex flex-col items-center space-y-4 animate-fade-in">
-      <Spinner className="text-primary-500 drop-shadow" style={{ height: size, width: size }} />
+      <Spinner
+        className={`${size} text-primary-500 animate-pulse drop-shadow`}
+      />
       <div className="text-lg font-medium text-gray-700 dark:text-gray-300 tracking-wide transition-colors">
         {message}
       </div>
