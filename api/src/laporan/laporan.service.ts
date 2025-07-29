@@ -11,6 +11,12 @@ import { normalizeRole } from "../common/roles";
 import { ROLES } from "../common/roles.constants";
 import { STATUS } from "../common/status.constants";
 
+function getWeekOfMonth(date: Date) {
+  const first = new Date(date.getFullYear(), date.getMonth(), 1);
+  const offset = (first.getDay() + 6) % 7;
+  return Math.floor((date.getDate() + offset - 1) / 7) + 1;
+}
+
 // Semua perhitungan tanggal pada service ini mengasumsikan server
 // berjalan dalam timezone UTC.
 
@@ -229,70 +235,136 @@ export class LaporanService {
     return { success: true };
   }
 
-  getByMonthWeek(userId: number, bulan?: string, minggu?: number) {
+  async getByMonthWeek(
+    userId: number,
+    bulan?: string,
+    minggu?: number,
+    includeTambahan = false,
+  ) {
     const where: any = { pegawaiId: userId };
     if (bulan || minggu) {
       where.penugasan = {};
       if (bulan) where.penugasan.bulan = bulan;
       if (minggu) where.penugasan.minggu = minggu;
     }
-    return this.prisma.laporanHarian.findMany({
+    const laporan = await this.prisma.laporanHarian.findMany({
       where,
       orderBy: { tanggal: "desc" },
-      include: { penugasan: { include: { kegiatan: true } } },
+      include: { penugasan: { include: { kegiatan: { include: { team: true } } } } },
     });
+
+    const mapped = laporan.map((l: any) => ({
+      ...l,
+      type: "mingguan",
+      penugasan: { ...l.penugasan, tim: l.penugasan.kegiatan.team },
+    }));
+
+    if (!includeTambahan) return mapped;
+
+    let tambahan = await this.prisma.kegiatanTambahan.findMany({
+      where: { userId },
+      include: { kegiatan: { include: { team: true } } },
+    });
+
+    if (bulan) {
+      const bln = parseInt(bulan, 10);
+      tambahan = tambahan.filter((t: any) => t.tanggal.getMonth() + 1 === bln);
+    }
+    if (minggu) {
+      tambahan = tambahan.filter((t: any) => getWeekOfMonth(t.tanggal) === minggu);
+    }
+
+    const mappedTambahan = tambahan.map((t: any) => ({
+      id: t.id,
+      tanggal: t.tanggal,
+      status: t.status,
+      deskripsi: t.deskripsi,
+      buktiLink: t.buktiLink,
+      catatan: null,
+      type: "tambahan",
+      penugasan: {
+        kegiatan: {
+          namaKegiatan: t.nama,
+          deskripsi: t.kegiatan?.deskripsi,
+          team: t.kegiatan?.team,
+        },
+        tim: t.kegiatan?.team,
+      },
+    }));
+
+    return [...mapped, ...mappedTambahan].sort(
+      (a, b) => b.tanggal.getTime() - a.tanggal.getTime(),
+    );
   }
 
-  async export(
-    userId: number,
-    format: string,
-    bulan?: string,
-    minggu?: number,
-    tanggal?: string,
-  ) {
-    const data = tanggal
-      ? await this.getByUserTanggal(userId, tanggal)
-      : await this.getByMonthWeek(userId, bulan, minggu);
-    if (format === "pdf") {
-      const doc = new PDFDocument({ margin: 30 });
-      const buffers: Buffer[] = [];
-      doc.on("data", (b: Buffer) => buffers.push(b));
-      doc.text("Laporan Harian", { align: "center" });
+async export(
+  userId: number,
+  format: string,
+  bulan?: string,
+  minggu?: number,
+  includeTambahan = false,
+  tanggal?: string,
+) {
+  const data = tanggal
+    ? await this.getByUserTanggal(userId, tanggal)
+    : await this.getByMonthWeek(userId, bulan, minggu, includeTambahan);
+
+  if (format === "pdf") {
+    const doc = new PDFDocument({ margin: 30 });
+    const buffers: Buffer[] = [];
+
+    doc.on("data", (b: Buffer) => buffers.push(b));
+
+    doc.text("Laporan Harian", { align: "center" });
+    doc.moveDown();
+
+    data.forEach((d: any) => {
+      const label =
+        d.type === "tambahan"
+          ? `Tugas Tambahan - ${d.status}`
+          : `Minggu ${d.penugasan.minggu} ${d.penugasan.bulan}/${d.penugasan.tahun} - ${d.status}`;
+
+      doc
+        .fontSize(10)
+        .text(
+          `${d.tanggal.toISOString().slice(0, 10)} - ${d.penugasan.kegiatan.namaKegiatan} - ${label}`
+        );
+      if (d.catatan) doc.text(`Catatan: ${d.catatan}`);
+      if (d.buktiLink) doc.text(`Bukti: ${d.buktiLink}`);
       doc.moveDown();
-      data.forEach((d: any) => {
-        doc
-          .fontSize(10)
-          .text(
-            `${d.tanggal.toISOString().slice(0, 10)} - ${d.penugasan.kegiatan.namaKegiatan} - Minggu ${d.penugasan.minggu} ${d.penugasan.bulan}/${d.penugasan.tahun} - ${d.status}`
-          );
-        if (d.catatan) doc.text(`Catatan: ${d.catatan}`);
-        if (d.buktiLink) doc.text(`Bukti: ${d.buktiLink}`);
-        doc.moveDown();
-      });
-      doc.end();
-      await new Promise((resolve) => doc.on("end", resolve));
-      return Buffer.concat(buffers);
-    } else {
-      const wb = new Workbook();
-      const ws = wb.addWorksheet("laporan");
-      ws.columns = [
-        { header: "No", width: 5 },
-        { header: "Tugas", width: 25 },
-        { header: "Tanggal Laporan", width: 15 },
-        { header: "Deskripsi Kegiatan", width: 40 },
-        { header: "Bukti Dukung", width: 30 },
-      ];
-      ws.getRow(1).font = { bold: true };
-      data.forEach((d: any, idx: number) => {
-        ws.addRow([
-          idx + 1,
-          d.penugasan.kegiatan.namaKegiatan,
-          d.tanggal.toISOString().slice(0, 10),
-          d.deskripsi || "",
-          d.buktiLink || "",
-        ]);
-      });
-      return await wb.xlsx.writeBuffer();
-    }
+    });
+
+    doc.end();
+    await new Promise((resolve) => doc.on("end", resolve));
+    return Buffer.concat(buffers);
+  } else {
+    const wb = new Workbook();
+    const ws = wb.addWorksheet("laporan");
+
+    ws.columns = [
+      { header: "No", width: 5 },
+      { header: "Jenis", width: 15 },
+      { header: "Tugas", width: 25 },
+      { header: "Tanggal Laporan", width: 15 },
+      { header: "Deskripsi Kegiatan", width: 40 },
+      { header: "Bukti Dukung", width: 30 },
+    ];
+
+    ws.getRow(1).font = { bold: true };
+
+    data.forEach((d: any, idx: number) => {
+      ws.addRow([
+        idx + 1,
+        d.type === "tambahan" ? "Tambahan" : "Mingguan",
+        d.penugasan.kegiatan.namaKegiatan,
+        d.tanggal.toISOString().slice(0, 10),
+        d.deskripsi || "",
+        d.buktiLink || "",
+      ]);
+    });
+
+    return await wb.xlsx.writeBuffer();
   }
+}
+
 }

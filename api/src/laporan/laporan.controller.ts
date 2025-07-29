@@ -61,10 +61,16 @@ export class LaporanController {
     @Req() req: Request,
     @Query("bulan") bulan?: string,
     @Query("minggu") minggu?: string,
+    @Query("tambahan") tambahan?: string,
   ) {
     const userId = (req.user as AuthRequestUser).userId;
     const week = minggu ? parseInt(minggu, 10) : undefined;
-    return this.laporanService.getByMonthWeek(userId, bulan, week);
+    return this.laporanService.getByMonthWeek(
+      userId,
+      bulan,
+      week,
+      tambahan === "true",
+    );
   }
 
   @Get("mine/export")
@@ -74,6 +80,7 @@ export class LaporanController {
     @Query("format") format = "xlsx",
     @Query("bulan") bulan?: string,
     @Query("minggu") minggu?: string,
+    @Query("tambahan") tambahan?: string,
     @Query("tanggal") tanggal?: string,
   ) {
     const userId = (req.user as AuthRequestUser).userId;
@@ -83,6 +90,7 @@ export class LaporanController {
       format,
       bulan,
       week,
+      tambahan === "true",
       tanggal,
     );
     const monthIdx = bulan ? parseInt(bulan, 10) : undefined;

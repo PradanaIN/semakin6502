@@ -69,6 +69,7 @@ export default function LaporanHarianPage() {
       if (!isAdmin) {
         if (bulan) params.bulan = bulan;
         if (minggu) params.minggu = minggu;
+        params.tambahan = true;
       }
       const res = await axios.get(url, { params });
       setLaporan(res.data);
@@ -92,25 +93,32 @@ export default function LaporanHarianPage() {
     }
   };
 
-  const exportExcel = async (params) => {
-    try {
-      const res = await axios.get("/laporan-harian/mine/export", {
-        params,
-        responseType: "blob",
-      });
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      const idx = bulan ? parseInt(bulan, 10) : undefined;
-      const name = `${exportFileName("LaporanHarian", idx)}.xlsx`;
-      link.setAttribute("download", name);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (err) {
-      handleAxiosError(err, "Gagal mengekspor");
-    }
-  };
+  const exportExcel = async () => {
+  try {
+    const params = {};
+    if (bulan) params.bulan = bulan;
+    if (minggu) params.minggu = minggu;
+    params.tambahan = true;
+
+    const res = await axios.get("/laporan-harian/mine/export", {
+      params,
+      responseType: "blob",
+    });
+
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    const idx = bulan ? parseInt(bulan, 10) : undefined;
+    const name = `${exportFileName("LaporanHarian", idx)}.xlsx`;
+    link.setAttribute("download", name);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  } catch (err) {
+    handleAxiosError(err, "Gagal mengekspor");
+  }
+};
+
 
   const openExportModal = () => setShowExport(true);
   const handleExportConfirm = (params) => {
@@ -124,7 +132,8 @@ export default function LaporanHarianPage() {
 
   const filtered = laporan.filter((l) => {
     const peg = l.pegawai?.nama?.toLowerCase() || "";
-    const keg = l.penugasan?.kegiatan?.namaKegiatan?.toLowerCase() || "";
+    const keg =
+      l.penugasan?.kegiatan?.namaKegiatan?.toLowerCase() || l.nama?.toLowerCase() || "";
     const desc = l.deskripsi?.toLowerCase() || "";
     const cat = l.catatan?.toLowerCase() || "";
     const stat = l.status.toLowerCase();
@@ -145,18 +154,27 @@ export default function LaporanHarianPage() {
       disableFilters: true,
     },
     {
+      Header: "Jenis",
+      accessor: (row) =>
+        row.type === "tambahan" ? "Tugas Tambahan" : "Tugas Mingguan",
+      disableFilters: true,
+    },
+    {
       Header: "Kegiatan",
-      accessor: (row) => row.penugasan?.kegiatan?.namaKegiatan || "-",
+      accessor: (row) =>
+        row.penugasan?.kegiatan?.namaKegiatan || row.nama || "-",
       disableFilters: true,
     },
     {
       Header: "Tim",
-      accessor: (row) => row.penugasan?.tim?.namaTim || "-",
+      accessor: (row) =>
+        row.penugasan?.tim?.namaTim || row.kegiatan?.team?.namaTim || "-",
       disableFilters: true,
     },
     {
       Header: "Deskripsi Kegiatan",
-      accessor: (row) => row.penugasan?.kegiatan?.deskripsi || "-",
+      accessor: (row) =>
+        row.penugasan?.kegiatan?.deskripsi || row.deskripsi || "-",
       disableFilters: true,
     },
     {
