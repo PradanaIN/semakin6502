@@ -5,6 +5,7 @@ import Spinner from "../../components/Spinner";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import formatDate from "../../utils/formatDate";
 
 export default function MissedReportsPage() {
   const [data, setData] = useState({ day1: [], day3: [], day7: [] });
@@ -25,15 +26,6 @@ export default function MissedReportsPage() {
     fetchData();
   }, []);
 
-  const formatDate = (iso) => {
-    const date = new Date(iso);
-    return date.toLocaleDateString("id-ID", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   const formatToday = () => {
     const today = new Date();
@@ -139,8 +131,7 @@ export default function MissedReportsPage() {
               <td className="px-4 py-2 text-right">
                 {u.lastDate ? (
                   <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">
-                    Tidak melapor sejak {formatDate(u.lastDate)} (
-                    {daysSince(u.lastDate)} hari)
+                    {formatDate(u.lastDate)} • {daysSince(u.lastDate)} hari
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-gray-200 text-gray-700 rounded-full">
