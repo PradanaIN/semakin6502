@@ -17,6 +17,7 @@ import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import TableSkeleton from "../../components/ui/TableSkeleton";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
+import exportFileName from "../../utils/exportFileName";
 
 export default function LaporanHarianPage() {
   const { user } = useAuth();
@@ -105,7 +106,9 @@ export default function LaporanHarianPage() {
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "laporan.xlsx");
+      const idx = bulan ? parseInt(bulan, 10) : undefined;
+      const name = `${exportFileName("LaporanHarian", idx)}.xlsx`;
+      link.setAttribute("download", name);
       document.body.appendChild(link);
       link.click();
       link.remove();
