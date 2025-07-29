@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { ROLES } from "../common/roles.constants";
 import { PrismaService } from "../prisma.service";
 import { AddTambahanDto } from "./dto/add-tambahan.dto";
 import { UpdateTambahanDto } from "./dto/update-tambahan.dto";
@@ -47,9 +48,13 @@ export class TambahanService {
     });
   }
 
-  getOne(id: number, userId: number) {
+  getOne(id: number, userId: number, role: string) {
+    const where: any = { id };
+    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
+      where.userId = userId;
+    }
     return this.prisma.kegiatanTambahan.findFirst({
-      where: { id, userId },
+      where,
       include: { kegiatan: { include: { team: true } } },
     });
   }
