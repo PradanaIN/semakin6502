@@ -191,7 +191,14 @@ export default function AppRoutes() {
             <Route
               path="tugas-tambahan"
               element={
-                <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
+                <RoleRoute
+                  roles={[
+                    ROLES.ADMIN,
+                    ROLES.KETUA,
+                    ROLES.ANGGOTA,
+                    ROLES.PIMPINAN,
+                  ]}
+                >
                   <TugasTambahanPage />
                 </RoleRoute>
               }
@@ -199,7 +206,14 @@ export default function AppRoutes() {
             <Route
               path="tugas-tambahan/:id"
               element={
-                <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
+                <RoleRoute
+                  roles={[
+                    ROLES.ADMIN,
+                    ROLES.KETUA,
+                    ROLES.ANGGOTA,
+                    ROLES.PIMPINAN,
+                  ]}
+                >
                   <TugasTambahanDetailPage />
                 </RoleRoute>
               }
