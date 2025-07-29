@@ -7,6 +7,7 @@ import { ROLES } from "../../utils/roles";
 import Button from "../../components/ui/Button";
 import { handleAxiosError } from "../../utils/alerts";
 import Loading from "../../components/Loading";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -17,6 +18,7 @@ const Dashboard = () => {
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
+  const [hasReportedToday, setHasReportedToday] = useState(false);
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -122,6 +124,8 @@ const Dashboard = () => {
         });
 
         setDailyData(dailyRes.data);
+        const todayRec = dailyRes.data.find((d) => d.tanggal === tanggal);
+        setHasReportedToday(!!todayRec?.adaKegiatan);
         setWeeklyList(normalized);
         setWeekIndex(currentIndex);
         setMonthlyData(monthlyRes.data);
@@ -168,14 +172,18 @@ const Dashboard = () => {
         monthlyData={monthlyData}
       />
 
-      <div className="bg-green-50 dark:bg-green-900 p-6 rounded-xl shadow text-center">
-        <h2 className="text-xl font-semibold text-green-800 dark:text-white mb-3">
-          Ayo lengkapi laporan harianmu!
-        </h2>
-        <Button variant="primary" className="font-semibold w-fit mx-auto">
-          Isi Laporan Sekarang
-        </Button>
-      </div>
+      {!hasReportedToday && (
+        <div className="bg-yellow-50 dark:bg-yellow-900 p-6 rounded-xl shadow text-center">
+          <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-200 mb-3">
+            Hari ini Anda belum melakukan laporan kegiatan harian Anda!
+          </h2>
+          <Link to="/laporan-harian">
+            <Button variant="primary" className="font-semibold w-fit mx-auto">
+              Isi Laporan Sekarang
+            </Button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };
