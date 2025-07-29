@@ -142,7 +142,7 @@ export default function FilterToolbar({
       )}
 
       {/* Filter tim */}
-      {(userRole === "admin" || userRole === "ketua") && (
+      {(userRole === "admin" || userRole === "ketua" || userRole === "pimpinan") && (
         <div className="w-36">
           <select
             value={teamId}
