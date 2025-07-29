@@ -114,7 +114,11 @@ export default function PenugasanPage() {
       firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
     );
     const opts = [];
-    for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+    for (
+      let d = new Date(firstMonday);
+      d <= monthEnd;
+      d.setDate(d.getDate() + 7)
+    ) {
       opts.push(opts.length + 1);
     }
     setWeekOptions(opts);
@@ -272,6 +276,39 @@ export default function PenugasanPage() {
 
   return (
     <div className="space-y-6">
+      {/* TABS */}
+      {user?.role !== ROLES.PIMPINAN && (
+        <div
+          className="flex flex-wrap gap-2"
+          role="tablist"
+          aria-label="View Tabs"
+        >
+          {[
+            { id: "all", label: "Semua" },
+            { id: "mine", label: "Tugas untuk Saya" },
+            { id: "anggota", label: "Tugas Anggota" },
+          ].map((t) => (
+            <Button
+              as="button"
+              type="button"
+              key={t.id}
+              onClick={() => {
+                setViewTab(t.id);
+                setCurrentPage(1);
+              }}
+              role="tab"
+              aria-selected={viewTab === t.id}
+              variant={viewTab === t.id ? "primary" : "ghost"}
+              className={`px-4 py-2 rounded-lg font-semibold transition ${
+                viewTab === t.id ? "shadow" : ""
+              }`}
+            >
+              {t.label}
+            </Button>
+          ))}
+        </div>
+      )}
+
       {/* FILTERS */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
@@ -343,39 +380,6 @@ export default function PenugasanPage() {
           )}
         </div>
       </motion.div>
-
-      {/* TABS */}
-      {user?.role !== ROLES.PIMPINAN && (
-        <div
-          className="flex flex-wrap gap-2"
-          role="tablist"
-          aria-label="View Tabs"
-        >
-          {[
-            { id: "all", label: "Semua" },
-            { id: "mine", label: "Tugas untuk Saya" },
-            { id: "anggota", label: "Tugas Anggota" },
-          ].map((t) => (
-            <Button
-              as="button"
-              type="button"
-              key={t.id}
-              onClick={() => {
-                setViewTab(t.id);
-                setCurrentPage(1);
-              }}
-              role="tab"
-              aria-selected={viewTab === t.id}
-              variant={viewTab === t.id ? "primary" : "ghost"}
-              className={`px-4 py-2 rounded-lg font-semibold transition ${
-                viewTab === t.id ? "shadow" : ""
-              }`}
-            >
-              {t.label}
-            </Button>
-          ))}
-        </div>
-      )}
 
       {/* TABLE */}
       <div className="overflow-x-auto md:overflow-x-visible min-h-[120px]">
