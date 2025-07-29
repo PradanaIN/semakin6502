@@ -58,8 +58,8 @@ export default function MonitoringPage() {
   return (
     <div className="space-y-4">
       <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow">
-        <div className="flex flex-wrap items-center mb-4">
-          <TabNavigation activeTab={tab} onChange={setTab} />
+        <TabNavigation activeTab={tab} onChange={setTab} />
+        <div className="mt-4">
           <FilterToolbar
             tab={tab}
             monthIndex={monthIndex}
