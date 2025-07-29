@@ -15,6 +15,7 @@ import StatusBadge from "../../components/ui/StatusBadge";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import formatDate from "../../utils/formatDate";
+import Spinner from "../../components/Spinner";
 
 
 export default function TugasTambahanDetailPage() {
@@ -108,7 +109,12 @@ export default function TugasTambahanDetailPage() {
     }
   };
 
-  if (!item) return <div className="p-6">Memuat...</div>;
+  if (!item)
+    return (
+      <div className="p-6 text-center">
+        <Spinner className="h-6 w-6 mx-auto" />
+      </div>
+    );
 
   return (
     <div className="p-6 space-y-6">
