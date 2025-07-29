@@ -74,7 +74,11 @@ export default function TugasTambahanPage() {
       ]);
       setItems(tRes.data);
       setKegiatan(kRes.data.data || kRes.data);
-      setTeams(teamRes.data);
+      setTeams(
+        teamRes.data.filter(
+          (t) => t.namaTim !== "Admin" && t.namaTim !== "Pimpinan"
+        )
+      );
       if (user?.role === ROLES.ADMIN) {
         const sorted = userRes.data
           .filter((u) => u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN)

@@ -132,7 +132,11 @@ export default function PenugasanPage() {
         kRes = { data: { data: [] } };
       }
       setPenugasan(pRes.data);
-      setTeams(tRes.data);
+      setTeams(
+        tRes.data.filter(
+          (t) => t.namaTim !== "Admin" && t.namaTim !== "Pimpinan"
+        )
+      );
       setUsers([...uRes.data].sort((a, b) => a.nama.localeCompare(b.nama)));
       const kData = kRes.data.data || kRes.data;
       setKegiatan(
