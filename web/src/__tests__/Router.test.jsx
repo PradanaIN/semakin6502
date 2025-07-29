@@ -16,5 +16,8 @@ test('renders login page at /login', async () => {
     </AuthProvider>
   );
 
+  // shows loading fallback while lazy component loads
+  expect(screen.getByText(/Sabar, ambil nafas dulu/i)).toBeInTheDocument();
+
   expect(await screen.findByText(/Masuk untuk melanjutkan/i)).toBeInTheDocument();
 });
