@@ -25,7 +25,7 @@ const mainLinks = [
     to: "/tugas-mingguan",
     label: "Tugas Mingguan",
     icon: ClipboardList,
-    roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA],
+    roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA, ROLES.PIMPINAN],
   },
   {
     to: "/tugas-tambahan",
@@ -43,13 +43,13 @@ const mainLinks = [
     to: "/monitoring",
     label: "Monitoring",
     icon: BarChart2,
-    roles: [ROLES.ADMIN, ROLES.PIMPINAN],
+    roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA, ROLES.PIMPINAN],
   },
   {
     to: "/laporan-terlambat",
     label: "Keterlambatan",
     icon: AlertCircle,
-    roles: [ROLES.ADMIN, ROLES.PIMPINAN],
+    roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA, ROLES.PIMPINAN],
   },
 ];
 
