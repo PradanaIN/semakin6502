@@ -125,6 +125,7 @@ export default function PenugasanDetailPage() {
       deskripsi: "",
       status: STATUS.BELUM,
       catatan: "",
+      buktiLink: "",
     });
     setShowLaporanForm(true);
   };
@@ -175,6 +176,7 @@ export default function PenugasanDetailPage() {
       deskripsi: item.deskripsi || "",
       status: item.status,
       catatan: item.catatan || "",
+      buktiLink: item.buktiLink || "",
     });
     setShowLaporanForm(true);
   };
