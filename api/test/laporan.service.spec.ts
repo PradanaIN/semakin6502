@@ -88,6 +88,54 @@ describe('LaporanService submit', () => {
       data: { status: STATUS.SELESAI_DIKERJAKAN },
     });
   });
+
+  it('returns laporan when optional fields missing', async () => {
+    prisma.penugasan.findUnique.mockResolvedValue({
+      id: 1,
+      pegawaiId: 1,
+      kegiatan: { teamId: 1 },
+    });
+    prisma.laporanHarian.create.mockResolvedValue({ id: 12 });
+    prisma.laporanHarian.findFirst.mockResolvedValue(null);
+    prisma.penugasan.update.mockResolvedValue({});
+
+    const payload = {
+      penugasanId: 1,
+      tanggal: '2024-05-02',
+      status: STATUS.BELUM,
+      deskripsi: 'd',
+      capaianKegiatan: 'cap',
+    } as any;
+
+    const res = await service.submit(payload, 1, ROLES.ANGGOTA);
+
+    expect(res).toEqual({ id: 12 });
+    expect(prisma.laporanHarian.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          buktiLink: undefined,
+          catatan: undefined,
+        }),
+      }),
+    );
+  });
+
+  it('ignores errors from syncPenugasanStatus', async () => {
+    prisma.penugasan.findUnique.mockResolvedValue({
+      id: 1,
+      pegawaiId: 1,
+      kegiatan: { teamId: 1 },
+    });
+    prisma.laporanHarian.create.mockResolvedValue({ id: 13 });
+    const spy = jest
+      .spyOn<any, any>(service as any, 'syncPenugasanStatus')
+      .mockRejectedValue(new Error('fail'));
+
+    const res = await service.submit(data as any, 1, ROLES.ANGGOTA);
+
+    expect(res).toEqual({ id: 13 });
+    expect(spy).toHaveBeenCalled();
+  });
 });
 
 describe('LaporanService update', () => {

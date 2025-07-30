@@ -125,7 +125,8 @@ export class LaporanService {
     try {
       await this.syncPenugasanStatus(data.penugasanId);
     } catch (err) {
-      console.error('Failed to sync penugasan status', err);
+      // Ignore sync errors so laporan is still returned
+      console.error("Failed to sync penugasan status", err);
     }
 
     return laporan;
