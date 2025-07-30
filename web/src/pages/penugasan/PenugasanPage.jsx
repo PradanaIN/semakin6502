@@ -95,8 +95,8 @@ export default function PenugasanPage() {
   const [viewTab, setViewTab] = useState("mine");
   const [formTouched, setFormTouched] = useState(false); // for validation
 
-  // --- Refs for autofocus
-  const firstInputRef = useRef();
+  // --- Ref for initial focus
+  const descriptionRef = useRef();
 
   // --- Fetch Logic
   useEffect(() => {
@@ -450,7 +450,7 @@ export default function PenugasanPage() {
           <Modal
             onClose={closeForm}
             titleId="penugasan-form-title"
-            initialFocusRef={firstInputRef}
+            initialFocusRef={descriptionRef}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.98 }}
@@ -510,8 +510,6 @@ export default function PenugasanPage() {
                     placeholder="Pilih kegiatan..."
                     isSearchable
                     noOptionsMessage={() => "Tidak ditemukan."}
-                    ref={firstInputRef}
-                    autoFocus
                   />
                   {formTouched && !form.kegiatanId && (
                     <span className="text-xs text-red-500">
@@ -588,6 +586,7 @@ export default function PenugasanPage() {
                   <Label htmlFor="deskripsi">Deskripsi Penugasan</Label>
                   <textarea
                     id="deskripsi"
+                    ref={descriptionRef}
                     value={form.deskripsi}
                     onChange={(e) =>
                       setForm({ ...form, deskripsi: e.target.value })
