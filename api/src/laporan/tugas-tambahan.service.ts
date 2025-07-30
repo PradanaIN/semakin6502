@@ -18,6 +18,7 @@ export class TambahanService {
         nama: master.namaKegiatan,
         tanggal: new Date(data.tanggal),
         status: data.status,
+        capaianKegiatan: data.capaianKegiatan,
         buktiLink: data.buktiLink,
         deskripsi: data.deskripsi,
         tanggalSelesai: data.tanggalSelesai ? new Date(data.tanggalSelesai) : undefined,
