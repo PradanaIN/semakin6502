@@ -206,7 +206,7 @@ export default function LaporanHarianPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-end gap-2">
+      <div>
         <SearchInput
           value={query}
           onChange={(e) => {
@@ -216,6 +216,8 @@ export default function LaporanHarianPage() {
           placeholder="Cari..."
           ariaLabel="Cari"
         />
+      </div>
+      <div className="flex justify-end items-center gap-2 mb-4">
         <MonthYearPicker
           month={bulan}
           onMonthChange={(val) => {
