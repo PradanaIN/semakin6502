@@ -44,7 +44,7 @@ const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek, selectedWeek }) => 
 
   return (
     <div className="overflow-x-auto md:overflow-visible max-h-[60vh] w-full">
-      <table className="min-w-[1000px] w-full table-fixed text-xs border-collapse">
+      <table className="min-w-[1000px] w-full table-fixed text-xs border-collapse border rounded-lg shadow">
         <thead className="sticky top-0 bg-white dark:bg-gray-800 z-10 shadow-sm">
           <tr>
             <th className="p-2 border text-left">Nama</th>
