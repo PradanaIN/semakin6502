@@ -38,47 +38,51 @@ export class LaporanService {
   }
 
   private async syncPenugasanStatus(penugasanId: number) {
-    const pen = await this.prisma.penugasan.findUnique({
-      where: { id: penugasanId },
-      include: { kegiatan: true },
-    });
-    if (!pen) return;
+    try {
+      const pen = await this.prisma.penugasan.findUnique({
+        where: { id: penugasanId },
+        include: { kegiatan: true },
+      });
+      if (!pen) return;
 
-    const finished = await this.prisma.laporanHarian.findFirst({
-      where: { penugasanId, status: STATUS.SELESAI_DIKERJAKAN },
-    });
-    if (finished) {
-      if (pen.status !== STATUS.SELESAI_DIKERJAKAN) {
-        await this.prisma.penugasan.update({
-          where: { id: penugasanId },
-          data: { status: STATUS.SELESAI_DIKERJAKAN },
-        });
+      const finished = await this.prisma.laporanHarian.findFirst({
+        where: { penugasanId, status: STATUS.SELESAI_DIKERJAKAN },
+      });
+      if (finished) {
+        if (pen.status !== STATUS.SELESAI_DIKERJAKAN) {
+          await this.prisma.penugasan.update({
+            where: { id: penugasanId },
+            data: { status: STATUS.SELESAI_DIKERJAKAN },
+          });
 
-        const leaders = await this.prisma.member.findMany({
-          where: { teamId: pen.kegiatan.teamId, isLeader: true },
-          select: { userId: true },
-        });
-        await Promise.all(
-          leaders.map((l: { userId: number }) =>
-            this.notifications.create(
-              l.userId,
-              `Penugasan ${pen.kegiatan.namaKegiatan} selesai`,
-              `/tugas-mingguan/${pen.id}`,
+          const leaders = await this.prisma.member.findMany({
+            where: { teamId: pen.kegiatan.teamId, isLeader: true },
+            select: { userId: true },
+          });
+          await Promise.all(
+            leaders.map((l: { userId: number }) =>
+              this.notifications.create(
+                l.userId,
+                `Penugasan ${pen.kegiatan.namaKegiatan} selesai`,
+                `/tugas-mingguan/${pen.id}`,
+              ),
             ),
-          ),
-        );
+          );
+        }
+        return;
       }
-      return;
-    }
 
-    const latest = await this.prisma.laporanHarian.findFirst({
-      where: { penugasanId },
-      orderBy: { tanggal: 'desc' },
-    });
-    await this.prisma.penugasan.update({
-      where: { id: penugasanId },
-      data: { status: latest?.status || STATUS.BELUM },
-    });
+      const latest = await this.prisma.laporanHarian.findFirst({
+        where: { penugasanId },
+        orderBy: { tanggal: 'desc' },
+      });
+      await this.prisma.penugasan.update({
+        where: { id: penugasanId },
+        data: { status: latest?.status || STATUS.BELUM },
+      });
+    } catch (err) {
+      console.error('Failed to sync penugasan status', err);
+    }
   }
   async submit(data: any, userId: number, role: string) {
     role = normalizeRole(role);
@@ -118,7 +122,11 @@ export class LaporanService {
       },
     });
 
-    await this.syncPenugasanStatus(data.penugasanId);
+    try {
+      await this.syncPenugasanStatus(data.penugasanId);
+    } catch (err) {
+      console.error('Failed to sync penugasan status', err);
+    }
 
     return laporan;
   }
@@ -199,7 +207,11 @@ export class LaporanService {
       },
     });
 
-    await this.syncPenugasanStatus(existing.penugasanId);
+    try {
+      await this.syncPenugasanStatus(existing.penugasanId);
+    } catch (err) {
+      console.error('Failed to sync penugasan status', err);
+    }
 
     return laporan;
   }
@@ -232,7 +244,11 @@ export class LaporanService {
     }
     await this.prisma.laporanHarian.delete({ where: { id } });
 
-    await this.syncPenugasanStatus(existing.penugasanId);
+    try {
+      await this.syncPenugasanStatus(existing.penugasanId);
+    } catch (err) {
+      console.error('Failed to sync penugasan status', err);
+    }
 
     return { success: true };
   }
