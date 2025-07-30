@@ -80,12 +80,7 @@ export default function TugasTambahanPage() {
         user?.role === ROLES.ADMIN || user?.role === ROLES.KETUA
           ? axios.get("/master-kegiatan?limit=1000")
           : Promise.resolve({ data: [] }),
-        axios.get("/teams").then(async (res) => {
-          if (Array.isArray(res.data) && res.data.length === 0) {
-            return axios.get("/teams/member");
-          }
-          return res;
-        }),
+        axios.get("/teams/all"),
         user?.role === ROLES.ADMIN
           ? axios.get("/users")
           : Promise.resolve({ data: [] }),

@@ -32,6 +32,11 @@ export class TeamsController {
     return this.teamsService.findByLeader(user.userId);
   }
 
+  @Get("all")
+  findAllPublic() {
+    return this.teamsService.findAllPublic();
+  }
+
   @Get("member")
   findMemberTeams(@Req() req: Request) {
     const user = req.user as AuthRequestUser;
