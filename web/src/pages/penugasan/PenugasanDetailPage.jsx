@@ -32,6 +32,10 @@ export default function PenugasanDetailPage() {
   const canManage = [ROLES.ADMIN, ROLES.KETUA].includes(user?.role);
   const canManageLaporan = user?.role !== ROLES.PIMPINAN;
   const [item, setItem] = useState(null);
+  const canAddReport =
+    user?.role === ROLES.ADMIN ||
+    user?.role === ROLES.KETUA ||
+    user?.id === item?.pegawaiId;
   const [kegiatan, setKegiatan] = useState([]);
   const [users, setUsers] = useState([]);
   const [form, setForm] = useState({
@@ -512,7 +516,7 @@ export default function PenugasanDetailPage() {
           <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
             Laporan Harian
           </h3>
-          {item.status !== STATUS.SELESAI_DIKERJAKAN && user?.role !== ROLES.PIMPINAN && (
+          {item.status !== STATUS.SELESAI_DIKERJAKAN && canAddReport && (
             <Button
               onClick={openLaporan}
               className="flex items-center gap-2 px-3 py-2 sm:px-4"
