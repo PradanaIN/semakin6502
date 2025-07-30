@@ -175,12 +175,13 @@ export default function PenugasanDetailPage() {
 
   const editLaporan = (item) => {
     setLaporanForm({
+      ...item,
       id: item.id,
       tanggal: item.tanggal.slice(0, 10),
-      deskripsi: item.deskripsi || "",
+      deskripsi: item.deskripsi ?? "",
       status: item.status,
-      catatan: item.catatan || "",
-      buktiLink: item.buktiLink || "",
+      catatan: item.catatan ?? "",
+      buktiLink: item.buktiLink ?? "",
     });
     setShowLaporanForm(true);
   };
