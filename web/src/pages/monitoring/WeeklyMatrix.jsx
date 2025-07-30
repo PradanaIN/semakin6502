@@ -13,7 +13,7 @@ export const WeeklyMatrixRow = ({ user, progressColor, weekCount, currentUser })
           : "hover:bg-gray-50 dark:hover:bg-gray-700"
       }`}
     >
-      <td className="p-2 border text-left whitespace-nowrap text-sm font-medium">
+      <td className="p-2 border text-left whitespace-nowrap text-sm font-medium w-48 md:w-60">
         {user.nama}
       </td>
       {user.weeks.slice(0, weekCount).map((w, i) => (
@@ -38,8 +38,8 @@ export const WeeklyMatrixRow = ({ user, progressColor, weekCount, currentUser })
 };
 
 const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek, selectedWeek }) => {
-  if (!Array.isArray(data) || data.length === 0) return null;
   const { user: currentUser } = useAuth();
+  if (!Array.isArray(data) || data.length === 0) return null;
   const progressColor = getProgressColor;
 
   return (
@@ -47,7 +47,7 @@ const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek, selectedWeek }) => 
       <table className="min-w-[1000px] w-full table-fixed text-xs border-collapse border rounded-lg shadow">
         <thead className="sticky top-0 bg-white dark:bg-gray-800 z-10 shadow-sm">
           <tr>
-            <th className="p-2 border text-left">Nama</th>
+            <th className="p-2 border text-left w-48 md:w-60">Nama</th>
             {weeks.map((_, i) => (
               <th
                 key={i}

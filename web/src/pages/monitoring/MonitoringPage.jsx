@@ -79,7 +79,7 @@ export default function MonitoringPage() {
     }
     setWeekStarts(starts);
     if (weekIndex >= starts.length) setWeekIndex(0);
-  }, [monthIndex, year]);
+  }, [monthIndex, year, weekIndex]);
 
   return (
     <div className="max-w-screen-xl mx-auto px-4 flex flex-col gap-4">
