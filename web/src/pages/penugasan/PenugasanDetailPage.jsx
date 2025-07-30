@@ -58,6 +58,7 @@ export default function PenugasanDetailPage() {
     catatan: "",
     buktiLink: "",
   });
+  const [saving, setSaving] = useState(false);
 
   const closeLaporanForm = useCallback(() => {
     setShowLaporanForm(false);
@@ -127,10 +128,13 @@ export default function PenugasanDetailPage() {
       catatan: "",
       buktiLink: "",
     });
+    setSaving(false);
     setShowLaporanForm(true);
   };
 
   const saveLaporan = async () => {
+    if (saving) return;
+    setSaving(true);
     try {
       if (laporanForm.deskripsi.trim() === "") {
         showWarning("Lengkapi data", "Deskripsi wajib diisi");
@@ -170,6 +174,8 @@ export default function PenugasanDetailPage() {
     } catch (err) {
       console.error("Failed to save report", err?.response?.data || err);
       handleAxiosError(err, "Gagal menyimpan laporan");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -674,7 +680,9 @@ export default function PenugasanDetailPage() {
               >
                 Batal
               </Button>
-              <Button onClick={saveLaporan}>Simpan</Button>
+              <Button type="button" onClick={saveLaporan} disabled={saving}>
+                Simpan
+              </Button>
             </div>
           </div>
         </Modal>
