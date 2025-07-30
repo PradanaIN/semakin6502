@@ -61,6 +61,7 @@ export default function TugasTambahanPage() {
   const [filterTeam, setFilterTeam] = useState("");
   const [filterMinggu, setFilterMinggu] = useState("");
   const [weekOptions, setWeekOptions] = useState([]);
+  const [step, setStep] = useState(1);
   const fetchKegiatanForTeam = async (teamId) => {
     if (!teamId) {
       setKegiatan([]);
@@ -109,7 +110,6 @@ export default function TugasTambahanPage() {
   useEffect(() => {
     fetchData();
   }, [filterTeam, user?.role]);
-
 
   useEffect(() => {
     if (!filterBulan || !filterTahun) {
@@ -209,21 +209,10 @@ export default function TugasTambahanPage() {
         matchMinggu = weekNum === parseInt(filterMinggu, 10);
       }
       return (
-        matchesSearch &&
-        matchBulan &&
-        matchTahun &&
-        matchTeam &&
-        matchMinggu
+        matchesSearch && matchBulan && matchTahun && matchTeam && matchMinggu
       );
-  });
-}, [
-    items,
-    search,
-    filterBulan,
-    filterTahun,
-    filterTeam,
-    filterMinggu,
-  ]);
+    });
+  }, [items, search, filterBulan, filterTahun, filterTeam, filterMinggu]);
 
   const paginatedItems = filteredItems.slice(
     (currentPage - 1) * pageSize,
@@ -383,172 +372,230 @@ export default function TugasTambahanPage() {
 
       {canManage && showForm && (
         <Modal
-          onClose={() => {
-            setShowForm(false);
-          }}
+          onClose={() => setShowForm(false)}
           titleId="tugas-tambahan-modal-title"
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="mb-4 flex items-center justify-between">
             <h2
               id="tugas-tambahan-modal-title"
               className="text-xl font-semibold"
             >
-              Tambah Kegiatan
+              {step === 1
+                ? "Informasi Tugas Tambahan [1/2]"
+                : "Detail Tugas Tambahan [2/2]"}
             </h2>
             <p className="text-xs text-red-600 dark:text-red-500">
-              * Fardu 'Ain
+              * Wajib diisi
             </p>
           </div>
 
           <div className="space-y-4">
-            <div>
-              <Label htmlFor="teamId" className="dark:text-gray-100">
-                Tim <span className="text-red-500">*</span>
-              </Label>
-              <select
-                id="teamId"
-                value={form.teamId}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  const tId = value ? parseInt(value, 10) : "";
-                  setForm({
-                    ...form,
-                    teamId: tId,
-                    kegiatanId: "",
-                  });
-                  fetchKegiatanForTeam(tId);
-                }}
-                className="w-full border rounded-lg px-3 py-2 bg-white text-gray-900 
-            dark:bg-gray-700 dark:text-gray-100 
-            focus:outline-none focus:ring-2 focus:ring-blue-500 
-            shadow-sm transition duration-150 ease-in-out"
-              >
-                <option value="">Pilih Tim</option>
-                {teams
-                  .filter((t) => t.namaTim !== "Pimpinan")
-                  .map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.namaTim}
+            {step === 1 && (
+              <>
+                {/* Tim */}
+                <div>
+                  <Label htmlFor="teamId">
+                    Tim <span className="text-red-500">*</span>
+                  </Label>
+                  <select
+                    id="teamId"
+                    value={form.teamId}
+                    onChange={(e) => {
+                      const tId = e.target.value
+                        ? parseInt(e.target.value)
+                        : "";
+                      setForm({ ...form, teamId: tId, kegiatanId: "" });
+                      fetchKegiatanForTeam(tId);
+                    }}
+                    className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                  >
+                    <option value="">Pilih Tim</option>
+                    {teams
+                      .filter((t) => t.namaTim !== "Pimpinan")
+                      .map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.namaTim}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+
+                {/* Kegiatan */}
+                <div>
+                  <Label htmlFor="kegiatanId">
+                    Kegiatan <span className="text-red-500">*</span>
+                  </Label>
+                  <select
+                    id="kegiatanId"
+                    value={form.kegiatanId}
+                    onChange={(e) =>
+                      setForm({ ...form, kegiatanId: e.target.value })
+                    }
+                    disabled={!form.teamId}
+                    className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                  >
+                    <option value="">
+                      {form.teamId
+                        ? "Pilih Kegiatan"
+                        : "Pilih Tim terlebih dahulu"}
                     </option>
-                  ))}
-              </select>
-            </div>
+                    {kegiatan
+                      .filter((k) => k.teamId === form.teamId)
+                      .map((k) => (
+                        <option key={k.id} value={k.id}>
+                          {k.namaKegiatan}
+                        </option>
+                      ))}
+                  </select>
+                </div>
 
-            <div>
-              <Label htmlFor="kegiatanId" className="dark:text-gray-100">
-                Kegiatan <span className="text-red-500">*</span>
-              </Label>
-              <select
-                id="kegiatanId"
-                value={form.kegiatanId}
-                onChange={(e) =>
-                  setForm({ ...form, kegiatanId: e.target.value })
-                }
-                className="w-full border rounded-lg px-3 py-2 bg-white text-gray-900 
-            dark:bg-gray-700 dark:text-gray-100 
-            focus:outline-none focus:ring-2 focus:ring-blue-500 
-            shadow-sm transition duration-150 ease-in-out"
-                disabled={!form.teamId}
-              >
-                <option value="">
-                  {form.teamId ? "Pilih Kegiatan" : "Pilih Tim terlebih dahulu"}
-                </option>
-                {kegiatan
-                  .filter((k) => k.teamId === form.teamId)
-                  .map((k) => (
-                    <option key={k.id} value={k.id}>
-                      {k.namaKegiatan}
+                {/* Tanggal */}
+                <div>
+                  <Label htmlFor="tanggal">
+                    Tanggal Kegiatan <span className="text-red-500">*</span>
+                  </Label>
+                  <input
+                    ref={tanggalRef}
+                    id="tanggal"
+                    type="date"
+                    value={form.tanggal}
+                    onChange={(e) =>
+                      setForm({ ...form, tanggal: e.target.value })
+                    }
+                    onClick={() => tanggalRef.current?.showPicker()}
+                    className="w-full cursor-pointer rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                  />
+                </div>
+
+                <div className="flex justify-end pt-2 gap-3">
+                  <Button
+                    onClick={() => {
+                      if (!form.teamId || !form.kegiatanId || !form.tanggal) {
+                        Swal.fire({
+                          icon: "warning",
+                          title: "Lengkapi Formulir",
+                          text: "Harap isi semua kolom wajib di langkah 1.",
+                        });
+                        return;
+                      }
+                      setStep(2);
+                    }}
+                  >
+                    Lanjut
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {step === 2 && (
+              <>
+                {/* Deskripsi */}
+                <div>
+                  <Label htmlFor="deskripsi">
+                    Deskripsi Kegiatan <span className="text-red-500">*</span>
+                  </Label>
+                  <textarea
+                    id="deskripsi"
+                    value={form.deskripsi}
+                    onChange={(e) =>
+                      setForm({ ...form, deskripsi: e.target.value })
+                    }
+                    placeholder="Deskripsi kegiatan..."
+                    required
+                    className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white resize-y"
+                  />
+                </div>
+
+                {/* Capaian */}
+                <div>
+                  <Label htmlFor="capaianKegiatan">
+                    Capaian Kegiatan <span className="text-red-500">*</span>
+                  </Label>
+                  <textarea
+                    id="capaianKegiatan"
+                    value={form.capaianKegiatan}
+                    onChange={(e) =>
+                      setForm({ ...form, capaianKegiatan: e.target.value })
+                    }
+                    required
+                    placeholder="Capaian kegiatan..."
+                    className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white resize-y"
+                  />
+                </div>
+
+                {/* Status */}
+                <div>
+                  <Label htmlFor="status">
+                    Status <span className="text-red-500">*</span>
+                  </Label>
+                  <select
+                    id="status"
+                    value={form.status}
+                    onChange={(e) =>
+                      setForm({ ...form, status: e.target.value })
+                    }
+                    className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                  >
+                    <option value={STATUS.BELUM}>
+                      {formatStatus(STATUS.BELUM)}
                     </option>
-                  ))}
-              </select>
-            </div>
+                    <option value={STATUS.SEDANG_DIKERJAKAN}>
+                      {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
+                    </option>
+                    <option value={STATUS.SELESAI_DIKERJAKAN}>
+                      {formatStatus(STATUS.SELESAI_DIKERJAKAN)}
+                    </option>
+                  </select>
+                </div>
 
-            <div>
-              <Label htmlFor="kegiatanId" className="dark:text-gray-100">
-                Tanggal <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                ref={tanggalRef}
-                id="tanggal"
-                type="date"
-                value={form.tanggal}
-                onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
-                onClick={() => tanggalRef.current?.showPicker()}
-                className="w-full cursor-pointer border rounded-lg px-3 py-2 bg-white text-gray-900 
-    dark:bg-gray-700 dark:text-gray-100 
-    focus:outline-none focus:ring-2 focus:ring-blue-500 
-    shadow-sm transition duration-150 ease-in-out"
-              />
-            </div>
+                {/* Link Bukti (Jika selesai) */}
+                {form.status === STATUS.SELESAI_DIKERJAKAN && (
+                  <div>
+                    <Label htmlFor="buktiLink">
+                      Link Bukti <span className="text-red-500">*</span>
+                    </Label>
+                    <input
+                      id="buktiLink"
+                      type="url"
+                      value={form.buktiLink}
+                      onChange={(e) =>
+                        setForm({ ...form, buktiLink: e.target.value })
+                      }
+                      placeholder="https://..."
+                      required
+                      className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                    />
+                  </div>
+                )}
 
-            <div>
-              <Label htmlFor="deskripsi" className="dark:text-gray-100">
-                Deskripsi
-              </Label>
-              <textarea
-                id="deskripsi"
-                value={form.deskripsi}
-                onChange={(e) =>
-                  setForm({ ...form, deskripsi: e.target.value })
-                }
-                className="w-full border rounded-lg px-3 py-2 bg-white text-gray-900
-            dark:bg-gray-700 dark:text-gray-100
-            focus:outline-none focus:ring-2 focus:ring-blue-500
-            shadow-sm transition duration-150 ease-in-out resize-none"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="capaianKegiatan" className="dark:text-gray-100">
-                Capaian Kegiatan <span className="text-red-500">*</span>
-              </Label>
-              <textarea
-                id="capaianKegiatan"
-                value={form.capaianKegiatan}
-                onChange={(e) =>
-                  setForm({ ...form, capaianKegiatan: e.target.value })
-                }
-                className="form-input resize-y w-full min-h-[48px] border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
-                required
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="status" className="dark:text-gray-100">
-                Status <span className="text-red-500">*</span>
-              </Label>
-              <select
-                id="status"
-                value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="w-full border rounded-lg px-3 py-2 bg-white text-gray-900 
-            dark:bg-gray-700 dark:text-gray-100 
-            focus:outline-none focus:ring-2 focus:ring-blue-500 
-            shadow-sm transition duration-150 ease-in-out"
-              >
-                <option value={STATUS.BELUM}>
-                  {formatStatus(STATUS.BELUM)}
-                </option>
-                <option value={STATUS.SEDANG_DIKERJAKAN}>
-                  {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
-                </option>
-                <option value={STATUS.SELESAI_DIKERJAKAN}>
-                  {formatStatus(STATUS.SELESAI_DIKERJAKAN)}
-                </option>
-              </select>
-            </div>
-
-            <div className="flex justify-end space-x-2 pt-2">
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setShowForm(false);
-                }}
-              >
-                Batal
-              </Button>
-              <Button onClick={save}>Simpan</Button>
-            </div>
+                <div className="flex justify-between gap-3 pt-4">
+                  <Button variant="secondary" onClick={() => setStep(1)}>
+                    Kembali
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      if (
+                        !form.deskripsi ||
+                        !form.capaianKegiatan ||
+                        !form.status ||
+                        (form.status === STATUS.SELESAI_DIKERJAKAN &&
+                          !form.buktiLink)
+                      ) {
+                        Swal.fire({
+                          icon: "warning",
+                          title: "Lengkapi Detail",
+                          text: "Semua kolom wajib diisi sebelum menyimpan.",
+                        });
+                        return;
+                      }
+                      save();
+                    }}
+                  >
+                    Simpan
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </Modal>
       )}

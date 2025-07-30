@@ -21,6 +21,7 @@ import DataTable from "../../components/ui/DataTable";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
+import Textarea from "../../components/ui/Textarea";
 import months from "../../utils/months";
 import formatDate from "../../utils/formatDate";
 import Loading from "../../components/Loading";
@@ -571,26 +572,24 @@ export default function PenugasanDetailPage() {
 
       {showLaporanForm && (
         <Modal onClose={closeLaporanForm} titleId="laporan-form-title">
-          <div className="space-y-6">
-            <div className="flex items-center justify-between mb-3">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
               <h3
                 id="laporan-form-title"
-                className="text-xl font-bold text-gray-800 dark:text-gray-100"
+                className="text-lg font-semibold text-gray-800 dark:text-gray-100"
               >
                 {laporanForm.id ? "Edit" : "Tambah"} Laporan Harian
               </h3>
-              <p className="text-xs text-red-600 dark:text-red-500">
-                * Fardu 'Ain
-              </p>
+              <span className="text-xs text-red-500">* Fardu 'Ain</span>
             </div>
 
-            <div className="space-y-4">
+            <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Deskripsi */}
-              <div>
+              <div className="col-span-1 md:col-span-2">
                 <Label htmlFor="laporanDeskripsi">
-                  Deskripsi Kegiatan<span className="text-red-500">*</span>
+                  Deskripsi Kegiatan <span className="text-red-500">*</span>
                 </Label>
-                <textarea
+                <Textarea
                   id="laporanDeskripsi"
                   value={laporanForm.deskripsi}
                   onChange={(e) =>
@@ -601,15 +600,15 @@ export default function PenugasanDetailPage() {
                   }
                   placeholder="Tuliskan deskripsi kegiatan..."
                   required
-                  className="w-full mt-1 rounded-md border px-4 py-2 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
-              <div>
+              {/* Capaian */}
+              <div className="col-span-1 md:col-span-2">
                 <Label htmlFor="capaianKegiatan">
                   Capaian Kegiatan <span className="text-red-500">*</span>
                 </Label>
-                <textarea
+                <Textarea
                   id="capaianKegiatan"
                   value={laporanForm.capaianKegiatan}
                   onChange={(e) =>
@@ -618,9 +617,8 @@ export default function PenugasanDetailPage() {
                       capaianKegiatan: e.target.value,
                     })
                   }
-                  className="form-input resize-y w-full min-h-[48px] border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
-                  required
                   placeholder="Tuliskan capaian kegiatan..."
+                  required
                 />
               </div>
 
@@ -639,7 +637,6 @@ export default function PenugasanDetailPage() {
                   }
                   onFocus={() => dateRef.current?.showPicker()}
                   required
-                  className="w-full mt-1 rounded-md border px-4 py-2 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -655,7 +652,7 @@ export default function PenugasanDetailPage() {
                     setLaporanForm({ ...laporanForm, status: e.target.value })
                   }
                   required
-                  className="w-full mt-1 rounded-md border px-4 py-2 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
                 >
                   <option value={STATUS.BELUM}>
                     {formatStatus(STATUS.BELUM)}
@@ -669,9 +666,9 @@ export default function PenugasanDetailPage() {
                 </select>
               </div>
 
-              {/* Link Bukti (opsional, tergantung status) */}
+              {/* Link Bukti - tampil jika selesai */}
               {laporanForm.status === STATUS.SELESAI_DIKERJAKAN && (
-                <div>
+                <div className="col-span-1 md:col-span-2">
                   <Label htmlFor="buktiLink">
                     Link Bukti <span className="text-red-500">*</span>
                   </Label>
@@ -687,25 +684,31 @@ export default function PenugasanDetailPage() {
                     }
                     placeholder="https://..."
                     required
-                    className="w-full mt-1 rounded-md border px-4 py-2 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               )}
 
               {/* Catatan */}
-              <div>
-                <Label htmlFor="catatan">Catatan</Label>
-                <textarea
-                  id="catatan"
-                  value={laporanForm.catatan}
-                  onChange={(e) =>
-                    setLaporanForm({ ...laporanForm, catatan: e.target.value })
-                  }
-                  placeholder="Catatan Kendala..."
-                  className="w-full mt-1 rounded-md border px-4 py-2 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
+              <details className="col-span-1 md:col-span-2 mt-2">
+                <summary className="cursor-pointer text-sm text-blue-600 dark:text-blue-400">
+                  Tambah Catatan Kendala (Opsional)
+                </summary>
+                <div className="mt-2">
+                  <Label htmlFor="catatan">Catatan</Label>
+                  <Textarea
+                    id="catatan"
+                    value={laporanForm.catatan}
+                    onChange={(e) =>
+                      setLaporanForm({
+                        ...laporanForm,
+                        catatan: e.target.value,
+                      })
+                    }
+                    placeholder="Catatan kendala..."
+                  />
+                </div>
+              </details>
+            </form>
 
             {/* Aksi tombol */}
             <div className="flex justify-end gap-3 pt-4">

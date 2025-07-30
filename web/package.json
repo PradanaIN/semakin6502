@@ -13,8 +13,10 @@
   "dependencies": {
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
+    "@shadcn/ui": "^0.0.4",
     "@tanstack/react-table": "^8.21.3",
     "axios": "^1.10.0",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.11",
     "jspdf": "^3.0.1",
@@ -29,6 +31,8 @@
     "react-toastify": "^11.0.5",
     "react-window": "^1.8.11",
     "sweetalert2": "10.16.9",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss-animate": "^1.0.7",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
