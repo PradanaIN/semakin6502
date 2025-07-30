@@ -67,7 +67,6 @@ export default function PenugasanDetailPage() {
 
   const dateRef = useRef(null);
 
-
   const fetchDetail = useCallback(async () => {
     try {
       const res = await axios.get(`/penugasan/${id}`);
@@ -139,7 +138,7 @@ export default function PenugasanDetailPage() {
     setSaving(true);
     try {
       if (laporanForm.deskripsi.trim() === "") {
-        showWarning("Lengkapi data", "Deskripsi wajib diisi");
+        showWarning("Lengkapi data", "Deskripsi Kegiatan wajib diisi");
         return;
       }
       if (laporanForm.capaianKegiatan.trim() === "") {
@@ -148,7 +147,9 @@ export default function PenugasanDetailPage() {
       }
       if (
         laporanForm.status === STATUS.SELESAI_DIKERJAKAN &&
-        !(typeof laporanForm.buktiLink === "string" ? laporanForm.buktiLink : "").trim()
+        !(
+          typeof laporanForm.buktiLink === "string" ? laporanForm.buktiLink : ""
+        ).trim()
       ) {
         showWarning("Lengkapi data", "Link bukti wajib diisi");
         return;
@@ -213,15 +214,19 @@ export default function PenugasanDetailPage() {
     }
   };
 
-  const columns = useMemo(
-    () => {
-      const cols = [
+  const columns = useMemo(() => {
+    const cols = [
       {
         Header: "No",
         accessor: (_row, i) => i + 1,
         disableFilters: true,
       },
       { Header: "Deskripsi", accessor: "deskripsi", disableFilters: true },
+      {
+        Header: "Capaian",
+        accessor: "capaianKegiatan",
+        disableFilters: true,
+      },
       {
         Header: "Tanggal",
         accessor: (row) => formatDate(row.tanggal),
@@ -258,38 +263,37 @@ export default function PenugasanDetailPage() {
         Header: "Catatan",
         accessor: (row) => row.catatan || "-",
         disableFilters: true,
-      }];
-      if (canManageLaporan) {
-        cols.push({
-          Header: "Aksi",
-          accessor: "id",
-          Cell: ({ row }) => (
-            <div className="space-x-2">
-              <Button
-                onClick={() => editLaporan(row.original)}
-                variant="warning"
-                icon
-                aria-label="Edit laporan"
-              >
-                <Pencil size={14} />
-              </Button>
-              <Button
-                onClick={() => deleteLaporan(row.original.id)}
-                variant="danger"
-                icon
-                aria-label="Hapus laporan"
-              >
-                <Trash2 size={14} />
-              </Button>
-            </div>
-          ),
-          disableFilters: true,
-        });
-      }
-      return cols;
-    },
-    [editLaporan, deleteLaporan, canManageLaporan]
-  );
+      },
+    ];
+    if (canManageLaporan) {
+      cols.push({
+        Header: "Aksi",
+        accessor: "id",
+        Cell: ({ row }) => (
+          <div className="space-x-2">
+            <Button
+              onClick={() => editLaporan(row.original)}
+              variant="warning"
+              icon
+              aria-label="Edit laporan"
+            >
+              <Pencil size={14} />
+            </Button>
+            <Button
+              onClick={() => deleteLaporan(row.original.id)}
+              variant="danger"
+              icon
+              aria-label="Hapus laporan"
+            >
+              <Trash2 size={14} />
+            </Button>
+          </div>
+        ),
+        disableFilters: true,
+      });
+    }
+    return cols;
+  }, [editLaporan, deleteLaporan, canManageLaporan]);
 
   const remove = async () => {
     const r = await confirmDelete("Hapus penugasan ini?");
@@ -550,7 +554,13 @@ export default function PenugasanDetailPage() {
         </div>
 
         <div className="overflow-x-auto md:overflow-x-visible rounded-lg border dark:border-gray-700">
-          <DataTable columns={columns} data={laporan} showGlobalFilter={false} showPagination={false} selectable={false} />
+          <DataTable
+            columns={columns}
+            data={laporan}
+            showGlobalFilter={false}
+            showPagination={false}
+            selectable={false}
+          />
         </div>
       </div>
 
@@ -573,7 +583,7 @@ export default function PenugasanDetailPage() {
               {/* Deskripsi */}
               <div>
                 <Label htmlFor="laporanDeskripsi">
-                  Deskripsi <span className="text-red-500">*</span>
+                  Deskripsi Kegiatan<span className="text-red-500">*</span>
                 </Label>
                 <textarea
                   id="laporanDeskripsi"
@@ -591,7 +601,9 @@ export default function PenugasanDetailPage() {
               </div>
 
               <div>
-                <Label htmlFor="capaianKegiatan">Capaian Kegiatan <span className="text-red-500">*</span></Label>
+                <Label htmlFor="capaianKegiatan">
+                  Capaian Kegiatan <span className="text-red-500">*</span>
+                </Label>
                 <textarea
                   id="capaianKegiatan"
                   value={laporanForm.capaianKegiatan}
@@ -603,6 +615,7 @@ export default function PenugasanDetailPage() {
                   }
                   className="form-input resize-y w-full min-h-[48px] border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
                   required
+                  placeholder="Tuliskan capaian kegiatan..."
                 />
               </div>
 
