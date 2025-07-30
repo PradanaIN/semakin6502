@@ -240,7 +240,7 @@ const openExportModal = () => setShowExport(true);
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-end gap-2">
+      <div>
         <SearchInput
           value={query}
           onChange={(e) => {
@@ -250,6 +250,8 @@ const openExportModal = () => setShowExport(true);
           placeholder="Cari..."
           ariaLabel="Cari"
         />
+      </div>
+      <div className="flex justify-end items-center gap-2 mb-4">
         <MonthYearPicker
           month={bulan}
           onMonthChange={(val) => {
@@ -373,7 +375,15 @@ const openExportModal = () => setShowExport(true);
             </div>
           </div>
           <div className="flex justify-end space-x-2 pt-2">
-            <Button variant="secondary" onClick={() => setShowForm(false)}>Batal</Button>
+            <Button
+              variant="secondary"
+              onClick={async () => {
+                const r = await confirmCancel("Batalkan perubahan?");
+                if (r.isConfirmed) setShowForm(false);
+              }}
+            >
+              Batal
+            </Button>
             <Button onClick={saveForm}>Simpan</Button>
           </div>
         </Modal>

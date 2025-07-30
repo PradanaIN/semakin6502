@@ -20,6 +20,7 @@ import { useRef } from "react";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 import formatDate from "../../utils/formatDate";
+import Swal from "sweetalert2";
 
 function sortTambahan(list, teamId) {
   return [...list].sort((a, b) => {
@@ -147,6 +148,7 @@ export default function TugasTambahanPage() {
       capaianKegiatan: "",
     });
     setKegiatan([]);
+    setStep(1);
     setShowForm(true);
   };
 
@@ -164,6 +166,7 @@ export default function TugasTambahanPage() {
       });
       await axios.post("/tugas-tambahan", payload);
       setShowForm(false);
+      setStep(1);
       fetchData();
       showSuccess("Berhasil", "Data disimpan");
     } catch (err) {
@@ -372,7 +375,10 @@ export default function TugasTambahanPage() {
 
       {canManage && showForm && (
         <Modal
-          onClose={() => setShowForm(false)}
+          onClose={() => {
+            setShowForm(false);
+            setStep(1);
+          }}
           titleId="tugas-tambahan-modal-title"
         >
           <div className="mb-4 flex items-center justify-between">

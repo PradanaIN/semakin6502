@@ -329,28 +329,55 @@ async export(
     ? await this.getByUserTanggal(userId, tanggal)
     : await this.getByMonthWeek(userId, bulan, minggu, includeTambahan);
 
+  const user = await this.prisma.user.findUnique({
+    where: { id: userId },
+    select: { nama: true },
+  });
+
+  const exportDate = new Date().toISOString().slice(0, 10);
+  const range = tanggal
+    ? `Tanggal ${tanggal}`
+    : bulan
+    ? `Bulan ${bulan}${minggu ? ` Minggu ${minggu}` : ""}`
+    : "Semua";
+
   if (format === "pdf") {
     const doc = new PDFDocument({ margin: 30 });
     const buffers: Buffer[] = [];
 
     doc.on("data", (b: Buffer) => buffers.push(b));
 
-    doc.text("Laporan Harian", { align: "center" });
+    doc.fontSize(14).text("Laporan Harian", { align: "center" });
+    doc.moveDown();
+    doc.fontSize(10);
+    doc.text(`Nama: ${user?.nama || ""}`);
+    doc.text(`Tanggal Export: ${exportDate}`);
+    doc.text(`Rentang: ${range}`);
     doc.moveDown();
 
-    data.forEach((d: any) => {
-      const label =
-        d.type === "tambahan"
-          ? `Tugas Tambahan - ${d.status}`
-          : `Minggu ${d.penugasan.minggu} ${d.penugasan.bulan}/${d.penugasan.tahun} - ${d.status}`;
+    const headers = ["No", "Tanggal", "Tim", "Kegiatan", "Capaian", "Catatan"];
+    const widths = [30, 70, 80, 160, 70, 100];
+    let x = doc.x;
+    headers.forEach((h, i) => {
+      doc.font("Helvetica-Bold").text(h, x, doc.y, { width: widths[i] });
+      x += widths[i];
+    });
+    doc.moveDown();
 
-      doc
-        .fontSize(10)
-        .text(
-          `${d.tanggal.toISOString().slice(0, 10)} - ${d.penugasan.kegiatan.namaKegiatan} - ${label}`
-        );
-      if (d.catatan) doc.text(`Catatan: ${d.catatan}`);
-      if (d.buktiLink) doc.text(`Bukti: ${d.buktiLink}`);
+    data.forEach((d: any, idx: number) => {
+      const row = [
+        idx + 1,
+        d.tanggal.toISOString().slice(0, 10),
+        d.penugasan.kegiatan.team?.namaTim || "",
+        d.penugasan.kegiatan.namaKegiatan,
+        d.capaianKegiatan,
+        d.catatan || "",
+      ];
+      let xx = doc.x;
+      row.forEach((cell, i) => {
+        doc.font("Helvetica").text(String(cell), xx, doc.y, { width: widths[i] });
+        xx += widths[i];
+      });
       doc.moveDown();
     });
 
@@ -361,26 +388,36 @@ async export(
     const wb = new Workbook();
     const ws = wb.addWorksheet("laporan");
 
+    ws.addRow([`Nama: ${user?.nama || ""}`]);
+    ws.addRow([`Tanggal Export: ${exportDate}`]);
+    ws.addRow([`Rentang: ${range}`]);
+    ws.addRow([]);
+
     ws.columns = [
-      { header: "No", width: 5 },
-      { header: "Jenis", width: 15 },
-      { header: "Tugas", width: 25 },
-      { header: "Tanggal Laporan", width: 15 },
-      { header: "Deskripsi Kegiatan", width: 40 },
-      { header: "Bukti Dukung", width: 30 },
+      { header: "No", key: "no", width: 5 },
+      { header: "Tanggal", key: "tanggal", width: 15 },
+      { header: "Tim", key: "tim", width: 20 },
+      { header: "Kegiatan", key: "kegiatan", width: 25 },
+      { header: "Capaian", key: "capaian", width: 20 },
+      { header: "Deskripsi", key: "deskripsi", width: 40 },
+      { header: "Bukti Dukung", key: "bukti", width: 30 },
+      { header: "Catatan", key: "catatan", width: 20 },
     ];
 
-    ws.getRow(1).font = { bold: true };
+    const titleRow = ws.addRow(ws.columns.map((c) => c.header));
+    titleRow.font = { bold: true };
 
     data.forEach((d: any, idx: number) => {
-      ws.addRow([
-        idx + 1,
-        d.type === "tambahan" ? "Tambahan" : "Mingguan",
-        d.penugasan.kegiatan.namaKegiatan,
-        d.tanggal.toISOString().slice(0, 10),
-        d.deskripsi || "",
-        d.buktiLink || "",
-      ]);
+      ws.addRow({
+        no: idx + 1,
+        tanggal: d.tanggal.toISOString().slice(0, 10),
+        tim: d.penugasan.kegiatan.team?.namaTim || "",
+        kegiatan: d.penugasan.kegiatan.namaKegiatan,
+        capaian: d.capaianKegiatan,
+        deskripsi: d.deskripsi || "",
+        bukti: d.buktiLink || "",
+        catatan: d.catatan || "",
+      });
     });
 
     return await wb.xlsx.writeBuffer();

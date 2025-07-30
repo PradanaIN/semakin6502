@@ -2,14 +2,12 @@ import { useState, useEffect } from "react";
 import Modal from "./ui/Modal";
 import Button from "./ui/Button";
 import Label from "./ui/Label";
-import Input from "./ui/Input";
 import MonthYearPicker from "./ui/MonthYearPicker";
 
 export default function ExportModal({ onClose, onConfirm }) {
   const [type, setType] = useState("bulanan");
   const [bulan, setBulan] = useState("");
   const [minggu, setMinggu] = useState("");
-  const [tanggal, setTanggal] = useState(new Date().toISOString().slice(0, 10));
   const [weekOptions, setWeekOptions] = useState([]);
 
   useEffect(() => {
@@ -33,12 +31,8 @@ export default function ExportModal({ onClose, onConfirm }) {
 
   const handleConfirm = () => {
     const params = {};
-    if (type === "harian") {
-      params.tanggal = tanggal;
-    } else {
-      if (bulan) params.bulan = bulan;
-      if (type === "mingguan" && minggu) params.minggu = minggu;
-    }
+    if (bulan) params.bulan = bulan;
+    if (type === "mingguan" && minggu) params.minggu = minggu;
     onConfirm(params);
   };
 
@@ -71,19 +65,9 @@ export default function ExportModal({ onClose, onConfirm }) {
               />
               <span>Mingguan</span>
             </label>
-            <label className="inline-flex items-center space-x-1">
-              <input
-                type="radio"
-                checked={type === "harian"}
-                onChange={() => setType("harian")}
-              />
-              <span>Harian</span>
-            </label>
           </div>
         </div>
-        {type !== "harian" && (
-          <MonthYearPicker month={bulan} onMonthChange={setBulan} />
-        )}
+        <MonthYearPicker month={bulan} onMonthChange={setBulan} />
         {type === "mingguan" && (
           <select
             value={minggu}
@@ -97,17 +81,6 @@ export default function ExportModal({ onClose, onConfirm }) {
               </option>
             ))}
           </select>
-        )}
-        {type === "harian" && (
-          <div>
-            <Label htmlFor="tanggal">Tanggal</Label>
-            <Input
-              id="tanggal"
-              type="date"
-              value={tanggal}
-              onChange={(e) => setTanggal(e.target.value)}
-            />
-          </div>
         )}
       </div>
       <div className="flex justify-end space-x-2 pt-4">
