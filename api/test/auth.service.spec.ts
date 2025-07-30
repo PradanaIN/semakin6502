@@ -1,5 +1,4 @@
 import { AuthService } from '../src/auth/auth.service';
-import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 

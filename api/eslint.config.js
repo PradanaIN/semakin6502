@@ -23,7 +23,13 @@ module.exports = [
       sourceType: 'module',
     },
     plugins: ['@typescript-eslint'],
-    ignorePatterns: ['dist/', 'node_modules/', 'eslint.config.js', 'prisma/*.js'],
+    ignorePatterns: [
+      'dist/',
+      'node_modules/',
+      'eslint.config.js',
+      'jest.config.js',
+      'prisma/*.js',
+    ],
     rules: {
       '@typescript-eslint/interface-name-prefix': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
