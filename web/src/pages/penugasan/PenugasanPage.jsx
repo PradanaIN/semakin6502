@@ -233,8 +233,7 @@ export default function PenugasanPage() {
         ? p.kegiatan?.teamId === parseInt(filterTeam, 10)
         : true;
       if (viewTab === "mine") return matchesSearch && p.pegawaiId === user?.id;
-      if (viewTab === "dariSaya")
-        return matchesSearch && matchTeam;
+      if (viewTab === "dariSaya") return matchesSearch && matchTeam;
       return matchesSearch && matchTeam;
     });
   }, [penugasan, search, viewTab, user?.id, filterTeam]);
