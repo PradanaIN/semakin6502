@@ -41,8 +41,6 @@ export default function TugasTambahanPage() {
   const [showForm, setShowForm] = useState(false);
   const [teams, setTeams] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
-  const [users, setUsers] = useState([]);
   const [form, setForm] = useState({
     teamId: "",
     kegiatanId: "",
@@ -60,35 +58,38 @@ export default function TugasTambahanPage() {
   const { user } = useAuth();
   const canManage = user?.role !== ROLES.PIMPINAN;
   const [filterTeam, setFilterTeam] = useState("");
-  const [filterUser, setFilterUser] = useState("");
   const [filterMinggu, setFilterMinggu] = useState("");
   const [weekOptions, setWeekOptions] = useState([]);
+  const fetchKegiatanForTeam = async (teamId) => {
+    if (!teamId) {
+      setKegiatan([]);
+      return;
+    }
+    try {
+      const res = await axios.get(`/master-kegiatan?team=${teamId}`);
+      setKegiatan(res.data.data || res.data);
+    } catch (err) {
+      handleAxiosError(err, "Gagal mengambil kegiatan");
+      setKegiatan([]);
+    }
+  };
 
   const fetchData = async () => {
     try {
       setLoading(true);
       const params = {};
       if (filterTeam) params.teamId = filterTeam;
-      if (filterUser) params.userId = filterUser;
       const tugasReq =
         user?.role === ROLES.ADMIN || user?.role === ROLES.PIMPINAN
           ? axios.get("/tugas-tambahan/all", { params })
           : axios.get("/tugas-tambahan");
 
-      const [tRes, kRes, teamRes, userRes] = await Promise.all([
+      const [tRes, kRes, teamRes] = await Promise.all([
         tugasReq,
         user?.role === ROLES.ADMIN || user?.role === ROLES.KETUA
           ? axios.get("/master-kegiatan?limit=1000")
           : Promise.resolve({ data: [] }),
-        axios.get("/teams").then(async (res) => {
-          if (Array.isArray(res.data) && res.data.length === 0) {
-            return axios.get("/teams/member");
-          }
-          return res;
-        }),
-        user?.role === ROLES.ADMIN
-          ? axios.get("/users")
-          : Promise.resolve({ data: [] }),
+        axios.get("/teams/all"),
       ]);
       setItems(sortTambahan(tRes.data, user?.teamId));
       setKegiatan(kRes.data.data || kRes.data);
@@ -97,13 +98,6 @@ export default function TugasTambahanPage() {
           (t) => t.namaTim !== "Admin" && t.namaTim !== "Pimpinan"
         )
       );
-      if (user?.role === ROLES.ADMIN) {
-        const sorted = userRes.data
-          .filter((u) => u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN)
-          .sort((a, b) => a.nama.localeCompare(b.nama));
-        setAllUsers(sorted);
-        setUsers(sorted);
-      }
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil data");
     } finally {
@@ -113,22 +107,8 @@ export default function TugasTambahanPage() {
 
   useEffect(() => {
     fetchData();
-  }, [filterTeam, filterUser, user?.role]);
+  }, [filterTeam, user?.role]);
 
-  useEffect(() => {
-    if (filterTeam && user?.role === ROLES.ADMIN) {
-      const t = teams.find((tm) => tm.id === parseInt(filterTeam, 10));
-      if (t) {
-        const mem = t.members
-          .map((m) => m.user)
-          .filter((u) => u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN);
-        const sorted = mem.sort((a, b) => a.nama.localeCompare(b.nama));
-        setUsers(sorted);
-      }
-    } else {
-      setUsers(allUsers);
-    }
-  }, [filterTeam, teams, allUsers, user?.role]);
 
   useEffect(() => {
     if (!filterBulan || !filterTahun) {
@@ -164,6 +144,7 @@ export default function TugasTambahanPage() {
       status: STATUS.BELUM,
       deskripsi: "",
     });
+    setKegiatan([]);
     setShowForm(true);
   };
 
@@ -206,9 +187,6 @@ export default function TugasTambahanPage() {
       const matchTeam = filterTeam
         ? item.teamId === parseInt(filterTeam, 10)
         : true;
-      const matchUser = filterUser
-        ? item.userId === parseInt(filterUser, 10)
-        : true;
       let matchMinggu = true;
       if (filterMinggu && filterBulan && filterTahun) {
         const year = parseInt(filterTahun, 10);
@@ -229,17 +207,15 @@ export default function TugasTambahanPage() {
         matchBulan &&
         matchTahun &&
         matchTeam &&
-        matchUser &&
         matchMinggu
       );
-    });
-  }, [
+  });
+}, [
     items,
     search,
     filterBulan,
     filterTahun,
     filterTeam,
-    filterUser,
     filterMinggu,
   ]);
 
@@ -324,7 +300,6 @@ export default function TugasTambahanPage() {
               value={filterTeam}
               onChange={(e) => {
                 setFilterTeam(e.target.value);
-                setFilterUser("");
                 setCurrentPage(1);
               }}
               className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out"
@@ -429,11 +404,13 @@ export default function TugasTambahanPage() {
                 value={form.teamId}
                 onChange={(e) => {
                   const value = e.target.value;
+                  const tId = value ? parseInt(value, 10) : "";
                   setForm({
                     ...form,
-                    teamId: value ? parseInt(value, 10) : "",
-                    kegiatanId: "", // reset kegiatan saat tim berubah
+                    teamId: tId,
+                    kegiatanId: "",
                   });
+                  fetchKegiatanForTeam(tId);
                 }}
                 className="w-full border rounded-lg px-3 py-2 bg-white text-gray-900 
             dark:bg-gray-700 dark:text-gray-100 

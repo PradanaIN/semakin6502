@@ -10,6 +10,13 @@ export class TeamsService {
     });
   }
 
+  findAllPublic() {
+    return this.prisma.team.findMany({
+      where: { namaTim: { notIn: ["Admin", "Pimpinan"] } },
+      include: { members: { include: { user: true } } },
+    });
+  }
+
   findByLeader(userId: number) {
     return this.prisma.team.findMany({
       where: { members: { some: { userId, isLeader: true } } },

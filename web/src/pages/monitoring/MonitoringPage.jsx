@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion as Motion } from "framer-motion";
 import FilterToolbar from "./components/FilterToolbar";
 import TabNavigation from "./components/TabNavigation";
 import TabContent from "./components/TabContent";
@@ -53,7 +53,9 @@ export default function MonitoringPage() {
       try {
         const res = await axios.get('/monitoring/last-update');
         setLastUpdate(res.data.lastUpdate);
-      } catch {}
+      } catch {
+        // ignore error
+      }
     };
     getUpdate();
   }, []);
@@ -110,7 +112,7 @@ export default function MonitoringPage() {
         )}
 
         <AnimatePresence mode="wait">
-          <motion.div
+          <Motion.div
             key={tab}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -125,7 +127,7 @@ export default function MonitoringPage() {
               year={year}
               teamId={teamId}
             />
-          </motion.div>
+          </Motion.div>
         </AnimatePresence>
       </div>
     </div>

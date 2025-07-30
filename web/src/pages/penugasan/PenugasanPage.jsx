@@ -25,7 +25,7 @@ import months from "../../utils/months";
 import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
 import TableSkeleton from "../../components/ui/TableSkeleton";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion as Motion } from "framer-motion";
 import Spinner from "../../components/Spinner";
 import { STATUS } from "../../utils/status";
 
@@ -111,7 +111,9 @@ export default function PenugasanPage() {
           const latest = Math.max(...weeks);
           setFilterMinggu(String(latest));
         }
-      } catch {}
+      } catch {
+        // ignore error
+      }
     };
     if (!filterMinggu) initWeek();
     // eslint-disable-next-line
@@ -219,10 +221,6 @@ export default function PenugasanPage() {
   };
 
   // --- Memoized Data
-  const myTasks = useMemo(
-    () => penugasan.filter((p) => p.pegawaiId === user?.id),
-    [penugasan, user?.id]
-  );
   const filtered = useMemo(() => {
     return penugasan.filter((p) => {
       const text = `${p.kegiatan?.namaKegiatan || ""} ${
@@ -329,7 +327,7 @@ export default function PenugasanPage() {
       )}
 
       {/* FILTERS */}
-      <motion.div
+      <Motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-wrap justify-between items-center gap-2"
@@ -398,7 +396,7 @@ export default function PenugasanPage() {
             </Button>
           )}
         </div>
-      </motion.div>
+      </Motion.div>
 
       {/* TABLE */}
       <div className="overflow-x-auto md:overflow-x-visible min-h-[120px]">
@@ -452,7 +450,7 @@ export default function PenugasanPage() {
             titleId="penugasan-form-title"
             initialFocusRef={descriptionRef}
           >
-            <motion.div
+            <Motion.div
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
@@ -673,7 +671,7 @@ export default function PenugasanPage() {
                   </Button>
                 </div>
               </form>
-            </motion.div>
+            </Motion.div>
           </Modal>
         )}
       </AnimatePresence>
