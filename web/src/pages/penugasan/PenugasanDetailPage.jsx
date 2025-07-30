@@ -58,6 +58,7 @@ export default function PenugasanDetailPage() {
     catatan: "",
     buktiLink: "",
   });
+  const [saving, setSaving] = useState(false);
 
   const closeLaporanForm = useCallback(() => {
     setShowLaporanForm(false);
@@ -125,11 +126,15 @@ export default function PenugasanDetailPage() {
       deskripsi: "",
       status: STATUS.BELUM,
       catatan: "",
+      buktiLink: "",
     });
+    setSaving(false);
     setShowLaporanForm(true);
   };
 
   const saveLaporan = async () => {
+    if (saving) return;
+    setSaving(true);
     try {
       if (laporanForm.deskripsi.trim() === "") {
         showWarning("Lengkapi data", "Deskripsi wajib diisi");
@@ -137,17 +142,21 @@ export default function PenugasanDetailPage() {
       }
       if (
         laporanForm.status === STATUS.SELESAI_DIKERJAKAN &&
-        !laporanForm.buktiLink.trim()
+        !(typeof laporanForm.buktiLink === "string" ? laporanForm.buktiLink : "").trim()
       ) {
         showWarning("Lengkapi data", "Link bukti wajib diisi");
         return;
       }
 
+      const payload = { ...laporanForm };
+      if (payload.buktiLink === "") delete payload.buktiLink;
+      if (payload.catatan === "") delete payload.catatan;
+
       if (laporanForm.id) {
-        await axios.put(`/laporan-harian/${laporanForm.id}`, laporanForm);
+        await axios.put(`/laporan-harian/${laporanForm.id}`, payload);
       } else {
         await axios.post("/laporan-harian", {
-          ...laporanForm,
+          ...payload,
           penugasanId: parseInt(id, 10),
           pegawaiId: item.pegawaiId,
         });
@@ -165,16 +174,20 @@ export default function PenugasanDetailPage() {
     } catch (err) {
       console.error("Failed to save report", err?.response?.data || err);
       handleAxiosError(err, "Gagal menyimpan laporan");
+    } finally {
+      setSaving(false);
     }
   };
 
   const editLaporan = (item) => {
     setLaporanForm({
+      ...item,
       id: item.id,
       tanggal: item.tanggal.slice(0, 10),
-      deskripsi: item.deskripsi || "",
+      deskripsi: item.deskripsi ?? "",
       status: item.status,
-      catatan: item.catatan || "",
+      catatan: item.catatan ?? "",
+      buktiLink: item.buktiLink ?? "",
     });
     setShowLaporanForm(true);
   };
@@ -668,7 +681,9 @@ export default function PenugasanDetailPage() {
               >
                 Batal
               </Button>
-              <Button onClick={saveLaporan}>Simpan</Button>
+              <Button type="button" onClick={saveLaporan} disabled={saving}>
+                Simpan
+              </Button>
             </div>
           </div>
         </Modal>
