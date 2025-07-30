@@ -21,7 +21,7 @@ export default function FilterToolbar({
   const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
 
   return (
-    <div className="flex flex-wrap items-center gap-4">
+    <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
       {/* Filter bulan */}
       {(tab === "harian" || tab === "mingguan") && (
         <div className="w-36">
