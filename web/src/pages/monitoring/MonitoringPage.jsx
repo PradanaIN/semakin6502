@@ -82,7 +82,7 @@ export default function MonitoringPage() {
   }, [monthIndex, year]);
 
   return (
-    <div className="space-y-4">
+    <div className="max-w-screen-xl mx-auto px-4 flex flex-col gap-4">
       <TabNavigation activeTab={tab} onChange={setTab} />
 
       <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow space-y-4">
