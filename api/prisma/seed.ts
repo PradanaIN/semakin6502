@@ -467,6 +467,7 @@ async function main() {
         kegiatanId: k.id,
         teamId: m.teamId,
         deskripsi: `Tugas tambahan ${k.namaKegiatan}`,
+        capaianKegiatan: `Capaian ${k.namaKegiatan}`,
       });
     }
   }
@@ -555,6 +556,7 @@ async function main() {
                 pegawaiId: m.userId,
                 tanggal: date.toISOString(),
                 status: STATUS.SELESAI_DIKERJAKAN,
+                capaianKegiatan: `Capaian ${p.id}`,
               });
               selesaiIds.add(p.id);
             }
@@ -625,6 +627,7 @@ async function main() {
           pegawaiId: m.userId,
           tanggal: tanggal.toISOString(),
           status: STATUS.SELESAI_DIKERJAKAN,
+          capaianKegiatan: `Capaian ${penugasan.id}`,
         },
       });
     }

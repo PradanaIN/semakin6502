@@ -13,6 +13,9 @@ export class SubmitLaporanDto {
   @IsString()
   deskripsi!: string;
 
+  @IsString()
+  capaianKegiatan!: string;
+
   @IsOptional()
   @IsString()
   buktiLink?: string;

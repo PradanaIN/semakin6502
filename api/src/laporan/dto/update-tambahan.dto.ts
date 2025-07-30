@@ -28,6 +28,11 @@ export class UpdateTambahanDto {
 
   @IsOptional()
   @Transform(({ value }) => (value === "" ? undefined : value))
+  @IsString()
+  capaianKegiatan?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => (value === "" ? undefined : value))
   @IsDateString()
   tanggalSelesai?: string;
 
