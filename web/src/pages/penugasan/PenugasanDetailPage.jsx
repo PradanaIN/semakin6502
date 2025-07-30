@@ -138,17 +138,21 @@ export default function PenugasanDetailPage() {
       }
       if (
         laporanForm.status === STATUS.SELESAI_DIKERJAKAN &&
-        !laporanForm.buktiLink.trim()
+        !(typeof laporanForm.buktiLink === "string" ? laporanForm.buktiLink : "").trim()
       ) {
         showWarning("Lengkapi data", "Link bukti wajib diisi");
         return;
       }
 
+      const payload = { ...laporanForm };
+      if (payload.buktiLink === "") delete payload.buktiLink;
+      if (payload.catatan === "") delete payload.catatan;
+
       if (laporanForm.id) {
-        await axios.put(`/laporan-harian/${laporanForm.id}`, laporanForm);
+        await axios.put(`/laporan-harian/${laporanForm.id}`, payload);
       } else {
         await axios.post("/laporan-harian", {
-          ...laporanForm,
+          ...payload,
           penugasanId: parseInt(id, 10),
           pegawaiId: item.pegawaiId,
         });
