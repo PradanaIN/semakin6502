@@ -8,9 +8,9 @@ const WeeklyProgressTable = ({ data = [] }) => {
   const progressColor = getProgressColor;
 
   return (
-    <div className="overflow-auto md:overflow-visible mt-4 max-h-[60vh]">
-      <table className="min-w-full text-xs border-collapse">
-        <thead className="sticky top-0 bg-gray-100 dark:bg-gray-800 z-10">
+    <div className="overflow-x-auto md:overflow-visible mt-4 max-h-[60vh] w-full">
+      <table className="min-w-[1000px] w-full table-fixed text-xs border-collapse">
+        <thead className="sticky top-0 bg-white dark:bg-gray-800 z-10 shadow-sm">
           <tr>
             <th className="p-2 border text-left">Nama</th>
             <th className="p-2 border text-center">Tugas Selesai</th>
@@ -24,15 +24,12 @@ const WeeklyProgressTable = ({ data = [] }) => {
               key={u.userId}
               className={`text-center transition-colors ${
                 currentUser && (u.userId === currentUser.id || u.nama === currentUser.nama)
-                  ? "bg-yellow-50 dark:bg-yellow-900"
+                  ? "bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-400"
                   : "hover:bg-gray-50 dark:hover:bg-gray-700"
               }`}
             >
               <td className="p-2 border text-left whitespace-nowrap text-sm font-medium">
                 {u.nama}
-                {currentUser && (u.userId === currentUser.id || u.nama === currentUser.nama) && (
-                  <span className="ml-1 text-xs">🟢 Kamu</span>
-                )}
               </td>
               <td className="p-1 border">{u.selesai}</td>
               <td className="p-1 border">{u.total}</td>

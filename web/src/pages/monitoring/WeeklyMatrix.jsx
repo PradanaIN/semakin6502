@@ -8,12 +8,13 @@ export const WeeklyMatrixRow = ({ user, progressColor, weekCount, currentUser })
   return (
     <tr
       className={`text-center transition-colors ${
-        isCurrentUser ? "bg-yellow-50 dark:bg-yellow-900" : "hover:bg-gray-50 dark:hover:bg-gray-700"
+        isCurrentUser
+          ? "bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-400"
+          : "hover:bg-gray-50 dark:hover:bg-gray-700"
       }`}
     >
       <td className="p-2 border text-left whitespace-nowrap text-sm font-medium">
         {user.nama}
-        {isCurrentUser && <span className="ml-1 text-xs">🟢 Kamu</span>}
       </td>
       {user.weeks.slice(0, weekCount).map((w, i) => (
         <td key={i} className="p-1 border space-y-1">
@@ -42,9 +43,9 @@ const WeeklyMatrix = ({ data = [], weeks = [], onSelectWeek, selectedWeek }) => 
   const progressColor = getProgressColor;
 
   return (
-    <div className="overflow-auto md:overflow-visible max-h-[60vh]">
-      <table className="min-w-full text-xs border-collapse">
-        <thead className="sticky top-0 bg-gray-100 dark:bg-gray-800 z-10">
+    <div className="overflow-x-auto md:overflow-visible max-h-[60vh] w-full">
+      <table className="min-w-[1000px] w-full table-fixed text-xs border-collapse">
+        <thead className="sticky top-0 bg-white dark:bg-gray-800 z-10 shadow-sm">
           <tr>
             <th className="p-2 border text-left">Nama</th>
             {weeks.map((_, i) => (

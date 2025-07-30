@@ -7,12 +7,13 @@ export const DailyMatrixRow = ({ user, boxClass, currentUser }) => {
   return (
     <tr
       className={`text-center transition-colors ${
-        isCurrentUser ? "bg-yellow-50 dark:bg-yellow-900" : "hover:bg-gray-50 dark:hover:bg-gray-700"
+        isCurrentUser
+          ? "bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-400"
+          : "hover:bg-gray-50 dark:hover:bg-gray-700"
       }`}
     >
       <td className="px-4 py-2 border text-left text-sm whitespace-nowrap font-medium">
         {user.nama}
-        {isCurrentUser && <span className="ml-1 text-xs">🟢 Kamu</span>}
       </td>
       {user.detail.map((day, i) => (
         <td
@@ -56,9 +57,9 @@ const DailyMatrix = ({ data = [] }) => {
   const dayCount = data[0].detail.length;
 
   return (
-    <div className="overflow-x-auto max-h-[60vh] overflow-y-auto">
-      <table className="min-w-full border text-sm rounded shadow">
-        <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
+    <div className="overflow-x-auto max-h-[60vh] overflow-y-auto w-full">
+      <table className="min-w-[1000px] w-full table-fixed border text-sm rounded shadow">
+        <thead className="sticky top-0 bg-white dark:bg-gray-800 z-10 shadow-sm">
           <tr>
             <th className="px-4 py-2 border text-left">Nama</th>
             {Array.from({ length: dayCount }, (_, i) => (

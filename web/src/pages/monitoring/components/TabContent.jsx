@@ -22,11 +22,11 @@ export default function TabContent({
   const [weeklyMonthData, setWeeklyMonthData] = useState([]);
   const [weeklyData, setWeeklyData] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
-  const [weeklyMode, setWeeklyMode] = useState("matrix");
+  const [weeklyMode, setWeeklyMode] = useState("summary");
 
   useEffect(() => {
     if (activeTab === "mingguan") {
-      setWeeklyMode("matrix");
+      setWeeklyMode("summary");
     }
   }, [activeTab]);
 
