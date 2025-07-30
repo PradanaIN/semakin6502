@@ -155,9 +155,11 @@ export default function PenugasanDetailPage() {
         return;
       }
 
-      const payload = { ...laporanForm };
-      if (payload.buktiLink === "") delete payload.buktiLink;
-      if (payload.catatan === "") delete payload.catatan;
+      const payload = {
+        ...laporanForm,
+        buktiLink: laporanForm.buktiLink || "",
+        catatan: laporanForm.catatan || "",
+      };
 
       if (laporanForm.id) {
         await axios.put(`/laporan-harian/${laporanForm.id}`, payload);
@@ -180,6 +182,9 @@ export default function PenugasanDetailPage() {
       }, 200);
     } catch (err) {
       console.error("Failed to save report", err?.response?.data || err);
+      if (err?.response?.status >= 500) {
+        console.error(err.response);
+      }
       handleAxiosError(err, "Gagal menyimpan laporan");
     } finally {
       setSaving(false);
