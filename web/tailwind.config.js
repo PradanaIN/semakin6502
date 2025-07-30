@@ -1,3 +1,4 @@
+/* eslint-env node */
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
@@ -62,5 +63,8 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    // eslint-disable-next-line no-undef
+    require("tailwindcss-animate"),
+  ],
 };
