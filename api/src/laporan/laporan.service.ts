@@ -111,6 +111,7 @@ export class LaporanService {
         pegawaiId: targetId,
         tanggal: new Date(data.tanggal),
         status: data.status,
+        capaianKegiatan: data.capaianKegiatan,
         deskripsi: data.deskripsi,
         buktiLink: data.buktiLink || undefined,
         catatan: data.catatan || undefined,
@@ -191,6 +192,7 @@ export class LaporanService {
       data: {
         tanggal: new Date(data.tanggal),
         status: data.status,
+        capaianKegiatan: data.capaianKegiatan,
         deskripsi: data.deskripsi,
         buktiLink: data.buktiLink,
         catatan: data.catatan,
@@ -279,6 +281,7 @@ export class LaporanService {
       tanggal: t.tanggal,
       status: t.status,
       deskripsi: t.deskripsi,
+      capaianKegiatan: t.capaianKegiatan,
       buktiLink: t.buktiLink,
       catatan: null,
       type: "tambahan",

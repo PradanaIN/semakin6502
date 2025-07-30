@@ -21,6 +21,9 @@ export class AddTambahanDto {
   @IsString()
   deskripsi?: string;
 
+  @IsString()
+  capaianKegiatan!: string;
+
   @IsOptional()
   @Transform(({ value }) => (value === "" ? undefined : value))
   @IsDateString()

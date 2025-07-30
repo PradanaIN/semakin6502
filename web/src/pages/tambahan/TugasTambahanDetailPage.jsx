@@ -6,6 +6,7 @@ import {
   confirmDelete,
   confirmCancel,
   handleAxiosError,
+  showWarning,
 } from "../../utils/alerts";
 import { Pencil, Trash2 } from "lucide-react";
 import Select from "react-select";
@@ -40,6 +41,7 @@ export default function TugasTambahanDetailPage() {
     tanggal: "",
     status: STATUS.BELUM,
     deskripsi: "",
+    capaianKegiatan: "",
   });
 
   const fetchDetail = useCallback(async () => {
@@ -57,6 +59,7 @@ export default function TugasTambahanDetailPage() {
         tanggal: dRes.data.tanggal.slice(0, 10),
         status: dRes.data.status,
         deskripsi: dRes.data.deskripsi || "",
+        capaianKegiatan: dRes.data.capaianKegiatan || "",
       });
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil data");
@@ -69,6 +72,10 @@ export default function TugasTambahanDetailPage() {
 
   const save = async () => {
     try {
+      if (form.capaianKegiatan.trim() === "") {
+        showWarning("Lengkapi data", "Capaian Kegiatan wajib diisi");
+        return;
+      }
       const payload = { ...form };
       Object.keys(payload).forEach((k) => {
         if (payload[k] === "") delete payload[k];
@@ -236,6 +243,17 @@ export default function TugasTambahanDetailPage() {
               value={form.deskripsi}
               onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
               className="form-input"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="capaianKegiatan" className="block text-sm mb-1">Capaian Kegiatan <span className="text-red-500">*</span></label>
+            <textarea
+              id="capaianKegiatan"
+              value={form.capaianKegiatan}
+              onChange={(e) => setForm({ ...form, capaianKegiatan: e.target.value })}
+              className="form-input resize-y w-full min-h-[48px] border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+              required
             />
           </div>
           <div>

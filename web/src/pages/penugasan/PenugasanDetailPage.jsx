@@ -54,6 +54,7 @@ export default function PenugasanDetailPage() {
     id: null,
     tanggal: new Date().toISOString().slice(0, 10),
     deskripsi: "",
+    capaianKegiatan: "",
     status: STATUS.BELUM, // Belum, Sedang Dikerjakan, Selesai Dikerjakan
     catatan: "",
     buktiLink: "",
@@ -123,6 +124,7 @@ export default function PenugasanDetailPage() {
       id: null,
       tanggal: new Date().toISOString().slice(0, 10),
       deskripsi: "",
+      capaianKegiatan: "",
       status: STATUS.BELUM,
       catatan: "",
       buktiLink: "",
@@ -134,6 +136,10 @@ export default function PenugasanDetailPage() {
     try {
       if (laporanForm.deskripsi.trim() === "") {
         showWarning("Lengkapi data", "Deskripsi wajib diisi");
+        return;
+      }
+      if (laporanForm.capaianKegiatan.trim() === "") {
+        showWarning("Lengkapi data", "Capaian Kegiatan wajib diisi");
         return;
       }
       if (
@@ -178,6 +184,7 @@ export default function PenugasanDetailPage() {
       id: item.id,
       tanggal: item.tanggal.slice(0, 10),
       deskripsi: item.deskripsi || "",
+      capaianKegiatan: item.capaianKegiatan || "",
       status: item.status,
       catatan: item.catatan || "",
       buktiLink: item.buktiLink || "",
@@ -573,6 +580,22 @@ export default function PenugasanDetailPage() {
                   placeholder="Tuliskan deskripsi kegiatan..."
                   required
                   className="w-full mt-1 rounded-md border px-4 py-2 bg-white dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="capaianKegiatan">Capaian Kegiatan <span className="text-red-500">*</span></Label>
+                <textarea
+                  id="capaianKegiatan"
+                  value={laporanForm.capaianKegiatan}
+                  onChange={(e) =>
+                    setLaporanForm({
+                      ...laporanForm,
+                      capaianKegiatan: e.target.value,
+                    })
+                  }
+                  className="form-input resize-y w-full min-h-[48px] border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                  required
                 />
               </div>
 

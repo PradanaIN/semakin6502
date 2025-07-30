@@ -12,6 +12,10 @@ export class UpdateLaporanDto {
 
   @IsOptional()
   @IsString()
+  capaianKegiatan?: string;
+
+  @IsOptional()
+  @IsString()
   buktiLink?: string;
 
   @IsOptional()

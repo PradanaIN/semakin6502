@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { showSuccess, handleAxiosError } from "../../utils/alerts";
+import { showSuccess, handleAxiosError, showWarning } from "../../utils/alerts";
 import { Plus, Eye, Check, X } from "lucide-react";
 import DataTable from "../../components/ui/DataTable";
 import { useNavigate } from "react-router-dom";
@@ -47,6 +47,7 @@ export default function TugasTambahanPage() {
     tanggal: new Date().toISOString().slice(0, 10),
     status: STATUS.BELUM,
     deskripsi: "",
+    capaianKegiatan: "",
   });
   const [search, setSearch] = useState("");
   const [filterBulan, setFilterBulan] = useState("");
@@ -143,6 +144,7 @@ export default function TugasTambahanPage() {
       tanggal: new Date().toISOString().slice(0, 10),
       status: STATUS.BELUM,
       deskripsi: "",
+      capaianKegiatan: "",
     });
     setKegiatan([]);
     setShowForm(true);
@@ -150,6 +152,10 @@ export default function TugasTambahanPage() {
 
   const save = async () => {
     if (!form.teamId || !form.kegiatanId || !form.tanggal) return;
+    if (form.capaianKegiatan.trim() === "") {
+      showWarning("Lengkapi data", "Capaian Kegiatan wajib diisi");
+      return;
+    }
     try {
       const payload = { ...form };
       delete payload.teamId;
@@ -485,10 +491,25 @@ export default function TugasTambahanPage() {
                 onChange={(e) =>
                   setForm({ ...form, deskripsi: e.target.value })
                 }
-                className="w-full border rounded-lg px-3 py-2 bg-white text-gray-900 
-            dark:bg-gray-700 dark:text-gray-100 
-            focus:outline-none focus:ring-2 focus:ring-blue-500 
+                className="w-full border rounded-lg px-3 py-2 bg-white text-gray-900
+            dark:bg-gray-700 dark:text-gray-100
+            focus:outline-none focus:ring-2 focus:ring-blue-500
             shadow-sm transition duration-150 ease-in-out resize-none"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="capaianKegiatan" className="dark:text-gray-100">
+                Capaian Kegiatan <span className="text-red-500">*</span>
+              </Label>
+              <textarea
+                id="capaianKegiatan"
+                value={form.capaianKegiatan}
+                onChange={(e) =>
+                  setForm({ ...form, capaianKegiatan: e.target.value })
+                }
+                className="form-input resize-y w-full min-h-[48px] border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                required
               />
             </div>
 
