@@ -38,6 +38,7 @@ export default function Layout() {
   const notifRef = useRef();
 
   const fetchNotifications = useCallback(async () => {
+    if (!user || user.role === ROLES.PIMPINAN) return;
     try {
       const res = await axios.get("/notifications");
       const data = res.data || [];
@@ -46,7 +47,7 @@ export default function Layout() {
     } catch (err) {
       console.error("Failed to fetch notifications", err);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     fetchNotifications();
