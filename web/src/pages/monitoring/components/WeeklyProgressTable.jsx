@@ -3,8 +3,8 @@ import getProgressColor from "../../../utils/progressColor";
 import { useAuth } from "../../auth/useAuth";
 
 const WeeklyProgressTable = ({ data = [] }) => {
-  if (!Array.isArray(data) || data.length === 0) return null;
   const { user: currentUser } = useAuth();
+  if (!Array.isArray(data) || data.length === 0) return null;
   const progressColor = getProgressColor;
 
   return (
@@ -12,7 +12,7 @@ const WeeklyProgressTable = ({ data = [] }) => {
       <table className="min-w-[1000px] w-full table-fixed text-xs border-collapse border rounded-lg shadow">
         <thead className="sticky top-0 bg-white dark:bg-gray-800 z-10 shadow-sm">
           <tr>
-            <th className="p-2 border text-left">Nama</th>
+            <th className="p-2 border text-left w-48 md:w-60">Nama</th>
             <th className="p-2 border text-center">Tugas Selesai</th>
             <th className="p-2 border text-center">Total Tugas</th>
             <th className="p-2 border text-center">Capaian</th>
@@ -28,7 +28,7 @@ const WeeklyProgressTable = ({ data = [] }) => {
                   : "hover:bg-gray-50 dark:hover:bg-gray-700"
               }`}
             >
-              <td className="p-2 border text-left whitespace-nowrap text-sm font-medium">
+              <td className="p-2 border text-left whitespace-nowrap text-sm font-medium w-48 md:w-60">
                 {u.nama}
               </td>
               <td className="p-1 border">{u.selesai}</td>

@@ -4,16 +4,16 @@ import months from "../../../utils/months";
 import { useAuth } from "../../auth/useAuth";
 
 const MonthlyMatrix = ({ data = [] }) => {
-  if (!Array.isArray(data) || data.length === 0) return null;
   const { user: currentUser } = useAuth();
+  if (!Array.isArray(data) || data.length === 0) return null;
   const progressColor = getProgressColor;
 
   return (
     <div className="overflow-x-auto overflow-y-auto md:overflow-visible mt-4 max-h-[60vh] w-full">
-      <table className="min-w-[1000px] w-full table-fixed text-xs border-collapse">
+      <table className="min-w-[800px] w-full table-fixed text-xs border-collapse">
         <thead className="sticky top-0 bg-white dark:bg-gray-800 z-10 shadow-sm">
           <tr>
-            <th className="p-2 border text-left">Nama</th>
+            <th className="p-2 border text-left w-48 md:w-60">Nama</th>
             {months.map((m, i) => (
               <th key={i} className="p-1 border text-center">
                 {m.slice(0, 3)}
@@ -31,7 +31,7 @@ const MonthlyMatrix = ({ data = [] }) => {
                   : "hover:bg-gray-50 dark:hover:bg-gray-700"
               }`}
             >
-              <td className="p-2 border text-left whitespace-nowrap text-sm font-medium">
+              <td className="p-2 border text-left whitespace-nowrap text-sm font-medium w-48 md:w-60">
                 {u.nama}
               </td>
               {u.months.map((m, i) => (

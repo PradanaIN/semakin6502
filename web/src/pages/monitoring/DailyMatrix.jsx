@@ -12,7 +12,7 @@ export const DailyMatrixRow = ({ user, boxClass, currentUser }) => {
           : "hover:bg-gray-50 dark:hover:bg-gray-700"
       }`}
     >
-      <td className="px-4 py-2 border text-left text-sm whitespace-nowrap font-medium">
+      <td className="px-4 py-2 border text-left text-sm whitespace-nowrap font-medium w-48 md:w-60">
         {user.nama}
       </td>
       {user.detail.map((day, i) => (
@@ -29,9 +29,8 @@ export const DailyMatrixRow = ({ user, boxClass, currentUser }) => {
 };
 
 const DailyMatrix = ({ data = [] }) => {
-  if (!Array.isArray(data) || data.length === 0) return null;
-
   const { user: currentUser } = useAuth();
+  if (!Array.isArray(data) || data.length === 0) return null;
 
   const year = new Date(data[0].detail[0].tanggal).getFullYear();
   const today = new Date().toISOString().slice(0, 10);
@@ -58,10 +57,10 @@ const DailyMatrix = ({ data = [] }) => {
 
   return (
     <div className="overflow-x-auto max-h-[60vh] overflow-y-auto w-full">
-      <table className="min-w-[1000px] w-full table-fixed border text-sm rounded shadow">
+      <table className="min-w-[1300px] w-full table-fixed border text-sm rounded shadow">
         <thead className="sticky top-0 bg-white dark:bg-gray-800 z-10 shadow-sm">
           <tr>
-            <th className="px-4 py-2 border text-left">Nama</th>
+            <th className="px-4 py-2 border text-left w-48 md:w-60">Nama</th>
             {Array.from({ length: dayCount }, (_, i) => (
               <th key={i} className="px-2 py-1 border text-center">
                 {i + 1}
