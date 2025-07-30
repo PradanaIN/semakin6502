@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Pencil, Trash2, ExternalLink, Minus, Download } from "lucide-react";
 import Spinner from "../../components/Spinner";
-import { showSuccess, handleAxiosError, confirmCancel } from "../../utils/alerts";
+import {
+  showSuccess,
+  showError,
+  handleAxiosError,
+} from "../../utils/alerts";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import DataTable from "../../components/ui/DataTable";
@@ -19,6 +23,13 @@ import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 import ExportModal from "../../components/ExportModal";
 import exportFileName from "../../utils/exportFileName";
+import confirmAlert from "../../utils/confirmAlert";
+
+function getWeekOfMonth(date) {
+  const first = new Date(date.getFullYear(), date.getMonth(), 1);
+  const offset = (first.getDay() + 6) % 7;
+  return Math.floor((date.getDate() + offset - 1) / 7) + 1;
+}
 
 export default function LaporanHarianPage() {
   const { user } = useAuth();
@@ -95,37 +106,58 @@ export default function LaporanHarianPage() {
 
   const exportExcel = async (params = {}) => {
     try {
-      const query = { ...params, tambahan: true };
-
       const res = await axios.get("/laporan-harian/mine/export", {
-        params: query,
+        params: { ...params, tambahan: true },
         responseType: "blob",
       });
 
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
-      let monthIndex;
-      if (params?.bulan) {
-        monthIndex = parseInt(params.bulan, 10);
-      } else if (params?.tanggal) {
-        monthIndex = new Date(params.tanggal).getMonth() + 1;
-      }
-      const name = `${exportFileName("LaporanHarian", monthIndex)}.xlsx`;
+      const idx = params.bulan ? parseInt(params.bulan, 10) : undefined;
+      const name = `${exportFileName("LaporanHarian", idx)}.xlsx`;
       link.setAttribute("download", name);
       document.body.appendChild(link);
       link.click();
       link.remove();
+      showSuccess("Berhasil", "Export berhasil disimpan");
     } catch (err) {
       handleAxiosError(err, "Gagal mengekspor");
     }
   };
 
 
-  const openExportModal = () => setShowExport(true);
-  const handleExportConfirm = (params) => {
-    exportExcel(params);
-    setShowExport(false);
+const openExportModal = () => setShowExport(true);
+  const handleExportConfirm = async (params) => {
+    const check = {};
+    if (params.tanggal) {
+      const d = new Date(params.tanggal);
+      check.bulan = d.getMonth() + 1;
+      check.minggu = getWeekOfMonth(d);
+    } else {
+      if (params.bulan) check.bulan = params.bulan;
+      if (params.minggu) check.minggu = params.minggu;
+    }
+    try {
+      const res = await axios.get("/laporan-harian/mine/filter", {
+        params: { ...check, tambahan: true },
+      });
+      if (!res.data.length) {
+        showError("Gagal", "Tidak ada data untuk diekspor");
+        return;
+      }
+      const r = await confirmAlert({
+        title: "Apakah Anda ingin mengekspor data ini?",
+        icon: "question",
+        confirmButtonText: "Export",
+      });
+      if (!r.isConfirmed) return;
+      await exportExcel(params);
+    } catch (err) {
+      handleAxiosError(err, "Gagal mengekspor");
+    } finally {
+      setShowExport(false);
+    }
   };
 
   useEffect(() => {
@@ -242,7 +274,12 @@ export default function LaporanHarianPage() {
             </option>
           ))}
         </select>
-        <Button onClick={openExportModal} className="add-button" variant="primary">
+        <Button
+          onClick={openExportModal}
+          className="add-button"
+          variant="primary"
+          disabled={!bulan || !minggu}
+        >
           <Download size={16} />
           <span className="hidden sm:inline">Export</span>
         </Button>

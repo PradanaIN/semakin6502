@@ -36,6 +36,10 @@ export default function ExportModal({ onClose, onConfirm }) {
     onConfirm(params);
   };
 
+  const exportDisabled =
+    (type === "bulanan" && !bulan) ||
+    (type === "mingguan" && (!bulan || !minggu));
+
   return (
     <Modal onClose={onClose} titleId="export-modal-title">
       <h3 id="export-modal-title" className="text-lg font-semibold">
@@ -83,7 +87,9 @@ export default function ExportModal({ onClose, onConfirm }) {
         <Button variant="secondary" onClick={onClose}>
           Batal
         </Button>
-        <Button onClick={handleConfirm}>Export</Button>
+        <Button onClick={handleConfirm} disabled={exportDisabled}>
+          Export
+        </Button>
       </div>
     </Modal>
   );
