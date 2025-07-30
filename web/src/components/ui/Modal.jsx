@@ -6,14 +6,20 @@ export default function Modal({
   widthClass = "w-full max-w-md",
   titleId,
   descriptionId,
+  initialFocusRef,
 }) {
   const containerRef = useRef(null);
+  const onCloseRef = useRef(onClose);
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
 
   useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
     function handleKey(e) {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onCloseRef.current();
       if (e.key === "Tab") {
         const focusable = containerRef.current?.querySelectorAll(
           "a[href], button, textarea, input, select, [tabindex]:not([tabindex='-1'])"
@@ -34,15 +40,19 @@ export default function Modal({
     const firstInput = containerRef.current?.querySelector(
       "a[href], button, textarea, input, select, [tabindex]:not([tabindex='-1'])"
     );
-    firstInput?.focus();
+    if (initialFocusRef?.current) {
+      initialFocusRef.current.focus();
+    } else {
+      firstInput?.focus();
+    }
     setTimeout(() => setVisible(true), 10);
     return () => document.removeEventListener("keydown", handleKey);
-  }, [onClose]);
+  }, []);
 
   function handleClose() {
     setClosing(true);
     setVisible(false);
-    setTimeout(onClose, 300);
+    setTimeout(() => onCloseRef.current(), 300);
   }
 
   return (
