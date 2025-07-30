@@ -109,7 +109,7 @@ const MissedReportsPage = () => {
     }));
     const sheet = XLSX.utils.json_to_sheet(all);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Status_Pelaporan");
+    XLSX.utils.book_append_sheet(wb, sheet, "Status_Pelaporan");
     const name = `${exportFileName("LaporanTerlambat")}.xlsx`;
     XLSX.writeFile(wb, name);
   };
