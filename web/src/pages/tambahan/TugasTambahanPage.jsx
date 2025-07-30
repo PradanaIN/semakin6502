@@ -63,6 +63,19 @@ export default function TugasTambahanPage() {
   const [filterUser, setFilterUser] = useState("");
   const [filterMinggu, setFilterMinggu] = useState("");
   const [weekOptions, setWeekOptions] = useState([]);
+  const fetchKegiatanForTeam = async (teamId) => {
+    if (!teamId) {
+      setKegiatan([]);
+      return;
+    }
+    try {
+      const res = await axios.get(`/master-kegiatan?team=${teamId}`);
+      setKegiatan(res.data.data || res.data);
+    } catch (err) {
+      handleAxiosError(err, "Gagal mengambil kegiatan");
+      setKegiatan([]);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -159,6 +172,7 @@ export default function TugasTambahanPage() {
       status: STATUS.BELUM,
       deskripsi: "",
     });
+    setKegiatan([]);
     setShowForm(true);
   };
 
@@ -424,11 +438,13 @@ export default function TugasTambahanPage() {
                 value={form.teamId}
                 onChange={(e) => {
                   const value = e.target.value;
+                  const tId = value ? parseInt(value, 10) : "";
                   setForm({
                     ...form,
-                    teamId: value ? parseInt(value, 10) : "",
-                    kegiatanId: "", // reset kegiatan saat tim berubah
+                    teamId: tId,
+                    kegiatanId: "",
                   });
+                  fetchKegiatanForTeam(tId);
                 }}
                 className="w-full border rounded-lg px-3 py-2 bg-white text-gray-900 
             dark:bg-gray-700 dark:text-gray-100 
