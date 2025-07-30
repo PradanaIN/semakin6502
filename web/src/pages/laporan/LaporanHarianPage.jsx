@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Pencil, Trash2, ExternalLink, Minus, Download } from "lucide-react";
 import Spinner from "../../components/Spinner";
-import { showSuccess, handleAxiosError } from "../../utils/alerts";
+import { showSuccess, handleAxiosError, confirmCancel } from "../../utils/alerts";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import DataTable from "../../components/ui/DataTable";
@@ -334,7 +334,15 @@ export default function LaporanHarianPage() {
             </div>
           </div>
           <div className="flex justify-end space-x-2 pt-2">
-            <Button variant="secondary" onClick={() => setShowForm(false)}>Batal</Button>
+            <Button
+              variant="secondary"
+              onClick={async () => {
+                const r = await confirmCancel("Batalkan perubahan?");
+                if (r.isConfirmed) setShowForm(false);
+              }}
+            >
+              Batal
+            </Button>
             <Button onClick={saveForm}>Simpan</Button>
           </div>
         </Modal>
