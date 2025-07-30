@@ -159,6 +159,7 @@ export default function PenugasanDetailPage() {
         fetchDetail();
       }, 200);
     } catch (err) {
+      console.error("Failed to save report", err?.response?.data || err);
       handleAxiosError(err, "Gagal menyimpan laporan");
     }
   };
