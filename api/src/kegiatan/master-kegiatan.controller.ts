@@ -22,11 +22,11 @@ import { ROLES } from "../common/roles.constants";
 
 @Controller("master-kegiatan")
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(ROLES.ADMIN, ROLES.KETUA)
 export class MasterKegiatanController {
   constructor(private readonly masterService: MasterKegiatanService) {}
 
   @Post()
+  @Roles(ROLES.ADMIN, ROLES.KETUA)
   create(
     @Body() body: CreateMasterKegiatanDto,
     @Req() req: Request,
@@ -47,6 +47,7 @@ export class MasterKegiatanController {
   }
 
   @Put(":id")
+  @Roles(ROLES.ADMIN, ROLES.KETUA)
   update(
     @Param("id", ParseIntPipe) id: number,
     @Body() body: UpdateMasterKegiatanDto,
@@ -57,6 +58,7 @@ export class MasterKegiatanController {
   }
 
   @Delete(":id")
+  @Roles(ROLES.ADMIN, ROLES.KETUA)
   remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
     const u = req.user as AuthRequestUser;
     return this.masterService.remove(id, u.userId, u.role);
