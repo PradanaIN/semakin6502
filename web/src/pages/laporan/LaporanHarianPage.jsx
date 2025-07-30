@@ -93,31 +93,33 @@ export default function LaporanHarianPage() {
     }
   };
 
-  const exportExcel = async () => {
-  try {
-    const params = {};
-    if (bulan) params.bulan = bulan;
-    if (minggu) params.minggu = minggu;
-    params.tambahan = true;
+  const exportExcel = async (params = {}) => {
+    try {
+      const query = { ...params, tambahan: true };
 
-    const res = await axios.get("/laporan-harian/mine/export", {
-      params,
-      responseType: "blob",
-    });
+      const res = await axios.get("/laporan-harian/mine/export", {
+        params: query,
+        responseType: "blob",
+      });
 
-    const url = window.URL.createObjectURL(new Blob([res.data]));
-    const link = document.createElement("a");
-    link.href = url;
-    const idx = bulan ? parseInt(bulan, 10) : undefined;
-    const name = `${exportFileName("LaporanHarian", idx)}.xlsx`;
-    link.setAttribute("download", name);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-  } catch (err) {
-    handleAxiosError(err, "Gagal mengekspor");
-  }
-};
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      let monthIndex;
+      if (params?.bulan) {
+        monthIndex = parseInt(params.bulan, 10);
+      } else if (params?.tanggal) {
+        monthIndex = new Date(params.tanggal).getMonth() + 1;
+      }
+      const name = `${exportFileName("LaporanHarian", monthIndex)}.xlsx`;
+      link.setAttribute("download", name);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      handleAxiosError(err, "Gagal mengekspor");
+    }
+  };
 
 
   const openExportModal = () => setShowExport(true);
