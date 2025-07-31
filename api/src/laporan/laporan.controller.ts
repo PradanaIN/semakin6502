@@ -21,7 +21,6 @@ import { ROLES } from "../common/roles.constants";
 import { SubmitLaporanDto } from "./dto/submit-laporan.dto";
 import { UpdateLaporanDto } from "./dto/update-laporan.dto";
 import { AuthRequestUser } from "../common/auth-request-user.interface";
-import exportFileName from "../utils/exportFileName";
 
 @Controller("laporan-harian")
 @UseGuards(JwtAuthGuard, RolesGuard)

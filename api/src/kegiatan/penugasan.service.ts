@@ -20,12 +20,11 @@ export class PenugasanService {
   ) {}
 
   findAll(
-    role: string,
-    userId: number,
+    _role: string,
+    _userId: number,
     filter: { bulan?: string; tahun?: number; minggu?: number },
     creatorId?: number,
   ) {
-    role = normalizeRole(role);
     const opts: any = {
       include: {
         kegiatan: { include: { team: true } },
@@ -38,26 +37,6 @@ export class PenugasanService {
     if (filter.tahun) opts.where.tahun = filter.tahun;
     if (filter.minggu) opts.where.minggu = filter.minggu;
     if (creatorId) opts.where.creatorId = creatorId;
-
-    if (role === ROLES.ADMIN || role === ROLES.PIMPINAN) {
-      // admins and top management can see all assignments
-    } else if (role === ROLES.KETUA) {
-      // team leaders can see assignments in their teams as well as tasks
-      // assigned specifically to them
-      opts.where.OR = [
-        {
-          kegiatan: {
-            team: {
-              members: { some: { userId, isLeader: true } },
-            },
-          },
-        },
-        { pegawaiId: userId },
-      ];
-    } else {
-      // regular members only see their own assignments
-      opts.where.pegawaiId = userId;
-    }
 
     return this.prisma.penugasan.findMany(opts);
   }
@@ -182,10 +161,12 @@ export class PenugasanService {
     });
     if (!existing) throw new NotFoundException("not found");
     if (role !== ROLES.ADMIN) {
-      const leader = await this.prisma.member.findFirst({
-        where: { teamId: existing.kegiatan.teamId, userId, isLeader: true },
-      });
-      if (!leader) throw new ForbiddenException("bukan ketua tim kegiatan ini");
+      if (existing.pegawaiId !== userId) {
+        const leader = await this.prisma.member.findFirst({
+          where: { teamId: existing.kegiatan.teamId, userId, isLeader: true },
+        });
+        if (!leader) throw new ForbiddenException("bukan penugasan anda");
+      }
     }
     return this.prisma.penugasan.update({
       where: { id },
@@ -210,13 +191,15 @@ export class PenugasanService {
     });
     if (!existing) throw new NotFoundException("not found");
     if (role !== ROLES.ADMIN) {
-      const leader = await this.prisma.member.findFirst({
-        where: { teamId: existing.kegiatan.teamId, userId, isLeader: true },
-      });
-      if (!leader)
-        throw new ForbiddenException(
-          "Hanya admin atau ketua tim yang dapat menghapus penugasan"
-        );
+      if (existing.pegawaiId !== userId) {
+        const leader = await this.prisma.member.findFirst({
+          where: { teamId: existing.kegiatan.teamId, userId, isLeader: true },
+        });
+        if (!leader)
+          throw new ForbiddenException(
+            "Hanya admin atau ketua tim yang dapat menghapus penugasan"
+          );
+      }
     }
     const count = await this.prisma.laporanHarian.count({
       where: { penugasanId: id },

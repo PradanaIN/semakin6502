@@ -62,8 +62,10 @@ export default function PenugasanPage() {
   const { user } = useAuth();
   const canManage = [ROLES.ADMIN, ROLES.KETUA].includes(user?.role);
   const showPegawaiColumn = useMemo(
-    () => [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role),
-    [user]
+    () =>
+      viewTab === "all" ||
+      [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role),
+    [user, viewTab]
   );
   const navigate = useNavigate();
 
@@ -273,20 +275,28 @@ export default function PenugasanPage() {
       {
         Header: "Aksi",
         accessor: "id",
-        Cell: ({ row }) => (
-          <Button
-            onClick={() => navigate(`/tugas-mingguan/${row.original.id}`)}
-            variant="icon"
-            icon
-            aria-label="Detail"
-          >
-            <Eye size={16} />
-          </Button>
-        ),
+        Cell: ({ row }) =>
+          viewTab === "all" && row.original.pegawaiId !== user?.id ? null : (
+            <Button
+              onClick={() => navigate(`/tugas-mingguan/${row.original.id}`)}
+              variant="icon"
+              icon
+              aria-label="Detail"
+            >
+              <Eye size={16} />
+            </Button>
+          ),
       }
     );
     return cols;
-  }, [currentPage, pageSize, navigate, showPegawaiColumn]);
+  }, [
+    currentPage,
+    pageSize,
+    navigate,
+    showPegawaiColumn,
+    viewTab,
+    user?.id,
+  ]);
 
   // --- UI
 
