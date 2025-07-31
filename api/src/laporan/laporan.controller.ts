@@ -7,7 +7,6 @@ import {
   UseGuards,
   Req,
   Param,
-  ParseIntPipe,
   Put,
   Delete,
   Res,
@@ -45,7 +44,7 @@ export class LaporanController {
   }
 
   @Get("penugasan/:id")
-  getByPenugasan(@Param("id", ParseIntPipe) id: number) {
+  getByPenugasan(@Param("id") id: string) {
     return this.laporanService.getByPenugasan(id);
   }
 
@@ -103,7 +102,7 @@ export class LaporanController {
 
   @Put(":id")
   update(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() body: UpdateLaporanDto,
     @Req() req: Request
   ) {
@@ -112,7 +111,7 @@ export class LaporanController {
   }
 
   @Delete(":id")
-  remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+  remove(@Param("id") id: string, @Req() req: Request) {
     const u = req.user as AuthRequestUser;
     return this.laporanService.remove(id, u.userId, u.role);
   }

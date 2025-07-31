@@ -7,7 +7,6 @@ import {
   Req,
   Param,
   Query,
-  ParseIntPipe,
   Put,
   Delete,
 } from "@nestjs/common";
@@ -45,13 +44,11 @@ export class TambahanController {
     @Query('teamId') teamId?: string,
     @Query('userId') userId?: string,
   ) {
-    const tId = teamId ? parseInt(teamId, 10) : undefined;
-    const uId = userId ? parseInt(userId, 10) : undefined;
-    return this.tambahanService.getAll({ teamId: tId, userId: uId });
+    return this.tambahanService.getAll({ teamId, userId });
   }
 
   @Get(":id")
-  detail(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+  detail(@Param("id") id: string, @Req() req: Request) {
     const { userId, role } = req.user as AuthRequestUser;
     return this.tambahanService.getOne(id, userId, role);
   }
@@ -59,7 +56,7 @@ export class TambahanController {
   @Put(":id")
   @Roles(ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA)
   update(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() body: UpdateTambahanDto,
     @Req() req: Request,
   ) {
@@ -69,7 +66,7 @@ export class TambahanController {
 
   @Delete(":id")
   @Roles(ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA)
-  remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+  remove(@Param("id") id: string, @Req() req: Request) {
     const userId = (req.user as AuthRequestUser).userId;
     return this.tambahanService.remove(id, userId);
   }

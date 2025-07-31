@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id        Int                @id @default(autoincrement())
+  id        String             @id
   nama      String
   username  String             @unique
   email     String             @unique
@@ -23,7 +23,7 @@ model User {
 }
 
 model Team {
-  id               Int                @id @default(autoincrement())
+  id               String             @id
   namaTim          String
   members          Member[]
   masterKegiatan   MasterKegiatan[]
@@ -31,9 +31,9 @@ model Team {
 }
 
 model Member {
-  id       Int     @id @default(autoincrement())
-  userId   Int
-  teamId   Int
+  id       String  @id
+  userId   String
+  teamId   String
   isLeader Boolean
   user     User    @relation(fields: [userId], references: [id])
   team     Team    @relation(fields: [teamId], references: [id])
@@ -42,8 +42,8 @@ model Member {
 }
 
 model MasterKegiatan {
-  id               Int                @id @default(autoincrement())
-  teamId           Int
+  id               String             @id
+  teamId           String
   namaKegiatan     String
   deskripsi        String?
   team             Team               @relation(fields: [teamId], references: [id])
@@ -52,10 +52,10 @@ model MasterKegiatan {
 }
 
 model Penugasan {
-  id         Int             @id @default(autoincrement())
-  kegiatanId Int
-  pegawaiId  Int
-  creatorId  Int
+  id         String          @id
+  kegiatanId String
+  pegawaiId  String
+  creatorId  String
   minggu     Int
   bulan      String
   tahun      Int
@@ -68,21 +68,21 @@ model Penugasan {
 }
 
 model LaporanHarian {
-  id          Int       @id @default(autoincrement())
-  penugasanId Int
+  id          String    @id
+  penugasanId String
   tanggal     DateTime
   status      String
   capaianKegiatan String @default("")
   deskripsi   String?
   buktiLink   String?
   catatan     String?
-  pegawaiId   Int
+  pegawaiId   String
   penugasan   Penugasan @relation(fields: [penugasanId], references: [id])
   pegawai     User      @relation(fields: [pegawaiId], references: [id])
 }
 
 model KegiatanTambahan {
-  id                  Int            @id @default(autoincrement())
+  id                  String         @id
   nama                String
   tanggal             DateTime
   status              String
@@ -91,22 +91,22 @@ model KegiatanTambahan {
   deskripsi           String?
   tanggalSelesai      DateTime?
   tanggalSelesaiAkhir DateTime?
-  userId              Int
-  kegiatanId          Int
-  teamId              Int
+  userId              String
+  kegiatanId          String
+  teamId              String
   user                User           @relation(fields: [userId], references: [id])
   kegiatan            MasterKegiatan @relation(fields: [kegiatanId], references: [id])
   team                Team           @relation(fields: [teamId], references: [id])
 }
 
 model Role {
-  id   Int    @id @default(autoincrement())
+  id   String @id
   name String @unique
 }
 
 model Notification {
-  id        Int      @id @default(autoincrement())
-  userId    Int
+  id        String   @id
+  userId    String
   text      String
   link      String?
   isRead    Boolean  @default(false)

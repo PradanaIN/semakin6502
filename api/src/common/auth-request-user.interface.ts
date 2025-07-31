@@ -1,4 +1,4 @@
 export interface AuthRequestUser {
-  userId: number;
+  userId: string;
   role: import("./roles.constants").Role;
 }

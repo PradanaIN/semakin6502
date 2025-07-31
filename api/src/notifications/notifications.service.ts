@@ -1,31 +1,32 @@
 import { Injectable } from "@nestjs/common";
+import { ulid } from "ulid";
 import { PrismaService } from "../prisma.service";
 
 @Injectable()
 export class NotificationsService {
   constructor(private prisma: PrismaService) {}
 
-  create(userId: number, text: string, link?: string) {
+  create(userId: string, text: string, link?: string) {
     return this.prisma.notification.create({
-      data: { userId, text, link },
+      data: { id: ulid(), userId, text, link },
     });
   }
 
-  findByUser(userId: number) {
+  findByUser(userId: string) {
     return this.prisma.notification.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
     });
   }
 
-  markAsRead(id: number, userId: number) {
+  markAsRead(id: string, userId: string) {
     return this.prisma.notification.updateMany({
       where: { id, userId },
       data: { isRead: true },
     });
   }
 
-  markAllAsRead(userId: number) {
+  markAllAsRead(userId: string) {
     return this.prisma.notification.updateMany({
       where: { userId, isRead: false },
       data: { isRead: true },

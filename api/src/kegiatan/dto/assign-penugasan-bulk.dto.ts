@@ -1,12 +1,12 @@
 import { IsInt, IsString, IsArray, ArrayNotEmpty, IsOptional } from "class-validator";
 
 export class AssignPenugasanBulkDto {
-  @IsInt()
-  kegiatanId!: number;
+  @IsString()
+  kegiatanId!: string;
 
   @IsArray()
   @ArrayNotEmpty()
-  pegawaiIds!: number[];
+  pegawaiIds!: string[];
 
   @IsInt()
   minggu!: number;

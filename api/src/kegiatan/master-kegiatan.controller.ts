@@ -8,7 +8,6 @@ import {
   Body,
   UseGuards,
   Req,
-  ParseIntPipe,
 } from "@nestjs/common";
 import { Request } from "express";
 import { AuthRequestUser } from "../common/auth-request-user.interface";
@@ -41,7 +40,7 @@ export class MasterKegiatanController {
     return this.masterService.findAll({
       page: page ? parseInt(page as string, 10) : undefined,
       limit: limit ? parseInt(limit as string, 10) : undefined,
-      teamId: team ? parseInt(team as string, 10) : undefined,
+      teamId: team as string | undefined,
       search: search as string | undefined,
     });
   }
@@ -49,7 +48,7 @@ export class MasterKegiatanController {
   @Put(":id")
   @Roles(ROLES.ADMIN, ROLES.KETUA)
   update(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() body: UpdateMasterKegiatanDto,
     @Req() req: Request,
   ) {
@@ -59,7 +58,7 @@ export class MasterKegiatanController {
 
   @Delete(":id")
   @Roles(ROLES.ADMIN, ROLES.KETUA)
-  remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+  remove(@Param("id") id: string, @Req() req: Request) {
     const u = req.user as AuthRequestUser;
     return this.masterService.remove(id, u.userId, u.role);
   }

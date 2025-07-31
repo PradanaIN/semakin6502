@@ -7,7 +7,6 @@ import {
   Req,
   Query,
   Param,
-  ParseIntPipe,
   Put,
   Delete,
   BadRequestException,
@@ -50,19 +49,19 @@ export class PenugasanController {
     if (bulan) filter.bulan = bulan;
     if (tahun) filter.tahun = parseInt(tahun, 10);
     if (minggu) filter.minggu = parseInt(minggu, 10);
-    const creatorId = creator ? parseInt(creator, 10) : undefined;
+    const creatorId = creator;
     return this.penugasanService.findAll(u.role, u.userId, filter, creatorId);
   }
 
   @Get(":id")
-  detail(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+  detail(@Param("id") id: string, @Req() req: Request) {
     const u = req.user as AuthRequestUser;
     return this.penugasanService.findOne(id, u.role, u.userId);
   }
 
   @Put(":id")
   update(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() body: AssignPenugasanDto,
     @Req() req: Request,
   ) {
@@ -71,7 +70,7 @@ export class PenugasanController {
   }
 
   @Delete(":id")
-  remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
+  remove(@Param("id") id: string, @Req() req: Request) {
     const u = req.user as AuthRequestUser;
     return this.penugasanService.remove(id, u.userId, u.role);
   }

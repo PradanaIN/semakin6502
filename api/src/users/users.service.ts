@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { ulid } from "ulid";
 import { PrismaService } from "../prisma.service";
 import { hashPassword } from "../common/hash";
 
@@ -13,7 +14,7 @@ export class UsersService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException("not found");
     return user;
@@ -26,10 +27,10 @@ export class UsersService {
     if (!data.username && data.email) {
       data.username = data.email.split("@")[0];
     }
-    return this.prisma.user.create({ data });
+    return this.prisma.user.create({ data: { id: ulid(), ...data } });
   }
 
-  async update(id: number, data: any) {
+  async update(id: string, data: any) {
     if (data.password) {
       data.password = await hashPassword(data.password);
     }
@@ -39,7 +40,7 @@ export class UsersService {
     return this.prisma.user.update({ where: { id }, data });
   }
 
-  async findProfile(id: number) {
+  async findProfile(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: { members: { include: { team: true } } },
@@ -55,7 +56,7 @@ export class UsersService {
     return sanitized;
   }
 
-  async updateProfile(id: number, data: any) {
+  async updateProfile(id: string, data: any) {
     if (data.password) {
       data.password = await hashPassword(data.password);
     }
@@ -76,7 +77,7 @@ export class UsersService {
     return sanitized;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.user.delete({ where: { id } });
   }
 }
