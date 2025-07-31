@@ -11,6 +11,7 @@ import { STATUS } from "../common/status.constants";
 import { normalizeRole } from "../common/roles";
 import { AssignPenugasanDto } from "./dto/assign-penugasan.dto";
 import { AssignPenugasanBulkDto } from "./dto/assign-penugasan-bulk.dto";
+import { ulid } from "ulid";
 
 @Injectable()
 export class PenugasanService {
@@ -21,9 +22,9 @@ export class PenugasanService {
 
   findAll(
     role: string,
-    userId: number,
+    userId: string,
     filter: { bulan?: string; tahun?: number; minggu?: number },
-    creatorId?: number,
+    creatorId?: string,
   ) {
     role = normalizeRole(role);
     const opts: any = {
@@ -62,7 +63,7 @@ export class PenugasanService {
     return this.prisma.penugasan.findMany(opts);
   }
 
-  async assign(data: AssignPenugasanDto, userId: number, role: string) {
+  async assign(data: AssignPenugasanDto, userId: string, role: string) {
     role = normalizeRole(role);
     const master = await this.prisma.masterKegiatan.findUnique({
       where: { id: data.kegiatanId },
@@ -80,6 +81,7 @@ export class PenugasanService {
     }
     const penugasan = await this.prisma.penugasan.create({
       data: {
+        id: ulid(),
         kegiatanId: data.kegiatanId,
         pegawaiId: data.pegawaiId,
         creatorId: userId,
@@ -100,7 +102,7 @@ export class PenugasanService {
     return penugasan;
   }
 
-  async assignBulk(data: AssignPenugasanBulkDto, userId: number, role: string) {
+  async assignBulk(data: AssignPenugasanBulkDto, userId: string, role: string) {
     role = normalizeRole(role);
     const master = await this.prisma.masterKegiatan.findUnique({
       where: { id: data.kegiatanId },
@@ -116,7 +118,8 @@ export class PenugasanService {
         throw new ForbiddenException("bukan ketua tim kegiatan ini");
       }
     }
-    const rows = data.pegawaiIds.map((pid: number) => ({
+    const rows = data.pegawaiIds.map((pid: string) => ({
+      id: ulid(),
       kegiatanId: data.kegiatanId,
       pegawaiId: pid,
       creatorId: userId,
@@ -132,7 +135,7 @@ export class PenugasanService {
     );
 
     await Promise.all(
-      created.map((p: { pegawaiId: number; id: number }) =>
+      created.map((p: { pegawaiId: string; id: string }) =>
         this.notifications.create(
           p.pegawaiId,
           "Penugasan baru tersedia",
@@ -144,7 +147,7 @@ export class PenugasanService {
     return { count: created.length };
   }
 
-  async findOne(id: number, role: string, userId: number) {
+  async findOne(id: string, role: string, userId: string) {
     role = normalizeRole(role);
     const where: any = { id };
 
@@ -170,9 +173,9 @@ export class PenugasanService {
   }
 
   async update(
-    id: number,
+    id: string,
     data: AssignPenugasanDto,
-    userId: number,
+    userId: string,
     role: string
   ) {
     role = normalizeRole(role);
@@ -202,7 +205,7 @@ export class PenugasanService {
     });
   }
 
-  async remove(id: number, userId: number, role: string) {
+  async remove(id: string, userId: string, role: string) {
     role = normalizeRole(role);
     const existing = await this.prisma.penugasan.findUnique({
       where: { id },
@@ -249,7 +252,7 @@ export class PenugasanService {
     });
 
     const byUser: Record<
-      number,
+      string,
       { nama: string; tugas: { tugas: string; deskripsi?: string; status: string }[] }
     > = {};
 
@@ -264,7 +267,7 @@ export class PenugasanService {
     }
 
     return Object.entries(byUser)
-      .map(([id, v]) => ({ userId: Number(id), nama: v.nama, tugas: v.tugas }))
+      .map(([id, v]) => ({ userId: id, nama: v.nama, tugas: v.tugas }))
       .sort((a, b) => a.nama.localeCompare(b.nama));
   }
 }

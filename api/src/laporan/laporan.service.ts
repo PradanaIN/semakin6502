@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from "@nestjs/common";
+import { ulid } from "ulid";
 import { PrismaService } from "../prisma.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { Workbook } from "exceljs";
@@ -39,7 +40,7 @@ export class LaporanService {
     });
   }
 
-  private async syncPenugasanStatus(penugasanId: number) {
+  private async syncPenugasanStatus(penugasanId: string) {
     try {
       const pen = await this.prisma.penugasan.findUnique({
         where: { id: penugasanId },
@@ -62,7 +63,7 @@ export class LaporanService {
             select: { userId: true },
           });
           await Promise.all(
-            leaders.map((l: { userId: number }) =>
+            leaders.map((l: { userId: string }) =>
               this.notifications.create(
                 l.userId,
                 `Penugasan ${pen.kegiatan.namaKegiatan} selesai`,
@@ -86,7 +87,7 @@ export class LaporanService {
       console.error("Failed to sync penugasan status", err);
     }
   }
-  async submit(data: any, userId: number, role: string) {
+  async submit(data: any, userId: string, role: string) {
     role = normalizeRole(role);
     if (role === ROLES.PIMPINAN) {
       throw new ForbiddenException("pimpinan tidak diizinkan");
@@ -113,6 +114,7 @@ export class LaporanService {
     }
     const laporan = await this.prisma.laporanHarian.create({
       data: {
+        id: ulid(),
         penugasanId: data.penugasanId,
         pegawaiId: targetId,
         tanggal: new Date(data.tanggal),
@@ -144,7 +146,7 @@ export class LaporanService {
     });
   }
 
-  getByUserTanggal(userId: number, tanggal: string) {
+  getByUserTanggal(userId: string, tanggal: string) {
     return this.prisma.laporanHarian.findMany({
       where: { pegawaiId: userId, tanggal: new Date(tanggal) },
       include: { penugasan: { include: { kegiatan: true } } },
@@ -152,7 +154,7 @@ export class LaporanService {
     });
   }
 
-  getByPenugasan(penugasanId: number) {
+  getByPenugasan(penugasanId: string) {
     return this.prisma.laporanHarian.findMany({
       where: { penugasanId },
       include: {
@@ -162,7 +164,7 @@ export class LaporanService {
     });
   }
 
-  getByUser(userId: number) {
+  getByUser(userId: string) {
     return this.prisma.laporanHarian.findMany({
       where: { pegawaiId: userId },
       orderBy: { tanggal: "desc" },
@@ -172,7 +174,7 @@ export class LaporanService {
     });
   }
 
-  async update(id: number, data: any, userId: number, role: string) {
+  async update(id: string, data: any, userId: string, role: string) {
     role = normalizeRole(role);
     if (role === ROLES.PIMPINAN) {
       throw new ForbiddenException("pimpinan tidak diizinkan");
@@ -219,7 +221,7 @@ export class LaporanService {
     return laporan;
   }
 
-  async remove(id: number, userId: number, role: string) {
+  async remove(id: string, userId: string, role: string) {
     role = normalizeRole(role);
     if (role === ROLES.PIMPINAN) {
       throw new ForbiddenException("pimpinan tidak diizinkan");
@@ -257,7 +259,7 @@ export class LaporanService {
   }
 
   async getByMonthWeek(
-    userId: number,
+    userId: string,
     bulan?: string,
     minggu?: number,
     includeTambahan = false
@@ -324,7 +326,7 @@ export class LaporanService {
   }
 
   async export(
-    userId: number,
+    userId: string,
     fileFormat: string,
     bulan?: string,
     minggu?: number,

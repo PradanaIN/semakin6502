@@ -1,11 +1,11 @@
 import { IsInt, IsString, IsOptional } from "class-validator";
 
 export class AssignPenugasanDto {
-  @IsInt()
-  kegiatanId!: number;
+  @IsString()
+  kegiatanId!: string;
 
-  @IsInt()
-  pegawaiId!: number;
+  @IsString()
+  pegawaiId!: string;
 
   @IsInt()
   minggu!: number;

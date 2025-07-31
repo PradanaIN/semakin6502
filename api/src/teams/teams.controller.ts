@@ -7,7 +7,6 @@ import {
   Param,
   Body,
   UseGuards,
-  ParseIntPipe,
   Req,
 } from "@nestjs/common";
 import { TeamsService } from "./teams.service";
@@ -45,7 +44,7 @@ export class TeamsController {
 
   @Get(":id")
   @Roles(ROLES.ADMIN)
-  findOne(@Param("id", ParseIntPipe) id: number) {
+  findOne(@Param("id") id: string) {
     return this.teamsService.findOne(id);
   }
 
@@ -57,19 +56,19 @@ export class TeamsController {
 
   @Put(":id")
   @Roles(ROLES.ADMIN)
-  update(@Param("id", ParseIntPipe) id: number, @Body() body: any) {
+  update(@Param("id") id: string, @Body() body: any) {
     return this.teamsService.update(id, body);
   }
 
   @Delete(":id")
   @Roles(ROLES.ADMIN)
-  remove(@Param("id", ParseIntPipe) id: number) {
+  remove(@Param("id") id: string) {
     return this.teamsService.remove(id);
   }
 
   @Post(":id/members")
   @Roles(ROLES.ADMIN)
-  addMember(@Param("id", ParseIntPipe) teamId: number, @Body() member: any) {
+  addMember(@Param("id") teamId: string, @Body() member: any) {
     return this.teamsService.addMember(teamId, member);
   }
 }

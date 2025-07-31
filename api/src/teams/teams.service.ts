@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
+import { ulid } from "ulid";
 import { PrismaService } from "../prisma.service";
 
 @Injectable()
@@ -17,21 +18,21 @@ export class TeamsService {
     });
   }
 
-  findByLeader(userId: number) {
+  findByLeader(userId: string) {
     return this.prisma.team.findMany({
       where: { members: { some: { userId, isLeader: true } } },
       include: { members: { include: { user: true } } },
     });
   }
 
-  findByMember(userId: number) {
+  findByMember(userId: string) {
     return this.prisma.team.findMany({
       where: { members: { some: { userId } } },
       include: { members: { include: { user: true } } },
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const team = await this.prisma.team.findUnique({
       where: { id },
       include: { members: { include: { user: true } } },
@@ -41,20 +42,21 @@ export class TeamsService {
   }
 
   create(data: any) {
-    return this.prisma.team.create({ data });
+    return this.prisma.team.create({ data: { id: ulid(), ...data } });
   }
 
-  update(id: number, data: any) {
+  update(id: string, data: any) {
     return this.prisma.team.update({ where: { id }, data });
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return this.prisma.team.delete({ where: { id } });
   }
 
-  addMember(teamId: number, member: { user_id: number; isLeader: boolean }) {
+  addMember(teamId: string, member: { user_id: string; isLeader: boolean }) {
     return this.prisma.member.create({
       data: {
+        id: ulid(),
         teamId,
         userId: member.user_id,
         isLeader: member.isLeader,

@@ -23,6 +23,6 @@ export class UpdateLaporanDto {
   catatan?: string;
 
   @IsOptional()
-  @IsInt()
-  pegawaiId?: number;
+  @IsString()
+  pegawaiId?: string;
 }

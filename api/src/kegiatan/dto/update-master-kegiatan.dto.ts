@@ -1,10 +1,8 @@
-import { IsInt, IsString, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString, IsOptional } from 'class-validator';
 
 export class UpdateMasterKegiatanDto {
-  @Type(() => Number)
-  @IsInt()
-  teamId!: number;
+  @IsString()
+  teamId!: string;
 
   @IsString()
   namaKegiatan!: string;

@@ -33,7 +33,7 @@ export class AuthService {
     };
   }
 
-  async me(userId: number) {
+  async me(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: { members: { include: { team: true } } },

@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from "@nestjs/common";
+import { ulid } from "ulid";
 import { PrismaService } from "../prisma.service";
 import { ROLES } from "../common/roles.constants";
 import { CreateMasterKegiatanDto } from "./dto/create-master-kegiatan.dto";
@@ -15,7 +16,7 @@ export class MasterKegiatanService {
   async findAll(params: {
     page?: number;
     limit?: number;
-    teamId?: number;
+    teamId?: string;
     search?: string;
   }) {
     const page = params.page && params.page > 0 ? params.page : 1;
@@ -43,7 +44,7 @@ export class MasterKegiatanService {
     };
   }
 
-  async create(data: CreateMasterKegiatanDto, userId: number, role: string) {
+  async create(data: CreateMasterKegiatanDto, userId: string, role: string) {
     if (role !== ROLES.ADMIN) {
       const leader = await this.prisma.member.findFirst({
         where: { teamId: data.teamId, userId, isLeader: true },
@@ -52,13 +53,16 @@ export class MasterKegiatanService {
         throw new ForbiddenException("bukan ketua tim kegiatan ini");
       }
     }
-    return this.prisma.masterKegiatan.create({ data, include: { team: true } });
+    return this.prisma.masterKegiatan.create({
+      data: { id: ulid(), ...data },
+      include: { team: true },
+    });
   }
 
   async update(
-    id: number,
+    id: string,
     data: UpdateMasterKegiatanDto,
-    userId: number,
+    userId: string,
     role: string,
   ) {
     const existing = await this.prisma.masterKegiatan.findUnique({
@@ -78,7 +82,7 @@ export class MasterKegiatanService {
     });
   }
 
-  async remove(id: number, userId: number, role: string) {
+  async remove(id: string, userId: string, role: string) {
     const existing = await this.prisma.masterKegiatan.findUnique({ where: { id } });
     if (!existing) throw new NotFoundException("not found");
     if (role !== ROLES.ADMIN) {

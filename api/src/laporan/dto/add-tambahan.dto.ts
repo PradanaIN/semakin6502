@@ -2,8 +2,8 @@ import { IsDateString, IsInt, IsOptional, IsString } from "class-validator";
 import { Transform } from "class-transformer";
 
 export class AddTambahanDto {
-  @IsInt()
-  kegiatanId!: number;
+  @IsString()
+  kegiatanId!: string;
 
   @IsDateString()
   tanggal!: string;

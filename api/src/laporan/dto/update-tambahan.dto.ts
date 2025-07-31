@@ -3,8 +3,8 @@ import { Transform } from "class-transformer";
 
 export class UpdateTambahanDto {
   @IsOptional()
-  @IsInt()
-  kegiatanId?: number;
+  @IsString()
+  kegiatanId?: string;
 
   @IsOptional()
   @Transform(({ value }) => (value === "" ? undefined : value))

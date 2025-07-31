@@ -7,7 +7,6 @@ import {
   Param,
   Body,
   UseGuards,
-  ParseIntPipe,
   Req,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
@@ -33,7 +32,7 @@ export class UsersController {
 
   @Get(":id")
   @Roles(ROLES.ADMIN)
-  findOne(@Param("id", ParseIntPipe) id: number) {
+  findOne(@Param("id") id: string) {
     return this.usersService.findOne(id);
   }
 
@@ -59,13 +58,13 @@ export class UsersController {
 
   @Put(":id")
   @Roles(ROLES.ADMIN)
-  update(@Param("id", ParseIntPipe) id: number, @Body() body: UpdateUserDto) {
+  update(@Param("id") id: string, @Body() body: UpdateUserDto) {
     return this.usersService.update(id, body);
   }
 
   @Delete(":id")
   @Roles(ROLES.ADMIN)
-  remove(@Param("id", ParseIntPipe) id: number) {
+  remove(@Param("id") id: string) {
     return this.usersService.remove(id);
   }
 }

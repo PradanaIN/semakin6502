@@ -1,8 +1,8 @@
 import { IsDateString, IsInt, IsOptional, IsString } from "class-validator";
 
 export class SubmitLaporanDto {
-  @IsInt()
-  penugasanId!: number;
+  @IsString()
+  penugasanId!: string;
 
   @IsDateString()
   tanggal!: string;
@@ -25,6 +25,6 @@ export class SubmitLaporanDto {
   catatan?: string;
 
   @IsOptional()
-  @IsInt()
-  pegawaiId?: number;
+  @IsString()
+  pegawaiId?: string;
 }
