@@ -154,7 +154,12 @@ const MissedReportsPage = () => {
               key={u.userId}
               className="border-b hover:bg-gray-50 dark:hover:bg-gray-800"
             >
-              <td className="px-4 py-2 font-medium">{u.nama}</td>
+              <td
+                className="px-4 py-2 font-medium max-w-[200px] truncate"
+                title={u.nama}
+              >
+                {u.nama}
+              </td>
               <td className="px-4 py-2 text-right">
                 {u.lastDate ? (
                   <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">

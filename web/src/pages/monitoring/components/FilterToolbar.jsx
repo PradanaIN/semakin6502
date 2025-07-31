@@ -20,23 +20,26 @@ export default function FilterToolbar({
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
 
+  const baseSelectClass =
+    "cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out w-full text-center";
+
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
-      {/* Filter bulan */}
+    <div className="flex flex-wrap gap-3 items-center justify-start">
+      {/* Filter Bulan */}
       {(tab === "harian" || tab === "mingguan") && (
         <div className="w-36">
           <Listbox value={monthIndex} onChange={setMonthIndex}>
-            <div className="relative mt-1">
-              <Listbox.Button className="relative w-full cursor-pointer rounded-xl bg-gray-50 dark:bg-gray-800 py-2 pl-4 pr-10 text-center border border-gray-300 dark:border-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+            <div className="relative">
+              <Listbox.Button className="relative w-full cursor-pointer rounded-xl bg-gray-50 dark:bg-gray-800 py-2 pl-4 pr-10 border border-gray-300 dark:border-gray-600 shadow-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <span className="block truncate">{months[monthIndex]}</span>
-                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <ChevronUpDownIcon
                     className="h-5 w-5 text-gray-400"
                     aria-hidden="true"
                   />
                 </span>
               </Listbox.Button>
-              <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-50">
+              <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5">
                 {months.map((m, i) => (
                   <Listbox.Option
                     key={i}
@@ -73,21 +76,21 @@ export default function FilterToolbar({
         </div>
       )}
 
-      {/* Filter minggu */}
+      {/* Filter Minggu */}
       {tab === "mingguan" && weekStarts.length > 0 && (
         <div className="w-36">
           <Listbox value={weekIndex} onChange={setWeekIndex}>
-            <div className="relative mt-1">
-              <Listbox.Button className="relative w-full cursor-pointer rounded-xl bg-gray-50 dark:bg-gray-800 py-2 pl-4 pr-10 text-center border border-gray-300 dark:border-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+            <div className="relative">
+              <Listbox.Button className="relative w-full cursor-pointer rounded-xl bg-gray-50 dark:bg-gray-800 py-2 pl-4 pr-10 border border-gray-300 dark:border-gray-600 shadow-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <span className="block truncate">Minggu {weekIndex + 1}</span>
-                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                   <ChevronUpDownIcon
                     className="h-5 w-5 text-gray-400"
                     aria-hidden="true"
                   />
                 </span>
               </Listbox.Button>
-              <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-50">
+              <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-gray-700 py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5">
                 {weekStarts.map((_, i) => (
                   <Listbox.Option
                     key={i}
@@ -124,13 +127,13 @@ export default function FilterToolbar({
         </div>
       )}
 
-      {/* Filter tahun */}
+      {/* Filter Tahun */}
       {tab === "bulanan" && (
         <div className="w-32">
           <select
             value={year}
             onChange={(e) => setYear(parseInt(e.target.value, 10))}
-            className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out text-center w-full"
+            className={baseSelectClass}
           >
             {yearOptions.map((y) => (
               <option key={y} value={y}>
@@ -141,22 +144,24 @@ export default function FilterToolbar({
         </div>
       )}
 
-      {/* Filter tim */}
-      {(userRole === "admin" || userRole === "ketua" || userRole === "pimpinan") && (
-        <div className="w-36">
+      {/* Filter Tim */}
+      {(userRole === "admin" ||
+        userRole === "ketua" ||
+        userRole === "pimpinan") && (
+        <div className="w-40">
           <select
             value={teamId}
             onChange={(e) => setTeamId(e.target.value)}
-            className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out text-center w-full"
+            className={baseSelectClass}
           >
             <option value="">Semua Tim</option>
             {teams
               .filter((t) => t.namaTim !== "Pimpinan")
               .map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.namaTim}
-              </option>
-            ))}
+                <option key={t.id} value={t.id}>
+                  {t.namaTim}
+                </option>
+              ))}
           </select>
         </div>
       )}

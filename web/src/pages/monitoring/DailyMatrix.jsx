@@ -3,23 +3,30 @@ import { useAuth } from "../auth/useAuth";
 
 export const DailyMatrixRow = ({ user, boxClass, currentUser }) => {
   const isCurrentUser =
-    currentUser && (user.userId === currentUser.id || user.nama === currentUser.nama);
+    currentUser &&
+    (user.userId === currentUser.id || user.nama === currentUser.nama);
+
   return (
     <tr
-      className={`text-center transition-colors ${
+      className={`text-center text-sm transition-colors duration-200 ${
         isCurrentUser
           ? "bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-400"
-          : "hover:bg-gray-50 dark:hover:bg-gray-700"
+          : "hover:bg-gray-100 dark:hover:bg-gray-700"
       }`}
     >
-      <td className="px-4 py-2 border text-left text-sm whitespace-nowrap font-medium w-48 md:w-60">
+      <td
+        className="sticky left-0 bg-white dark:bg-gray-800 z-10 px-4 py-2 text-left font-semibold border-r border-gray-300 dark:border-gray-700 w-60 md:w-72 whitespace-nowrap overflow-hidden text-ellipsis"
+        title={user.nama}
+      >
         {user.nama}
       </td>
       {user.detail.map((day, i) => (
         <td
           key={i}
           title={day.count ? `${day.count} laporan` : ""}
-          className={`px-2 py-1 border text-sm ${boxClass(day)}`}
+          className={`px-2 py-1 border border-gray-300 dark:border-gray-600 ${boxClass(
+            day
+          )} truncate`}
         >
           {day.count || ""}
         </td>
@@ -45,24 +52,29 @@ const DailyMatrix = ({ data = [] }) => {
 
   const boxClass = (day) => {
     if (day.count > 0)
-      return "bg-green-200 border-green-500 dark:bg-green-700 dark:border-green-400";
+      return "bg-green-100 dark:bg-green-700 text-green-900 dark:text-green-100";
     if (isWeekend(day.tanggal) || isHoliday(day.tanggal))
-      return "bg-blue-100 border-blue-300 dark:bg-blue-700 dark:border-blue-500";
+      return "bg-blue-100 dark:bg-blue-700 text-blue-900 dark:text-blue-100";
     if (day.tanggal < today)
-      return "bg-yellow-100 border-yellow-400 dark:bg-yellow-700 dark:border-yellow-500";
-    return "bg-gray-100 border-gray-300 dark:bg-gray-800 dark:border-gray-600";
+      return "bg-yellow-100 dark:bg-yellow-700 text-yellow-900 dark:text-yellow-100";
+    return "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300";
   };
 
   const dayCount = data[0].detail.length;
 
   return (
-    <div className="overflow-x-auto max-h-[60vh] overflow-y-auto w-full">
-      <table className="min-w-[1300px] w-full table-fixed border text-sm rounded shadow">
-        <thead className="sticky top-0 bg-white dark:bg-gray-800 z-10 shadow-sm">
+    <div className="overflow-x-auto max-h-[65vh] overflow-y-auto w-full rounded-md shadow border border-gray-200 dark:border-gray-700">
+      <table className="min-w-[1200px] w-full table-fixed text-sm">
+        <thead className="sticky top-0 bg-white dark:bg-gray-900 z-20 border-b border-gray-300 dark:border-gray-700">
           <tr>
-            <th className="px-4 py-2 border text-left w-48 md:w-60">Nama</th>
+            <th className="sticky left-0 z-30 bg-white dark:bg-gray-900 px-4 py-2 text-left font-bold border-r border-gray-300 dark:border-gray-700 w-48 md:w-60">
+              Nama
+            </th>
             {Array.from({ length: dayCount }, (_, i) => (
-              <th key={i} className="px-2 py-1 border text-center">
+              <th
+                key={i}
+                className="px-2 py-1 border-r border-gray-300 dark:border-gray-700 text-center font-medium"
+              >
                 {i + 1}
               </th>
             ))}

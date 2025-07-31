@@ -3,7 +3,6 @@ import DailyMatrix from "../DailyMatrix";
 import WeeklyMatrix from "../WeeklyMatrix";
 import MonthlyMatrix from "./MonthlyMatrix";
 import WeeklyProgressTable from "./WeeklyProgressTable";
-import Skeleton from "../../../components/ui/Skeleton";
 import TableSkeleton from "../../../components/ui/TableSkeleton";
 import Legend from "../../../components/ui/Legend";
 import axios from "axios";
@@ -24,14 +23,12 @@ export default function TabContent({
   const [monthlyData, setMonthlyData] = useState([]);
   const [weeklyMode, setWeeklyMode] = useState("summary");
 
-  useEffect(() => {
-    if (activeTab === "mingguan") {
-      setWeeklyMode("summary");
-    }
-  }, [activeTab]);
-
   const skeletonCols =
     activeTab === "harian" ? 7 : activeTab === "mingguan" ? 4 : 12;
+
+  useEffect(() => {
+    if (activeTab === "mingguan") setWeeklyMode("summary");
+  }, [activeTab]);
 
   useEffect(() => {
     const fetchDaily = async () => {
@@ -117,43 +114,42 @@ export default function TabContent({
 
   return (
     <div>
-
+      {/* HARIAN */}
       {activeTab === "harian" && (
         <>
           <DailyMatrix data={dailyData} />
-          <Legend className="mt-2" />
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <Legend className="mt-3" />
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 tracking-wide">
             Setiap angka menunjukkan jumlah laporan harian pada tanggal
             tersebut.
           </p>
         </>
       )}
 
+      {/* MINGGUAN */}
       {activeTab === "mingguan" && (
         <>
           <div className="flex flex-wrap gap-2 mb-4" role="tablist">
-            <button
-              type="button"
-              onClick={() => setWeeklyMode("summary")}
-              className={`px-4 py-1.5 rounded-lg font-semibold text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out ${
-                weeklyMode === "summary"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600"
-              }`}
-            >
-              Ringkasan Minggu Ini
-            </button>
-            <button
-              type="button"
-              onClick={() => setWeeklyMode("matrix")}
-              className={`px-4 py-1.5 rounded-lg font-semibold text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out ${
-                weeklyMode === "matrix"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600"
-              }`}
-            >
-              Ringkasan per Minggu
-            </button>
+            {["summary", "matrix"].map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setWeeklyMode(mode)}
+                role="tab"
+                aria-selected={weeklyMode === mode}
+                className={`px-4 py-1.5 rounded-lg font-semibold text-sm shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors duration-150 ease-in-out
+                  ${
+                    weeklyMode === mode
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600"
+                  }
+                `}
+              >
+                {mode === "summary"
+                  ? "Ringkasan Minggu Ini"
+                  : "Ringkasan per Minggu"}
+              </button>
+            ))}
           </div>
 
           {weeklyMode === "matrix" ? (
@@ -166,7 +162,7 @@ export default function TabContent({
           ) : (
             <div>
               <h3 className="font-semibold mb-2 text-blue-600 dark:text-blue-400">
-                Ringkasan Minggu {weekIndex + 1}
+                Ringkasan Minggu ke-{weekIndex + 1}
               </h3>
               <WeeklyProgressTable data={weeklyData} />
             </div>
@@ -174,11 +170,14 @@ export default function TabContent({
         </>
       )}
 
+      {/* BULANAN */}
       {activeTab === "bulanan" &&
         (monthlyData.length > 0 ? (
           <MonthlyMatrix data={monthlyData} />
         ) : (
-          <div className="text-center py-4">Tidak ada data</div>
+          <div className="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
+            Tidak ada data untuk tahun ini.
+          </div>
         ))}
     </div>
   );

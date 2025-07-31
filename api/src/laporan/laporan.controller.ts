@@ -28,7 +28,7 @@ import exportFileName from "../utils/exportFileName";
 export class LaporanController {
   constructor(private readonly laporanService: LaporanService) {}
 
-  @Get('all')
+  @Get("all")
   @Roles(ROLES.ADMIN)
   getAll() {
     return this.laporanService.getAll();
@@ -61,7 +61,7 @@ export class LaporanController {
     @Req() req: Request,
     @Query("bulan") bulan?: string,
     @Query("minggu") minggu?: string,
-    @Query("tambahan") tambahan?: string,
+    @Query("tambahan") tambahan?: string
   ) {
     const userId = (req.user as AuthRequestUser).userId;
     const week = minggu ? parseInt(minggu, 10) : undefined;
@@ -69,7 +69,7 @@ export class LaporanController {
       userId,
       bulan,
       week,
-      tambahan === "true",
+      tambahan === "true"
     );
   }
 
@@ -81,44 +81,32 @@ export class LaporanController {
     @Query("bulan") bulan?: string,
     @Query("minggu") minggu?: string,
     @Query("tambahan") tambahan?: string,
-    @Query("tanggal") tanggal?: string,
+    @Query("tanggal") tanggal?: string
   ) {
     const userId = (req.user as AuthRequestUser).userId;
     const week = minggu ? parseInt(minggu, 10) : undefined;
-    const buf = await this.laporanService.export(
+    const { buffer, fileName } = await this.laporanService.export(
       userId,
       format,
       bulan,
       week,
       tambahan === "true",
-      tanggal,
+      tanggal
     );
-    const monthIdx = bulan ? parseInt(bulan, 10) : undefined;
-    const fileName = exportFileName("LaporanHarian", monthIdx);
-    if (format === "pdf") {
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename=${fileName}.pdf`,
-      );
-    } else {
-      res.setHeader(
-        "Content-Type",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      );
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename=${fileName}.xlsx`,
-      );
-    }
-    res.send(buf);
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+    res.send(buffer);
   }
 
   @Put(":id")
   update(
     @Param("id", ParseIntPipe) id: number,
     @Body() body: UpdateLaporanDto,
-    @Req() req: Request,
+    @Req() req: Request
   ) {
     const u = req.user as AuthRequestUser;
     return this.laporanService.update(id, body, u.userId, u.role);

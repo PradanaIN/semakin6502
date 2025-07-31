@@ -7,6 +7,8 @@ import { PrismaService } from "../prisma.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { Workbook } from "exceljs";
 import PDFDocument from "pdfkit";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
 import { normalizeRole } from "../common/roles";
 import { ROLES } from "../common/roles.constants";
 import { STATUS } from "../common/status.constants";
@@ -24,12 +26,12 @@ function getWeekOfMonth(date: Date) {
 export class LaporanService {
   constructor(
     private prisma: PrismaService,
-    private notifications: NotificationsService,
+    private notifications: NotificationsService
   ) {}
 
   getAll() {
     return this.prisma.laporanHarian.findMany({
-      orderBy: { tanggal: 'desc' },
+      orderBy: { tanggal: "desc" },
       include: {
         pegawai: true,
         penugasan: { include: { kegiatan: true } },
@@ -64,9 +66,9 @@ export class LaporanService {
               this.notifications.create(
                 l.userId,
                 `Penugasan ${pen.kegiatan.namaKegiatan} selesai`,
-                `/tugas-mingguan/${pen.id}`,
-              ),
-            ),
+                `/tugas-mingguan/${pen.id}`
+              )
+            )
           );
         }
         return;
@@ -74,20 +76,20 @@ export class LaporanService {
 
       const latest = await this.prisma.laporanHarian.findFirst({
         where: { penugasanId },
-        orderBy: { tanggal: 'desc' },
+        orderBy: { tanggal: "desc" },
       });
       await this.prisma.penugasan.update({
         where: { id: penugasanId },
         data: { status: latest?.status || STATUS.BELUM },
       });
     } catch (err) {
-      console.error('Failed to sync penugasan status', err);
+      console.error("Failed to sync penugasan status", err);
     }
   }
   async submit(data: any, userId: number, role: string) {
     role = normalizeRole(role);
     if (role === ROLES.PIMPINAN) {
-      throw new ForbiddenException('pimpinan tidak diizinkan');
+      throw new ForbiddenException("pimpinan tidak diizinkan");
     }
     const pen = await this.prisma.penugasan.findUnique({
       where: { id: data.penugasanId },
@@ -146,7 +148,7 @@ export class LaporanService {
     return this.prisma.laporanHarian.findMany({
       where: { pegawaiId: userId, tanggal: new Date(tanggal) },
       include: { penugasan: { include: { kegiatan: true } } },
-      orderBy: { tanggal: 'desc' },
+      orderBy: { tanggal: "desc" },
     });
   }
 
@@ -173,7 +175,7 @@ export class LaporanService {
   async update(id: number, data: any, userId: number, role: string) {
     role = normalizeRole(role);
     if (role === ROLES.PIMPINAN) {
-      throw new ForbiddenException('pimpinan tidak diizinkan');
+      throw new ForbiddenException("pimpinan tidak diizinkan");
     }
     const existing = await this.prisma.laporanHarian.findUnique({
       where: { id },
@@ -211,7 +213,7 @@ export class LaporanService {
     try {
       await this.syncPenugasanStatus(existing.penugasanId);
     } catch (err) {
-      console.error('Failed to sync penugasan status', err);
+      console.error("Failed to sync penugasan status", err);
     }
 
     return laporan;
@@ -220,7 +222,7 @@ export class LaporanService {
   async remove(id: number, userId: number, role: string) {
     role = normalizeRole(role);
     if (role === ROLES.PIMPINAN) {
-      throw new ForbiddenException('pimpinan tidak diizinkan');
+      throw new ForbiddenException("pimpinan tidak diizinkan");
     }
     const existing = await this.prisma.laporanHarian.findUnique({
       where: { id },
@@ -248,7 +250,7 @@ export class LaporanService {
     try {
       await this.syncPenugasanStatus(existing.penugasanId);
     } catch (err) {
-      console.error('Failed to sync penugasan status', err);
+      console.error("Failed to sync penugasan status", err);
     }
 
     return { success: true };
@@ -258,7 +260,7 @@ export class LaporanService {
     userId: number,
     bulan?: string,
     minggu?: number,
-    includeTambahan = false,
+    includeTambahan = false
   ) {
     const where: any = { pegawaiId: userId };
     if (bulan || minggu) {
@@ -269,7 +271,9 @@ export class LaporanService {
     const laporan = await this.prisma.laporanHarian.findMany({
       where,
       orderBy: { tanggal: "desc" },
-      include: { penugasan: { include: { kegiatan: { include: { team: true } } } } },
+      include: {
+        penugasan: { include: { kegiatan: { include: { team: true } } } },
+      },
     });
 
     const mapped = laporan.map((l: any) => ({
@@ -290,7 +294,9 @@ export class LaporanService {
       tambahan = tambahan.filter((t: any) => t.tanggal.getMonth() + 1 === bln);
     }
     if (minggu) {
-      tambahan = tambahan.filter((t: any) => getWeekOfMonth(t.tanggal) === minggu);
+      tambahan = tambahan.filter(
+        (t: any) => getWeekOfMonth(t.tanggal) === minggu
+      );
     }
 
     const mappedTambahan = tambahan.map((t: any) => ({
@@ -313,115 +319,148 @@ export class LaporanService {
     }));
 
     return [...mapped, ...mappedTambahan].sort(
-      (a, b) => b.tanggal.getTime() - a.tanggal.getTime(),
+      (a, b) => b.tanggal.getTime() - a.tanggal.getTime()
     );
   }
 
-async export(
-  userId: number,
-  format: string,
-  bulan?: string,
-  minggu?: number,
-  includeTambahan = false,
-  tanggal?: string,
-) {
-  const data = tanggal
-    ? await this.getByUserTanggal(userId, tanggal)
-    : await this.getByMonthWeek(userId, bulan, minggu, includeTambahan);
+  async export(
+    userId: number,
+    fileFormat: string,
+    bulan?: string,
+    minggu?: number,
+    includeTambahan = false,
+    tanggal?: string
+  ) {
+    const data = tanggal
+      ? await this.getByUserTanggal(userId, tanggal)
+      : await this.getByMonthWeek(userId, bulan, minggu, includeTambahan);
 
-  const user = await this.prisma.user.findUnique({
-    where: { id: userId },
-    select: { nama: true },
-  });
-
-  const exportDate = new Date().toISOString().slice(0, 10);
-  const range = tanggal
-    ? `Tanggal ${tanggal}`
-    : bulan
-    ? `Bulan ${bulan}${minggu ? ` Minggu ${minggu}` : ""}`
-    : "Semua";
-
-  if (format === "pdf") {
-    const doc = new PDFDocument({ margin: 30 });
-    const buffers: Buffer[] = [];
-
-    doc.on("data", (b: Buffer) => buffers.push(b));
-
-    doc.fontSize(14).text("Laporan Harian", { align: "center" });
-    doc.moveDown();
-    doc.fontSize(10);
-    doc.text(`Nama: ${user?.nama || ""}`);
-    doc.text(`Tanggal Export: ${exportDate}`);
-    doc.text(`Rentang: ${range}`);
-    doc.moveDown();
-
-    const headers = ["No", "Tanggal", "Tim", "Kegiatan", "Capaian", "Catatan"];
-    const widths = [30, 70, 80, 160, 70, 100];
-    let x = doc.x;
-    headers.forEach((h, i) => {
-      doc.font("Helvetica-Bold").text(h, x, doc.y, { width: widths[i] });
-      x += widths[i];
-    });
-    doc.moveDown();
-
-    data.forEach((d: any, idx: number) => {
-      const row = [
-        idx + 1,
-        d.tanggal.toISOString().slice(0, 10),
-        d.penugasan.kegiatan.team?.namaTim || "",
-        d.penugasan.kegiatan.namaKegiatan,
-        d.capaianKegiatan,
-        d.catatan || "",
-      ];
-      let xx = doc.x;
-      row.forEach((cell, i) => {
-        doc.font("Helvetica").text(String(cell), xx, doc.y, { width: widths[i] });
-        xx += widths[i];
-      });
-      doc.moveDown();
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { nama: true },
     });
 
-    doc.end();
-    await new Promise((resolve) => doc.on("end", resolve));
-    return Buffer.concat(buffers);
-  } else {
-    const wb = new Workbook();
-    const ws = wb.addWorksheet("laporan");
-
-    ws.addRow([`Nama: ${user?.nama || ""}`]);
-    ws.addRow([`Tanggal Export: ${exportDate}`]);
-    ws.addRow([`Rentang: ${range}`]);
-    ws.addRow([]);
-
-    ws.columns = [
-      { header: "No", key: "no", width: 5 },
-      { header: "Tanggal", key: "tanggal", width: 15 },
-      { header: "Tim", key: "tim", width: 20 },
-      { header: "Kegiatan", key: "kegiatan", width: 25 },
-      { header: "Capaian", key: "capaian", width: 20 },
-      { header: "Deskripsi", key: "deskripsi", width: 40 },
-      { header: "Bukti Dukung", key: "bukti", width: 30 },
-      { header: "Catatan", key: "catatan", width: 20 },
+    const now = new Date();
+    const exportDateFormatted = format(now, "d MMMM yyyy", { locale: id }); // e.g., 31 Juli 2025
+    const months = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
     ];
 
-    const titleRow = ws.addRow(ws.columns.map((c) => c.header));
-    titleRow.font = { bold: true };
+    const range = tanggal
+      ? `Tanggal ${format(new Date(tanggal), "d MMMM yyyy", { locale: id })}`
+      : bulan
+      ? `Bulan ${months[parseInt(bulan) - 1]}${
+          minggu ? ` Minggu ${minggu}` : ""
+        }`
+      : "Semua";
 
+    const exportFileName = (prefix = "LaporanHarian") => {
+      const timestamp = now
+        .toLocaleString("id-ID", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })
+        .replace(/\D/g, "")
+        .slice(0, 12); // DDMMYYYYHHMM
+
+      const monthStr = bulan ? `_${months[parseInt(bulan) - 1]}` : "";
+      const weekStr = minggu ? `_Minggu_${minggu}` : "";
+
+      return `${timestamp}_${prefix}${monthStr}${weekStr}`;
+    };
+
+    const wb = new Workbook();
+    const ws = wb.addWorksheet("Laporan Harian");
+
+    // Metadata
+    ws.addRow([`Nama: ${user?.nama || ""}`]).font = { bold: true };
+    ws.addRow([`Tanggal Export: ${exportDateFormatted}`]).font = { bold: true };
+    ws.addRow([`Rentang: ${range}`]).font = { bold: true };
+    ws.addRow([]);
+
+    // Header
+    const headers = [
+      "No",
+      "Tanggal",
+      "Tim",
+      "Kegiatan",
+      "Deskripsi",
+      "Capaian",
+      "Bukti Dukung",
+      "Catatan",
+    ];
+    const columnWidths = [3, 13, 15, 20, 30, 30, 20, 20];
+
+    const headerRow = ws.addRow(headers);
+    headerRow.font = { bold: true };
+    headerRow.eachCell((cell, i) => {
+      cell.alignment = {
+        vertical: "middle",
+        horizontal: "center",
+        wrapText: true,
+      };
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFDEEAF6" },
+      };
+      cell.border = {
+        top: { style: "thin" },
+        bottom: { style: "thin" },
+        left: { style: "thin" },
+        right: { style: "thin" },
+      };
+      ws.getColumn(i + 1).width = columnWidths[i];
+    });
+
+    // Urutkan berdasarkan tanggal lama ke baru
+    data.sort(
+      (a, b) => new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime()
+    );
+
+    // Data rows
     data.forEach((d: any, idx: number) => {
-      ws.addRow({
-        no: idx + 1,
-        tanggal: d.tanggal.toISOString().slice(0, 10),
-        tim: d.penugasan.kegiatan.team?.namaTim || "",
-        kegiatan: d.penugasan.kegiatan.namaKegiatan,
-        capaian: d.capaianKegiatan,
-        deskripsi: d.deskripsi || "",
-        bukti: d.buktiLink || "",
-        catatan: d.catatan || "",
+      const formattedDate = format(new Date(d.tanggal), "dd-MM-yyyy");
+      const row = ws.addRow([
+        idx + 1,
+        formattedDate,
+        d.penugasan.kegiatan.team?.namaTim || "",
+        d.penugasan.kegiatan.namaKegiatan,
+        d.deskripsi || "",
+        d.capaianKegiatan,
+        d.buktiLink || "",
+        d.catatan || "",
+      ]);
+
+      row.alignment = { vertical: "top", wrapText: true };
+      row.eachCell((cell) => {
+        cell.border = {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        };
       });
     });
 
-    return await wb.xlsx.writeBuffer();
+    return {
+      buffer: await wb.xlsx.writeBuffer(),
+      fileName: `${exportFileName()}.xlsx`,
+    };
   }
-}
-
 }

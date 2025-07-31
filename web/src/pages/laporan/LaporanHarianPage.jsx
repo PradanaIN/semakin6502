@@ -63,9 +63,15 @@ export default function LaporanHarianPage() {
     const firstOfMonth = new Date(year, monthIdx, 1);
     const monthEnd = new Date(year, monthIdx + 1, 0);
     const firstMonday = new Date(firstOfMonth);
-    firstMonday.setDate(firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7));
+    firstMonday.setDate(
+      firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
+    );
     const opts = [];
-    for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+    for (
+      let d = new Date(firstMonday);
+      d <= monthEnd;
+      d.setDate(d.getDate() + 7)
+    ) {
       opts.push(opts.length + 1);
     }
     setWeekOptions(opts);
@@ -76,7 +82,9 @@ export default function LaporanHarianPage() {
     try {
       setLoading(true);
       const isAdmin = user?.role === ROLES.ADMIN;
-      const url = isAdmin ? "/laporan-harian/all" : "/laporan-harian/mine/filter";
+      const url = isAdmin
+        ? "/laporan-harian/all"
+        : "/laporan-harian/mine/filter";
       const params = {};
       if (!isAdmin) {
         if (bulan) params.bulan = bulan;
@@ -116,7 +124,12 @@ export default function LaporanHarianPage() {
       const link = document.createElement("a");
       link.href = url;
       const idx = params.bulan ? parseInt(params.bulan, 10) : undefined;
-      const name = `${exportFileName("LaporanHarian", idx)}.xlsx`;
+      const name = `${exportFileName(
+        "LaporanHarian",
+        idx,
+        params.minggu
+      )}.xlsx`;
+
       link.setAttribute("download", name);
       document.body.appendChild(link);
       link.click();
@@ -127,8 +140,7 @@ export default function LaporanHarianPage() {
     }
   };
 
-
-const openExportModal = () => setShowExport(true);
+  const openExportModal = () => setShowExport(true);
   const handleExportConfirm = async (params) => {
     const check = {};
     if (params.tanggal) {
@@ -168,13 +180,20 @@ const openExportModal = () => setShowExport(true);
   const filtered = laporan.filter((l) => {
     const peg = l.pegawai?.nama?.toLowerCase() || "";
     const keg =
-      l.penugasan?.kegiatan?.namaKegiatan?.toLowerCase() || l.nama?.toLowerCase() || "";
+      l.penugasan?.kegiatan?.namaKegiatan?.toLowerCase() ||
+      l.nama?.toLowerCase() ||
+      "";
     const desc = l.deskripsi?.toLowerCase() || "";
     const cat = l.catatan?.toLowerCase() || "";
     const stat = l.status.toLowerCase();
     const txt = `${peg} ${keg} ${desc} ${cat} ${stat}`;
     return txt.includes(query.toLowerCase());
   });
+
+  const truncateText = (text, maxLength = 50) => {
+    if (!text) return "-";
+    return text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
+  };
 
   const paginated = filtered.slice(
     (currentPage - 1) * pageSize,
@@ -209,7 +228,15 @@ const openExportModal = () => setShowExport(true);
     {
       Header: "Deskripsi Kegiatan",
       accessor: (row) =>
-        row.penugasan?.kegiatan?.deskripsi || row.deskripsi || "-",
+        truncateText(
+          row.penugasan?.kegiatan?.deskripsi || row.deskripsi || "-"
+        ),
+      disableFilters: true,
+    },
+    {
+      Header: "Capaian Kegiatan",
+      accessor: (row) =>
+        truncateText(row.penugasan?.kegiatan?.capaian || row.capaian || "-"),
       disableFilters: true,
     },
     {
@@ -224,7 +251,10 @@ const openExportModal = () => setShowExport(true);
       Cell: ({ row }) =>
         row.original.buktiLink ? (
           <a href={row.original.buktiLink} target="_blank" rel="noreferrer">
-            <ExternalLink size={16} className="mx-auto text-blue-600 dark:text-blue-400" />
+            <ExternalLink
+              size={16}
+              className="mx-auto text-blue-600 dark:text-blue-400"
+            />
           </a>
         ) : (
           <Minus className="w-4 h-4 mx-auto text-gray-500" />
@@ -234,7 +264,7 @@ const openExportModal = () => setShowExport(true);
     },
     {
       Header: "Catatan",
-      accessor: (row) => row.catatan || "-",
+      accessor: (row) => truncateText(row.catatan || "-"),
       disableFilters: true,
     },
   ];
@@ -253,7 +283,8 @@ const openExportModal = () => setShowExport(true);
             ariaLabel="Cari"
           />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Month Picker */}
           <MonthYearPicker
             month={bulan}
             onMonthChange={(val) => {
@@ -261,13 +292,15 @@ const openExportModal = () => setShowExport(true);
               setCurrentPage(1);
             }}
           />
+
+          {/* Week Selector */}
           <select
             value={minggu}
             onChange={(e) => {
               setMinggu(e.target.value);
               setCurrentPage(1);
             }}
-            className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
+            className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
           >
             <option value="">Minggu</option>
             {weekOptions.map((m) => (
@@ -276,7 +309,12 @@ const openExportModal = () => setShowExport(true);
               </option>
             ))}
           </select>
-          <Button onClick={openExportModal} className="add-button" variant="primary">
+
+          {/* Export Button */}
+          <Button
+            onClick={openExportModal}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white transition duration-150 ease-in-out"
+          >
             <Download size={16} />
             <span className="hidden sm:inline">Export</span>
           </Button>
@@ -321,7 +359,9 @@ const openExportModal = () => setShowExport(true);
           </h3>
           <div className="space-y-2">
             <div>
-              <Label htmlFor="tanggal">Tanggal<span className="text-red-500">*</span></Label>
+              <Label htmlFor="tanggal">
+                Tanggal<span className="text-red-500">*</span>
+              </Label>
               <Input
                 id="tanggal"
                 type="date"
@@ -330,25 +370,37 @@ const openExportModal = () => setShowExport(true);
               />
             </div>
             <div>
-              <Label htmlFor="deskripsi">Deskripsi <span className="text-red-500">*</span></Label>
+              <Label htmlFor="deskripsi">
+                Deskripsi <span className="text-red-500">*</span>
+              </Label>
               <textarea
                 id="deskripsi"
                 value={form.deskripsi}
-                onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, deskripsi: e.target.value })
+                }
                 className="form-input"
               />
             </div>
             <div>
-              <Label htmlFor="status">Status<span className="text-red-500">*</span></Label>
+              <Label htmlFor="status">
+                Status<span className="text-red-500">*</span>
+              </Label>
               <select
                 id="status"
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
                 className="form-input"
               >
-                <option value={STATUS.BELUM}>{formatStatus(STATUS.BELUM)}</option>
-                <option value={STATUS.SEDANG_DIKERJAKAN}>{formatStatus(STATUS.SEDANG_DIKERJAKAN)}</option>
-                <option value={STATUS.SELESAI_DIKERJAKAN}>{formatStatus(STATUS.SELESAI_DIKERJAKAN)}</option>
+                <option value={STATUS.BELUM}>
+                  {formatStatus(STATUS.BELUM)}
+                </option>
+                <option value={STATUS.SEDANG_DIKERJAKAN}>
+                  {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
+                </option>
+                <option value={STATUS.SELESAI_DIKERJAKAN}>
+                  {formatStatus(STATUS.SELESAI_DIKERJAKAN)}
+                </option>
               </select>
             </div>
             {form.status === STATUS.SELESAI_DIKERJAKAN && (
@@ -358,7 +410,9 @@ const openExportModal = () => setShowExport(true);
                   id="buktiLink"
                   type="text"
                   value={form.buktiLink}
-                  onChange={(e) => setForm({ ...form, buktiLink: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, buktiLink: e.target.value })
+                  }
                 />
               </div>
             )}

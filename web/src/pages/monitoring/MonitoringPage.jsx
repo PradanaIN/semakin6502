@@ -22,21 +22,17 @@ export default function MonitoringPage() {
   const [lastUpdate, setLastUpdate] = useState("");
 
   const headings = {
-    harian: "Daftar Laporan Harian",
-    mingguan: "Capaian Mingguan Pegawai",
-    bulanan: "Capaian Bulanan Pegawai",
+    harian: "📅 Daftar Laporan Harian",
+    mingguan: "📈 Capaian Mingguan Pegawai",
+    bulanan: "📊 Capaian Bulanan Pegawai",
   };
 
   const { user } = useAuth();
 
-  // Fetch daftar tim jika admin/ketua/pimpinan
+  // Ambil daftar tim jika admin/ketua/pimpinan
   useEffect(() => {
     const fetchTeams = async () => {
-      if (
-        user?.role === ROLES.ADMIN ||
-        user?.role === ROLES.KETUA ||
-        user?.role === ROLES.PIMPINAN
-      ) {
+      if ([ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role)) {
         try {
           const res = await axios.get("/teams");
           setTeams(res.data);
@@ -48,19 +44,20 @@ export default function MonitoringPage() {
     fetchTeams();
   }, [user?.role]);
 
+  // Ambil waktu update terakhir
   useEffect(() => {
     const getUpdate = async () => {
       try {
-        const res = await axios.get('/monitoring/last-update');
+        const res = await axios.get("/monitoring/last-update");
         setLastUpdate(res.data.lastUpdate);
       } catch {
-        // ignore error
+        // abaikan error
       }
     };
     getUpdate();
   }, []);
 
-  // Generate minggu setiap bulan berubah
+  // Hitung awal minggu setiap kali bulan berubah
   useEffect(() => {
     const firstOfMonth = new Date(year, monthIndex, 1);
     const monthEnd = new Date(year, monthIndex + 1, 0);
@@ -79,15 +76,16 @@ export default function MonitoringPage() {
     }
     setWeekStarts(starts);
     if (weekIndex >= starts.length) setWeekIndex(0);
-  }, [monthIndex, year, weekIndex]);
+  }, [monthIndex, year]);
 
   return (
-    <div className="max-w-screen-xl mx-auto px-4 flex flex-col gap-4">
+    <div className="max-w-screen-xl mx-auto px-4 flex flex-col gap-4 pb-10">
       <TabNavigation activeTab={tab} onChange={setTab} />
 
-      <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow space-y-4">
-        <div className="flex flex-wrap justify-between items-start gap-4">
-          <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg space-y-6">
+        {/* Heading + Filter */}
+        <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white tracking-tight">
             {headings[tab]}
           </h2>
           <FilterToolbar
@@ -105,12 +103,15 @@ export default function MonitoringPage() {
             userRole={user?.role}
           />
         </div>
+
+        {/* Info terakhir diperbarui */}
         {lastUpdate && (
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Data terakhir diperbarui: {formatWita(lastUpdate)}
+          <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+            Terakhir diperbarui: {formatWita(lastUpdate)}
           </p>
         )}
 
+        {/* Isi tab */}
         <AnimatePresence mode="wait">
           <Motion.div
             key={tab}
