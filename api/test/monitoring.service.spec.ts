@@ -16,27 +16,27 @@ describe('MonitoringService aggregated', () => {
 
   it('harianAll aggregates and sorts by name', async () => {
     prisma.laporanHarian.findMany.mockResolvedValue([
-      { pegawaiId: 2, status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'B' } },
-      { pegawaiId: 1, status: STATUS.BELUM, pegawai: { nama: 'A' } },
-      { pegawaiId: 1, status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'A' } },
+      { pegawaiId: '2', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'B' } },
+      { pegawaiId: '1', status: STATUS.BELUM, pegawai: { nama: 'A' } },
+      { pegawaiId: '1', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'A' } },
     ]);
     const res = await service.harianAll('2024-05-01');
     expect(res).toEqual([
-      { userId: 1, nama: 'A', selesai: 1, total: 2, persen: 50 },
-      { userId: 2, nama: 'B', selesai: 1, total: 1, persen: 100 },
+      { userId: '1', nama: 'A', selesai: 1, total: 2, persen: 50 },
+      { userId: '2', nama: 'B', selesai: 1, total: 1, persen: 100 },
     ]);
   });
 
   it('mingguanAll aggregates and sorts', async () => {
     prisma.laporanHarian.findMany.mockResolvedValue([
-      { pegawaiId: 2, status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'B' } },
-      { pegawaiId: 1, status: STATUS.BELUM, pegawai: { nama: 'A' } },
-      { pegawaiId: 1, status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'A' } },
+      { pegawaiId: '2', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'B' } },
+      { pegawaiId: '1', status: STATUS.BELUM, pegawai: { nama: 'A' } },
+      { pegawaiId: '1', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'A' } },
     ]);
     const res = await service.mingguanAll('2024-05-01');
     expect(res).toEqual([
-      { userId: 1, nama: 'A', selesai: 1, total: 2, persen: 50 },
-      { userId: 2, nama: 'B', selesai: 1, total: 1, persen: 100 },
+      { userId: '1', nama: 'A', selesai: 1, total: 2, persen: 50 },
+      { userId: '2', nama: 'B', selesai: 1, total: 1, persen: 100 },
     ]);
   });
 
@@ -66,26 +66,26 @@ describe('MonitoringService aggregated', () => {
 
   it('bulananAll aggregates and passes bulan filter', async () => {
     prisma.penugasan.findMany.mockResolvedValue([
-      { pegawaiId: 2, bulan: '1', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'B' } },
-      { pegawaiId: 1, bulan: '1', status: STATUS.BELUM, pegawai: { nama: 'A' } },
-      { pegawaiId: 1, bulan: '1', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'A' } },
+      { pegawaiId: '2', bulan: '1', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'B' } },
+      { pegawaiId: '1', bulan: '1', status: STATUS.BELUM, pegawai: { nama: 'A' } },
+      { pegawaiId: '1', bulan: '1', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'A' } },
     ]);
-    const res = await service.bulananAll('2024', 3, '1');
+    const res = await service.bulananAll('2024', '3', '1');
     expect(prisma.penugasan.findMany).toHaveBeenCalledWith({
-      where: { tahun: 2024, bulan: '1', kegiatan: { teamId: 3 } },
+      where: { tahun: 2024, bulan: '1', kegiatan: { teamId: '3' } },
       include: { pegawai: true },
     });
     expect(res).toEqual([
-      { userId: 1, nama: 'A', selesai: 1, total: 2, persen: 50 },
-      { userId: 2, nama: 'B', selesai: 1, total: 1, persen: 100 },
+      { userId: '1', nama: 'A', selesai: 1, total: 2, persen: 50 },
+      { userId: '2', nama: 'B', selesai: 1, total: 1, persen: 100 },
     ]);
   });
 
   it('harianBulan groups by user and counts records', async () => {
     prisma.laporanHarian.findMany.mockResolvedValue([
-      { pegawaiId: 1, tanggal: new Date('2024-05-02'), pegawai: { nama: 'A' } },
-      { pegawaiId: 1, tanggal: new Date('2024-05-02'), pegawai: { nama: 'A' } },
-      { pegawaiId: 2, tanggal: new Date('2024-05-01'), pegawai: { nama: 'B' } },
+      { pegawaiId: '1', tanggal: new Date('2024-05-02'), pegawai: { nama: 'A' } },
+      { pegawaiId: '1', tanggal: new Date('2024-05-02'), pegawai: { nama: 'A' } },
+      { pegawaiId: '2', tanggal: new Date('2024-05-01'), pegawai: { nama: 'B' } },
     ]);
     const res = await service.harianBulan('2024-05-10');
     expect(res.map((u) => u.nama)).toEqual(['A', 'B']);
@@ -97,19 +97,19 @@ describe('MonitoringService aggregated', () => {
   it('mingguanBulan aggregates per week', async () => {
     prisma.laporanHarian.findMany.mockResolvedValue([
       {
-        pegawaiId: 1,
+        pegawaiId: '1',
         tanggal: new Date('2024-05-02'),
         status: STATUS.SELESAI_DIKERJAKAN,
         pegawai: { nama: 'A' },
       },
       {
-        pegawaiId: 1,
+        pegawaiId: '1',
         tanggal: new Date('2024-05-08'),
         status: STATUS.BELUM,
         pegawai: { nama: 'A' },
       },
       {
-        pegawaiId: 2,
+        pegawaiId: '2',
         tanggal: new Date('2024-05-15'),
         status: STATUS.SELESAI_DIKERJAKAN,
         pegawai: { nama: 'B' },
@@ -118,7 +118,7 @@ describe('MonitoringService aggregated', () => {
     const res = await service.mingguanBulan('2024-05-10');
     expect(res).toEqual([
       {
-        userId: 1,
+        userId: '1',
         nama: 'A',
         weeks: [
           { selesai: 1, total: 1, persen: 100 },
@@ -129,7 +129,7 @@ describe('MonitoringService aggregated', () => {
         ],
       },
       {
-        userId: 2,
+        userId: '2',
         nama: 'B',
         weeks: [
           { selesai: 0, total: 0, persen: 0 },
@@ -178,26 +178,26 @@ describe('MonitoringService aggregated', () => {
     expect(spy).toHaveBeenCalledTimes(12);
     expect(res[0]).toEqual({ bulan: 'Januari', persen: 67 });
 
-    const resUser = await service.bulanan('2024', undefined, 1);
+    const resUser = await service.bulanan('2024', undefined, '1');
     expect(resUser[0]).toEqual({ bulan: 'Januari', persen: 67 });
   });
 
   it('bulananMatrix aggregates per month', async () => {
     prisma.penugasan.findMany.mockResolvedValue([
       {
-        pegawaiId: 1,
+        pegawaiId: '1',
         bulan: '1',
         status: STATUS.SELESAI_DIKERJAKAN,
         pegawai: { nama: 'A' },
       },
       {
-        pegawaiId: 1,
+        pegawaiId: '1',
         bulan: '2',
         status: STATUS.BELUM,
         pegawai: { nama: 'A' },
       },
       {
-        pegawaiId: 2,
+        pegawaiId: '2',
         bulan: '1',
         status: STATUS.SELESAI_DIKERJAKAN,
         pegawai: { nama: 'B' },
@@ -208,7 +208,7 @@ describe('MonitoringService aggregated', () => {
     const zero = { selesai: 0, total: 0, persen: 0 };
     expect(res).toEqual([
       {
-        userId: 1,
+        userId: '1',
         nama: 'A',
         months: [
           { selesai: 1, total: 1, persen: 100 },
@@ -217,7 +217,7 @@ describe('MonitoringService aggregated', () => {
         ],
       },
       {
-        userId: 2,
+        userId: '2',
         nama: 'B',
         months: [
           { selesai: 1, total: 1, persen: 100 },
@@ -231,13 +231,13 @@ describe('MonitoringService aggregated', () => {
     jest.useFakeTimers().setSystemTime(new Date('2024-05-10'));
     prisma.user.findMany.mockResolvedValue([
       {
-        id: 1,
+        id: '1',
         nama: 'A',
         role: ROLES.ANGGOTA,
         laporan: [{ tanggal: new Date('2024-05-02') }],
       },
       {
-        id: 2,
+        id: '2',
         nama: 'B',
         role: ROLES.KETUA,
         laporan: [{ tanggal: new Date('2024-05-05') }],
@@ -247,10 +247,10 @@ describe('MonitoringService aggregated', () => {
     const res = await service.laporanTerlambat();
 
     expect(res.day7).toEqual([
-      { userId: 1, nama: 'A', lastDate: '2024-05-02' },
+      { userId: '1', nama: 'A', lastDate: '2024-05-02' },
     ]);
     expect(res.day3).toEqual([
-      { userId: 2, nama: 'B', lastDate: '2024-05-05' },
+      { userId: '2', nama: 'B', lastDate: '2024-05-05' },
     ]);
     expect(res.day1).toEqual([]);
     jest.useRealTimers();
@@ -258,11 +258,11 @@ describe('MonitoringService aggregated', () => {
 
   it('laporanTerlambat merges role filter with team filter', async () => {
     prisma.user.findMany.mockResolvedValue([]);
-    await service.laporanTerlambat(1);
+    await service.laporanTerlambat('1');
     expect(prisma.user.findMany).toHaveBeenCalledWith({
       where: {
         NOT: { role: { in: [ROLES.ADMIN, ROLES.PIMPINAN] } },
-        members: { some: { teamId: 1 } },
+        members: { some: { teamId: '1' } },
       },
       include: { laporan: { orderBy: { tanggal: 'desc' }, take: 1 } },
       orderBy: { nama: 'asc' },

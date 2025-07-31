@@ -15,9 +15,9 @@ describe('AuthController login', () => {
 
   it('sets cookie and returns user', async () => {
     const res: any = { cookie: jest.fn() };
-    service.login.mockResolvedValue({ access_token: 'tok', user: { id: 1 } });
+    service.login.mockResolvedValue({ access_token: 'tok', user: { id: '1' } });
     const result = await controller.login({ identifier: 'a', password: 'b' } as any, res);
-    expect(result).toEqual({ user: { id: 1 } });
+    expect(result).toEqual({ user: { id: '1' } });
     expect(res.cookie).toHaveBeenCalledWith('token', 'tok', expect.any(Object));
   });
 
@@ -39,10 +39,10 @@ describe('AuthController logout', () => {
 
 describe('AuthController me', () => {
   it('returns current user', async () => {
-    const req: any = { user: { userId: 1 } };
-    service.me.mockResolvedValue({ id: 1 });
+    const req: any = { user: { userId: '1' } };
+    service.me.mockResolvedValue({ id: '1' });
     const result = await controller.me(req);
-    expect(service.me).toHaveBeenCalledWith(1);
-    expect(result).toEqual({ user: { id: 1 } });
+    expect(service.me).toHaveBeenCalledWith('1');
+    expect(result).toEqual({ user: { id: '1' } });
   });
 });

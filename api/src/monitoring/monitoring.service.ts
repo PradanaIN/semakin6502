@@ -17,7 +17,7 @@ export class MonitoringService {
     });
     return latest?.tanggal || null;
   }
-  async harian(tanggal: string, teamId?: number, userId?: number) {
+  async harian(tanggal: string, teamId?: string, userId?: string) {
     const base = new Date(tanggal);
     if (isNaN(base.getTime()))
       throw new BadRequestException("tanggal tidak valid");
@@ -56,7 +56,7 @@ export class MonitoringService {
     return result;
   }
 
-  async mingguan(minggu: string, teamId?: number, userId?: number) {
+  async mingguan(minggu: string, teamId?: string, userId?: string) {
     const start = new Date(minggu);
     const offset = (start.getDay() + 6) % 7; // days since Monday
     start.setDate(start.getDate() - offset);
@@ -154,7 +154,7 @@ export class MonitoringService {
     };
   }
 
-  async bulanan(year: string, teamId?: number, userId?: number) {
+  async bulanan(year: string, teamId?: string, userId?: string) {
     const yr = parseInt(year, 10);
     if (isNaN(yr)) throw new BadRequestException("year tidak valid");
 
@@ -181,7 +181,7 @@ export class MonitoringService {
     return results;
   }
 
-  async harianBulan(tanggal: string, teamId?: number) {
+  async harianBulan(tanggal: string, teamId?: string) {
     const base = new Date(tanggal);
     if (isNaN(base.getTime()))
       throw new BadRequestException("tanggal tidak valid");
@@ -208,7 +208,7 @@ export class MonitoringService {
     );
 
     const byUser: Record<
-      number,
+      string,
       { nama: string; counts: Record<string, number> }
     > = {};
     for (const r of records) {
@@ -231,12 +231,12 @@ export class MonitoringService {
             count: v.counts[dateStr] || 0,
           });
         }
-        return { userId: Number(id), nama: v.nama, detail };
+        return { userId: id, nama: v.nama, detail };
       })
       .sort((a, b) => a.nama.localeCompare(b.nama));
   }
 
-  async harianAll(tanggal: string, teamId?: number) {
+  async harianAll(tanggal: string, teamId?: string) {
     const date = new Date(tanggal);
     if (isNaN(date.getTime()))
       throw new BadRequestException("tanggal tidak valid");
@@ -257,7 +257,7 @@ export class MonitoringService {
     );
 
     const byUser: Record<
-      number,
+      string,
       { nama: string; selesai: number; total: number }
     > = {};
 
@@ -270,7 +270,7 @@ export class MonitoringService {
 
     return Object.entries(byUser)
       .map(([id, v]) => ({
-        userId: Number(id),
+        userId: id,
         nama: v.nama,
         selesai: v.selesai,
         total: v.total,
@@ -279,7 +279,7 @@ export class MonitoringService {
       .sort((a, b) => a.nama.localeCompare(b.nama));
   }
 
-  async mingguanAll(minggu: string, teamId?: number) {
+  async mingguanAll(minggu: string, teamId?: string) {
     const start = new Date(minggu);
     const offset = (start.getDay() + 6) % 7;
     start.setDate(start.getDate() - offset);
@@ -305,7 +305,7 @@ export class MonitoringService {
     );
 
     const byUser: Record<
-      number,
+      string,
       { nama: string; selesai: number; total: number }
     > = {};
 
@@ -318,7 +318,7 @@ export class MonitoringService {
 
     return Object.entries(byUser)
       .map(([id, v]) => ({
-        userId: Number(id),
+        userId: id,
         nama: v.nama,
         selesai: v.selesai,
         total: v.total,
@@ -327,7 +327,7 @@ export class MonitoringService {
       .sort((a, b) => a.nama.localeCompare(b.nama));
   }
 
-  async mingguanBulan(tanggal: string, teamId?: number) {
+  async mingguanBulan(tanggal: string, teamId?: string) {
     const base = new Date(tanggal);
     if (isNaN(base.getTime()))
       throw new BadRequestException("tanggal tidak valid");
@@ -361,7 +361,7 @@ export class MonitoringService {
     );
 
     const byUser: Record<
-      number,
+      string,
       {
         nama: string;
         perWeek: Record<number, { selesai: number; total: number }>;
@@ -388,15 +388,15 @@ export class MonitoringService {
           const persen = w.total > 0 ? 100 : 0;
           return { selesai: w.selesai, total: w.total, persen };
         });
-        return { userId: Number(id), nama: v.nama, weeks };
+        return { userId: id, nama: v.nama, weeks };
       })
       .sort((a, b) => a.nama.localeCompare(b.nama));
   }
 
   async penugasanMinggu(
     minggu: string,
-    teamId?: number,
-    userId?: number,
+    teamId?: string,
+    userId?: string,
   ) {
     const start = new Date(minggu);
     const offset = (start.getDay() + 6) % 7;
@@ -430,8 +430,8 @@ export class MonitoringService {
 
   async penugasanBulan(
     tanggal: string,
-    teamId?: number,
-    userId?: number,
+    teamId?: string,
+    userId?: string,
   ) {
     const base = new Date(tanggal);
     if (isNaN(base.getTime()))
@@ -477,7 +477,7 @@ export class MonitoringService {
     });
   }
 
-  async bulananAll(year: string, teamId?: number, bulan?: string) {
+  async bulananAll(year: string, teamId?: string, bulan?: string) {
     const yr = parseInt(year, 10);
     if (isNaN(yr)) throw new BadRequestException("year tidak valid");
 
@@ -500,7 +500,7 @@ export class MonitoringService {
     );
     
     const byUser: Record<
-      number,
+      string,
       { nama: string; selesai: number; total: number }
     > = {};
 
@@ -513,7 +513,7 @@ export class MonitoringService {
 
     return Object.entries(byUser)
       .map(([id, v]) => ({
-        userId: Number(id),
+        userId: id,
         nama: v.nama,
         selesai: v.selesai,
         total: v.total,
@@ -522,7 +522,7 @@ export class MonitoringService {
       .sort((a, b) => a.nama.localeCompare(b.nama));
   }
 
-  async bulananMatrix(year: string, teamId?: number) {
+  async bulananMatrix(year: string, teamId?: string) {
     const yr = parseInt(year, 10);
     if (isNaN(yr)) throw new BadRequestException("year tidak valid");
 
@@ -539,7 +539,7 @@ export class MonitoringService {
     );
 
     const byUser: Record<
-      number,
+      string,
       { nama: string; perMonth: Record<number, { selesai: number; total: number }> }
     > = {};
 
@@ -561,12 +561,12 @@ export class MonitoringService {
           const persen = m.total ? Math.round((m.selesai / m.total) * 100) : 0;
           return { selesai: m.selesai, total: m.total, persen };
         });
-        return { userId: Number(id), nama: v.nama, months };
+        return { userId: id, nama: v.nama, months };
       })
       .sort((a, b) => a.nama.localeCompare(b.nama));
   }
 
-  async laporanTerlambat(teamId?: number) {
+  async laporanTerlambat(teamId?: string) {
     const whereUser: any = {
       NOT: { role: { in: [ROLES.ADMIN, ROLES.PIMPINAN] } },
     };
@@ -583,7 +583,7 @@ export class MonitoringService {
 
     const result = { day1: [], day3: [], day7: [] } as Record<
       'day1' | 'day3' | 'day7',
-      { userId: number; nama: string; lastDate: string | null }[]
+      { userId: string; nama: string; lastDate: string | null }[]
     >;
 
     for (const u of users) {
