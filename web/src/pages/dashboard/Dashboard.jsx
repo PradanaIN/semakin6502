@@ -84,8 +84,8 @@ const Dashboard = () => {
 
         const [dailyRes, weeklyArray, monthlyRes, tugasArray] =
           await Promise.all([
-            axios.get("/monitoring/harian", {
-              params: { tanggal, ...filters },
+            axios.get("/monitoring/harian/bulan", {
+              params: { tanggal: formatISO(monthStart), ...filters },
             }),
             Promise.all(weeklyPromises),
             axios.get("/monitoring/bulanan", {
