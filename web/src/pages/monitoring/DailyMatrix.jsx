@@ -8,7 +8,7 @@ export const DailyMatrixRow = ({ user, boxClass, currentUser }) => {
 
   return (
     <tr
-      className={`text-center text-sm transition-colors duration-200 ${
+      className={`text-center transition-colors duration-200 border-b border-gray-200 dark:border-gray-700 ${
         isCurrentUser
           ? "bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-400"
           : "hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -24,7 +24,7 @@ export const DailyMatrixRow = ({ user, boxClass, currentUser }) => {
         <td
           key={i}
           title={day.count ? `${day.count} laporan` : ""}
-          className={`px-2 py-1 border border-gray-300 dark:border-gray-600 ${boxClass(
+          className={`px-4 py-2 border border-gray-300 dark:border-gray-600 ${boxClass(
             day
           )} truncate`}
         >
@@ -63,17 +63,17 @@ const DailyMatrix = ({ data = [] }) => {
   const dayCount = data[0].detail.length;
 
   return (
-    <div className="overflow-x-auto max-h-[65vh] overflow-y-auto w-full rounded-md shadow border border-gray-200 dark:border-gray-700">
-      <table className="min-w-[1200px] w-full table-fixed text-sm">
-        <thead className="sticky top-0 bg-white dark:bg-gray-900 z-20 border-b border-gray-300 dark:border-gray-700">
+    <div className="overflow-x-auto max-h-[65vh] overflow-y-auto w-full rounded-md shadow border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+      <table className="min-w-[1000px] w-full table-fixed text-sm">
+        <thead className="sticky top-0 bg-gray-50 dark:bg-gray-800 z-20 border-b border-gray-300 dark:border-gray-700">
           <tr>
-            <th className="sticky left-0 z-30 bg-white dark:bg-gray-900 px-4 py-2 text-left font-bold border-r border-gray-300 dark:border-gray-700 w-48 md:w-60">
+            <th className="sticky left-0 z-30 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-left font-bold border-r border-gray-300 dark:border-gray-700 w-48 md:w-60">
               Nama
             </th>
             {Array.from({ length: dayCount }, (_, i) => (
               <th
                 key={i}
-                className="px-2 py-1 border-r border-gray-300 dark:border-gray-700 text-center font-medium"
+                className="px-4 py-2 border-r border-gray-300 dark:border-gray-700 text-center font-medium"
               >
                 {i + 1}
               </th>

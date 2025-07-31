@@ -9,20 +9,20 @@ const WeeklyProgressTable = ({ data = [] }) => {
   const progressColor = getProgressColor;
 
   return (
-    <div className="overflow-x-auto max-h-[65vh] w-full mt-4 rounded-md border border-gray-200 dark:border-gray-700 shadow">
-      <table className="min-w-[800px] w-full table-fixed text-sm border-collapse">
-        <thead className="sticky top-0 bg-white dark:bg-gray-900 z-20 border-b border-gray-300 dark:border-gray-700">
+    <div className="overflow-x-auto max-h-[65vh] w-full mt-4 rounded-md border border-gray-200 dark:border-gray-700 shadow bg-white dark:bg-gray-900">
+      <table className="min-w-[1000px] w-full table-fixed text-sm border-collapse">
+        <thead className="sticky top-0 bg-gray-50 dark:bg-gray-800 z-20 border-b border-gray-300 dark:border-gray-700">
           <tr>
-            <th className="sticky left-0 z-30 bg-white dark:bg-gray-900 p-3 text-left font-bold border-r border-gray-300 dark:border-gray-700 w-48 md:w-60">
+            <th className="sticky left-0 z-30 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-left font-bold border-r border-gray-300 dark:border-gray-700 w-48 md:w-60">
               Nama
             </th>
-            <th className="p-3 border-r text-center font-semibold">
+            <th className="px-4 py-2 border-r text-center font-semibold">
               Tugas Selesai
             </th>
-            <th className="p-3 border-r text-center font-semibold">
+            <th className="px-4 py-2 border-r text-center font-semibold">
               Total Tugas
             </th>
-            <th className="p-3 border-r text-center font-semibold">Capaian</th>
+            <th className="px-4 py-2 border-r text-center font-semibold">Capaian</th>
           </tr>
         </thead>
         <tbody>
@@ -34,7 +34,7 @@ const WeeklyProgressTable = ({ data = [] }) => {
             return (
               <tr
                 key={u.userId}
-                className={`text-center transition-colors duration-200 ${
+                className={`text-center transition-colors duration-200 border-b border-gray-200 dark:border-gray-700 ${
                   isCurrentUser
                     ? "bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-400"
                     : "hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -46,9 +46,9 @@ const WeeklyProgressTable = ({ data = [] }) => {
                 >
                   {u.nama}
                 </td>
-                <td className="p-2 border-r">{u.selesai}</td>
-                <td className="p-2 border-r">{u.total}</td>
-                <td className="p-2 border-r space-y-1">
+                <td className="px-4 py-2 border-r">{u.selesai}</td>
+                <td className="px-4 py-2 border-r">{u.total}</td>
+                <td className="px-4 py-2 border-r space-y-1">
                   <div
                     role="progressbar"
                     aria-valuenow={u.persen}
