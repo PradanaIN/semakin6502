@@ -1,13 +1,13 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import MonitoringTabs from "../pages/dashboard/components/MonitoringTabs";
 
-jest.mock("../components/dashboard/DailyOverview", () => () => (
+jest.mock("../pages/dashboard/components/DailyOverview", () => () => (
   <div>Daily content</div>
 ));
-jest.mock("../components/dashboard/WeeklyOverview", () => () => (
+jest.mock("../pages/dashboard/components/WeeklyOverview", () => () => (
   <div>Weekly content</div>
 ));
-jest.mock("../components/dashboard/MonthlyOverview", () => () => (
+jest.mock("../pages/dashboard/components/MonthlyOverview", () => () => (
   <div>Monthly content</div>
 ));
 

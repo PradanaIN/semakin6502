@@ -20,5 +20,7 @@ test('displays last update note', async () => {
     return Promise.resolve({ data: [] });
   });
   render(<MonitoringPage />);
-  expect(await screen.findByText(/Data terakhir diperbarui/i)).toBeInTheDocument();
+  expect(
+    await screen.findByText(/Terakhir diperbarui/i)
+  ).toBeInTheDocument();
 });
