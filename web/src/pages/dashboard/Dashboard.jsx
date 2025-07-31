@@ -1,5 +1,5 @@
-import MonitoringTabs from "../../components/dashboard/MonitoringTabs";
-import StatsSummary from "../../components/dashboard/StatsSummary";
+import MonitoringTabs from "./components/MonitoringTabs";
+import StatsSummary from "./components/StatsSummary";
 import { useAuth } from "../auth/useAuth";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -8,6 +8,28 @@ import Button from "../../components/ui/Button";
 import { handleAxiosError } from "../../utils/alerts";
 import Loading from "../../components/Loading";
 import { Link } from "react-router-dom";
+
+const formatISO = (d) => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+
+const getWeekStarts = (month, year) => {
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month + 1, 0);
+  const weeks = [];
+
+  const start = new Date(first);
+  start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+
+  for (let d = new Date(start); d <= last; d.setDate(d.getDate() + 7)) {
+    weeks.push(new Date(d));
+  }
+
+  return weeks;
+};
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -22,33 +44,14 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchAllData = async () => {
-      const formatISO = (d) => {
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, "0");
-        const day = String(d.getDate()).padStart(2, "0");
-        return `${y}-${m}-${day}`;
-      };
-
       const today = new Date();
       const tanggal = formatISO(today);
       const year = today.getFullYear();
       const month = monthIndex;
-
-      // determine start dates for each week in the month
-      const firstOfMonth = new Date(year, month, 1);
+      const monthStart = new Date(year, month, 1);
       const monthEnd = new Date(year, month + 1, 0);
-      const firstMonday = new Date(firstOfMonth);
-      firstMonday.setDate(
-        firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
-      );
-      const weekStarts = [];
-      for (
-        let d = new Date(firstMonday);
-        d <= monthEnd;
-        d.setDate(d.getDate() + 7)
-      ) {
-        weekStarts.push(new Date(d));
-      }
+
+      const weekStarts = getWeekStarts(month, year);
 
       let currentIndex = weekStarts.findIndex((start) => {
         const end = new Date(start);
@@ -59,12 +62,9 @@ const Dashboard = () => {
 
       try {
         const filters = {};
-        if (user?.role === ROLES.ANGGOTA) {
-          filters.userId = user.id;
-        }
-        if (user?.role === ROLES.KETUA && user?.teamId) {
+        if (user?.role === ROLES.ANGGOTA) filters.userId = user.id;
+        if (user?.role === ROLES.KETUA && user?.teamId)
           filters.teamId = user.teamId;
-        }
 
         const weeklyPromises = weekStarts.map((d) =>
           axios
@@ -82,18 +82,19 @@ const Dashboard = () => {
             .then((res) => res.data)
         );
 
-        const [dailyRes, weeklyArray, monthlyRes, tugasArray] = await Promise.all([
-          axios.get("/monitoring/harian", { params: { tanggal, ...filters } }),
-          Promise.all(weeklyPromises),
-          axios.get("/monitoring/bulanan", {
-            params: { year: String(year), ...filters },
-          }),
-          Promise.all(tugasPromises),
-        ]);
+        const [dailyRes, weeklyArray, monthlyRes, tugasArray] =
+          await Promise.all([
+            axios.get("/monitoring/harian", {
+              params: { tanggal, ...filters },
+            }),
+            Promise.all(weeklyPromises),
+            axios.get("/monitoring/bulanan", {
+              params: { year: String(year), ...filters },
+            }),
+            Promise.all(tugasPromises),
+          ]);
 
-        const monthStart = new Date(year, month, 1);
-        const monthEnd = new Date(year, month + 1, 0);
-        const normalized = weeklyArray.map((w, i) => {
+        const normalizedWeeks = weeklyArray.map((w, i) => {
           const [sIso, eIso] = w.tanggal.split(" - ");
           const startDate = new Date(sIso);
           const endDate = new Date(eIso);
@@ -102,15 +103,18 @@ const Dashboard = () => {
           const tanggal = `${formatISO(displayStart)} - ${formatISO(
             displayEnd
           )}`;
+
           const detail = w.detail.filter((d) => {
             const t = new Date(d.tanggal);
             return t >= monthStart && t <= monthEnd;
           });
+
           const totalSelesai = detail.reduce((sum, d) => sum + d.selesai, 0);
           const totalTugas = detail.reduce((sum, d) => sum + d.total, 0);
           const totalProgress = totalTugas
             ? Math.round((totalSelesai / totalTugas) * 100)
             : 0;
+
           return {
             ...w,
             minggu: i + 1,
@@ -124,9 +128,10 @@ const Dashboard = () => {
         });
 
         setDailyData(dailyRes.data);
-        const todayRec = dailyRes.data.find((d) => d.tanggal === tanggal);
-        setHasReportedToday(!!todayRec?.adaKegiatan);
-        setWeeklyList(normalized);
+        setHasReportedToday(
+          !!dailyRes.data.find((d) => d.tanggal === tanggal)?.adaKegiatan
+        );
+        setWeeklyList(normalizedWeeks);
         setWeekIndex(currentIndex);
         setMonthlyData(monthlyRes.data);
       } catch (error) {
@@ -142,29 +147,28 @@ const Dashboard = () => {
     fetchAllData();
   }, [user?.id, user?.role, user?.teamId, monthIndex]);
 
-  if (loading) {
-    return <Loading fullScreen />;
-  }
-
-  if (errorMsg) {
+  if (loading) return <Loading fullScreen />;
+  if (errorMsg)
     return (
       <div className="p-6 text-center">
         <p className="text-red-500 dark:text-red-400">{errorMsg}</p>
       </div>
     );
-  }
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-6">
+    <div className="w-full max-w-7xl mx-auto space-y-6 animate-fade-in">
       <h1 className="text-3xl font-bold">
         Selamat datang, {user?.nama || "Pengguna"}! 👋
       </h1>
 
       {!hasReportedToday && (
-        <div className="bg-yellow-50 dark:bg-yellow-900 p-6 rounded-xl shadow text-center">
-          <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-200 mb-3">
-            Hari ini Anda belum melakukan laporan kegiatan harian Anda!
+        <div className="bg-yellow-50 dark:bg-yellow-900 border border-yellow-300 dark:border-yellow-700 p-6 rounded-xl shadow text-center animate-pulse">
+          <h2 className="text-lg sm:text-xl font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
+            Anda belum mengisi laporan kegiatan harian hari ini.
           </h2>
+          <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-4">
+            Ayo segera lengkapi agar progres Anda tetap tercatat.
+          </p>
           <Link to="/tugas-mingguan">
             <Button variant="primary" className="font-semibold w-fit mx-auto">
               Isi Laporan Sekarang

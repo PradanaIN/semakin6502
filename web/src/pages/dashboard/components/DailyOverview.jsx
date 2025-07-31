@@ -1,6 +1,6 @@
-import { getHolidays } from "../../utils/holidays";
-import Legend from "../ui/Legend";
-import months from "../../utils/months";
+import { getHolidays } from "../../../utils/holidays";
+import Legend from "../../../components/ui/Legend";
+import months from "../../../utils/months";
 
 const DailyOverview = ({ data = [] }) => {
   if (!Array.isArray(data)) {
@@ -27,17 +27,19 @@ const DailyOverview = ({ data = [] }) => {
   const isHoliday = (iso) => HOLIDAYS.includes(iso);
 
   const boxClass = (day) => {
+    const base = "transition-all duration-200 border-2 shadow-sm";
     if (day.adaKegiatan) {
-      return "bg-green-200 border-green-400 dark:bg-green-700 dark:border-green-500";
+      return `${base} bg-green-100 border-green-500 dark:bg-green-800 dark:border-green-400`;
     }
     if (isWeekend(day.tanggal) || isHoliday(day.tanggal)) {
-      return "bg-blue-200 border-blue-400 dark:bg-blue-700 dark:border-blue-500";
+      return `${base} bg-blue-100 border-blue-400 dark:bg-blue-800 dark:border-blue-300`;
     }
     if (day.tanggal < today) {
-      return "bg-yellow-200 border-yellow-400 dark:bg-yellow-700 dark:border-yellow-500";
+      return `${base} bg-yellow-100 border-yellow-400 dark:bg-yellow-800 dark:border-yellow-500`;
     }
-    return "bg-gray-100 dark:bg-gray-700";
+    return `${base} bg-gray-50 border-gray-300 dark:bg-gray-700 dark:border-gray-600`;
   };
+
   return (
     <div>
       <h2 className="text-lg font-semibold mb-3 text-blue-600 dark:text-blue-400">
@@ -53,17 +55,24 @@ const DailyOverview = ({ data = [] }) => {
           return (
             <div
               key={day.tanggal}
-              className={`p-3 rounded-lg text-center text-sm font-medium border ${boxClass(
+              className={`p-3 rounded-xl text-center text-sm font-medium ${boxClass(
                 day
               )}`}
             >
-              <div className="text-gray-800 dark:text-gray-100">
+              <div className="text-gray-900 dark:text-gray-100 font-semibold">
                 {dayName}, {formatDate(day.tanggal)}
               </div>
+
               {weekend && (
-                <div className="text-xs text-blue-600 dark:text-blue-300 mt-1">
-                  {isHoliday(day.tanggal) ? "Hari Libur" : "Akhir Pekan"}
-                </div>
+                <div className="text-xs mt-1 font-medium text-blue-600 dark:text-blue-300"></div>
+              )}
+
+              {!weekend && !day.adaKegiatan && day.tanggal < today && (
+                <div className="text-xs mt-1 font-medium text-yellow-700 dark:text-yellow-300"></div>
+              )}
+
+              {day.adaKegiatan && (
+                <div className="text-xs mt-1 font-medium text-green-700 dark:text-green-200"></div>
               )}
             </div>
           );

@@ -7,7 +7,7 @@ export default function Legend({ className = "" }) {
     >
       <div className="flex items-center gap-1">
         <span className="inline-block w-3 h-3 bg-green-400 rounded-sm"></span>
-        Ada Tugas
+        Ada Laporan
       </div>
       <div className="flex items-center gap-1">
         <span className="inline-block w-3 h-3 bg-yellow-400 rounded-sm"></span>

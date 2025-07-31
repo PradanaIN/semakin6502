@@ -1,11 +1,17 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import MonitoringTabs from '../components/dashboard/MonitoringTabs';
+import { render, screen, fireEvent } from "@testing-library/react";
+import MonitoringTabs from "../pages/dashboard/components/MonitoringTabs";
 
-jest.mock('../components/dashboard/DailyOverview', () => () => <div>Daily content</div>);
-jest.mock('../components/dashboard/WeeklyOverview', () => () => <div>Weekly content</div>);
-jest.mock('../components/dashboard/MonthlyOverview', () => () => <div>Monthly content</div>);
+jest.mock("../components/dashboard/DailyOverview", () => () => (
+  <div>Daily content</div>
+));
+jest.mock("../components/dashboard/WeeklyOverview", () => () => (
+  <div>Weekly content</div>
+));
+jest.mock("../components/dashboard/MonthlyOverview", () => () => (
+  <div>Monthly content</div>
+));
 
-test('switches between monitoring tabs', () => {
+test("switches between monitoring tabs", () => {
   render(
     <MonitoringTabs
       dailyData={[]}
@@ -21,9 +27,9 @@ test('switches between monitoring tabs', () => {
   // default tab
   expect(screen.getByText(/Daily content/i)).toBeInTheDocument();
 
-  fireEvent.click(screen.getByRole('tab', { name: /mingguan/i }));
+  fireEvent.click(screen.getByRole("tab", { name: /mingguan/i }));
   expect(screen.getByText(/Weekly content/i)).toBeInTheDocument();
 
-  fireEvent.click(screen.getByRole('tab', { name: /bulanan/i }));
+  fireEvent.click(screen.getByRole("tab", { name: /bulanan/i }));
   expect(screen.getByText(/Monthly content/i)).toBeInTheDocument();
 });
