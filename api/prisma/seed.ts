@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { hashPassword } from "../src/common/hash";
 import { STATUS } from "../src/common/status.constants";
 import { getHolidays } from "../src/utils/holidays";
+import { ulid } from "ulid";
 
 const prisma = new PrismaClient();
 
@@ -249,10 +250,10 @@ const roleMap: Record<string, string> = {
 async function main() {
   await prisma.role.createMany({
     data: [
-      { name: "admin" },
-      { name: "pimpinan" },
-      { name: "ketua" },
-      { name: "anggota" },
+      { id: ulid(), name: "admin" },
+      { id: ulid(), name: "pimpinan" },
+      { id: ulid(), name: "ketua" },
+      { id: ulid(), name: "anggota" },
     ],
     skipDuplicates: true,
   });
@@ -261,6 +262,7 @@ async function main() {
     where: { email: "admin@bps.go.id" },
     update: {},
     create: {
+      id: ulid(),
       nama: "Admin Utama",
       email: "admin@bps.go.id",
       username: "admin",
@@ -271,7 +273,7 @@ async function main() {
 
   const teamNames = Array.from(new Set(rawUsers.map((u) => u.team)));
   await prisma.team.createMany({
-    data: teamNames.map((n) => ({ namaTim: n })),
+    data: teamNames.map((n) => ({ id: ulid(), namaTim: n })),
     skipDuplicates: true,
   });
 
@@ -392,7 +394,7 @@ async function main() {
       });
       if (!existing) {
         await prisma.masterKegiatan.create({
-          data: { teamId, namaKegiatan: nama },
+          data: { id: ulid(), teamId, namaKegiatan: nama },
         });
       }
     }
@@ -405,6 +407,7 @@ async function main() {
       where: { email: u.email },
       update: {},
       create: {
+        id: ulid(),
         nama: u.nama,
         email: u.email,
         username: u.username,
@@ -416,6 +419,7 @@ async function main() {
     const teamId = teamMap.get(u.team);
     if (teamId) {
       memberRows.push({
+        id: ulid(),
         userId: user.id,
         teamId,
         isLeader: role !== "anggota",
@@ -434,7 +438,7 @@ async function main() {
   ];
 
   const members = await prisma.member.findMany({ include: { user: true } });
-  const leaderByTeam = new Map<number, number>();
+  const leaderByTeam = new Map<string, string>();
   for (const m of members) {
     if (m.isLeader) leaderByTeam.set(m.teamId, m.userId);
   }
@@ -454,7 +458,7 @@ async function main() {
     if (!masters.length) continue;
 
     for (let i = 0; i < sampleDates.length; i++) {
-      const k = masters[i % masters.length];
+      const k = masters[randomInt(0, masters.length - 1)];
       const date = sampleDates[i];
       const status =
         i === 0
@@ -463,6 +467,7 @@ async function main() {
           ? STATUS.SEDANG_DIKERJAKAN
           : STATUS.SELESAI_DIKERJAKAN;
       tambahanRows.push({
+        id: ulid(),
         nama: k.namaKegiatan,
         tanggal: date.toISOString(),
         status,
@@ -497,8 +502,9 @@ async function main() {
       for (let w = 1; w <= maxWeeks; w++) {
         const taskCount = randomInt(5, 7);
         for (let i = 0; i < taskCount; i++) {
-          const k = masters[(w * i + i) % masters.length];
+          const k = masters[randomInt(0, masters.length - 1)];
           penugasanRows.push({
+            id: ulid(),
             kegiatanId: k.id,
             pegawaiId: m.userId,
             creatorId: leaderByTeam.get(m.teamId) || m.userId,
@@ -527,7 +533,7 @@ async function main() {
 
   if (penugasans.length) {
     const laporanRows: any[] = [];
-    const selesaiIds = new Set<number>();
+    const selesaiIds = new Set<string>();
     const holidays = new Set(getHolidays(2025));
 
     for (const m of members) {
@@ -553,8 +559,9 @@ async function main() {
 
             const laporanCount = randomInt(1, 3);
             for (let i = 0; i < laporanCount; i++) {
-              const p = tugas[(d + i) % tugas.length];
+              const p = tugas[randomInt(0, tugas.length - 1)];
               laporanRows.push({
+                id: ulid(),
                 penugasanId: p.id,
                 pegawaiId: m.userId,
                 tanggal: date.toISOString(),
@@ -626,6 +633,7 @@ async function main() {
 
       await prisma.laporanHarian.create({
         data: {
+          id: ulid(),
           penugasanId: penugasan.id,
           pegawaiId: m.userId,
           tanggal: tanggal.toISOString(),
