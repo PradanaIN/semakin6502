@@ -182,10 +182,12 @@ export class PenugasanService {
     });
     if (!existing) throw new NotFoundException("not found");
     if (role !== ROLES.ADMIN) {
-      const leader = await this.prisma.member.findFirst({
-        where: { teamId: existing.kegiatan.teamId, userId, isLeader: true },
-      });
-      if (!leader) throw new ForbiddenException("bukan ketua tim kegiatan ini");
+      if (existing.pegawaiId !== userId) {
+        const leader = await this.prisma.member.findFirst({
+          where: { teamId: existing.kegiatan.teamId, userId, isLeader: true },
+        });
+        if (!leader) throw new ForbiddenException("bukan penugasan anda");
+      }
     }
     return this.prisma.penugasan.update({
       where: { id },
@@ -210,13 +212,15 @@ export class PenugasanService {
     });
     if (!existing) throw new NotFoundException("not found");
     if (role !== ROLES.ADMIN) {
-      const leader = await this.prisma.member.findFirst({
-        where: { teamId: existing.kegiatan.teamId, userId, isLeader: true },
-      });
-      if (!leader)
-        throw new ForbiddenException(
-          "Hanya admin atau ketua tim yang dapat menghapus penugasan"
-        );
+      if (existing.pegawaiId !== userId) {
+        const leader = await this.prisma.member.findFirst({
+          where: { teamId: existing.kegiatan.teamId, userId, isLeader: true },
+        });
+        if (!leader)
+          throw new ForbiddenException(
+            "Hanya admin atau ketua tim yang dapat menghapus penugasan"
+          );
+      }
     }
     const count = await this.prisma.laporanHarian.count({
       where: { penugasanId: id },
