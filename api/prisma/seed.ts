@@ -6,7 +6,7 @@ import { getHolidays } from "../src/utils/holidays";
 
 const prisma = new PrismaClient();
 
-const BASE_DATE = new Date();
+const BASE_DATE = new Date("2025-07-31T00:00:00Z");
 BASE_DATE.setUTCHours(0, 0, 0, 0);
 
 function randomInt(min: number, max: number): number {
@@ -439,7 +439,12 @@ async function main() {
     if (m.isLeader) leaderByTeam.set(m.teamId, m.userId);
   }
 
-  // seed tugas tambahan linked to master kegiatan
+  // seed tugas tambahan linked to master kegiatan using explicit dates
+  const sampleDates = [
+    new Date("2025-06-15T00:00:00Z"),
+    new Date("2025-07-14T00:00:00Z"),
+    new Date("2025-07-31T00:00:00Z"),
+  ];
   const tambahanRows: any[] = [];
   for (const m of members) {
     if (m.user.role === "admin") continue;
@@ -448,11 +453,9 @@ async function main() {
     });
     if (!masters.length) continue;
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < sampleDates.length; i++) {
       const k = masters[i % masters.length];
-      const info = months[i % months.length];
-      const day = ((m.userId + i) % info.days) + 1;
-      const date = new Date(Date.UTC(info.year, info.monthIndex, day));
+      const date = sampleDates[i];
       const status =
         i === 0
           ? STATUS.BELUM

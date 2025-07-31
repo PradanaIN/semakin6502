@@ -77,6 +77,7 @@ npx prisma db push
 npm run seed  # menjalankan `prisma db seed` dan otomatis memuat variabel `.env`
 ```
 Script ini juga menambahkan pengguna demo dengan laporan terakhir 1, 3, dan 7 hari sebelum tanggal `BASE_DATE` di `prisma/seed.ts`.
+`BASE_DATE` ditetapkan ke `2025-07-31T00:00:00Z` agar data dummy konsisten pada bulan Juni dan Juli.
 
 6. **Jalankan server**
 ```bash
