@@ -22,7 +22,7 @@ export class PenugasanService {
 
   findAll(
     _role: string,
-    _userId: number,
+    _userId: string,
     filter: { bulan?: string; tahun?: number; minggu?: number },
     creatorId?: string,
   ) {

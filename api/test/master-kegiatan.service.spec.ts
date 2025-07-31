@@ -23,18 +23,18 @@ describe('MasterKegiatanService findAll', () => {
 
   it('returns items containing teamId', async () => {
     prisma.masterKegiatan.findMany.mockResolvedValue([
-      { id: 1, teamId: 2, namaKegiatan: 'Test' },
+      { id: '1', teamId: '2', namaKegiatan: 'Test' },
     ]);
     prisma.masterKegiatan.count.mockResolvedValue(1);
 
-    const result = await service.findAll({ page: 1, limit: 10, teamId: 2 });
+    const result = await service.findAll({ page: 1, limit: 10, teamId: '2' });
 
     expect(prisma.masterKegiatan.findMany).toHaveBeenCalledWith({
-      where: { teamId: 2 },
+      where: { teamId: '2' },
       include: { team: true },
       skip: 0,
       take: 10,
     });
-    expect(result.data[0]).toHaveProperty('teamId', 2);
+    expect(result.data[0]).toHaveProperty('teamId', '2');
   });
 });

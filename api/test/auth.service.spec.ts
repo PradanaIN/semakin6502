@@ -22,8 +22,8 @@ describe('AuthService login', () => {
 });
 
 test('returns token and user on success', async () => {
-  prisma.user.findFirst.mockResolvedValue({
-    id: 1,
+    prisma.user.findFirst.mockResolvedValue({
+    id: '1',
     email: 'a',
     username: 'a',
     password: bcrypt.hashSync('b', 1),
@@ -31,7 +31,7 @@ test('returns token and user on success', async () => {
   });
   const result = await service.login('a', 'b');
   expect(result).toHaveProperty('access_token');
-  expect(result.user).toHaveProperty('id', 1);
+  expect(result.user).toHaveProperty('id', '1');
   expect(prisma.user.findFirst).toHaveBeenCalled();
   expect(jwtService.sign).toHaveBeenCalled();
 });
@@ -43,32 +43,32 @@ describe('AuthService me', () => {
 
   it('throws NotFoundException when user missing', async () => {
     prisma.user.findUnique.mockResolvedValue(null);
-    await expect(service.me(1)).rejects.toThrow(NotFoundException);
+    await expect(service.me('1')).rejects.toThrow(NotFoundException);
   });
 
   it('returns sanitized user', async () => {
     prisma.user.findUnique.mockResolvedValue({
-      id: 1,
+      id: '1',
       nama: 'A',
       username: 'a',
       email: 'a@b.c',
       password: 'x',
       role: 'admin',
-      members: [{ teamId: 2, team: { namaTim: 'Tim' } }],
+      members: [{ teamId: '2', team: { namaTim: 'Tim' } }],
     });
-    const res = await service.me(1);
+    const res = await service.me('1');
     expect(prisma.user.findUnique).toHaveBeenCalledWith({
-      where: { id: 1 },
+      where: { id: '1' },
       include: { members: { include: { team: true } } },
     });
     expect(res).toEqual({
-      id: 1,
+      id: '1',
       nama: 'A',
       username: 'a',
       email: 'a@b.c',
       role: 'admin',
-      members: [{ teamId: 2, team: { namaTim: 'Tim' } }],
-      teamId: 2,
+      members: [{ teamId: '2', team: { namaTim: 'Tim' } }],
+      teamId: '2',
       teamName: 'Tim',
     });
     expect(res).not.toHaveProperty('password');

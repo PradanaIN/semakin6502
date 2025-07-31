@@ -41,8 +41,8 @@ export class MonitoringController {
     }
     const user = req?.user as AuthRequestUser;
     const role = user?.role;
-    const tId = teamId ? parseInt(teamId, 10) : undefined;
-    let uId = userId ? parseInt(userId, 10) : undefined;
+    const tId = teamId;
+    let uId = userId;
 
     if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
       const uid = user.userId;
@@ -75,7 +75,7 @@ export class MonitoringController {
     }
     const user = req?.user as AuthRequestUser;
     const role = user?.role;
-    const tId = teamId ? parseInt(teamId, 10) : undefined;
+    const tId = teamId;
 
     if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
       const member = await this.prisma.member.findFirst({
@@ -98,7 +98,7 @@ export class MonitoringController {
     }
     const user = req?.user as AuthRequestUser;
     const role = user?.role;
-    const tId = teamId ? parseInt(teamId, 10) : undefined;
+    const tId = teamId;
 
     if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
       const member = await this.prisma.member.findFirst({
@@ -122,8 +122,8 @@ export class MonitoringController {
     }
     const user = req?.user as AuthRequestUser;
     const role = user?.role;
-    const tId = teamId ? parseInt(teamId, 10) : undefined;
-    let uId = userId ? parseInt(userId, 10) : undefined;
+    const tId = teamId;
+    let uId = userId;
 
     if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
       const uid = user.userId;
@@ -156,7 +156,7 @@ export class MonitoringController {
     }
     const user = req?.user as AuthRequestUser;
     const role = user?.role;
-    const tId = teamId ? parseInt(teamId, 10) : undefined;
+    const tId = teamId;
 
     if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
       const member = await this.prisma.member.findFirst({
@@ -180,8 +180,8 @@ export class MonitoringController {
     }
     const user = req?.user as AuthRequestUser;
     const role = user?.role;
-    const tId = teamId ? parseInt(teamId, 10) : undefined;
-    let uId = userId ? parseInt(userId, 10) : undefined;
+    const tId = teamId;
+    let uId = userId;
 
     if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
       const uid = user.userId;
@@ -214,7 +214,7 @@ export class MonitoringController {
     }
     const user = req?.user as AuthRequestUser;
     const role = user?.role;
-    const tId = teamId ? parseInt(teamId, 10) : undefined;
+    const tId = teamId;
 
     if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
       const member = await this.prisma.member.findFirst({
@@ -238,8 +238,8 @@ export class MonitoringController {
     }
     const user = req?.user as AuthRequestUser;
     const role = user?.role;
-    const tId = teamId ? parseInt(teamId, 10) : undefined;
-    let uId = userId ? parseInt(userId, 10) : undefined;
+    const tId = teamId;
+    let uId = userId;
 
     if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN) {
       const uid = user.userId;
@@ -273,7 +273,7 @@ export class MonitoringController {
     }
     const user = req?.user as AuthRequestUser;
     const role = user?.role;
-    const tId = teamId ? parseInt(teamId, 10) : undefined;
+    const tId = teamId;
 
     if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
       const member = await this.prisma.member.findFirst({
@@ -296,7 +296,7 @@ export class MonitoringController {
     }
     const user = req?.user as AuthRequestUser;
     const role = user?.role;
-    const tId = teamId ? parseInt(teamId, 10) : undefined;
+    const tId = teamId;
 
     if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
       const member = await this.prisma.member.findFirst({
@@ -315,7 +315,7 @@ export class MonitoringController {
   ) {
     const user = req?.user as AuthRequestUser;
     const role = user?.role;
-    const tId = teamId ? parseInt(teamId, 10) : undefined;
+    const tId = teamId;
 
     if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
       const member = await this.prisma.member.findFirst({
