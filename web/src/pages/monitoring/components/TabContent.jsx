@@ -117,12 +117,8 @@ export default function TabContent({
       {/* HARIAN */}
       {activeTab === "harian" && (
         <>
+          <Legend className="mb-3" />
           <DailyMatrix data={dailyData} />
-          <Legend className="mt-3" />
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 tracking-wide">
-            Setiap angka menunjukkan jumlah laporan harian pada tanggal
-            tersebut.
-          </p>
         </>
       )}
 
