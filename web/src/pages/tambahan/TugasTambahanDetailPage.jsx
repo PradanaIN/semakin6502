@@ -15,6 +15,9 @@ import { STATUS, formatStatus } from "../../utils/status";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import Modal from "../../components/ui/Modal";
+import Label from "../../components/ui/Label";
+import Textarea from "../../components/ui/Textarea";
 import formatDate from "../../utils/formatDate";
 import Spinner from "../../components/Spinner";
 import { useAuth } from "../auth/useAuth";
@@ -26,17 +29,16 @@ export default function TugasTambahanDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [item, setItem] = useState(null);
-  const canManage =
-    [ROLES.ADMIN, ROLES.KETUA].includes(user?.role) ||
-    user?.id === item?.userId;
+  const canManage = user?.id === item?.userId;
   const [editing, setEditing] = useState(false);
   const [kegiatan, setKegiatan] = useState([]);
   const [showUpload, setShowUpload] = useState(false);
   const [laporanForm, setLaporanForm] = useState({
+    capaianKegiatan: "",
     tanggalSelesai: "",
-    tanggalSelesaiAkhir: "",
-    buktiLink: "",
     status: STATUS.SELESAI_DIKERJAKAN,
+    buktiLink: "",
+    deskripsi: "",
   });
   const [form, setForm] = useState({
     kegiatanId: "",
@@ -93,6 +95,21 @@ export default function TugasTambahanDetailPage() {
 
   const addLaporan = async () => {
     try {
+      if (
+        laporanForm.capaianKegiatan.trim() === "" ||
+        laporanForm.tanggalSelesai === "" ||
+        laporanForm.status === ""
+      ) {
+        showWarning("Lengkapi data", "Semua field wajib diisi");
+        return;
+      }
+      if (
+        laporanForm.status === STATUS.SELESAI_DIKERJAKAN &&
+        laporanForm.buktiLink.trim() === ""
+      ) {
+        showWarning("Lengkapi data", "Bukti Link wajib diisi");
+        return;
+      }
       const payload = { ...laporanForm };
       Object.keys(payload).forEach((k) => {
         if (payload[k] === "") delete payload[k];
@@ -100,10 +117,11 @@ export default function TugasTambahanDetailPage() {
       await axios.put(`/tugas-tambahan/${id}`, payload);
       showSuccess("Berhasil", "Laporan ditambah");
       setLaporanForm({
+        capaianKegiatan: "",
         tanggalSelesai: "",
-        tanggalSelesaiAkhir: "",
-        buktiLink: "",
         status: STATUS.SELESAI_DIKERJAKAN,
+        buktiLink: "",
+        deskripsi: "",
       });
       setShowUpload(false);
       fetchDetail();
@@ -292,51 +310,110 @@ export default function TugasTambahanDetailPage() {
       <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
         <h3 className="text-lg font-semibold">Bukti / Laporan Selesai</h3>
         {canManage && (
-          !showUpload ? (
-            <div className="flex justify-end">
-              <Button onClick={() => setShowUpload(true)}>Tambah Bukti</Button>
-            </div>
-          ) : (
-            <>
-            <div className="space-y-2">
+          <div className="flex justify-end">
+            <Button onClick={() => setShowUpload(true)}>Tambah Bukti</Button>
+          </div>
+        )}
+      </div>
+
+      {showUpload && (
+        <Modal onClose={() => setShowUpload(false)} titleId="bukti-form-title">
+          <div className="space-y-4">
+            <h3 id="bukti-form-title" className="text-lg font-semibold">
+              Tambah Bukti
+            </h3>
+            <form className="space-y-2">
               <div>
-                <label htmlFor="tanggalMulai" className="block text-sm mb-1">Tanggal Mulai</label>
+                <Label htmlFor="laporanCapaian">
+                  Capaian <span className="text-red-500">*</span>
+                </Label>
+                <Textarea
+                  id="laporanCapaian"
+                  value={laporanForm.capaianKegiatan}
+                  onChange={(e) =>
+                    setLaporanForm({
+                      ...laporanForm,
+                      capaianKegiatan: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="laporanTanggal">
+                  Tanggal <span className="text-red-500">*</span>
+                </Label>
                 <Input
-                  id="tanggalMulai"
+                  id="laporanTanggal"
                   type="date"
                   value={laporanForm.tanggalSelesai}
                   onChange={(e) =>
-                    setLaporanForm({ ...laporanForm, tanggalSelesai: e.target.value })
+                    setLaporanForm({
+                      ...laporanForm,
+                      tanggalSelesai: e.target.value,
+                    })
                   }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                  required
                 />
               </div>
               <div>
-                <label htmlFor="tanggalAkhir" className="block text-sm mb-1">Tanggal Akhir</label>
-                <Input
-                  id="tanggalAkhir"
-                  type="date"
-                  value={laporanForm.tanggalSelesaiAkhir}
+                <Label htmlFor="laporanStatus">
+                  Status <span className="text-red-500">*</span>
+                </Label>
+                <select
+                  id="laporanStatus"
+                  value={laporanForm.status}
                   onChange={(e) =>
-                    setLaporanForm({ ...laporanForm, tanggalSelesaiAkhir: e.target.value })
+                    setLaporanForm({ ...laporanForm, status: e.target.value })
                   }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
-                />
+                  required
+                >
+                  <option value={STATUS.BELUM}>{formatStatus(STATUS.BELUM)}</option>
+                  <option value={STATUS.SEDANG_DIKERJAKAN}>
+                    {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
+                  </option>
+                  <option value={STATUS.SELESAI_DIKERJAKAN}>
+                    {formatStatus(STATUS.SELESAI_DIKERJAKAN)}
+                  </option>
+                </select>
               </div>
+              {laporanForm.status === STATUS.SELESAI_DIKERJAKAN && (
+                <div>
+                  <Label htmlFor="laporanBukti">
+                    Bukti Link <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="laporanBukti"
+                    type="url"
+                    value={laporanForm.buktiLink}
+                    onChange={(e) =>
+                      setLaporanForm({
+                        ...laporanForm,
+                        buktiLink: e.target.value,
+                      })
+                    }
+                    className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                    required
+                  />
+                </div>
+              )}
               <div>
-                <label htmlFor="buktiLink" className="block text-sm mb-1">Link Bukti</label>
-                <Input
-                  id="buktiLink"
-                  type="text"
-                  value={laporanForm.buktiLink}
+                <Label htmlFor="laporanCatatan">Catatan</Label>
+                <Textarea
+                  id="laporanCatatan"
+                  value={laporanForm.deskripsi}
                   onChange={(e) =>
-                    setLaporanForm({ ...laporanForm, buktiLink: e.target.value })
+                    setLaporanForm({
+                      ...laporanForm,
+                      deskripsi: e.target.value,
+                    })
                   }
-                  className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                 />
               </div>
-            </div>
-            <div className="flex justify-end pt-2 space-x-2">
+            </form>
+            <div className="flex justify-end space-x-2 pt-2">
               <Button
                 variant="secondary"
                 onClick={async () => {
@@ -350,10 +427,9 @@ export default function TugasTambahanDetailPage() {
               </Button>
               <Button onClick={addLaporan}>Simpan Bukti</Button>
             </div>
-            </>
-          )
-        )}
-      </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
