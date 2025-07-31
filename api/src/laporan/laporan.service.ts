@@ -7,7 +7,6 @@ import { ulid } from "ulid";
 import { PrismaService } from "../prisma.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { Workbook } from "exceljs";
-import PDFDocument from "pdfkit";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { normalizeRole } from "../common/roles";
@@ -432,7 +431,8 @@ export class LaporanService {
 
     // Urutkan berdasarkan tanggal lama ke baru
     data.sort(
-      (a, b) => new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime()
+      (a: any, b: any) =>
+        new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime()
     );
 
     // Data rows

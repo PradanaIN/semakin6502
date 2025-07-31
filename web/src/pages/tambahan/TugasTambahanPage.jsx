@@ -1,7 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
-import { showSuccess, handleAxiosError, showWarning } from "../../utils/alerts";
-import { Plus, Eye, Check, X } from "lucide-react";
+import {
+  showSuccess,
+  handleAxiosError,
+  showWarning,
+  confirmCancel,
+} from "../../utils/alerts";
+import { Plus, Eye } from "lucide-react";
 import DataTable from "../../components/ui/DataTable";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
@@ -20,7 +25,6 @@ import { useRef } from "react";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 import formatDate from "../../utils/formatDate";
-import Swal from "sweetalert2";
 
 function sortTambahan(list, teamId) {
   return [...list].sort((a, b) => {
@@ -62,7 +66,6 @@ export default function TugasTambahanPage() {
   const [filterTeam, setFilterTeam] = useState("");
   const [filterMinggu, setFilterMinggu] = useState("");
   const [weekOptions, setWeekOptions] = useState([]);
-  const [step, setStep] = useState(1);
   const fetchKegiatanForTeam = async (teamId) => {
     if (!teamId) {
       setKegiatan([]);
@@ -148,14 +151,25 @@ export default function TugasTambahanPage() {
       capaianKegiatan: "",
     });
     setKegiatan([]);
-    setStep(1);
     setShowForm(true);
   };
 
+  const handleCancel = async () => {
+    const r = await confirmCancel("Batalkan penambahan?");
+    if (r.isConfirmed) setShowForm(false);
+  };
+
   const save = async () => {
-    if (!form.teamId || !form.kegiatanId || !form.tanggal) return;
-    if (form.capaianKegiatan.trim() === "") {
-      showWarning("Lengkapi data", "Capaian Kegiatan wajib diisi");
+    if (
+      !form.teamId ||
+      !form.kegiatanId ||
+      !form.tanggal ||
+      form.deskripsi.trim() === "" ||
+      form.capaianKegiatan.trim() === "" ||
+      !form.status ||
+      (form.status === STATUS.SELESAI_DIKERJAKAN && !form.buktiLink)
+    ) {
+      showWarning("Lengkapi data", "Semua kolom wajib diisi");
       return;
     }
     try {
@@ -166,7 +180,6 @@ export default function TugasTambahanPage() {
       });
       await axios.post("/tugas-tambahan", payload);
       setShowForm(false);
-      setStep(1);
       fetchData();
       showSuccess("Berhasil", "Data disimpan");
     } catch (err) {
@@ -375,10 +388,7 @@ export default function TugasTambahanPage() {
 
       {canManage && showForm && (
         <Modal
-          onClose={() => {
-            setShowForm(false);
-            setStep(1);
-          }}
+          onClose={() => setShowForm(false)}
           titleId="tugas-tambahan-modal-title"
         >
           <div className="mb-4 flex items-center justify-between">
@@ -386,9 +396,7 @@ export default function TugasTambahanPage() {
               id="tugas-tambahan-modal-title"
               className="text-xl font-semibold"
             >
-              {step === 1
-                ? "Informasi Tugas Tambahan [1/2]"
-                : "Detail Tugas Tambahan [2/2]"}
+              Tambah Tugas Tambahan
             </h2>
             <p className="text-xs text-red-600 dark:text-red-500">
               * Wajib diisi
@@ -396,212 +404,168 @@ export default function TugasTambahanPage() {
           </div>
 
           <div className="space-y-4">
-            {step === 1 && (
-              <>
-                {/* Tim */}
-                <div>
-                  <Label htmlFor="teamId">
-                    Tim <span className="text-red-500">*</span>
-                  </Label>
-                  <select
-                    id="teamId"
-                    value={form.teamId}
-                    onChange={(e) => {
-                      const tId = e.target.value
-                        ? parseInt(e.target.value)
-                        : "";
-                      setForm({ ...form, teamId: tId, kegiatanId: "" });
-                      fetchKegiatanForTeam(tId);
-                    }}
-                    className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
-                  >
-                    <option value="">Pilih Tim</option>
-                    {teams
-                      .filter((t) => t.namaTim !== "Pimpinan")
-                      .map((t) => (
-                        <option key={t.id} value={t.id}>
-                          {t.namaTim}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-
-                {/* Kegiatan */}
-                <div>
-                  <Label htmlFor="kegiatanId">
-                    Kegiatan <span className="text-red-500">*</span>
-                  </Label>
-                  <select
-                    id="kegiatanId"
-                    value={form.kegiatanId}
-                    onChange={(e) =>
-                      setForm({ ...form, kegiatanId: e.target.value })
-                    }
-                    disabled={!form.teamId}
-                    className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
-                  >
-                    <option value="">
-                      {form.teamId
-                        ? "Pilih Kegiatan"
-                        : "Pilih Tim terlebih dahulu"}
+            {/* Tim */}
+            <div>
+              <Label htmlFor="teamId">
+                Tim <span className="text-red-500">*</span>
+              </Label>
+              <select
+                id="teamId"
+                value={form.teamId}
+                onChange={(e) => {
+                  const tId = e.target.value ? parseInt(e.target.value) : "";
+                  setForm({ ...form, teamId: tId, kegiatanId: "" });
+                  fetchKegiatanForTeam(tId);
+                }}
+                required
+                className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+              >
+                <option value="">Pilih Tim</option>
+                {teams
+                  .filter((t) => t.namaTim !== "Pimpinan")
+                  .map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.namaTim}
                     </option>
-                    {kegiatan
-                      .filter((k) => k.teamId === form.teamId)
-                      .map((k) => (
-                        <option key={k.id} value={k.id}>
-                          {k.namaKegiatan}
-                        </option>
-                      ))}
-                  </select>
-                </div>
+                  ))}
+              </select>
+            </div>
 
-                {/* Tanggal */}
-                <div>
-                  <Label htmlFor="tanggal">
-                    Tanggal Kegiatan <span className="text-red-500">*</span>
-                  </Label>
-                  <input
-                    ref={tanggalRef}
-                    id="tanggal"
-                    type="date"
-                    value={form.tanggal}
-                    onChange={(e) =>
-                      setForm({ ...form, tanggal: e.target.value })
-                    }
-                    onClick={() => tanggalRef.current?.showPicker()}
-                    className="w-full cursor-pointer rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
-                  />
-                </div>
+            {/* Kegiatan */}
+            <div>
+              <Label htmlFor="kegiatanId">
+                Kegiatan <span className="text-red-500">*</span>
+              </Label>
+              <select
+                id="kegiatanId"
+                value={form.kegiatanId}
+                onChange={(e) =>
+                  setForm({ ...form, kegiatanId: e.target.value })
+                }
+                disabled={!form.teamId}
+                required
+                className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+              >
+                <option value="">
+                  {form.teamId
+                    ? "Pilih Kegiatan"
+                    : "Pilih Tim terlebih dahulu"}
+                </option>
+                {kegiatan
+                  .filter((k) => k.teamId === form.teamId)
+                  .map((k) => (
+                    <option key={k.id} value={k.id}>
+                      {k.namaKegiatan}
+                    </option>
+                  ))}
+              </select>
+            </div>
 
-                <div className="flex justify-end pt-2 gap-3">
-                  <Button
-                    onClick={() => {
-                      if (!form.teamId || !form.kegiatanId || !form.tanggal) {
-                        Swal.fire({
-                          icon: "warning",
-                          title: "Lengkapi Formulir",
-                          text: "Harap isi semua kolom wajib di langkah 1.",
-                        });
-                        return;
-                      }
-                      setStep(2);
-                    }}
-                  >
-                    Lanjut
-                  </Button>
-                </div>
-              </>
+            {/* Tanggal */}
+            <div>
+              <Label htmlFor="tanggal">
+                Tanggal Kegiatan <span className="text-red-500">*</span>
+              </Label>
+              <input
+                ref={tanggalRef}
+                id="tanggal"
+                type="date"
+                value={form.tanggal}
+                onChange={(e) =>
+                  setForm({ ...form, tanggal: e.target.value })
+                }
+                onClick={() => tanggalRef.current?.showPicker()}
+                required
+                className="w-full cursor-pointer rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+
+            {/* Deskripsi */}
+            <div>
+              <Label htmlFor="deskripsi">
+                Deskripsi Kegiatan <span className="text-red-500">*</span>
+              </Label>
+              <textarea
+                id="deskripsi"
+                value={form.deskripsi}
+                onChange={(e) =>
+                  setForm({ ...form, deskripsi: e.target.value })
+                }
+                placeholder="Deskripsi kegiatan..."
+                required
+                className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white resize-y"
+              />
+            </div>
+
+            {/* Capaian */}
+            <div>
+              <Label htmlFor="capaianKegiatan">
+                Capaian Kegiatan <span className="text-red-500">*</span>
+              </Label>
+              <textarea
+                id="capaianKegiatan"
+                value={form.capaianKegiatan}
+                onChange={(e) =>
+                  setForm({ ...form, capaianKegiatan: e.target.value })
+                }
+                placeholder="Capaian kegiatan..."
+                required
+                className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white resize-y"
+              />
+            </div>
+
+            {/* Status */}
+            <div>
+              <Label htmlFor="status">
+                Status <span className="text-red-500">*</span>
+              </Label>
+              <select
+                id="status"
+                value={form.status}
+                onChange={(e) =>
+                  setForm({ ...form, status: e.target.value })
+                }
+                required
+                className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+              >
+                <option value={STATUS.BELUM}>
+                  {formatStatus(STATUS.BELUM)}
+                </option>
+                <option value={STATUS.SEDANG_DIKERJAKAN}>
+                  {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
+                </option>
+                <option value={STATUS.SELESAI_DIKERJAKAN}>
+                  {formatStatus(STATUS.SELESAI_DIKERJAKAN)}
+                </option>
+              </select>
+            </div>
+
+            {/* Link Bukti (Jika selesai) */}
+            {form.status === STATUS.SELESAI_DIKERJAKAN && (
+              <div>
+                <Label htmlFor="buktiLink">
+                  Link Bukti <span className="text-red-500">*</span>
+                </Label>
+                <input
+                  id="buktiLink"
+                  type="url"
+                  value={form.buktiLink}
+                  onChange={(e) =>
+                    setForm({ ...form, buktiLink: e.target.value })
+                  }
+                  placeholder="https://..."
+                  required
+                  className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                />
+              </div>
             )}
 
-            {step === 2 && (
-              <>
-                {/* Deskripsi */}
-                <div>
-                  <Label htmlFor="deskripsi">
-                    Deskripsi Kegiatan <span className="text-red-500">*</span>
-                  </Label>
-                  <textarea
-                    id="deskripsi"
-                    value={form.deskripsi}
-                    onChange={(e) =>
-                      setForm({ ...form, deskripsi: e.target.value })
-                    }
-                    placeholder="Deskripsi kegiatan..."
-                    required
-                    className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white resize-y"
-                  />
-                </div>
-
-                {/* Capaian */}
-                <div>
-                  <Label htmlFor="capaianKegiatan">
-                    Capaian Kegiatan <span className="text-red-500">*</span>
-                  </Label>
-                  <textarea
-                    id="capaianKegiatan"
-                    value={form.capaianKegiatan}
-                    onChange={(e) =>
-                      setForm({ ...form, capaianKegiatan: e.target.value })
-                    }
-                    required
-                    placeholder="Capaian kegiatan..."
-                    className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white resize-y"
-                  />
-                </div>
-
-                {/* Status */}
-                <div>
-                  <Label htmlFor="status">
-                    Status <span className="text-red-500">*</span>
-                  </Label>
-                  <select
-                    id="status"
-                    value={form.status}
-                    onChange={(e) =>
-                      setForm({ ...form, status: e.target.value })
-                    }
-                    className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
-                  >
-                    <option value={STATUS.BELUM}>
-                      {formatStatus(STATUS.BELUM)}
-                    </option>
-                    <option value={STATUS.SEDANG_DIKERJAKAN}>
-                      {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
-                    </option>
-                    <option value={STATUS.SELESAI_DIKERJAKAN}>
-                      {formatStatus(STATUS.SELESAI_DIKERJAKAN)}
-                    </option>
-                  </select>
-                </div>
-
-                {/* Link Bukti (Jika selesai) */}
-                {form.status === STATUS.SELESAI_DIKERJAKAN && (
-                  <div>
-                    <Label htmlFor="buktiLink">
-                      Link Bukti <span className="text-red-500">*</span>
-                    </Label>
-                    <input
-                      id="buktiLink"
-                      type="url"
-                      value={form.buktiLink}
-                      onChange={(e) =>
-                        setForm({ ...form, buktiLink: e.target.value })
-                      }
-                      placeholder="https://..."
-                      required
-                      className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
-                    />
-                  </div>
-                )}
-
-                <div className="flex justify-between gap-3 pt-4">
-                  <Button variant="secondary" onClick={() => setStep(1)}>
-                    Kembali
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      if (
-                        !form.deskripsi ||
-                        !form.capaianKegiatan ||
-                        !form.status ||
-                        (form.status === STATUS.SELESAI_DIKERJAKAN &&
-                          !form.buktiLink)
-                      ) {
-                        Swal.fire({
-                          icon: "warning",
-                          title: "Lengkapi Detail",
-                          text: "Semua kolom wajib diisi sebelum menyimpan.",
-                        });
-                        return;
-                      }
-                      save();
-                    }}
-                  >
-                    Simpan
-                  </Button>
-                </div>
-              </>
-            )}
+            <div className="flex justify-end gap-3 pt-4">
+              <Button variant="secondary" onClick={handleCancel}>
+                Batal
+              </Button>
+              <Button onClick={save}>Simpan</Button>
+            </div>
           </div>
         </Modal>
       )}
