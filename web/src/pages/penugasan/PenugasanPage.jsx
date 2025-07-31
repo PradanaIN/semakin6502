@@ -62,8 +62,10 @@ export default function PenugasanPage() {
   const { user } = useAuth();
   const canManage = [ROLES.ADMIN, ROLES.KETUA].includes(user?.role);
   const showPegawaiColumn = useMemo(
-    () => [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role),
-    [user]
+    () =>
+      viewTab === "all" ||
+      [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role),
+    [user, viewTab]
   );
   const navigate = useNavigate();
 
