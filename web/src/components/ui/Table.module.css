@@ -1,33 +1,7 @@
 /* Table.module.css */
 
-.wrapper {
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.headerRow {
-  background-color: var(--th-bg);
-}
-
-.headerCell {
-  padding: 0.75rem 1rem;
-  font-weight: 600;
-  color: var(--th-color);
-  text-align: center;
-}
-
-.row {
-  text-align: center;
-}
-
-.cell {
-  padding: 0.75rem 1rem;
-  border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
-}
-
+/* Root Variables */
 :root {
-  /* Default theme (dark root) */
   --table-bg: #111827;
   --text-color: #f3f4f6;
   --th-bg: #1f2937;
@@ -38,49 +12,81 @@
   --row-hover-bg: #374151;
 }
 
-/* Override for light mode via .light class on body or html */
+/* Light Theme Overrides */
 :global(.light) {
-  --table-bg: #f9fafb;
+  --table-bg: #ffffff;
   --text-color: #111827;
   --th-bg: #f3f4f6;
   --th-color: #111827;
   --td-color: #374151;
   --border-color: #e5e7eb;
-  --row-alt-bg: #ffffff;
-  --row-hover-bg: #e5e7eb;
+  --row-alt-bg: #f9fafb;
+  --row-hover-bg: #f3f4f6;
 }
 
+/* Wrapper (Card Style) */
+.wrapper {
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  background-color: var(--table-bg);
+}
+
+/* Table Base */
 .table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.875rem;
-  background-color: var(--table-bg);
   color: var(--text-color);
+  background-color: var(--table-bg);
 }
 
-/* Header Cells */
-.table th {
-  text-align: center;
-  font-weight: 600;
-  padding: 0.75rem 1rem;
+/* Header Row */
+.headerRow,
+.table thead tr {
   background-color: var(--th-bg);
+}
+
+.headerCell,
+.table th {
+  padding: 1rem;
+  font-weight: 600;
+  text-align: center;
   color: var(--th-color);
-}
-
-/* Body Cells */
-.table td {
-  padding: 0.75rem 1rem;
-  border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
-  color: var(--td-color);
+  font-size: 0.875rem;
 }
 
-/* Row styling */
-.table tr:nth-child(even) {
+/* Data Row */
+.row,
+.table tbody tr {
+  text-align: center;
+  transition: background-color 0.2s ease;
+}
+
+.table tbody tr:nth-child(even) {
   background-color: var(--row-alt-bg);
 }
 
-.table tr:hover {
+.table tbody tr:hover {
   background-color: var(--row-hover-bg);
-  transition: background-color 0.2s ease;
 }
+
+/* Data Cell */
+.cell,
+.table td {
+  padding: 0.75rem 1rem;
+  color: var(--td-color);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  vertical-align: top;
+  word-wrap: break-word;
+}
+
+/* Responsive table (if needed later)
+@media (max-width: 768px) {
+  .table {
+    font-size: 0.8125rem;
+  }
+}
+*/

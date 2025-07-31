@@ -5,9 +5,9 @@ import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import Skeleton from "../../components/ui/Skeleton";
-import { showSuccess, showWarning, handleAxiosError } from "../../utils/alerts";
-import { User } from "lucide-react";
 import Spinner from "../../components/Spinner";
+import { showSuccess, showWarning, handleAxiosError } from "../../utils/alerts";
+import { User, Save } from "lucide-react";
 
 export default function ProfilePage() {
   const { user, setUser } = useAuth();
@@ -49,17 +49,28 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-900 rounded-xl shadow-md space-y-6 animate-fade-in">
+    <div className="max-w-xl mx-auto p-6 sm:p-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md dark:shadow-lg space-y-6 animate-fade-in">
       <div className="flex items-center gap-3">
         <User className="w-6 h-6 text-blue-600" />
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-          Profil Saya
-        </h2>
+        <div>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+            Profil Saya
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Perbarui informasi akun Anda di sini.
+          </p>
+        </div>
       </div>
 
-      <div className="space-y-4">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          save();
+        }}
+        className="space-y-5"
+      >
         <div>
-          <Label htmlFor="nama">Nama</Label>
+          <Label htmlFor="nama">Nama Lengkap</Label>
           <Input
             id="nama"
             type="text"
@@ -90,13 +101,27 @@ export default function ProfilePage() {
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
         </div>
-      </div>
 
-      <div className="flex justify-end pt-4">
-        <Button onClick={save} disabled={loading} className="w-full sm:w-auto">
-          {loading ? "Menyimpan..." : "Simpan Perubahan"}
-        </Button>
-      </div>
+        <div className="pt-2">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full sm:w-auto flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <Spinner className="w-4 h-4" />
+                Menyimpan...
+              </>
+            ) : (
+              <>
+                <Save size={16} />
+                Simpan Perubahan
+              </>
+            )}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }
