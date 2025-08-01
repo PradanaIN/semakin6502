@@ -1,4 +1,4 @@
-import { IsDateString, IsInt, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsOptional, IsString } from "class-validator";
 
 export class UpdateLaporanDto {
   @IsDateString()

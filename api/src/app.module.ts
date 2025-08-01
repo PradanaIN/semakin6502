@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, ExecutionContext } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule, minutes } from "@nestjs/throttler";
 import { ScheduleModule } from "@nestjs/schedule";
@@ -19,12 +19,18 @@ const ttl = process.env.THROTTLE_TTL
 
 const limit = process.env.THROTTLE_LIMIT
   ? parseInt(process.env.THROTTLE_LIMIT, 10)
-  : 100;
+  : 1000;
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    ThrottlerModule.forRoot([{ ttl, limit }]),
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl, limit }],
+      skipIf: (context: ExecutionContext) => {
+        const req = context.switchToHttp().getRequest();
+        return req.path.startsWith("/health");
+      },
+    }),
     AuthModule,
     UsersModule,
     TeamsModule,
