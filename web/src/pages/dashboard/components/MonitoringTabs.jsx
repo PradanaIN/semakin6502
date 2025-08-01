@@ -16,19 +16,22 @@ const MonitoringTabs = ({
   monthlyData,
 }) => {
   const [tab, setTab] = useState("harian");
+  const clampedWeekIndex = weeklyList.length
+    ? Math.min(Math.max(weekIndex, 0), weeklyList.length - 1)
+    : 0;
 
   const renderContent = useCallback(() => {
     switch (tab) {
       case "harian":
         return <DailyOverview data={dailyData} />;
       case "mingguan":
-        return <WeeklyOverview data={weeklyList[weekIndex]} />;
+        return <WeeklyOverview data={weeklyList[clampedWeekIndex]} />;
       case "bulanan":
         return <MonthlyOverview data={monthlyData} />;
       default:
         return null;
     }
-  }, [tab, dailyData, weeklyList, weekIndex, monthlyData]);
+  }, [tab, dailyData, weeklyList, clampedWeekIndex, monthlyData]);
 
   const handleTabClick = useCallback((t) => setTab(t), []);
 
@@ -118,7 +121,7 @@ const MonitoringTabs = ({
 
             {/* Minggu */}
             {tab === "mingguan" && weeklyList.length > 0 && (
-              <Listbox value={weekIndex} onChange={onWeekChange}>
+              <Listbox value={clampedWeekIndex} onChange={onWeekChange}>
                 <div className="relative w-32">
                   <Listbox.Button
                     className="w-full cursor-pointer rounded-lg bg-gray-50 dark:bg-gray-800
@@ -126,7 +129,7 @@ const MonitoringTabs = ({
                       shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <span className="block truncate">
-                      Minggu {weeklyList[weekIndex]?.minggu}
+                      Minggu {weeklyList[clampedWeekIndex]?.minggu}
                     </span>
                     <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <ChevronUpDownIcon className="h-5 w-5 text-gray-400" />
