@@ -29,6 +29,8 @@ test("switches between monitoring tabs", () => {
       monthIndex={0}
       onMonthChange={() => {}}
       monthlyData={[]}
+      year={new Date().getFullYear()}
+      onYearChange={() => {}}
     />
   );
 
@@ -45,6 +47,8 @@ test("switches between monitoring tabs", () => {
 test("changing month and week selections does not throw", async () => {
   const onMonthChange = jest.fn();
   const onWeekChange = jest.fn();
+  const onYearChange = jest.fn();
+  const currentYear = new Date().getFullYear();
   const user = userEvent.setup();
 
   render(
@@ -56,8 +60,14 @@ test("changing month and week selections does not throw", async () => {
       monthIndex={0}
       onMonthChange={onMonthChange}
       monthlyData={[]}
+      year={currentYear}
+      onYearChange={onYearChange}
     />
   );
+
+  await user.click(screen.getByRole("button", { name: String(currentYear) }));
+  await user.click(await screen.findByText(String(currentYear - 1)));
+  expect(onYearChange).toHaveBeenCalledWith(currentYear - 1);
 
   await user.click(screen.getByRole("button", { name: months[0] }));
   await user.click(await screen.findByText(months[1]));
