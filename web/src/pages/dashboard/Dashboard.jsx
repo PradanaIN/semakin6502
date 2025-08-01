@@ -41,6 +41,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [hasReportedToday, setHasReportedToday] = useState(false);
+  const [partialError, setPartialError] = useState(false);
 
   const handleMonthChange = useCallback((value) => {
     setMonthIndex((prev) => (prev !== value ? value : prev));
@@ -90,19 +91,66 @@ const Dashboard = () => {
             .then((res) => res.data)
         );
 
-        const [dailyRes, weeklyArray, monthlyRes, tugasArray] =
-          await Promise.all([
+        const [dailyRes, weeklyArrayRes, monthlyRes, tugasArrayRes] =
+          await Promise.allSettled([
             axios.get("/monitoring/harian/bulan", {
               params: { tanggal: formatISO(monthStart), ...filters },
             }),
-            Promise.all(weeklyPromises),
+            Promise.allSettled(weeklyPromises),
             axios.get("/monitoring/bulanan", {
               params: { year: String(year), ...filters },
             }),
-            Promise.all(tugasPromises),
+            Promise.allSettled(tugasPromises),
           ]);
 
-        const normalizedWeeks = weeklyArray.map((w, i) => {
+        let partial = false;
+
+        if (dailyRes.status === "fulfilled") {
+          setDailyData(dailyRes.value.data);
+          setHasReportedToday(
+            !!dailyRes.value.data.find((d) => d.tanggal === tanggal)?.adaKegiatan
+          );
+        } else {
+          partial = true;
+        }
+
+        let weeklyValues = [];
+        if (weeklyArrayRes.status === "fulfilled") {
+          weeklyValues = weeklyArrayRes.value;
+          if (weeklyArrayRes.value.some((r) => r.status === "rejected"))
+            partial = true;
+        } else {
+          partial = true;
+        }
+
+        let tugasValues = [];
+        if (tugasArrayRes.status === "fulfilled") {
+          tugasValues = tugasArrayRes.value;
+          if (tugasArrayRes.value.some((r) => r.status === "rejected"))
+            partial = true;
+        } else {
+          partial = true;
+        }
+
+        const normalizedWeeks = weeklyValues.map((wRes, i) => {
+          const w = wRes.status === "fulfilled" ? wRes.value : null;
+          const t =
+            tugasValues[i] && tugasValues[i].status === "fulfilled"
+              ? tugasValues[i].value
+              : {};
+
+          if (!w) {
+            return {
+              minggu: i + 1,
+              tanggal: "-",
+              detail: [],
+              totalSelesai: 0,
+              totalTugas: 0,
+              totalProgress: 0,
+              penugasan: t,
+            };
+          }
+
           const [sIso, eIso] = w.tanggal.split(" - ");
           const startDate = new Date(sIso);
           const endDate = new Date(eIso);
@@ -113,8 +161,8 @@ const Dashboard = () => {
           )}`;
 
           const detail = w.detail.filter((d) => {
-            const t = new Date(d.tanggal);
-            return t >= monthStart && t <= monthEnd;
+            const tgl = new Date(d.tanggal);
+            return tgl >= monthStart && tgl <= monthEnd;
           });
 
           const totalSelesai = detail.reduce((sum, d) => sum + d.selesai, 0);
@@ -131,17 +179,20 @@ const Dashboard = () => {
             totalSelesai,
             totalTugas,
             totalProgress,
-            penugasan: tugasArray[i],
+            penugasan: t,
           };
         });
 
-        setDailyData(dailyRes.data);
-        setHasReportedToday(
-          !!dailyRes.data.find((d) => d.tanggal === tanggal)?.adaKegiatan
-        );
         setWeeklyList(normalizedWeeks);
         setWeekIndex((prev) => (prev !== currentIndex ? currentIndex : prev));
-        setMonthlyData(monthlyRes.data);
+
+        if (monthlyRes.status === "fulfilled") {
+          setMonthlyData(monthlyRes.value.data);
+        } else {
+          partial = true;
+        }
+
+        if (partial) setPartialError(true);
       } catch (error) {
         if (error?.response && [401, 403].includes(error.response.status)) {
           setErrorMsg("Anda tidak memiliki akses untuk melihat monitoring.");
@@ -182,6 +233,12 @@ const Dashboard = () => {
               Isi Laporan Sekarang
             </Button>
           </Link>
+        </div>
+      )}
+
+      {partialError && (
+        <div className="bg-red-50 dark:bg-red-900 border border-red-300 dark:border-red-700 p-4 rounded-xl text-red-800 dark:text-red-200">
+          Sebagian data gagal dimuat. Beberapa informasi mungkin tidak lengkap.
         </div>
       )}
 
