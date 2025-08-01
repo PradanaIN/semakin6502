@@ -8,7 +8,7 @@ import {
   handleAxiosError,
   showWarning,
 } from "../../utils/alerts";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Plus } from "lucide-react";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
 import { STATUS, formatStatus } from "../../utils/status";
@@ -308,24 +308,30 @@ export default function TugasTambahanDetailPage() {
         </div>
       )}
       <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-        <h3 className="text-lg font-semibold">Bukti / Laporan Selesai</h3>
+        <h3 className="text-lg font-semibold">Laporan Harian</h3>
         {canManage && (
           <div className="flex justify-end">
-            <Button onClick={() => setShowUpload(true)}>Tambah Bukti</Button>
+            <Button
+              onClick={() => setShowUpload(true)}
+              className="add-button"
+            >
+              <Plus size={16} />
+              <span className="hidden sm:inline">Laporan Harian</span>
+            </Button>
           </div>
         )}
       </div>
 
       {showUpload && (
-        <Modal onClose={() => setShowUpload(false)} titleId="bukti-form-title">
+        <Modal onClose={() => setShowUpload(false)} titleId="laporan-form-title">
           <div className="space-y-4">
-            <h3 id="bukti-form-title" className="text-lg font-semibold">
-              Tambah Bukti
+            <h3 id="laporan-form-title" className="text-lg font-semibold">
+              Tambah Laporan Harian
             </h3>
             <form className="space-y-2">
               <div>
                 <Label htmlFor="laporanCapaian">
-                  Capaian <span className="text-red-500">*</span>
+                  Capaian Kegiatan <span className="text-red-500">*</span>
                 </Label>
                 <Textarea
                   id="laporanCapaian"
@@ -417,7 +423,9 @@ export default function TugasTambahanDetailPage() {
               <Button
                 variant="secondary"
                 onClick={async () => {
-                  const r = await confirmCancel("Batalkan menambah bukti?");
+                  const r = await confirmCancel(
+                    "Batalkan menambah laporan harian?"
+                  );
                   if (r.isConfirmed) {
                     setShowUpload(false);
                   }
@@ -425,7 +433,7 @@ export default function TugasTambahanDetailPage() {
               >
                 Batal
               </Button>
-              <Button onClick={addLaporan}>Simpan Bukti</Button>
+              <Button onClick={addLaporan}>Simpan Laporan</Button>
             </div>
           </div>
         </Modal>
