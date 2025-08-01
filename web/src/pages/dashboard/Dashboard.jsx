@@ -42,23 +42,13 @@ const Dashboard = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [hasReportedToday, setHasReportedToday] = useState(false);
 
-  const handleMonthChange = useCallback(
-    (value) => {
-      if (value !== monthIndex) {
-        setMonthIndex(value);
-      }
-    },
-    [monthIndex]
-  );
+  const handleMonthChange = useCallback((value) => {
+    setMonthIndex((prev) => (prev !== value ? value : prev));
+  }, []);
 
-  const handleWeekChange = useCallback(
-    (value) => {
-      if (value !== weekIndex) {
-        setWeekIndex(value);
-      }
-    },
-    [weekIndex]
-  );
+  const handleWeekChange = useCallback((value) => {
+    setWeekIndex((prev) => (prev !== value ? value : prev));
+  }, []);
 
   useEffect(() => {
     const fetchAllData = async () => {
