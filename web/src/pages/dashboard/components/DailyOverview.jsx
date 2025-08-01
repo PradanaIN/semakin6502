@@ -7,6 +7,10 @@ const DailyOverview = ({ data = [] }) => {
     return <p>Data tidak tersedia</p>;
   }
 
+  const filteredData = data.filter(
+    (day) => !isNaN(new Date(day.tanggal))
+  );
+
   const today = new Date().toISOString().slice(0, 10);
   const currentYear = new Date(today).getFullYear();
 
@@ -46,8 +50,9 @@ const DailyOverview = ({ data = [] }) => {
         Kalender Aktivitas Harian
       </h2>
       <Legend className="mb-2" />
+      {filteredData.length === 0 && <p>Tidak ada laporan</p>}
       <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-        {data.map((day) => {
+        {filteredData.map((day) => {
           const dayName = new Date(day.tanggal).toLocaleDateString("id-ID", {
             weekday: "short",
           });
