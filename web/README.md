@@ -1,97 +1,81 @@
-# React + Vite
+# 🌐 SEMAKIN 6502 Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend resmi SEMAKIN 6502 dibangun menggunakan **React 19**, **Vite**, dan **Tailwind CSS**. Aplikasi ini menyediakan antarmuka bagi pegawai untuk mengisi laporan serta menampilkan monitoring kinerja bagi pimpinan.
 
-Currently, two official plugins are available:
+## Teknologi Utama
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 19 dengan Vite
+- Tailwind CSS dan [shadcn/ui](https://ui.shadcn.com/)
+- React Router Dom v7
+- Axios untuk komunikasi API
+- Jest + Testing Library untuk pengujian
 
-## Expanding the ESLint configuration
+## Struktur Direktori
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+web/
+├── src/
+│   ├── pages/         # halaman aplikasi
+│   ├── components/    # komponen UI dan DataTable
+│   ├── routes/        # konfigurasi routing
+│   ├── hooks/         # custom hooks
+│   ├── lib/, utils/   # helper umum
+│   └── __tests__/     # unit test
+├── public/            # aset statis
+└── tailwind.config.js
+```
 
-## Linting
+## Persiapan & Instalasi
 
-Install dependencies before running ESLint:
+1. **Instal dependensi**
+   ```bash
+   cd web
+   npm install
+   ```
+2. **Konfigurasi variabel lingkungan**
+   ```bash
+   cp .env.example .env
+   # sesuaikan alamat backend
+   ```
+   Variabel yang digunakan:
+
+   | Nama          | Contoh nilai                 | Deskripsi                        |
+   |---------------|------------------------------|----------------------------------|
+   | `VITE_API_URL`| `http://localhost:3000`      | URL base API backend             |
+
+3. **Menjalankan server development**
+   ```bash
+   npm run dev
+   ```
+   Aplikasi akan tersedia pada `http://localhost:5173`.
+
+4. **Membangun untuk produksi**
+   ```bash
+   npm run build
+   npm run preview  # meninjau hasil build
+   ```
+
+## Pengujian & Linting
 
 ```bash
-npm install
-npm run lint
+npm test   # menjalankan unit test
+npm run lint  # menjalankan ESLint
 ```
 
-The lint script relies on dev dependencies installed by `npm install`.
+## Fitur Penting
 
-## Environment Variables
+### Monitoring
+Halaman `/monitoring` menampilkan progres harian, mingguan, dan bulanan bagi pengguna dengan role **admin**, **ketua tim**, atau **pimpinan**. Tab harian menyediakan matriks bulanan yang menggambarkan aktivitas setiap pegawai.
 
-Create a `.env` file based on `.env.example` and set the API base URL used by axios:
+### DataTable
+Komponen `DataTable` (`src/components/ui/DataTable`) digunakan untuk membuat tabel dinamis dengan fitur:
+- pencarian global dan filter per kolom
+- paginasi dan sorting
+- pemilihan baris opsional
 
-```bash
-cp .env.example .env
-```
+### Notifikasi
+Ikon lonceng di header menampilkan notifikasi terbaru. Pengguna dapat menandai seluruh notifikasi sebagai sudah dibaca atau membuka item tertentu untuk menuju halaman terkait.
 
-The variable is accessed via `import.meta.env`:
+## Lisensi
 
-```
-VITE_API_URL=http://localhost:3000
-```
-
-Adjust the URL if your backend runs on a different host/port.
-
-## Monitoring
-
-The monitoring page is available at the route `/monitoring` and can be opened by
-users with the **admin**, **ketua tim**, or **pimpinan** roles. It shows overall
-progress for all users using progress bars in three tabs:
-
-- **Daily** – progress for a selected date
-- **Weekly** – progress for a selected week
-- **Yearly** – monthly progress for a chosen year
-
-The Daily tab also includes a scrollable matrix table showing each user's activity for every day in the chosen month. Cells are color coded just like in the dashboard overview:
-
-- **Hijau** – ada tugas pada hari tersebut
-- **Kuning** – tidak ada tugas
-- **Biru** – akhir pekan atau hari libur
-
-When filtering results by team you may supply optional query parameters such as
-`teamId` to limit the data to a specific team.
-
-## DataTable Component
-
-Reusable tables are built with `@tanstack/react-table` through the `DataTable` component
-located in `src/components/ui`. It provides:
-
-- Global search across all columns
-- Optional per-column filters
-- Built-in pagination with a page size selector
-- Column sorting with visual indicators
-- Optional row selection with checkboxes
-
-Example usage:
-
-```jsx
-import DataTable, { SelectColumnFilter } from "./components/ui/DataTable";
-
-const columns = [
-  { Header: "Name", accessor: "name" },
-  { Header: "Role", accessor: "role", Filter: SelectColumnFilter },
-];
-
-<DataTable columns={columns} data={data} />;
-```
-
-### Additional Props
-
-- `initialSorting` – array of sorting rules, e.g. `[{ id: 'name', desc: true }]`
-- `onRowSelectionChange` – callback receiving the current row selection state
-- `showPagination` – toggle built-in pagination controls
-- `selectable` – include checkbox column for row selection
-- `showColumnFilters` – whether to display per-column filter dropdowns (default `true`); disabling it hides the filters
-
-## Notifications
-
-Header bell icon menampilkan daftar notifikasi terbaru. Klik notifikasi untuk
-menandainya sebagai telah dibaca dan langsung membuka tautan terkait. Tombol
-"Tandai sudah dibaca" akan menandai semua notifikasi sebagai selesai.
-
+Dirilis di bawah lisensi [MIT](../LICENSE).
