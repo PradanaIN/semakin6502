@@ -7,9 +7,10 @@ import { useAuth } from "../auth/useAuth";
 import axios from "axios";
 import { ROLES } from "../../utils/roles";
 import { handleAxiosError } from "../../utils/alerts";
+import dayjs from "../../utils/dayjs";
 
 const formatWita = (iso) =>
-  new Date(iso).toLocaleString("id-ID", { timeZone: "Asia/Makassar" });
+  dayjs.utc(iso).tz("Asia/Makassar").format("DD MMM YYYY HH:mm:ss");
 
 export default function MonitoringPage() {
   const [tab, setTab] = useState("harian");
@@ -59,18 +60,18 @@ export default function MonitoringPage() {
 
   // Hitung awal minggu setiap kali bulan berubah
   useEffect(() => {
-    const firstOfMonth = new Date(year, monthIndex, 1);
-    const monthEnd = new Date(year, monthIndex + 1, 0);
+    const firstOfMonth = new Date(Date.UTC(year, monthIndex, 1));
+    const monthEnd = new Date(Date.UTC(year, monthIndex + 1, 0));
     const firstMonday = new Date(firstOfMonth);
-    firstMonday.setDate(
-      firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
+    firstMonday.setUTCDate(
+      firstOfMonth.getUTCDate() - ((firstOfMonth.getUTCDay() + 6) % 7)
     );
 
     const starts = [];
     for (
       let d = new Date(firstMonday);
       d <= monthEnd;
-      d.setDate(d.getDate() + 7)
+      d.setUTCDate(d.getUTCDate() + 7)
     ) {
       starts.push(new Date(d));
     }

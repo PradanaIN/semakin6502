@@ -25,8 +25,8 @@ export class MonitoringService {
     const year = base.getFullYear();
     const month = base.getMonth();
 
-    const start = new Date(year, month, 1);
-    const end = new Date(year, month + 1, 0);
+    const start = new Date(Date.UTC(year, month, 1));
+    const end = new Date(Date.UTC(year, month + 1, 0));
 
     const where: any = { tanggal: { gte: start, lte: end } };
     if (userId) where.pegawaiId = userId;
@@ -41,16 +41,13 @@ export class MonitoringService {
     });
 
     const exists = new Set(
-      records.map((r: { tanggal: Date }) =>
-        r.tanggal.toISOString().slice(0, 10),
-      ),
+      records.map((r: { tanggal: Date }) => r.tanggal.toISOString()),
     );
 
     const result = [] as { tanggal: string; adaKegiatan: boolean }[];
-    for (let d = 1; d <= end.getDate(); d++) {
-      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
-        d,
-      ).padStart(2, "0")}`;
+    for (let d = 1; d <= end.getUTCDate(); d++) {
+      const date = new Date(Date.UTC(year, month, d));
+      const dateStr = date.toISOString();
       result.push({ tanggal: dateStr, adaKegiatan: exists.has(dateStr) });
     }
     return result;
@@ -58,13 +55,13 @@ export class MonitoringService {
 
   async mingguan(minggu: string, teamId?: string, userId?: string) {
     const start = new Date(minggu);
-    const offset = (start.getDay() + 6) % 7; // days since Monday
-    start.setDate(start.getDate() - offset);
+    const offset = (start.getUTCDay() + 6) % 7; // days since Monday
+    start.setUTCDate(start.getUTCDate() - offset);
     if (isNaN(start.getTime()))
       throw new BadRequestException("minggu tidak valid");
 
     const end = new Date(start);
-    end.setDate(start.getDate() + 6);
+    end.setUTCDate(start.getUTCDate() + 6);
 
     const laporanWhere: any = { tanggal: { gte: start, lte: end } };
     if (userId) laporanWhere.pegawaiId = userId;
@@ -93,7 +90,7 @@ export class MonitoringService {
 
     const perDay: Record<string, { selesai: number; total: number }> = {};
     for (const r of records) {
-      const dateStr = r.tanggal.toISOString().slice(0, 10);
+      const dateStr = r.tanggal.toISOString();
       if (!perDay[dateStr]) perDay[dateStr] = { selesai: 0, total: 0 };
       perDay[dateStr].total += 1;
       if (r.status === STATUS.SELESAI_DIKERJAKAN)
@@ -124,12 +121,12 @@ export class MonitoringService {
     const totalTugas = tugas.length;
     for (let i = 0; i < 7; i++) {
       const d = new Date(start);
-      d.setDate(start.getDate() + i);
-      const dateStr = d.toISOString().slice(0, 10);
+      d.setUTCDate(start.getUTCDate() + i);
+      const dateStr = d.toISOString();
       const data = perDay[dateStr] || { selesai: 0, total: 0 };
       const persen = data.total > 0 ? 100 : 0;
       detail.push({
-        hari: hari[d.getDay()],
+        hari: hari[d.getUTCDay()],
         tanggal: dateStr,
         selesai: data.selesai,
         total: data.total,
@@ -144,9 +141,7 @@ export class MonitoringService {
     return {
       minggu: getWeekOfMonth(start),
       bulan: monthName(start),
-      tanggal: `${start.toISOString().slice(0, 10)} - ${end
-        .toISOString()
-        .slice(0, 10)}`,
+      tanggal: `${start.toISOString()} - ${end.toISOString()}`,
       totalProgress,
       totalSelesai,
       totalTugas,
@@ -163,7 +158,7 @@ export class MonitoringService {
     for (let i = 0; i < MONTHS.length; i++) {
       const first = new Date(Date.UTC(yr, i, 1));
       const weeks = await this.penugasanBulan(
-        first.toISOString().slice(0, 10),
+        first.toISOString(),
         teamId,
         userId,
       );
@@ -189,8 +184,8 @@ export class MonitoringService {
     const year = base.getFullYear();
     const month = base.getMonth();
 
-    const start = new Date(year, month, 1);
-    const end = new Date(year, month + 1, 0);
+    const start = new Date(Date.UTC(year, month, 1));
+    const end = new Date(Date.UTC(year, month + 1, 0));
 
     const where: any = { tanggal: { gte: start, lte: end } };
     if (teamId)
@@ -212,7 +207,7 @@ export class MonitoringService {
       { nama: string; counts: Record<string, number> }
     > = {};
     for (const r of records) {
-      const dateStr = r.tanggal.toISOString().slice(0, 10);
+      const dateStr = r.tanggal.toISOString();
       if (!byUser[r.pegawaiId])
         byUser[r.pegawaiId] = { nama: r.pegawai.nama, counts: {} };
       byUser[r.pegawaiId].counts[dateStr] =
@@ -222,10 +217,9 @@ export class MonitoringService {
     return Object.entries(byUser)
       .map(([id, v]) => {
         const detail = [] as { tanggal: string; count: number }[];
-        for (let d = 1; d <= end.getDate(); d++) {
-          const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
-            d,
-          ).padStart(2, "0")}`;
+        for (let d = 1; d <= end.getUTCDate(); d++) {
+          const date = new Date(Date.UTC(year, month, d));
+          const dateStr = date.toISOString();
           detail.push({
             tanggal: dateStr,
             count: v.counts[dateStr] || 0,
@@ -335,13 +329,15 @@ export class MonitoringService {
     const year = base.getFullYear();
     const month = base.getMonth();
 
-    const monthStart = new Date(year, month, 1);
-    const monthEnd = new Date(year, month + 1, 0);
+    const monthStart = new Date(Date.UTC(year, month, 1));
+    const monthEnd = new Date(Date.UTC(year, month + 1, 0));
 
     const firstMonday = new Date(monthStart);
-    firstMonday.setDate(monthStart.getDate() - ((monthStart.getDay() + 6) % 7));
+    firstMonday.setUTCDate(
+      monthStart.getUTCDate() - ((monthStart.getUTCDay() + 6) % 7),
+    );
     const weekStarts: Date[] = [];
-    for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+    for (let d = new Date(firstMonday); d <= monthEnd; d.setUTCDate(d.getUTCDate() + 7)) {
       weekStarts.push(new Date(d));
     }
 
@@ -440,13 +436,15 @@ export class MonitoringService {
     const year = base.getFullYear();
     const month = base.getMonth();
 
-    const monthStart = new Date(year, month, 1);
-    const monthEnd = new Date(year, month + 1, 0);
+    const monthStart = new Date(Date.UTC(year, month, 1));
+    const monthEnd = new Date(Date.UTC(year, month + 1, 0));
 
     const firstMonday = new Date(monthStart);
-    firstMonday.setDate(monthStart.getDate() - ((monthStart.getDay() + 6) % 7));
+    firstMonday.setUTCDate(
+      monthStart.getUTCDate() - ((monthStart.getUTCDay() + 6) % 7),
+    );
     const weekStarts: Date[] = [];
-    for (let d = new Date(firstMonday); d <= monthEnd; d.setDate(d.getDate() + 7)) {
+    for (let d = new Date(firstMonday); d <= monthEnd; d.setUTCDate(d.getUTCDate() + 7)) {
       weekStarts.push(new Date(d));
     }
 
@@ -579,7 +577,7 @@ export class MonitoringService {
     });
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
 
     const result = { day1: [], day3: [], day7: [] } as Record<
       'day1' | 'day3' | 'day7',
@@ -594,7 +592,7 @@ export class MonitoringService {
         const d = new Date(last);
         d.setHours(0, 0, 0, 0);
         diff = Math.floor((today.getTime() - d.getTime()) / 86400000);
-        lastDate = d.toISOString().slice(0, 10);
+        lastDate = d.toISOString();
       }
 
       const entry = { userId: u.id, nama: u.nama, lastDate };
