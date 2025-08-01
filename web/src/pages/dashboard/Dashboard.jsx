@@ -2,7 +2,7 @@ import MonitoringTabs from "./components/MonitoringTabs";
 import StatsSummary from "./components/StatsSummary";
 import { useAuth } from "../auth/useAuth";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { ROLES } from "../../utils/roles";
 import Button from "../../components/ui/Button";
 import { handleAxiosError } from "../../utils/alerts";
@@ -41,6 +41,24 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [hasReportedToday, setHasReportedToday] = useState(false);
+
+  const handleMonthChange = useCallback(
+    (value) => {
+      if (value !== monthIndex) {
+        setMonthIndex(value);
+      }
+    },
+    [monthIndex]
+  );
+
+  const handleWeekChange = useCallback(
+    (value) => {
+      if (value !== weekIndex) {
+        setWeekIndex(value);
+      }
+    },
+    [weekIndex]
+  );
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -183,9 +201,9 @@ const Dashboard = () => {
         dailyData={dailyData}
         weeklyList={weeklyList}
         weekIndex={weekIndex}
-        onWeekChange={setWeekIndex}
+        onWeekChange={handleWeekChange}
         monthIndex={monthIndex}
-        onMonthChange={setMonthIndex}
+        onMonthChange={handleMonthChange}
         monthlyData={monthlyData}
       />
     </div>
