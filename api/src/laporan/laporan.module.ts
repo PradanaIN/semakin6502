@@ -10,5 +10,6 @@ import { NotificationsModule } from "../notifications/notifications.module";
   imports: [NotificationsModule],
   controllers: [LaporanController, TambahanController],
   providers: [PrismaService, LaporanService, TambahanService],
+  exports: [TambahanService],
 })
 export class LaporanModule {}

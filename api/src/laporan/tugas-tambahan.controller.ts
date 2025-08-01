@@ -4,11 +4,13 @@ import {
   Get,
   Body,
   UseGuards,
+  UsePipes,
   Req,
   Param,
   Query,
   Put,
   Delete,
+  ValidationPipe,
 } from "@nestjs/common";
 import { Request } from "express";
 import { TambahanService } from "./tugas-tambahan.service";
@@ -18,6 +20,7 @@ import { Roles } from "../common/guards/roles.decorator";
 import { ROLES } from "../common/roles.constants";
 import { AddTambahanDto } from "./dto/add-tambahan.dto";
 import { UpdateTambahanDto } from "./dto/update-tambahan.dto";
+import { SubmitTambahanLaporanDto } from "./dto/submit-tambahan-laporan.dto";
 import { AuthRequestUser } from "../common/auth-request-user.interface";
 
 @Controller("tugas-tambahan")
@@ -45,6 +48,17 @@ export class TambahanController {
     @Query('userId') userId?: string,
   ) {
     return this.tambahanService.getAll({ teamId, userId });
+  }
+
+  @Post(":id/laporan")
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  addLaporan(
+    @Param("id") id: string,
+    @Body() body: SubmitTambahanLaporanDto,
+    @Req() req: Request
+  ) {
+    const u = req.user as AuthRequestUser;
+    return this.tambahanService.addLaporan(id, body, u.userId, u.role);
   }
 
   @Get(":id")
