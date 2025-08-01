@@ -140,7 +140,7 @@ const Dashboard = () => {
           !!dailyRes.data.find((d) => d.tanggal === tanggal)?.adaKegiatan
         );
         setWeeklyList(normalizedWeeks);
-        setWeekIndex(currentIndex);
+        setWeekIndex((prev) => (prev !== currentIndex ? currentIndex : prev));
         setMonthlyData(monthlyRes.data);
       } catch (error) {
         if (error?.response && [401, 403].includes(error.response.status)) {
