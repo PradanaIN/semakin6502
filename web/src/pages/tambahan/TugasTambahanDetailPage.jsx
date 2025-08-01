@@ -419,7 +419,7 @@ export default function TugasTambahanDetailPage() {
                 />
               </div>
             </form>
-            <div className="flex justify-end space-x-2 pt-2">
+            <div className="flex justify-end gap-2 mt-6">
               <Button
                 variant="secondary"
                 onClick={async () => {
