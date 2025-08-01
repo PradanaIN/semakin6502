@@ -12,6 +12,20 @@ import dayjs from "../../utils/dayjs";
 const formatWita = (iso) =>
   dayjs.utc(iso).tz("Asia/Makassar").format("DD MMM YYYY HH:mm:ss");
 
+export const getWeekStarts = (month, year) => {
+  const firstOfMonth = new Date(Date.UTC(year, month, 1));
+  const monthEnd = new Date(Date.UTC(year, month + 1, 0));
+  const firstMonday = new Date(firstOfMonth);
+  const offset = (1 - firstOfMonth.getUTCDay() + 7) % 7;
+  firstMonday.setUTCDate(firstOfMonth.getUTCDate() + offset);
+
+  const starts = [];
+  for (let d = new Date(firstMonday); d <= monthEnd; d.setUTCDate(d.getUTCDate() + 7)) {
+    starts.push(new Date(d));
+  }
+  return starts;
+};
+
 export default function MonitoringPage() {
   const [tab, setTab] = useState("harian");
   const [monthIndex, setMonthIndex] = useState(new Date().getMonth());
@@ -58,26 +72,17 @@ export default function MonitoringPage() {
     getUpdate();
   }, []);
 
-  // Hitung awal minggu setiap kali bulan berubah
+  // Hitung awal minggu setiap kali bulan atau tahun berubah
   useEffect(() => {
-    const firstOfMonth = new Date(Date.UTC(year, monthIndex, 1));
-    const monthEnd = new Date(Date.UTC(year, monthIndex + 1, 0));
-    const firstMonday = new Date(firstOfMonth);
-    firstMonday.setUTCDate(
-      firstOfMonth.getUTCDate() - ((firstOfMonth.getUTCDay() + 6) % 7)
-    );
-
-    const starts = [];
-    for (
-      let d = new Date(firstMonday);
-      d <= monthEnd;
-      d.setUTCDate(d.getUTCDate() + 7)
-    ) {
-      starts.push(new Date(d));
-    }
+    const starts = getWeekStarts(monthIndex, year);
     setWeekStarts(starts);
     if (weekIndex >= starts.length) setWeekIndex(0);
   }, [monthIndex, year]);
+
+  // Reset ke minggu pertama saat bulan berubah
+  useEffect(() => {
+    setWeekIndex(0);
+  }, [monthIndex]);
 
   return (
     <div className="max-w-screen-xl mx-auto px-4 flex flex-col gap-4 pb-10">
