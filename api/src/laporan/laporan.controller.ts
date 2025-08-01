@@ -34,6 +34,7 @@ export class LaporanController {
 
   @Post()
   submit(@Body() body: SubmitLaporanDto, @Req() req: Request) {
+    console.log('Payload:', body);
     const u = req.user as AuthRequestUser;
     return this.laporanService.submit(body, u.userId, u.role);
   }

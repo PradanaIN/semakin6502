@@ -87,6 +87,7 @@ export class LaporanService {
     }
   }
   async submit(data: any, userId: string, role: string) {
+    console.log('Service Payload:', data);
     role = normalizeRole(role);
     if (role === ROLES.PIMPINAN) {
       throw new ForbiddenException("pimpinan tidak diizinkan");
