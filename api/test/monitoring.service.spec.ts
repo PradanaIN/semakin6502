@@ -90,8 +90,8 @@ describe('MonitoringService aggregated', () => {
     const res = await service.harianBulan('2024-05-10');
     expect(res.map((u) => u.nama)).toEqual(['A', 'B']);
     expect(res[0].detail.length).toBe(31);
-    expect(res[0].detail[1]).toEqual({ tanggal: '2024-05-02', count: 2 });
-    expect(res[1].detail[0]).toEqual({ tanggal: '2024-05-01', count: 1 });
+    expect(res[0].detail[1]).toEqual({ tanggal: '2024-05-02T00:00:00.000Z', count: 2 });
+    expect(res[1].detail[0]).toEqual({ tanggal: '2024-05-01T00:00:00.000Z', count: 1 });
   });
 
   it('mingguanBulan aggregates per week', async () => {
@@ -247,10 +247,10 @@ describe('MonitoringService aggregated', () => {
     const res = await service.laporanTerlambat();
 
     expect(res.day7).toEqual([
-      { userId: '1', nama: 'A', lastDate: '2024-05-02' },
+      { userId: '1', nama: 'A', lastDate: '2024-05-02T00:00:00.000Z' },
     ]);
     expect(res.day3).toEqual([
-      { userId: '2', nama: 'B', lastDate: '2024-05-05' },
+      { userId: '2', nama: 'B', lastDate: '2024-05-05T00:00:00.000Z' },
     ]);
     expect(res.day1).toEqual([]);
     jest.useRealTimers();

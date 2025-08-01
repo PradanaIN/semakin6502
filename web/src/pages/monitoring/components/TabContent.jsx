@@ -34,9 +34,7 @@ export default function TabContent({
     const fetchDaily = async () => {
       try {
         setLoading(true);
-        const first = new Date(year, monthIndex, 1)
-          .toISOString()
-          .slice(0, 10);
+        const first = new Date(Date.UTC(year, monthIndex, 1)).toISOString();
         const res = await axios.get("/monitoring/harian/bulan", {
           params: { tanggal: first, teamId: teamId || undefined },
         });
@@ -55,9 +53,7 @@ export default function TabContent({
       if (!weekStarts.length || activeTab !== "mingguan") return;
       try {
         setLoading(true);
-        const minggu = weekStarts[weekIndex]
-          .toISOString()
-          .slice(0, 10);
+        const minggu = new Date(weekStarts[weekIndex]).toISOString();
         const res = await axios.get("/monitoring/mingguan/all", {
           params: { minggu, teamId: teamId || undefined },
         });
@@ -76,9 +72,7 @@ export default function TabContent({
       if (activeTab !== "mingguan") return;
       try {
         setLoading(true);
-        const first = new Date(year, monthIndex, 1)
-          .toISOString()
-          .slice(0, 10);
+        const first = new Date(Date.UTC(year, monthIndex, 1)).toISOString();
         const res = await axios.get("/monitoring/mingguan/bulan", {
           params: { tanggal: first, teamId: teamId || undefined },
         });

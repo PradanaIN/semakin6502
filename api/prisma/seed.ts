@@ -449,6 +449,7 @@ async function main() {
     new Date("2025-07-14T00:00:00Z"),
     new Date("2025-07-31T00:00:00Z"),
   ];
+  sampleDates.forEach((d) => console.log("Seeded:", d.toISOString()));
   const tambahanRows: any[] = [];
   for (const m of members) {
     if (m.user.role === "admin") continue;

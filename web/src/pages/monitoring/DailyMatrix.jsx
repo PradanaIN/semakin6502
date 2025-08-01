@@ -1,5 +1,6 @@
 import { getHolidays } from "../../utils/holidays";
 import { useAuth } from "../auth/useAuth";
+import dayjs from "../../utils/dayjs";
 
 export const DailyMatrixRow = ({ user, boxClass, currentUser }) => {
   const isCurrentUser =
@@ -39,23 +40,29 @@ const DailyMatrix = ({ data = [] }) => {
   const { user: currentUser } = useAuth();
   if (!Array.isArray(data) || data.length === 0) return null;
 
-  const year = new Date(data[0].detail[0].tanggal).getFullYear();
-  const today = new Date().toISOString().slice(0, 10);
+  const year = dayjs
+    .utc(data[0].detail[0].tanggal)
+    .tz("Asia/Makassar")
+    .year();
+  const today = dayjs().tz("Asia/Makassar");
   const HOLIDAYS = getHolidays(year);
 
   const isWeekend = (iso) => {
-    const d = new Date(iso);
-    return d.getDay() === 0 || d.getDay() === 6;
+    const d = dayjs.utc(iso).tz("Asia/Makassar");
+    return d.day() === 0 || d.day() === 6;
   };
 
-  const isHoliday = (iso) => HOLIDAYS.includes(iso);
+  const isHoliday = (iso) =>
+    HOLIDAYS.includes(
+      dayjs.utc(iso).tz("Asia/Makassar").format("YYYY-MM-DD")
+    );
 
   const boxClass = (day) => {
     if (day.count > 0)
       return "bg-green-100 dark:bg-green-700 text-green-900 dark:text-green-100";
     if (isWeekend(day.tanggal) || isHoliday(day.tanggal))
       return "bg-blue-100 dark:bg-blue-700 text-blue-900 dark:text-blue-100";
-    if (day.tanggal < today)
+    if (dayjs.utc(day.tanggal).tz("Asia/Makassar").isBefore(today, "day"))
       return "bg-yellow-100 dark:bg-yellow-700 text-yellow-900 dark:text-yellow-100";
     return "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300";
   };
