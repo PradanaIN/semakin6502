@@ -20,9 +20,9 @@ export const DailyMatrixRow = ({ user, boxClass, currentUser }) => {
       >
         {user.nama}
       </td>
-      {user.detail.map((day, i) => (
+      {user.detail.map((day) => (
         <td
-          key={i}
+          key={day.tanggal}
           title={day.count ? `${day.count} laporan` : ""}
           className={`px-4 py-2 border border-gray-300 dark:border-gray-600 ${boxClass(
             day
