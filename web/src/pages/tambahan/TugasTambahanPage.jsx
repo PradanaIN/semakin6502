@@ -10,13 +10,12 @@ import { Plus, Eye } from "lucide-react";
 import DataTable from "../../components/ui/DataTable";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
-import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import MonthYearPicker from "../../components/ui/MonthYearPicker";
-import Select from "react-select";
-import { STATUS, formatStatus } from "../../utils/status";
 import Modal from "../../components/ui/Modal";
 import StatusBadge from "../../components/ui/StatusBadge";
+import Textarea from "../../components/ui/Textarea";
+import { STATUS } from "../../utils/status";
 import SearchInput from "../../components/SearchInput";
 import Pagination from "../../components/Pagination";
 import SelectDataShow from "../../components/ui/SelectDataShow";
@@ -50,8 +49,8 @@ export default function TugasTambahanPage() {
     teamId: "",
     kegiatanId: "",
     tanggal: new Date().toISOString().slice(0, 10),
-    status: STATUS.BELUM,
     deskripsi: "",
+    status: STATUS.BELUM,
     capaianKegiatan: "",
   });
   const [search, setSearch] = useState("");
@@ -164,10 +163,7 @@ export default function TugasTambahanPage() {
       !form.teamId ||
       !form.kegiatanId ||
       !form.tanggal ||
-      form.deskripsi.trim() === "" ||
-      form.capaianKegiatan.trim() === "" ||
-      !form.status ||
-      (form.status === STATUS.SELESAI_DIKERJAKAN && !form.buktiLink)
+      form.deskripsi.trim() === ""
     ) {
       showWarning("Lengkapi data", "Semua kolom wajib diisi");
       return;
@@ -176,7 +172,7 @@ export default function TugasTambahanPage() {
       const payload = { ...form };
       delete payload.teamId;
       Object.keys(payload).forEach((k) => {
-        if (payload[k] === "") delete payload[k];
+        if (payload[k] === "" && k !== "capaianKegiatan") delete payload[k];
       });
       await axios.post("/tugas-tambahan", payload);
       setShowForm(false);
@@ -418,7 +414,7 @@ export default function TugasTambahanPage() {
                   fetchKegiatanForTeam(tId);
                 }}
                 required
-                className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
               >
                 <option value="">Pilih Tim</option>
                 {teams
@@ -444,7 +440,7 @@ export default function TugasTambahanPage() {
                 }
                 disabled={!form.teamId}
                 required
-                className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
               >
                 <option value="">
                   {form.teamId
@@ -475,8 +471,9 @@ export default function TugasTambahanPage() {
                   setForm({ ...form, tanggal: e.target.value })
                 }
                 onClick={() => tanggalRef.current?.showPicker()}
+                onFocus={() => tanggalRef.current?.showPicker()}
                 required
-                className="w-full cursor-pointer rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                className="w-full cursor-pointer border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
               />
             </div>
 
@@ -485,7 +482,7 @@ export default function TugasTambahanPage() {
               <Label htmlFor="deskripsi">
                 Deskripsi Kegiatan <span className="text-red-500">*</span>
               </Label>
-              <textarea
+              <Textarea
                 id="deskripsi"
                 value={form.deskripsi}
                 onChange={(e) =>
@@ -493,72 +490,8 @@ export default function TugasTambahanPage() {
                 }
                 placeholder="Deskripsi kegiatan..."
                 required
-                className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white resize-y"
               />
             </div>
-
-            {/* Capaian */}
-            <div>
-              <Label htmlFor="capaianKegiatan">
-                Capaian Kegiatan <span className="text-red-500">*</span>
-              </Label>
-              <textarea
-                id="capaianKegiatan"
-                value={form.capaianKegiatan}
-                onChange={(e) =>
-                  setForm({ ...form, capaianKegiatan: e.target.value })
-                }
-                placeholder="Capaian kegiatan..."
-                required
-                className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white resize-y"
-              />
-            </div>
-
-            {/* Status */}
-            <div>
-              <Label htmlFor="status">
-                Status <span className="text-red-500">*</span>
-              </Label>
-              <select
-                id="status"
-                value={form.status}
-                onChange={(e) =>
-                  setForm({ ...form, status: e.target.value })
-                }
-                required
-                className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
-              >
-                <option value={STATUS.BELUM}>
-                  {formatStatus(STATUS.BELUM)}
-                </option>
-                <option value={STATUS.SEDANG_DIKERJAKAN}>
-                  {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
-                </option>
-                <option value={STATUS.SELESAI_DIKERJAKAN}>
-                  {formatStatus(STATUS.SELESAI_DIKERJAKAN)}
-                </option>
-              </select>
-            </div>
-
-            {/* Link Bukti (Jika selesai) */}
-            {form.status === STATUS.SELESAI_DIKERJAKAN && (
-              <div>
-                <Label htmlFor="buktiLink">
-                  Link Bukti <span className="text-red-500">*</span>
-                </Label>
-                <input
-                  id="buktiLink"
-                  type="url"
-                  value={form.buktiLink}
-                  onChange={(e) =>
-                    setForm({ ...form, buktiLink: e.target.value })
-                  }
-                  placeholder="https://..."
-                  required
-                  className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
-                />
-              </div>
-            )}
 
             <div className="flex justify-end gap-3 pt-4">
               <Button variant="secondary" onClick={handleCancel}>
