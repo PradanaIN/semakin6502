@@ -27,10 +27,12 @@ export const confirmCancel = (title = "Batalkan perubahan?") =>
 
 export const handleAxiosError = (error, defaultMessage = "Terjadi kesalahan") => {
   const message =
-    error?.response?.data?.message ||
-    (error?.request
-      ? "Tidak dapat terhubung ke server. Coba lagi nanti."
-      : defaultMessage);
+    error?.response?.status === 429
+      ? "Terlalu banyak permintaan, coba lagi beberapa saat lagi."
+      : error?.response?.data?.message ||
+        (error?.request
+          ? "Tidak dapat terhubung ke server. Coba lagi nanti."
+          : defaultMessage);
   showError("Error", message);
 };
 
