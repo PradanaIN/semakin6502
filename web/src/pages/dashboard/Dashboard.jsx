@@ -108,9 +108,34 @@ const Dashboard = () => {
         let partial = false;
 
         if (dailyRes.status === "fulfilled") {
-          setDailyData(dailyRes.value.data);
+          const apiDaily = Array.isArray(dailyRes.value.data)
+            ? dailyRes.value.data.filter(
+                (d) => d.tanggal && !isNaN(new Date(d.tanggal))
+              )
+            : [];
+
+          const apiMap = apiDaily.reduce((acc, cur) => {
+            acc[cur.tanggal] = cur;
+            return acc;
+          }, {});
+
+          const normalized = [];
+          for (
+            let d = new Date(monthStart);
+            d <= monthEnd;
+            d.setDate(d.getDate() + 1)
+          ) {
+            const tgl = formatISO(new Date(d));
+            normalized.push({
+              adaKegiatan: false,
+              ...apiMap[tgl],
+              tanggal: tgl,
+            });
+          }
+
+          setDailyData(normalized);
           setHasReportedToday(
-            !!dailyRes.value.data.find((d) => d.tanggal === tanggal)?.adaKegiatan
+            !!normalized.find((d) => d.tanggal === tanggal)?.adaKegiatan
           );
         } else {
           partial = true;
