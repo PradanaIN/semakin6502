@@ -14,6 +14,10 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    if (!form.identifier || !form.password) {
+      setError("Email/Username dan password wajib diisi.");
+      return;
+    }
     try {
       const res = await axios.post("/auth/login", form, {
         withCredentials: true,
@@ -72,6 +76,7 @@ export default function LoginPage() {
               value={form.identifier ?? ""}
               onChange={(e) => setForm({ ...form, identifier: e.target.value })}
               className="form-input"
+              required
             />
           </div>
 
@@ -90,6 +95,7 @@ export default function LoginPage() {
                 value={form.password ?? ""}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 className="form-input"
+                required
               />
               <button
                 type="button"
