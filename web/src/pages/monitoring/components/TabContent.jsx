@@ -34,7 +34,7 @@ export default function TabContent({
     const fetchDaily = async () => {
       try {
         setLoading(true);
-        const first = new Date(new Date().getFullYear(), monthIndex, 1)
+        const first = new Date(year, monthIndex, 1)
           .toISOString()
           .slice(0, 10);
         const res = await axios.get("/monitoring/harian/bulan", {
@@ -48,14 +48,16 @@ export default function TabContent({
       }
     };
     if (activeTab === "harian") fetchDaily();
-  }, [activeTab, monthIndex, teamId]);
+  }, [activeTab, monthIndex, teamId, year]);
 
   useEffect(() => {
     const fetchWeekly = async () => {
       if (!weekStarts.length || activeTab !== "mingguan") return;
       try {
         setLoading(true);
-        const minggu = weekStarts[weekIndex].toISOString().slice(0, 10);
+        const minggu = weekStarts[weekIndex]
+          .toISOString()
+          .slice(0, 10);
         const res = await axios.get("/monitoring/mingguan/all", {
           params: { minggu, teamId: teamId || undefined },
         });
@@ -67,14 +69,14 @@ export default function TabContent({
       }
     };
     fetchWeekly();
-  }, [activeTab, weekIndex, weekStarts, teamId]);
+  }, [activeTab, weekIndex, weekStarts, teamId, year]);
 
   useEffect(() => {
     const fetchWeeklyMonth = async () => {
       if (activeTab !== "mingguan") return;
       try {
         setLoading(true);
-        const first = new Date(new Date().getFullYear(), monthIndex, 1)
+        const first = new Date(year, monthIndex, 1)
           .toISOString()
           .slice(0, 10);
         const res = await axios.get("/monitoring/mingguan/bulan", {
@@ -88,7 +90,7 @@ export default function TabContent({
       }
     };
     fetchWeeklyMonth();
-  }, [activeTab, monthIndex, teamId]);
+  }, [activeTab, monthIndex, teamId, year]);
 
   useEffect(() => {
     const fetchMonthly = async () => {
