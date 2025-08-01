@@ -54,11 +54,17 @@ export class MonitoringService {
   }
 
   async mingguan(minggu: string, teamId?: string, userId?: string) {
-    const start = new Date(minggu);
+    const targetDate = new Date(minggu);
+    if (isNaN(targetDate.getTime()))
+      throw new BadRequestException("minggu tidak valid");
+
+    const mingguKe = getWeekOfMonth(targetDate);
+    const bulan = String(targetDate.getMonth() + 1);
+    const tahun = targetDate.getFullYear();
+
+    const start = new Date(targetDate);
     const offset = (start.getUTCDay() + 6) % 7; // days since Monday
     start.setUTCDate(start.getUTCDate() - offset);
-    if (isNaN(start.getTime()))
-      throw new BadRequestException("minggu tidak valid");
 
     const end = new Date(start);
     end.setUTCDate(start.getUTCDate() + 6);
@@ -76,9 +82,9 @@ export class MonitoringService {
     });
 
     const tugasWhere: any = {
-      minggu: getWeekOfMonth(start),
-      bulan: String(start.getMonth() + 1),
-      tahun: start.getFullYear(),
+      minggu: mingguKe,
+      bulan,
+      tahun,
     };
     if (teamId) tugasWhere.kegiatan = { teamId };
     if (userId) tugasWhere.pegawaiId = userId;
@@ -139,8 +145,8 @@ export class MonitoringService {
       : 0;
 
     return {
-      minggu: getWeekOfMonth(start),
-      bulan: monthName(start),
+      minggu: mingguKe,
+      bulan: monthName(targetDate),
       tanggal: `${start.toISOString()} - ${end.toISOString()}`,
       totalProgress,
       totalSelesai,
@@ -274,14 +280,16 @@ export class MonitoringService {
   }
 
   async mingguanAll(minggu: string, teamId?: string) {
-    const start = new Date(minggu);
-    const offset = (start.getDay() + 6) % 7;
-    start.setDate(start.getDate() - offset);
-    if (isNaN(start.getTime()))
+    const targetDate = new Date(minggu);
+    if (isNaN(targetDate.getTime()))
       throw new BadRequestException("minggu tidak valid");
 
+    const start = new Date(targetDate);
+    const offset = (start.getUTCDay() + 6) % 7;
+    start.setUTCDate(start.getUTCDate() - offset);
+
     const end = new Date(start);
-    end.setDate(start.getDate() + 6);
+    end.setUTCDate(start.getUTCDate() + 6);
 
     const where: any = { tanggal: { gte: start, lte: end } };
     if (teamId)
@@ -394,16 +402,23 @@ export class MonitoringService {
     teamId?: string,
     userId?: string,
   ) {
-    const start = new Date(minggu);
-    const offset = (start.getDay() + 6) % 7;
-    start.setDate(start.getDate() - offset);
-    if (isNaN(start.getTime()))
+    const targetDate = new Date(minggu);
+    if (isNaN(targetDate.getTime()))
       throw new BadRequestException("minggu tidak valid");
 
+    const mingguKe = getWeekOfMonth(targetDate);
+    const bulan = String(targetDate.getMonth() + 1);
+    const tahun = targetDate.getFullYear();
+
+    // Align to Monday for consistency even though it's not used afterward
+    const start = new Date(targetDate);
+    const offset = (start.getDay() + 6) % 7;
+    start.setDate(start.getDate() - offset);
+
     const where: any = {
-      minggu: getWeekOfMonth(start),
-      bulan: String(start.getMonth() + 1),
-      tahun: start.getFullYear(),
+      minggu: mingguKe,
+      bulan,
+      tahun,
     };
     if (teamId) where.kegiatan = { teamId };
     if (userId) where.pegawaiId = userId;
