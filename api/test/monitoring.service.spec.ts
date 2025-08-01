@@ -53,7 +53,7 @@ describe('MonitoringService aggregated', () => {
     const res = await service.mingguan('2024-05-01');
 
     expect(prisma.penugasan.findMany).toHaveBeenCalledWith({
-      where: { minggu: 5, bulan: '4', tahun: 2024 },
+      where: { minggu: 1, bulan: '5', tahun: 2024 },
       select: { status: true },
     });
 
