@@ -10,11 +10,10 @@ import { Plus, Eye } from "lucide-react";
 import DataTable from "../../components/ui/DataTable";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
-import Input from "../../components/ui/Input";
 import Label from "../../components/ui/Label";
 import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import Select from "react-select";
-import { STATUS, formatStatus } from "../../utils/status";
+import { STATUS } from "../../utils/status";
 import Modal from "../../components/ui/Modal";
 import StatusBadge from "../../components/ui/StatusBadge";
 import SearchInput from "../../components/SearchInput";
@@ -25,6 +24,12 @@ import { useRef } from "react";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 import formatDate from "../../utils/formatDate";
+
+function getWeekOfMonth(date) {
+  const first = new Date(date.getFullYear(), date.getMonth(), 1);
+  const offset = (first.getDay() + 6) % 7;
+  return Math.floor((date.getDate() + offset - 1) / 7) + 1;
+}
 
 function sortTambahan(list, teamId) {
   return [...list].sort((a, b) => {
@@ -50,9 +55,7 @@ export default function TugasTambahanPage() {
     teamId: "",
     kegiatanId: "",
     tanggal: new Date().toISOString().slice(0, 10),
-    status: STATUS.BELUM,
     deskripsi: "",
-    capaianKegiatan: "",
   });
   const [search, setSearch] = useState("");
   const [filterBulan, setFilterBulan] = useState("");
@@ -146,9 +149,7 @@ export default function TugasTambahanPage() {
       teamId: "",
       kegiatanId: "",
       tanggal: new Date().toISOString().slice(0, 10),
-      status: STATUS.BELUM,
       deskripsi: "",
-      capaianKegiatan: "",
     });
     setKegiatan([]);
     setShowForm(true);
@@ -164,23 +165,29 @@ export default function TugasTambahanPage() {
       !form.teamId ||
       !form.kegiatanId ||
       !form.tanggal ||
-      form.deskripsi.trim() === "" ||
-      form.capaianKegiatan.trim() === "" ||
-      !form.status ||
-      (form.status === STATUS.SELESAI_DIKERJAKAN && !form.buktiLink)
+      form.deskripsi.trim() === ""
     ) {
       showWarning("Lengkapi data", "Semua kolom wajib diisi");
       return;
     }
+    const team = teams.find((t) => t.id === form.teamId);
+    const pegawaiIds = team?.members?.map((m) => m.userId) || [];
+    if (pegawaiIds.length === 0) {
+      showWarning("Tim kosong", "Tim ini tidak memiliki anggota");
+      return;
+    }
     try {
-      const payload = { ...form };
-      delete payload.teamId;
-      Object.keys(payload).forEach((k) => {
-        if (payload[k] === "") delete payload[k];
-      });
-      await axios.post("/tugas-tambahan", payload);
+      const d = new Date(form.tanggal);
+      const payload = {
+        kegiatanId: form.kegiatanId,
+        pegawaiIds,
+        deskripsi: form.deskripsi,
+        minggu: getWeekOfMonth(d),
+        bulan: d.getMonth() + 1,
+        tahun: d.getFullYear(),
+      };
+      await axios.post("/penugasan/bulk", payload);
       setShowForm(false);
-      fetchData();
       showSuccess("Berhasil", "Data disimpan");
     } catch (err) {
       handleAxiosError(err, "Gagal menyimpan");
@@ -350,7 +357,7 @@ export default function TugasTambahanPage() {
           {canManage && (
             <Button onClick={openCreate} className="add-button">
               <Plus size={16} />
-              <span className="hidden sm:inline">Tugas Tambahan</span>
+              <span className="hidden sm:inline">Penugasan</span>
             </Button>
           )}
         </div>
@@ -389,14 +396,11 @@ export default function TugasTambahanPage() {
       {canManage && showForm && (
         <Modal
           onClose={() => setShowForm(false)}
-          titleId="tugas-tambahan-modal-title"
+          titleId="penugasan-modal-title"
         >
           <div className="mb-4 flex items-center justify-between">
-            <h2
-              id="tugas-tambahan-modal-title"
-              className="text-xl font-semibold"
-            >
-              Tambah Tugas Tambahan
+            <h2 id="penugasan-modal-title" className="text-xl font-semibold">
+              Tambah Penugasan
             </h2>
             <p className="text-xs text-red-600 dark:text-red-500">
               * Wajib diisi
@@ -475,6 +479,7 @@ export default function TugasTambahanPage() {
                   setForm({ ...form, tanggal: e.target.value })
                 }
                 onClick={() => tanggalRef.current?.showPicker()}
+                onFocus={() => tanggalRef.current?.showPicker()}
                 required
                 className="w-full cursor-pointer rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
               />
@@ -496,69 +501,6 @@ export default function TugasTambahanPage() {
                 className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white resize-y"
               />
             </div>
-
-            {/* Capaian */}
-            <div>
-              <Label htmlFor="capaianKegiatan">
-                Capaian Kegiatan <span className="text-red-500">*</span>
-              </Label>
-              <textarea
-                id="capaianKegiatan"
-                value={form.capaianKegiatan}
-                onChange={(e) =>
-                  setForm({ ...form, capaianKegiatan: e.target.value })
-                }
-                placeholder="Capaian kegiatan..."
-                required
-                className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white resize-y"
-              />
-            </div>
-
-            {/* Status */}
-            <div>
-              <Label htmlFor="status">
-                Status <span className="text-red-500">*</span>
-              </Label>
-              <select
-                id="status"
-                value={form.status}
-                onChange={(e) =>
-                  setForm({ ...form, status: e.target.value })
-                }
-                required
-                className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
-              >
-                <option value={STATUS.BELUM}>
-                  {formatStatus(STATUS.BELUM)}
-                </option>
-                <option value={STATUS.SEDANG_DIKERJAKAN}>
-                  {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
-                </option>
-                <option value={STATUS.SELESAI_DIKERJAKAN}>
-                  {formatStatus(STATUS.SELESAI_DIKERJAKAN)}
-                </option>
-              </select>
-            </div>
-
-            {/* Link Bukti (Jika selesai) */}
-            {form.status === STATUS.SELESAI_DIKERJAKAN && (
-              <div>
-                <Label htmlFor="buktiLink">
-                  Link Bukti <span className="text-red-500">*</span>
-                </Label>
-                <input
-                  id="buktiLink"
-                  type="url"
-                  value={form.buktiLink}
-                  onChange={(e) =>
-                    setForm({ ...form, buktiLink: e.target.value })
-                  }
-                  placeholder="https://..."
-                  required
-                  className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
-                />
-              </div>
-            )}
 
             <div className="flex justify-end gap-3 pt-4">
               <Button variant="secondary" onClick={handleCancel}>
