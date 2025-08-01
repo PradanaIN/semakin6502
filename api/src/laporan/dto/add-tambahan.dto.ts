@@ -1,4 +1,4 @@
-import { IsDateString, IsInt, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsOptional, IsString } from "class-validator";
 import { Transform } from "class-transformer";
 
 export class AddTambahanDto {
