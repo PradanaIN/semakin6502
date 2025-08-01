@@ -1,7 +1,9 @@
+import React, { useState } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import MonitoringTabs from "../pages/dashboard/components/MonitoringTabs";
 import months from "../utils/months";
 import userEvent from "@testing-library/user-event";
+import { getWeekStarts } from "../pages/monitoring/MonitoringPage";
 
 globalThis.ResizeObserver = class {
   observe() {}
@@ -78,4 +80,46 @@ test("changing month and week selections does not throw", async () => {
   await user.click(screen.getByRole("button", { name: /Minggu 1/i }));
   await user.click(await screen.findByText(/Minggu 2/i));
   expect(onWeekChange).toHaveBeenCalledWith(1);
+});
+
+test("week 1 for June starts with a June date", () => {
+  const starts = getWeekStarts(5, 2024);
+  expect(starts[0].getUTCMonth()).toBe(5);
+});
+
+test("changing month resets week index", async () => {
+  const user = userEvent.setup();
+
+  const Wrapper = () => {
+    const [month, setMonth] = useState(5); // June
+    const [week, setWeek] = useState(2); // third week
+    const weeks = Array.from({ length: 5 }, (_, i) => ({ minggu: i + 1 }));
+    const handleMonth = (m) => {
+      setMonth(m);
+      setWeek(0);
+    };
+    return (
+      <MonitoringTabs
+        dailyData={[]}
+        weeklyList={weeks}
+        weekIndex={week}
+        onWeekChange={setWeek}
+        monthIndex={month}
+        onMonthChange={handleMonth}
+        monthlyData={[]}
+        year={2024}
+        onYearChange={() => {}}
+      />
+    );
+  };
+
+  render(<Wrapper />);
+
+  await user.click(screen.getByRole("tab", { name: /mingguan/i }));
+  expect(screen.getByText(/Minggu 3/i)).toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: months[5] }));
+  await user.click(await screen.findByText(months[6]));
+
+  expect(screen.getByText(/Minggu 1/i)).toBeInTheDocument();
 });
