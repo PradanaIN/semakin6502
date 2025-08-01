@@ -74,33 +74,31 @@ const Dashboard = () => {
         if (user?.role === ROLES.KETUA && user?.teamId)
           filters.teamId = user.teamId;
 
-        const weeklyPromises = weekStarts.map((d) =>
-          axios
-            .get("/monitoring/mingguan", {
-              params: { minggu: formatISO(d), ...filters },
-            })
-            .then((res) => res.data)
-        );
-
-        const tugasPromises = weekStarts.map((d) =>
-          axios
-            .get("/monitoring/penugasan/minggu", {
-              params: { minggu: formatISO(d), ...filters },
-            })
-            .then((res) => res.data)
-        );
-
-        const [dailyRes, weeklyArray, monthlyRes, tugasArray] =
+        const [dailyRes, weeklyRes, monthlyRes, tugasRes] =
           await Promise.all([
             axios.get("/monitoring/harian/bulan", {
               params: { tanggal: formatISO(monthStart), ...filters },
             }),
-            Promise.all(weeklyPromises),
+            axios.get("/monitoring/mingguan/bulan", {
+              params: { tanggal: formatISO(monthStart), ...filters },
+            }),
             axios.get("/monitoring/bulanan", {
               params: { year: String(year), ...filters },
             }),
-            Promise.all(tugasPromises),
+            axios.get("/monitoring/penugasan/bulan", {
+              params: { tanggal: formatISO(monthStart), ...filters },
+            }),
           ]);
+
+        const weeklyArray = Array.isArray(weeklyRes.data)
+          ? weeklyRes.data
+          : [];
+        const tugasArray = Array.isArray(tugasRes.data) ? tugasRes.data : [];
+        const tugasMap = tugasArray.reduce((acc, t, idx) => {
+          const i = typeof t.minggu === "number" ? t.minggu - 1 : idx;
+          acc[i] = t;
+          return acc;
+        }, {});
 
         const normalizedWeeks = weeklyArray.map((w, i) => {
           const [sIso, eIso] = w.tanggal.split(" - ");
@@ -131,7 +129,7 @@ const Dashboard = () => {
             totalSelesai,
             totalTugas,
             totalProgress,
-            penugasan: tugasArray[i],
+            penugasan: tugasMap[i] || {},
           };
         });
 
