@@ -61,12 +61,6 @@ const getCurrentWeek = () => {
 export default function PenugasanPage() {
   const { user } = useAuth();
   const canManage = [ROLES.ADMIN, ROLES.KETUA].includes(user?.role);
-  const showPegawaiColumn = useMemo(
-    () =>
-      viewTab === "all" ||
-      [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role),
-    [user, viewTab]
-  );
   const navigate = useNavigate();
 
   // --- State
@@ -96,6 +90,13 @@ export default function PenugasanPage() {
   // Default tab is "Tugas Saya" to show the current user's tasks first
   const [viewTab, setViewTab] = useState("mine");
   const [formTouched, setFormTouched] = useState(false); // for validation
+
+  const showPegawaiColumn = useMemo(
+    () =>
+      viewTab === "all" ||
+      [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role),
+    [user, viewTab]
+  );
 
   // --- Ref for initial focus
   const descriptionRef = useRef();
