@@ -40,7 +40,7 @@ const DailyMatrix = ({ data = [] }) => {
   if (!Array.isArray(data) || data.length === 0) return null;
 
   const year = new Date(data[0].detail[0].tanggal).getFullYear();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString("en-CA");
   const HOLIDAYS = getHolidays(year);
 
   const isWeekend = (iso) => {

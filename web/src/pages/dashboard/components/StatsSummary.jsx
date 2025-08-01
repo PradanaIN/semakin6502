@@ -4,7 +4,7 @@ import React from "react";
 const StatsSummary = ({ weeklyData }) => {
   if (!weeklyData) return null;
 
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = new Date().toLocaleDateString("en-CA");
   const today = weeklyData.detail?.find((d) => d.tanggal === todayStr) || {};
 
   const tugasHariIni = today.selesai || 0;

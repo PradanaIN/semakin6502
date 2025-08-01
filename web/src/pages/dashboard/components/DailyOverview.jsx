@@ -11,7 +11,7 @@ const DailyOverview = ({ data = [] }) => {
     (day) => !isNaN(new Date(day.tanggal))
   );
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString("en-CA");
   const currentYear = new Date(today).getFullYear();
 
   const formatDate = (iso) => {

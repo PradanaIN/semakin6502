@@ -11,7 +11,7 @@ export default function WeeklyTasksPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const today = new Date().toISOString().slice(0, 10);
+        const today = new Date().toLocaleDateString("en-CA");
         const res = await axios.get("/penugasan/minggu/all", { params: { minggu: today } });
         const list = [];
         (res.data || []).forEach((u) => {
