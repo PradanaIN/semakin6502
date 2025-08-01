@@ -713,7 +713,7 @@ export default function PenugasanDetailPage() {
             </form>
 
             {/* Aksi tombol */}
-            <div className="flex justify-end gap-3 pt-4">
+            <div className="flex justify-end gap-2 mt-6">
               <Button
                 variant="secondary"
                 onClick={async () => {
