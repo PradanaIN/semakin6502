@@ -1,173 +1,121 @@
-# 📦 SEMAKIN 6502 API (Backend)
+# 📦 SEMAKIN 6502 API
 
-Ini adalah backend resmi dari aplikasi **SEMAKIN 6502** (Sistem Evaluasi dan Monitoring Kinerja), dibangun dengan **NestJS**, **Prisma ORM**, dan **MySQL**.
+Backend resmi aplikasi **SEMAKIN 6502** dibangun dengan **NestJS**, **Prisma ORM**, dan **MySQL**. Layanan ini menyediakan otentikasi berbasis JWT, manajemen kegiatan, pelaporan harian, serta berbagai endpoint monitoring kinerja pegawai.
 
----
+## Teknologi Utama
 
-## 🚀 Teknologi
+- Node.js + NestJS
+- Prisma ORM (MySQL)
+- JWT Authentication dengan Role Based Access Control
+- Scheduler untuk notifikasi otomatis
+- Rate limiting dengan `@nestjs/throttler`
 
-- **Node.js** + **NestJS**
-- **Prisma ORM** untuk akses database
-- **MySQL** (database: `semakin_6502`)
-- **JWT Authentication** dengan Role-Based Access Control
-- Modular struktur (`/auth`, `/users`, `/teams`, dst)
-
----
-
-## 📁 Struktur Folder
+## Struktur Direktori
 
 ```
 api/
 ├── src/
-│   ├── auth/            # Login, JWT
-│   ├── users/           # Manajemen pengguna
-│   ├── teams/           # Tim & anggota tim
-│   ├── kegiatan/        # Master kegiatan & penugasan
-│   ├── laporan/         # Laporan harian & tambahan
-│   ├── monitoring/      # Rekap kinerja (harian, mingguan, bulanan)
-│   └── app.module.ts    # Modul utama
+│   ├── auth/            # login & manajemen token
+│   ├── users/           # manajemen pengguna
+│   ├── teams/           # data tim dan anggotanya
+│   ├── kegiatan/        # master kegiatan & penugasan
+│   ├── laporan/         # laporan harian & tugas tambahan
+│   ├── monitoring/      # rekap harian/mingguan/bulanan
+│   ├── notifications/   # notifikasi in-app
+│   ├── common/          # utilitas & guard bersama
+│   └── main.ts          # entrypoint aplikasi
 ├── prisma/
-│   ├── schema.prisma    # Skema Prisma (MySQL)
-│   └── seed.ts          # Data dummy awal
-├── .env                 # Konfigurasi DB & JWT
-├── package.json
-└── tsconfig.json
+│   ├── schema.prisma    # skema database
+│   └── seed.ts          # script seeding data dummy
+└── test/                # unit & integration test
 ```
 
----
+## Persiapan & Instalasi
 
-## ⚙️ Setup & Instalasi
+1. **Instal dependensi**
+   ```bash
+   cd api
+   npm install
+   ```
+2. **Konfigurasi variabel lingkungan** (`.env`)
 
-1. **Clone repo**
+   | Nama               | Keterangan                                                                     |
+   |--------------------|---------------------------------------------------------------------------------|
+   | `DATABASE_URL`     | URL koneksi MySQL, misal `mysql://user:pass@localhost:3306/semakin_6502`        |
+   | `JWT_SECRET`       | *Required.* Rahasia untuk penandatanganan JWT                                   |
+   | `PORT`             | Port HTTP (opsional, default `3000`)                                           |
+   | `CORS_ORIGIN`      | Daftar origin yang diizinkan, pisahkan dengan koma                             |
+   | `THROTTLE_TTL`     | Masa berlaku rate limiting dalam detik (opsional, default `900`)               |
+   | `THROTTLE_LIMIT`   | Jumlah request per TTL (opsional, default `100`)                               |
+   | `COOKIE_DOMAIN`    | Domain cookie (opsional)                                                       |
+   | `COOKIE_SAMESITE`  | Nilai SameSite cookie (opsional)                                               |
+
+3. **Inisialisasi database**
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   npm run seed   # memuat data dummy & pengguna demo
+   ```
+4. **Menjalankan server development**
+   ```bash
+   npm run start:dev
+   ```
+   Backend akan tersedia di `http://localhost:3000` (atau sesuai `PORT`).
+
+## Skrip NPM Penting
+
+| Perintah            | Fungsi                             |
+|--------------------|------------------------------------|
+| `npm run start:dev`| Menjalankan server NestJS dengan reload otomatis |
+| `npm run build`    | Membangun berkas produksi di `dist/` |
+| `npm run start`    | Menjalankan server dari hasil build  |
+| `npm test`         | Menjalankan semua unit test          |
+| `npm run lint`     | Menjalankan ESLint                   |
+| `npm run seed`     | Menjalankan Prisma seed              |
+
+## Otentikasi & Role
+
+Aplikasi menggunakan JWT yang dikirim via cookie dan header Authorization. Setiap pengguna memiliki salah satu role berikut:
+
+| Role        | Akses utama                                                |
+|-------------|------------------------------------------------------------|
+| `admin`     | CRUD user & tim, akses penuh monitoring                     |
+| `pimpinan`  | Membaca seluruh monitoring                                 |
+| `ketua_tim` | Mengelola kegiatan, penugasan, monitoring tim               |
+| `anggota`   | Mengisi laporan harian & tugas tambahan                    |
+
+## Rate Limiting
+
+Rate limit global diterapkan dengan `@nestjs/throttler`. Defaultnya 100 request per 15 menit per alamat IP. Nilai dapat diubah melalui `THROTTLE_TTL` dan `THROTTLE_LIMIT` pada `.env`.
+
+## Endpoint Penting
+
+| Method | Endpoint                     | Deskripsi                                        |
+|--------|------------------------------|--------------------------------------------------|
+| GET    | `/health`                    | Mengecek status server                           |
+| POST   | `/auth/login`                | Login pengguna (`identifier`, `password`)        |
+| GET    | `/users`                     | Daftar semua pengguna                            |
+| GET    | `/teams`                     | Daftar tim                                       |
+| POST   | `/master-kegiatan`           | Menambah master kegiatan                         |
+| POST   | `/penugasan`                 | Memberi penugasan ke anggota                     |
+| POST   | `/laporan-harian`            | Mengirim laporan harian                          |
+| POST   | `/tugas-tambahan`            | Mengirim laporan tugas tambahan                  |
+| GET    | `/monitoring/harian`         | Monitoring harian                                |
+| GET    | `/monitoring/mingguan/all`   | Monitoring mingguan semua pegawai               |
+| GET    | `/monitoring/bulanan/all`    | Monitoring bulanan semua pegawai                |
+| GET    | `/monitoring/laporan/terlambat` | Daftar pegawai yang terlambat membuat laporan |
+
+## Zona Waktu
+
+Seluruh perhitungan tanggal mengasumsikan server berjalan pada zona waktu **UTC**. Kirim tanggal dalam format `YYYY-MM-DD` agar Node.js mem-parsing sebagai UTC.
+
+## Pengujian
+
+Jalankan seluruh unit test dengan:
 ```bash
-git clone https://github.com/namauser/semakin-6502.git
-cd semakin-6502/api
+npm test
 ```
 
-2. **Install dependencies**
-```bash
-npm install
-```
+## Lisensi
 
-3. **Konfigurasi environment**
-Buat file `.env` dan isi (nilai `JWT_SECRET` wajib diisi, server akan gagal start jika kosong):
-```
-DATABASE_URL="mysql://root:password@localhost:3306/semakin_6502"
-JWT_SECRET="your_jwt_secret_here"  # wajib diisi
-PORT=3000  # opsional, default 3000
-CORS_ORIGIN="http://localhost:5173"
-# COOKIE_DOMAIN=localhost       # opsional
-# COOKIE_SAMESITE=lax           # opsional
-```
-Jika `JWT_SECRET` tidak diatur, aplikasi akan langsung keluar dengan error.
-`CORS_ORIGIN` opsional, isi dengan satu atau beberapa origin (pisahkan koma)
-untuk membatasi akses CORS.
-
-Fitur notifikasi tidak memerlukan variabel tambahan. Jadwal pengingat harian
-aktif secara otomatis setiap pagi.
-
-4. **Setup database**
-```bash
-npx prisma generate
-npx prisma db push
-```
-
-5. **Seed data dummy**
-```bash
-npm run seed  # menjalankan `prisma db seed` dan otomatis memuat variabel `.env`
-```
-Script ini juga menambahkan pengguna demo dengan laporan terakhir 1, 3, dan 7 hari sebelum tanggal `BASE_DATE` di `prisma/seed.ts`.
-`BASE_DATE` ditetapkan ke `2025-07-31T00:00:00Z` agar data dummy konsisten pada bulan Juni dan Juli.
-
-6. **Jalankan server**
-```bash
-npm run start:dev
-```
-
-Server berjalan di: `http://localhost:${PORT}` (default 3000)
-
-Untuk pengecekan cepat, buka `/health`:
-
-```bash
-curl http://localhost:${PORT}/health
-# {"status":"ok"}
-```
-
-## ⏱️ Rate Limiting
-
-Aplikasi menerapkan rate limit global menggunakan `@nestjs/throttler`.
-Secara bawaan setiap IP dibatasi **100 request** setiap **15 menit**.
-Nilai batas ini dapat diubah lewat variabel lingkungan `THROTTLE_TTL`
-(dalam detik) dan `THROTTLE_LIMIT`.
-
----
-
-## 🔐 Role & Akses
-
-| Role       | Akses sistem |
-|------------|------------------------------------------------|
-| admin      | CRUD user, CRUD tim, monitoring |
-| pimpinan   | Melihat monitoring semua |
-| ketua tim  | Mengelola kegiatan dan penugasan |
-| anggota tim| Hak akses berdasarkan keanggotaan tim |
-
-## 📬 Endpoint Penting
-
-| Method | Endpoint                   | Deskripsi                    | Role     |
-|--------|----------------------------|------------------------------|----------|
-| GET    | `/health`                  | Cek apakah backend hidup    | semua    |
-| POST   | `/auth/login`              | Login user & dapatkan token (body: `{ identifier, password }`) | semua    |
-| GET    | `/users`                   | Lihat semua user             | admin    |
-| GET    | `/teams`                   | Daftar tim                   | admin    |
-| POST   | `/master-kegiatan`         | Tambah kegiatan              | ketua tim    |
-| POST   | `/penugasan`               | Assign penugasan             | ketua tim    |
-| POST   | `/laporan-harian`          | Laporan kegiatan harian      | anggota tim |
-| POST   | `/tugas-tambahan`          | Laporan tugas tambahan       | anggota tim |
-| GET    | `/tugas-tambahan/all`     | Lihat semua tugas tambahan (query: `teamId`, `userId` opsional) | admin |
-| GET    | `/monitoring/harian`       | Monitoring harian            | semua    |
-| GET    | `/monitoring/harian/all`   | Monitoring harian semua pegawai (query: `tanggal`, `teamId` opsional) | admin, pimpinan, ketua tim |
-| GET    | `/monitoring/harian/bulan` | Rekap harian sebulan penuh per pegawai (query: `tanggal`, `teamId` opsional) | admin, pimpinan, ketua tim |
-| GET    | `/monitoring/mingguan/all` | Monitoring mingguan semua pegawai (query: `minggu`, `teamId` opsional) | admin, pimpinan, ketua tim |
-| GET    | `/monitoring/mingguan/bulan` | Rekap mingguan per pegawai dalam sebulan (query: `tanggal`, `teamId` opsional) | admin, pimpinan, ketua tim |
-| GET    | `/monitoring/bulanan/all`  | Monitoring bulanan semua pegawai (query: `year`, `bulan` opsional, `teamId` opsional) | admin, pimpinan, ketua tim |
-| GET    | `/monitoring/bulanan/matrix` | Matriks bulanan per user (query: `year`, `teamId` opsional) | admin, pimpinan, ketua tim |
-| GET    | `/monitoring/laporan/terlambat` | Daftar pegawai terlambat mengisi laporan (query: `teamId` opsional) | admin, pimpinan, ketua tim |
-| GET    | `/notifications`           | Daftar notifikasi user       | login |
-| POST   | `/notifications/read-all`  | Tandai semua notifikasi user | login |
-| POST   | `/notifications/:id/read`  | Tandai satu notifikasi       | login |
-
-Endpoint `/tugas-tambahan/all` memungkinkan admin melihat seluruh laporan tugas tambahan.
-Gunakan parameter opsional `teamId` atau `userId` untuk memfilter hasil.
-
-Format hasil: objek `{ day1, day3, day7 }`. Akun admin dan pimpinan tidak ditampilkan.
-
-Format hasil: array per pengguna, masing-masing memiliki array 12 objek bulan.
-
-## 🕒 Zona Waktu
-
-Semua kalkulasi tanggal pada backend mengasumsikan server berjalan dalam
-timezone **UTC**. Pastikan data `tanggal` yang dikirim menggunakan format ISO
-`YYYY-MM-DD` sehingga diparse sebagai waktu UTC oleh Node.js. Apabila server
-dijalankan dengan timezone berbeda, hasil perhitungan tanggal bisa bergeser.
-
----
-
-## 🧪 Uji API
-
-Gunakan Postman:
-1. Login → dapatkan JWT token
-2. Tambahkan `Authorization: Bearer <token>` pada setiap request selanjutnya
-
----
-
-## 👥 Kontribusi
-
-1. Fork project
-2. Buat branch: `feature/nama-fitur`
-3. Pull request
-
----
-
-## 📄 Lisensi
-
-MIT License — bebas digunakan dengan menyebut sumber.
+MIT License – silakan menggunakan atau memodifikasi dengan menyertakan atribusi.

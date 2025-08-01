@@ -1,68 +1,78 @@
 # SEMAKIN 6502
 
-SEMAKIN 6502 (Sistem Evaluasi dan Monitoring Kinerja) is an internal tool for tracking daily activities and monitoring team performance.
+SEMAKIN 6502 (Sistem Evaluasi dan Monitoring Kinerja) adalah aplikasi internal untuk mencatat aktivitas harian pegawai, memberi tugas mingguan maupun tambahan, serta menampilkan rekap kinerja bagi pimpinan.
 
-This repository contains both the backend API and the frontend web application.
+Repositori ini merupakan **monorepo** yang berisi dua proyek utama:
 
-## Projects
+- **api/** – backend NestJS + Prisma + MySQL.
+- **web/** – frontend React + Vite + Tailwind.
+- **docker/** – skrip dan konfigurasi docker-compose untuk menjalankan stack secara terintegrasi.
 
-- **api/** – NestJS backend using Prisma and MySQL. Details and full installation instructions are available in [api/README.md](api/README.md).
-- **web/** – React + Vite frontend. Usage notes are provided in [web/README.md](web/README.md).
+## Prasyarat
 
-## Quick Start
+- [Node.js](https://nodejs.org/) ≥ 18
+- [npm](https://www.npmjs.com/) (terpasang bersama Node.js)
+- [MySQL](https://www.mysql.com/) 8 untuk menjalankan backend secara lokal
+- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/) (opsional, jika ingin menjalankan melalui kontainer)
 
-1. **Clone the repository**
+## Struktur Direktori
+
+```
+semakin6502/
+├── api/            # Backend NestJS
+├── web/            # Frontend React + Vite
+├── docker/         # Konfigurasi Docker & skrip inisialisasi
+├── docker-compose.yml
+└── README.md
+```
+
+## Memulai Pengembangan Lokal
+
+1. **Kloning repositori**
    ```bash
    git clone <repo-url>
    cd semakin6502
    ```
-2. **Install dependencies**
+2. **Instal dependensi**
    ```bash
    cd api && npm install
-   # optional: run tests
-   npm test
    cd ../web && npm install
    ```
-3. **Configure environment variables** following the examples in each subproject.
-4. **Run the development servers**
+3. **Konfigurasi environment** sesuai dengan contoh yang terdapat pada masing‑masing subproyek (`api/.env` dan `web/.env`).
+4. **Menjalankan server pengembangan**
    ```bash
-   cd api && npm run start:dev
-   # in a second terminal
-   cd ../web && npm run dev
+   # Terminal 1 – backend
+   cd api
+   npm run start:dev
+
+   # Terminal 2 – frontend
+   cd web
+   npm run dev
+   ```
+5. **Pengujian**
+   ```bash
+   cd api && npm test
+   cd ../web && npm test
    ```
 
-Check each subproject README for detailed configuration and feature descriptions.
+Backend akan berjalan pada `http://localhost:3000` dan frontend pada `http://localhost:5173`.
 
+## Menjalankan dengan Docker
 
-## Docker Compose
-
-A `docker-compose.yml` file is provided to start all services with a single command.
-Make sure Docker and Docker Compose are installed and then run:
+Semua layanan dapat dijalankan menggunakan Docker Compose. Pastikan Docker telah terinstal, kemudian jalankan:
 
 ```bash
 docker-compose up --build
 ```
 
-The backend is available at `http://localhost:3000` and the frontend at `http://localhost:5173`.
-MySQL data persists in the `mysql-data` volume and is initialized from `docker/mysql/init.sql`.
+Docker akan menyiapkan kontainer API, web, dan MySQL. Data MySQL tersimpan pada volume `mysql-data` dan akan diinisialisasi oleh skrip `docker/mysql/init.sql`.
 
-## Naming Conventions
+## Kontribusi
 
-Code and database fields use **camelCase**. When adding new API DTOs or Prisma models, prefer English terms and camelCase naming (e.g. `teamId`, `namaKegiatan`). Legacy snake_case columns remain for compatibility but new contributions should avoid them.
+1. Fork proyek ini
+2. Buat branch fitur: `git checkout -b feature/nama-fitur`
+3. Ajukan pull request ke repo utama
 
-## Role-Based Navigation
+## Lisensi
 
-Available sidebar links depend on the authenticated user's role:
-
-- **Admin** – access to all pages.
-- **Ketua Tim** – Dashboard, Tugas Mingguan, Tugas Tambahan, Laporan Harian and Master Kegiatan.
-- **Pimpinan** – Access to Monitoring and Keterlambatan. Read-only access to “Tugas Mingguan” and “Tugas Tambahan” (labelled “Data Pegawai” in the sidebar).
-
-## Monitoring
-
-The monitoring pages show aggregated progress reports. A new endpoint
-`GET /monitoring/last-update` returns the most recent `tanggal` from
-`laporanHarian` as an ISO timestamp. Both the Monitoring and Keterlambatan
-pages display this value with a note "Data terakhir diperbarui" formatted
-in WITA (UTC+8).
-
+Proyek ini dirilis dengan lisensi [MIT](LICENSE).
