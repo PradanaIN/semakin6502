@@ -1,9 +1,11 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, ForbiddenException } from "@nestjs/common";
 import { ulid } from "ulid";
 import { ROLES } from "../common/roles.constants";
 import { PrismaService } from "../prisma.service";
 import { AddTambahanDto } from "./dto/add-tambahan.dto";
 import { UpdateTambahanDto } from "./dto/update-tambahan.dto";
+import { SubmitTambahanLaporanDto } from "./dto/submit-tambahan-laporan.dto";
+import { normalizeRole } from "../common/roles";
 
 @Injectable()
 export class TambahanService {
@@ -81,5 +83,51 @@ export class TambahanService {
 
   remove(id: string, userId: string) {
     return this.prisma.kegiatanTambahan.delete({ where: { id, userId } });
+  }
+
+  async addLaporan(
+    id: string,
+    data: SubmitTambahanLaporanDto,
+    userId: string,
+    role: string
+  ) {
+    role = normalizeRole(role);
+    if (role === ROLES.PIMPINAN) {
+      throw new ForbiddenException("pimpinan tidak diizinkan");
+    }
+
+    const tambahan = await this.prisma.kegiatanTambahan.findUnique({
+      where: { id },
+    });
+    if (!tambahan) throw new NotFoundException("tugas tambahan tidak ditemukan");
+
+    let targetId = data.pegawaiId ?? userId;
+    if (tambahan.userId !== targetId) {
+      if (role === ROLES.ADMIN) {
+        targetId = tambahan.userId;
+      } else if (role === ROLES.KETUA) {
+        const leader = await this.prisma.member.findFirst({
+          where: { teamId: tambahan.teamId, userId, isLeader: true },
+        });
+        if (!leader) throw new ForbiddenException("bukan tugas tambahan anda");
+        targetId = tambahan.userId;
+      } else {
+        throw new ForbiddenException("bukan tugas tambahan anda");
+      }
+    }
+
+    return this.prisma.laporanHarian.create({
+      data: {
+        id: ulid(),
+        penugasanId: id,
+        pegawaiId: targetId,
+        tanggal: new Date(data.tanggal),
+        status: data.status,
+        capaianKegiatan: data.capaianKegiatan,
+        deskripsi: data.deskripsi,
+        buktiLink: data.buktiLink || undefined,
+        catatan: data.catatan || undefined,
+      },
+    });
   }
 }
