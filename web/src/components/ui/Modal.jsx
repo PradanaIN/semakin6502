@@ -37,6 +37,7 @@ export default function Modal({
       }
     }
     document.addEventListener("keydown", handleKey);
+
     const firstInput = containerRef.current?.querySelector(
       "a[href], button, textarea, input, select, [tabindex]:not([tabindex='-1'])"
     );
@@ -45,8 +46,16 @@ export default function Modal({
     } else {
       firstInput?.focus();
     }
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     setTimeout(() => setVisible(true), 10);
-    return () => document.removeEventListener("keydown", handleKey);
+
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = originalOverflow;
+    };
   }, []);
 
   function handleClose() {
