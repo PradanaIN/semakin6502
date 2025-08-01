@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import React, { Suspense } from "react";
 import { useAuth } from "../pages/auth/useAuth";
 import Loading from "../components/Loading";
-import ErrorBoundary from "../components/ErrorBoundary";
+import ErrorBoundaryWrapper from "../components/ErrorBoundaryWrapper";
 import { ROLES } from "../utils/roles";
 
 const LoginPage = React.lazy(() => import("../pages/auth/LoginPage"));
@@ -65,8 +65,8 @@ export default function AppRoutes() {
   const { user } = useAuth();
 
   return (
-    <ErrorBoundary>
-      <Suspense fallback={<Loading fullScreen />}>
+    <Suspense fallback={<Loading fullScreen />}>
+      <ErrorBoundaryWrapper>
         <Routes>
           {/* Login tidak pakai layout */}
           <Route
@@ -221,7 +221,7 @@ export default function AppRoutes() {
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
-      </Suspense>
-    </ErrorBoundary>
+      </ErrorBoundaryWrapper>
+    </Suspense>
   );
 }
