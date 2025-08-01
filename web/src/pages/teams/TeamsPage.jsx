@@ -31,11 +31,7 @@ export default function TeamsPage() {
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    fetchTeams();
-  }, []);
-
-  const fetchTeams = async () => {
+  const fetchTeams = useCallback(async () => {
     try {
       setLoading(true);
       let res = await axios.get("/teams");
@@ -48,19 +44,29 @@ export default function TeamsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const openCreate = () => {
+  useEffect(() => {
+    fetchTeams();
+  }, [fetchTeams]);
+
+  const show = useCallback(() => setShowForm(true), []);
+  const close = useCallback(() => setShowForm(false), []);
+
+  const openCreate = useCallback(() => {
     setEditingTeam(null);
     setForm({ namaTim: "" });
-    setShowForm(true);
-  };
+    show();
+  }, [show]);
 
-  const openEdit = useCallback((t) => {
-    setEditingTeam(t);
-    setForm({ namaTim: t.namaTim });
-    setShowForm(true);
-  }, []);
+  const openEdit = useCallback(
+    (t) => {
+      setEditingTeam(t);
+      setForm({ namaTim: t.namaTim });
+      show();
+    },
+    [show]
+  );
 
   const saveTeam = async () => {
     if (!form.namaTim) {
@@ -73,7 +79,7 @@ export default function TeamsPage() {
       } else {
         await axios.post("/teams", form);
       }
-      setShowForm(false);
+      close();
       fetchTeams();
       showSuccess("Berhasil", "Tim disimpan");
     } catch (err) {
@@ -81,17 +87,20 @@ export default function TeamsPage() {
     }
   };
 
-  const deleteTeam = useCallback(async (id) => {
-    const r = await confirmDelete("Hapus tim ini?");
-    if (!r.isConfirmed) return;
-    try {
-      await axios.delete(`/teams/${id}`);
-      fetchTeams();
-      showSuccess("Dihapus", "Tim berhasil dihapus");
-    } catch (err) {
-      handleAxiosError(err, "Gagal menghapus tim");
-    }
-  }, []);
+  const deleteTeam = useCallback(
+    async (id) => {
+      const r = await confirmDelete("Hapus tim ini?");
+      if (!r.isConfirmed) return;
+      try {
+        await axios.delete(`/teams/${id}`);
+        fetchTeams();
+        showSuccess("Dihapus", "Tim berhasil dihapus");
+      } catch (err) {
+        handleAxiosError(err, "Gagal menghapus tim");
+      }
+    },
+    [fetchTeams]
+  );
 
   const filtered = teams.filter((t) =>
     t.namaTim.toLowerCase().includes(query.toLowerCase())
@@ -195,12 +204,7 @@ export default function TeamsPage() {
       </div>
 
       {showForm && (
-        <Modal
-          onClose={() => {
-            setShowForm(false);
-          }}
-          titleId="team-form-title"
-        >
+        <Modal onClose={close} titleId="team-form-title">
           {/* flex container untuk judul + wajib diisi */}
           <div className="flex items-center justify-between mb-3">
             <h2 id="team-form-title" className="text-xl font-semibold">
@@ -231,7 +235,7 @@ export default function TeamsPage() {
               variant="secondary"
               onClick={async () => {
                 const r = await confirmCancel("Batalkan perubahan?");
-                if (r.isConfirmed) setShowForm(false);
+                if (r.isConfirmed) close();
               }}
             >
               Batal
