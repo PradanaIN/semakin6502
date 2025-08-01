@@ -31,8 +31,8 @@ function sortTambahan(list, teamId) {
     if (b.status === STATUS.BELUM && a.status !== STATUS.BELUM) return 1;
     const dateDiff = new Date(b.tanggal) - new Date(a.tanggal);
     if (dateDiff !== 0) return dateDiff;
-    const aOwn = teamId && a.teamId === teamId;
-    const bOwn = teamId && b.teamId === teamId;
+    const aOwn = teamId && String(a.teamId) === String(teamId);
+    const bOwn = teamId && String(b.teamId) === String(teamId);
     if (aOwn && !bOwn) return -1;
     if (bOwn && !aOwn) return 1;
     return 0;
@@ -203,7 +203,7 @@ export default function TugasTambahanPage() {
         ? tahun === parseInt(filterTahun, 10)
         : true;
       const matchTeam = filterTeam
-        ? item.teamId === parseInt(filterTeam, 10)
+        ? String(item.teamId) === filterTeam
         : true;
       let matchMinggu = true;
       if (filterMinggu && filterBulan && filterTahun) {
@@ -409,7 +409,7 @@ export default function TugasTambahanPage() {
                 id="teamId"
                 value={form.teamId}
                 onChange={(e) => {
-                  const tId = e.target.value ? parseInt(e.target.value) : "";
+                  const tId = e.target.value;
                   setForm({ ...form, teamId: tId, kegiatanId: "" });
                   fetchKegiatanForTeam(tId);
                 }}
@@ -447,13 +447,11 @@ export default function TugasTambahanPage() {
                     ? "Pilih Kegiatan"
                     : "Pilih Tim terlebih dahulu"}
                 </option>
-                {kegiatan
-                  .filter((k) => k.teamId === form.teamId)
-                  .map((k) => (
-                    <option key={k.id} value={k.id}>
-                      {k.namaKegiatan}
-                    </option>
-                  ))}
+                {kegiatan.map((k) => (
+                  <option key={k.id} value={k.id}>
+                    {k.namaKegiatan}
+                  </option>
+                ))}
               </select>
             </div>
 
