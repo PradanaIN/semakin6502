@@ -1,10 +1,14 @@
 import { useRef } from "react";
+import Label from "./Label";
 
 export default function DateFilter({ tanggal, setTanggal, setCurrentPage }) {
   const inputRef = useRef(null);
 
   return (
     <div>
+      <Label htmlFor="filterTanggal" className="sr-only">
+        Filter tanggal
+      </Label>
       <input
         id="filterTanggal"
         type="date"
