@@ -1,5 +1,13 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import MonitoringTabs from "../pages/dashboard/components/MonitoringTabs";
+import months from "../utils/months";
+import userEvent from "@testing-library/user-event";
+
+global.ResizeObserver = class {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
 
 jest.mock("../pages/dashboard/components/DailyOverview", () => () => (
   <div>Daily content</div>
@@ -32,4 +40,32 @@ test("switches between monitoring tabs", () => {
 
   fireEvent.click(screen.getByRole("tab", { name: /bulanan/i }));
   expect(screen.getByText(/Monthly content/i)).toBeInTheDocument();
+});
+
+test("changing month and week selections does not throw", async () => {
+  const onMonthChange = jest.fn();
+  const onWeekChange = jest.fn();
+  const user = userEvent.setup();
+
+  render(
+    <MonitoringTabs
+      dailyData={[]}
+      weeklyList={[{ minggu: 1 }, { minggu: 2 }]}
+      weekIndex={0}
+      onWeekChange={onWeekChange}
+      monthIndex={0}
+      onMonthChange={onMonthChange}
+      monthlyData={[]}
+    />
+  );
+
+  await user.click(screen.getByRole("button", { name: months[0] }));
+  await user.click(await screen.findByText(months[1]));
+  expect(onMonthChange).toHaveBeenCalledWith(1);
+
+  await user.click(screen.getByRole("tab", { name: /mingguan/i }));
+
+  await user.click(screen.getByRole("button", { name: /Minggu 1/i }));
+  await user.click(await screen.findByText(/Minggu 2/i));
+  expect(onWeekChange).toHaveBeenCalledWith(1);
 });
