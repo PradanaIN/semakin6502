@@ -44,6 +44,7 @@ const Dashboard = () => {
   const [partialError, setPartialError] = useState(false);
 
   const handleMonthChange = useCallback((value) => {
+    setWeekIndex(0);
     setMonthIndex((prev) => (prev !== value ? value : prev));
   }, []);
 
@@ -52,6 +53,7 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
+    setWeeklyList([]);
     const fetchAllData = async () => {
       const today = new Date();
       const tanggal = formatISO(today);
