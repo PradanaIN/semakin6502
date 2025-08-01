@@ -67,7 +67,7 @@ export default function Modal({
       <div
         ref={containerRef}
         onClick={(e) => e.stopPropagation()}
-        className={`bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl space-y-4 transform transition-all duration-300 ${visible && !closing ? 'scale-100 opacity-100' : 'scale-95 opacity-0'} ${widthClass}`}
+        className={`bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg space-y-4 transform transition-all duration-300 ${visible && !closing ? 'scale-100 opacity-100' : 'scale-95 opacity-0'} ${widthClass}`}
       >
         {children}
       </div>
