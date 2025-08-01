@@ -37,6 +37,7 @@ const Dashboard = () => {
   const [weeklyList, setWeeklyList] = useState([]);
   const [weekIndex, setWeekIndex] = useState(0);
   const [monthIndex, setMonthIndex] = useState(new Date().getMonth());
+  const [year, setYear] = useState(new Date().getFullYear());
   const [monthlyData, setMonthlyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
@@ -52,12 +53,16 @@ const Dashboard = () => {
     setWeekIndex((prev) => (prev !== value ? value : prev));
   }, []);
 
+  const handleYearChange = useCallback((value) => {
+    setWeekIndex(0);
+    setYear((prev) => (prev !== value ? value : prev));
+  }, []);
+
   useEffect(() => {
     setWeeklyList([]);
     const fetchAllData = async () => {
       const today = new Date();
       const tanggal = formatISO(today);
-      const year = today.getFullYear();
       const month = monthIndex;
       const monthStart = new Date(year, month, 1);
       const monthEnd = new Date(year, month + 1, 0);
@@ -231,7 +236,7 @@ const Dashboard = () => {
     };
 
     fetchAllData();
-  }, [user?.id, user?.role, user?.teamId, monthIndex]);
+  }, [user?.id, user?.role, user?.teamId, monthIndex, year]);
 
   if (loading) return <Loading fullScreen />;
   if (errorMsg)
@@ -279,6 +284,8 @@ const Dashboard = () => {
         monthIndex={monthIndex}
         onMonthChange={handleMonthChange}
         monthlyData={monthlyData}
+        year={year}
+        onYearChange={handleYearChange}
       />
     </div>
   );
