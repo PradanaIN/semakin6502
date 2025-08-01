@@ -3,7 +3,7 @@ import MonitoringTabs from "../pages/dashboard/components/MonitoringTabs";
 import months from "../utils/months";
 import userEvent from "@testing-library/user-event";
 
-global.ResizeObserver = class {
+globalThis.ResizeObserver = class {
   observe() {}
   unobserve() {}
   disconnect() {}
