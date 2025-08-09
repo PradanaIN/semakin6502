@@ -12,6 +12,8 @@ describe('MonitoringService aggregated', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    prisma.laporanHarian.findMany.mockResolvedValue([]);
+    prisma.penugasan.findMany.mockResolvedValue([]);
     prisma.user.findMany.mockResolvedValue([]);
   });
 
@@ -35,15 +37,31 @@ describe('MonitoringService aggregated', () => {
   });
 
   it('mingguanAll aggregates and sorts', async () => {
+    prisma.user.findMany.mockResolvedValue([
+      { id: '1', nama: 'A' },
+      { id: '2', nama: 'B' },
+    ]);
     prisma.laporanHarian.findMany.mockResolvedValue([
-      { pegawaiId: '2', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'B' } },
-      { pegawaiId: '1', status: STATUS.BELUM, pegawai: { nama: 'A' } },
-      { pegawaiId: '1', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'A' } },
+      { pegawaiId: '2', status: STATUS.SELESAI_DIKERJAKAN },
+      { pegawaiId: '1', status: STATUS.BELUM },
+      { pegawaiId: '1', status: STATUS.SELESAI_DIKERJAKAN },
     ]);
     const res = await service.mingguanAll('2024-05-01');
     expect(res).toEqual([
       { userId: '1', nama: 'A', selesai: 1, total: 2, persen: 50 },
       { userId: '2', nama: 'B', selesai: 1, total: 1, persen: 100 },
+    ]);
+  });
+
+  it('mingguanAll returns zeroes when no reports', async () => {
+    prisma.user.findMany.mockResolvedValue([
+      { id: '1', nama: 'A' },
+      { id: '2', nama: 'B' },
+    ]);
+    const res = await service.mingguanAll('2024-05-01');
+    expect(res).toEqual([
+      { userId: '1', nama: 'A', selesai: 0, total: 0, persen: 0 },
+      { userId: '2', nama: 'B', selesai: 0, total: 0, persen: 0 },
     ]);
   });
 
@@ -108,24 +126,25 @@ describe('MonitoringService aggregated', () => {
   });
 
   it('mingguanBulan aggregates per week', async () => {
+    prisma.user.findMany.mockResolvedValue([
+      { id: '1', nama: 'A' },
+      { id: '2', nama: 'B' },
+    ]);
     prisma.laporanHarian.findMany.mockResolvedValue([
       {
         pegawaiId: '1',
         tanggal: new Date('2024-05-02'),
         status: STATUS.SELESAI_DIKERJAKAN,
-        pegawai: { nama: 'A' },
       },
       {
         pegawaiId: '1',
         tanggal: new Date('2024-05-08'),
         status: STATUS.BELUM,
-        pegawai: { nama: 'A' },
       },
       {
         pegawaiId: '2',
         tanggal: new Date('2024-05-15'),
         status: STATUS.SELESAI_DIKERJAKAN,
-        pegawai: { nama: 'B' },
       },
     ]);
     const res = await service.mingguanBulan('2024-05-10');
@@ -152,6 +171,17 @@ describe('MonitoringService aggregated', () => {
           { selesai: 0, total: 0, persen: 0 },
         ],
       },
+    ]);
+  });
+
+  it('mingguanBulan returns zero weeks when no reports', async () => {
+    prisma.user.findMany.mockResolvedValue([
+      { id: '1', nama: 'A' },
+    ]);
+    const res = await service.mingguanBulan('2024-05-10');
+    const zero = { selesai: 0, total: 0, persen: 0 };
+    expect(res).toEqual([
+      { userId: '1', nama: 'A', weeks: [zero, zero, zero, zero, zero] },
     ]);
   });
 
