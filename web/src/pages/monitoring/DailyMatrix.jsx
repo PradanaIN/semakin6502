@@ -25,7 +25,7 @@ export const DailyMatrixRow = ({ user, boxClass, currentUser }) => {
         <td
           key={day.tanggal}
           title={day.count ? `${day.count} laporan` : ""}
-          className={`px-4 py-2 border border-gray-300 dark:border-gray-600 ${boxClass(
+          className={`px-4 py-2 border border-gray-300 dark:border-gray-600 text-center ${boxClass(
             day
           )} truncate`}
         >

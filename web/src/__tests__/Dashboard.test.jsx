@@ -8,7 +8,9 @@ jest.mock('axios');
 jest.mock('../pages/auth/useAuth');
 jest.mock('../pages/dashboard/components/StatsSummary', () => () => <div />);
 jest.mock('../pages/dashboard/components/MonitoringTabs', () => {
+  // eslint-disable-next-line no-undef
   const React = require('react');
+  // eslint-disable-next-line no-undef
   const DailyOverview = require('../pages/dashboard/components/DailyOverview').default;
   return ({ dailyData }) => <DailyOverview data={dailyData} />;
 });
