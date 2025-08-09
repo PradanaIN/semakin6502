@@ -199,23 +199,33 @@ export class MonitoringService {
         kegiatan: { teamId },
       };
 
-    const records = (
-      await this.prisma.laporanHarian.findMany({
+    const [records, users] = await Promise.all([
+      this.prisma.laporanHarian.findMany({
         where,
         include: { pegawai: true },
-      })
-    ).filter((r: { pegawai?: { username?: string } }) =>
-      !r.pegawai?.username?.startsWith("demo"),
-    );
+      }),
+      this.prisma.user.findMany({
+        where: {
+          role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
+          username: { not: { startsWith: "demo" } },
+          ...(teamId ? { members: { some: { teamId } } } : {}),
+        },
+        select: { id: true, nama: true },
+      }),
+    ]);
 
     const byUser: Record<
       string,
       { nama: string; counts: Record<string, number> }
     > = {};
+
+    for (const u of users) {
+      byUser[u.id] = { nama: u.nama, counts: {} };
+    }
+
     for (const r of records) {
+      if (!byUser[r.pegawaiId]) continue;
       const dateStr = r.tanggal.toISOString();
-      if (!byUser[r.pegawaiId])
-        byUser[r.pegawaiId] = { nama: r.pegawai.nama, counts: {} };
       byUser[r.pegawaiId].counts[dateStr] =
         (byUser[r.pegawaiId].counts[dateStr] || 0) + 1;
     }
@@ -247,23 +257,32 @@ export class MonitoringService {
         kegiatan: { teamId },
       };
 
-    const records = (
-      await this.prisma.laporanHarian.findMany({
+    const [records, users] = await Promise.all([
+      this.prisma.laporanHarian.findMany({
         where,
         include: { pegawai: true },
-      })
-    ).filter((r: { pegawai?: { username?: string } }) =>
-      !r.pegawai?.username?.startsWith("demo"),
-    );
+      }),
+      this.prisma.user.findMany({
+        where: {
+          role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
+          username: { not: { startsWith: "demo" } },
+          ...(teamId ? { members: { some: { teamId } } } : {}),
+        },
+        select: { id: true, nama: true },
+      }),
+    ]);
 
     const byUser: Record<
       string,
       { nama: string; selesai: number; total: number }
     > = {};
 
+    for (const u of users) {
+      byUser[u.id] = { nama: u.nama, selesai: 0, total: 0 };
+    }
+
     for (const r of records) {
-      if (!byUser[r.pegawaiId])
-        byUser[r.pegawaiId] = { nama: r.pegawai.nama, selesai: 0, total: 0 };
+      if (!byUser[r.pegawaiId]) continue;
       byUser[r.pegawaiId].total += 1;
       if (r.status === STATUS.SELESAI_DIKERJAKAN) byUser[r.pegawaiId].selesai += 1;
     }
