@@ -36,14 +36,11 @@ export const DailyMatrixRow = ({ user, boxClass, currentUser }) => {
   );
 };
 
-const DailyMatrix = ({ data = [] }) => {
+const DailyMatrix = ({ data = [], monthIndex, year }) => {
   const { user: currentUser } = useAuth();
-  if (!Array.isArray(data) || data.length === 0) return null;
 
-  const year = dayjs
-    .utc(data[0].detail[0].tanggal)
-    .tz("Asia/Makassar")
-    .year();
+  const rows = Array.isArray(data) ? data : [];
+
   const today = dayjs().tz("Asia/Makassar");
   const HOLIDAYS = getHolidays(year);
 
@@ -67,7 +64,7 @@ const DailyMatrix = ({ data = [] }) => {
     return "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300";
   };
 
-  const dayCount = data[0].detail.length;
+  const dayCount = dayjs().year(year).month(monthIndex).daysInMonth();
 
   return (
     <div className="overflow-x-auto max-h-[65vh] overflow-y-auto w-full rounded-md shadow border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
@@ -88,14 +85,25 @@ const DailyMatrix = ({ data = [] }) => {
           </tr>
         </thead>
         <tbody>
-          {data.map((u) => (
-            <DailyMatrixRow
-              key={u.userId}
-              user={u}
-              boxClass={boxClass}
-              currentUser={currentUser}
-            />
-          ))}
+          {rows.length > 0 ? (
+            rows.map((u) => (
+              <DailyMatrixRow
+                key={u.userId}
+                user={u}
+                boxClass={boxClass}
+                currentUser={currentUser}
+              />
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan={dayCount + 1}
+                className="px-4 py-4 text-center text-gray-500 dark:text-gray-400"
+              >
+                Belum ada laporan
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

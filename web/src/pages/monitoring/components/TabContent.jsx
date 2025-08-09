@@ -114,7 +114,7 @@ export default function TabContent({
       {activeTab === "harian" && (
         <>
           <Legend className="mb-3" />
-          <DailyMatrix data={dailyData} />
+          <DailyMatrix data={dailyData} monthIndex={monthIndex} year={year} />
         </>
       )}
 
