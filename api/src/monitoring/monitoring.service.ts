@@ -291,31 +291,46 @@ export class MonitoringService {
     const end = new Date(start);
     end.setUTCDate(start.getUTCDate() + 6);
 
-    const where: any = { tanggal: { gte: start, lte: end } };
+    const where: any = {
+      tanggal: { gte: start, lte: end },
+      pegawai: {
+        role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
+        NOT: { username: { startsWith: "demo" } },
+      },
+    };
     if (teamId)
       where.penugasan = {
         kegiatan: { teamId },
       };
 
-    const records = (
-      await this.prisma.laporanHarian.findMany({
-        where,
-        include: { pegawai: true },
-      })
-    ).filter((r: { pegawai?: { username?: string } }) =>
-      !r.pegawai?.username?.startsWith("demo"),
-    );
+    const records = await this.prisma.laporanHarian.findMany({
+      where,
+      select: { pegawaiId: true, status: true },
+    });
 
-    const byUser: Record<
-      string,
-      { nama: string; selesai: number; total: number }
-    > = {};
+    const whereUser: any = {
+      role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
+      NOT: { username: { startsWith: "demo" } },
+    };
+    if (teamId) whereUser.members = { some: { teamId } };
+
+    const users = await this.prisma.user.findMany({
+      where: whereUser,
+      select: { id: true, nama: true },
+      orderBy: { nama: "asc" },
+    });
+
+    const byUser: Record<string, { nama: string; selesai: number; total: number }> =
+      {};
+    for (const u of users) {
+      byUser[u.id] = { nama: u.nama, selesai: 0, total: 0 };
+    }
 
     for (const r of records) {
-      if (!byUser[r.pegawaiId])
-        byUser[r.pegawaiId] = { nama: r.pegawai.nama, selesai: 0, total: 0 };
-      byUser[r.pegawaiId].total += 1;
-      if (r.status === STATUS.SELESAI_DIKERJAKAN) byUser[r.pegawaiId].selesai += 1;
+      const u = byUser[r.pegawaiId];
+      if (!u) continue;
+      u.total += 1;
+      if (r.status === STATUS.SELESAI_DIKERJAKAN) u.selesai += 1;
     }
 
     return Object.entries(byUser)
@@ -349,40 +364,53 @@ export class MonitoringService {
       weekStarts.push(new Date(d));
     }
 
-    const where: any = { tanggal: { gte: monthStart, lte: monthEnd } };
+    const where: any = {
+      tanggal: { gte: monthStart, lte: monthEnd },
+      pegawai: {
+        role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
+        NOT: { username: { startsWith: "demo" } },
+      },
+    };
     if (teamId)
       where.penugasan = {
         kegiatan: { teamId },
       };
 
-    const records = (
-      await this.prisma.laporanHarian.findMany({
-        where,
-        include: { pegawai: true },
-      })
-    ).filter((r: { pegawai?: { username?: string } }) =>
-      !r.pegawai?.username?.startsWith("demo"),
-    );
+    const records = await this.prisma.laporanHarian.findMany({
+      where,
+      select: { pegawaiId: true, tanggal: true, status: true },
+    });
+
+    const whereUser: any = {
+      role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
+      NOT: { username: { startsWith: "demo" } },
+    };
+    if (teamId) whereUser.members = { some: { teamId } };
+
+    const users = await this.prisma.user.findMany({
+      where: whereUser,
+      select: { id: true, nama: true },
+      orderBy: { nama: "asc" },
+    });
 
     const byUser: Record<
       string,
-      {
-        nama: string;
-        perWeek: Record<number, { selesai: number; total: number }>;
-      }
+      { nama: string; perWeek: Record<number, { selesai: number; total: number }> }
     > = {};
+    for (const u of users) {
+      byUser[u.id] = { nama: u.nama, perWeek: {} };
+    }
 
     for (const r of records) {
+      const u = byUser[r.pegawaiId];
+      if (!u) continue;
       const idx = Math.floor(
         (r.tanggal.getTime() - weekStarts[0].getTime()) / (7 * 24 * 60 * 60 * 1000),
       );
-      if (!byUser[r.pegawaiId])
-        byUser[r.pegawaiId] = { nama: r.pegawai.nama, perWeek: {} };
-      if (!byUser[r.pegawaiId].perWeek[idx])
-        byUser[r.pegawaiId].perWeek[idx] = { selesai: 0, total: 0 };
-      byUser[r.pegawaiId].perWeek[idx].total += 1;
+      if (!u.perWeek[idx]) u.perWeek[idx] = { selesai: 0, total: 0 };
+      u.perWeek[idx].total += 1;
       if (r.status === STATUS.SELESAI_DIKERJAKAN)
-        byUser[r.pegawaiId].perWeek[idx].selesai += 1;
+        u.perWeek[idx].selesai += 1;
     }
 
     return Object.entries(byUser)
