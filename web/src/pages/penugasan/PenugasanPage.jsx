@@ -28,6 +28,7 @@ import TableSkeleton from "../../components/ui/TableSkeleton";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import Spinner from "../../components/Spinner";
 import { STATUS } from "../../utils/status";
+import EmptyState from "../../components/ui/EmptyState";
 
 const EXCLUDED_TB_NAMES = ["Ayu Pinta Gabina Siregar", "Elly Astutik"];
 
@@ -71,7 +72,7 @@ export default function PenugasanPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(""); // NEW: error state
-  const { showForm, form, setForm, openCreate, closeForm, resetForm } =
+  const { showForm, form, setForm, openCreate: openForm, closeForm, resetForm } =
     useModalForm({
       kegiatanId: "",
       pegawaiIds: [],
@@ -390,7 +391,7 @@ export default function PenugasanPage() {
           </select>
           {canManage && (
             <Button
-              onClick={openCreate}
+              onClick={openForm}
               className="flex gap-2 items-center shadow-sm"
               variant="primary"
             >
@@ -414,10 +415,11 @@ export default function PenugasanPage() {
             </Button>
           </div>
         ) : paginated.length === 0 ? (
-          <div className="py-10 flex flex-col items-center text-gray-400 dark:text-gray-500">
-            <span className="mb-2 text-2xl">🙁</span>
-            <span className="text-sm">Belum ada penugasan ditemukan.</span>
-          </div>
+          <EmptyState
+            message="Belum ada penugasan untuk minggu ini"
+            actionLabel="Tambah Penugasan"
+            onAction={openForm}
+          />
         ) : (
           <DataTable
             columns={columns}
