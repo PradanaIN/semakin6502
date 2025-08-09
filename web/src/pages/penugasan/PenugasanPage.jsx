@@ -290,14 +290,7 @@ export default function PenugasanPage() {
       }
     );
     return cols;
-  }, [
-    currentPage,
-    pageSize,
-    navigate,
-    showPegawaiColumn,
-    viewTab,
-    user?.id,
-  ]);
+  }, [currentPage, pageSize, navigate, showPegawaiColumn, viewTab, user?.id]);
 
   // --- UI
 
