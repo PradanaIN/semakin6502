@@ -50,9 +50,7 @@ const DailyMatrix = ({ data = [], monthIndex, year }) => {
   };
 
   const isHoliday = (iso) =>
-    HOLIDAYS.includes(
-      dayjs.utc(iso).tz("Asia/Makassar").format("YYYY-MM-DD")
-    );
+    HOLIDAYS.includes(dayjs.utc(iso).tz("Asia/Makassar").format("YYYY-MM-DD"));
 
   const boxClass = (day) => {
     if (day.count > 0)
