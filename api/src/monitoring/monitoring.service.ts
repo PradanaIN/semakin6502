@@ -207,6 +207,25 @@ export class MonitoringService {
     ).filter((r: { pegawai?: { username?: string } }) =>
       !r.pegawai?.username?.startsWith("demo"),
     );
+    if (records.length === 0) {
+      const users =
+        (await this.prisma.user.findMany({
+          where: teamId ? { members: { some: { teamId } } } : {},
+          orderBy: { nama: "asc" },
+        })) || [];
+      return users
+        .filter((u: { username?: string }) =>
+          !u.username?.startsWith("demo"),
+        )
+        .map((u: { id: string; nama: string }) => {
+          const detail = [] as { tanggal: string; count: number }[];
+          for (let d = 1; d <= end.getUTCDate(); d++) {
+            const date = new Date(Date.UTC(year, month, d));
+            detail.push({ tanggal: date.toISOString(), count: 0 });
+          }
+          return { userId: u.id, nama: u.nama, detail };
+        });
+    }
 
     const byUser: Record<
       string,
@@ -255,6 +274,24 @@ export class MonitoringService {
     ).filter((r: { pegawai?: { username?: string } }) =>
       !r.pegawai?.username?.startsWith("demo"),
     );
+    if (records.length === 0) {
+      const users =
+        (await this.prisma.user.findMany({
+          where: teamId ? { members: { some: { teamId } } } : {},
+          orderBy: { nama: "asc" },
+        })) || [];
+      return users
+        .filter((u: { username?: string }) =>
+          !u.username?.startsWith("demo"),
+        )
+        .map((u: { id: string; nama: string }) => ({
+          userId: u.id,
+          nama: u.nama,
+          selesai: 0,
+          total: 0,
+          persen: 0,
+        }));
+    }
 
     const byUser: Record<
       string,
@@ -305,6 +342,24 @@ export class MonitoringService {
     ).filter((r: { pegawai?: { username?: string } }) =>
       !r.pegawai?.username?.startsWith("demo"),
     );
+    if (records.length === 0) {
+      const users =
+        (await this.prisma.user.findMany({
+          where: teamId ? { members: { some: { teamId } } } : {},
+          orderBy: { nama: "asc" },
+        })) || [];
+      return users
+        .filter((u: { username?: string }) =>
+          !u.username?.startsWith("demo"),
+        )
+        .map((u: { id: string; nama: string }) => ({
+          userId: u.id,
+          nama: u.nama,
+          selesai: 0,
+          total: 0,
+          persen: 0,
+        }));
+    }
 
     const byUser: Record<
       string,
@@ -363,6 +418,27 @@ export class MonitoringService {
     ).filter((r: { pegawai?: { username?: string } }) =>
       !r.pegawai?.username?.startsWith("demo"),
     );
+    if (records.length === 0) {
+      const users =
+        (await this.prisma.user.findMany({
+          where: teamId ? { members: { some: { teamId } } } : {},
+          orderBy: { nama: "asc" },
+        })) || [];
+      const emptyWeeks = weekStarts.map(() => ({
+        selesai: 0,
+        total: 0,
+        persen: 0,
+      }));
+      return users
+        .filter((u: { username?: string }) =>
+          !u.username?.startsWith("demo"),
+        )
+        .map((u: { id: string; nama: string }) => ({
+          userId: u.id,
+          nama: u.nama,
+          weeks: emptyWeeks,
+        }));
+    }
 
     const byUser: Record<
       string,
