@@ -61,8 +61,7 @@ const WeeklyMatrix = ({
   selectedWeek,
 }) => {
   const { user: currentUser } = useAuth();
-  if (!Array.isArray(data) || data.length === 0) return null;
-
+  const safeData = Array.isArray(data) ? data : [];
   const progressColor = getProgressColor;
 
   return (
@@ -89,15 +88,26 @@ const WeeklyMatrix = ({
           </tr>
         </thead>
         <tbody>
-          {data.map((u) => (
-            <WeeklyMatrixRow
-              key={u.userId}
-              user={u}
-              progressColor={progressColor}
-              weekCount={weeks.length}
-              currentUser={currentUser}
-            />
-          ))}
+          {safeData.length === 0 ? (
+            <tr>
+              <td
+                colSpan={weeks.length + 1}
+                className="p-4 text-center text-gray-500"
+              >
+                Belum ada data
+              </td>
+            </tr>
+          ) : (
+            safeData.map((u) => (
+              <WeeklyMatrixRow
+                key={u.userId}
+                user={u}
+                progressColor={progressColor}
+                weekCount={weeks.length}
+                currentUser={currentUser}
+              />
+            ))
+          )}
         </tbody>
       </table>
     </div>
