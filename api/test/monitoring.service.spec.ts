@@ -36,6 +36,19 @@ describe('MonitoringService aggregated', () => {
     ]);
   });
 
+  it('harianAll returns zero metrics for all users when no reports', async () => {
+    prisma.laporanHarian.findMany.mockResolvedValue([]);
+    prisma.user.findMany.mockResolvedValue([
+      { id: '1', nama: 'A' },
+      { id: '2', nama: 'B' },
+    ]);
+    const res = await service.harianAll('2024-05-01');
+    expect(res).toEqual([
+      { userId: '1', nama: 'A', selesai: 0, total: 0, persen: 0 },
+      { userId: '2', nama: 'B', selesai: 0, total: 0, persen: 0 },
+    ]);
+  });
+
   it('mingguanAll aggregates and sorts', async () => {
     prisma.user.findMany.mockResolvedValue([
       { id: '1', nama: 'A' },
@@ -53,7 +66,8 @@ describe('MonitoringService aggregated', () => {
     ]);
   });
 
-  it('mingguanAll returns zeroes when no reports', async () => {
+  it('mingguanAll returns zero metrics for all users when no reports', async () => {
+    prisma.laporanHarian.findMany.mockResolvedValue([]);
     prisma.user.findMany.mockResolvedValue([
       { id: '1', nama: 'A' },
       { id: '2', nama: 'B' },
@@ -125,6 +139,23 @@ describe('MonitoringService aggregated', () => {
     expect(res[2].detail.every((d) => d.count === 0)).toBe(true);
   });
 
+  it('harianBulan returns zero counts for all users when no reports', async () => {
+    prisma.laporanHarian.findMany.mockResolvedValue([]);
+    prisma.user.findMany.mockResolvedValue([
+      { id: '1', nama: 'A' },
+      { id: '2', nama: 'B' },
+    ]);
+    const res = await service.harianBulan('2024-05-10');
+    const zeroDetail = Array.from({ length: 31 }, (_, i) => ({
+      tanggal: new Date(Date.UTC(2024, 4, i + 1)).toISOString(),
+      count: 0,
+    }));
+    expect(res).toEqual([
+      { userId: '1', nama: 'A', detail: zeroDetail },
+      { userId: '2', nama: 'B', detail: zeroDetail },
+    ]);
+  });
+
   it('mingguanBulan aggregates per week', async () => {
     prisma.user.findMany.mockResolvedValue([
       { id: '1', nama: 'A' },
@@ -174,14 +205,18 @@ describe('MonitoringService aggregated', () => {
     ]);
   });
 
-  it('mingguanBulan returns zero weeks when no reports', async () => {
+  it('mingguanBulan returns zero weeks for all users when no reports', async () => {
+    prisma.laporanHarian.findMany.mockResolvedValue([]);
     prisma.user.findMany.mockResolvedValue([
       { id: '1', nama: 'A' },
+      { id: '2', nama: 'B' },
     ]);
     const res = await service.mingguanBulan('2024-05-10');
-    const zero = { selesai: 0, total: 0, persen: 0 };
+    const zeroWeeks = () =>
+      Array.from({ length: 5 }, () => ({ selesai: 0, total: 0, persen: 0 }));
     expect(res).toEqual([
-      { userId: '1', nama: 'A', weeks: [zero, zero, zero, zero, zero] },
+      { userId: '1', nama: 'A', weeks: zeroWeeks() },
+      { userId: '2', nama: 'B', weeks: zeroWeeks() },
     ]);
   });
 

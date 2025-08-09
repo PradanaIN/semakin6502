@@ -203,16 +203,29 @@ export class MonitoringService {
       this.prisma.laporanHarian.findMany({
         where,
         include: { pegawai: true },
-      }),
-      this.prisma.user.findMany({
-        where: {
-          role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
-          username: { not: { startsWith: "demo" } },
-          ...(teamId ? { members: { some: { teamId } } } : {}),
-        },
-        select: { id: true, nama: true },
-      }),
-    ]);
+      })
+    ).filter((r: { pegawai?: { username?: string } }) =>
+      !r.pegawai?.username?.startsWith("demo"),
+    );
+    if (records.length === 0) {
+      const users =
+        (await this.prisma.user.findMany({
+          where: teamId ? { members: { some: { teamId } } } : {},
+          orderBy: { nama: "asc" },
+        })) || [];
+      return users
+        .filter((u: { username?: string }) =>
+          !u.username?.startsWith("demo"),
+        )
+        .map((u: { id: string; nama: string }) => {
+          const detail = [] as { tanggal: string; count: number }[];
+          for (let d = 1; d <= end.getUTCDate(); d++) {
+            const date = new Date(Date.UTC(year, month, d));
+            detail.push({ tanggal: date.toISOString(), count: 0 });
+          }
+          return { userId: u.id, nama: u.nama, detail };
+        });
+    }
 
     const byUser: Record<
       string,
@@ -261,16 +274,28 @@ export class MonitoringService {
       this.prisma.laporanHarian.findMany({
         where,
         include: { pegawai: true },
-      }),
-      this.prisma.user.findMany({
-        where: {
-          role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
-          username: { not: { startsWith: "demo" } },
-          ...(teamId ? { members: { some: { teamId } } } : {}),
-        },
-        select: { id: true, nama: true },
-      }),
-    ]);
+      })
+    ).filter((r: { pegawai?: { username?: string } }) =>
+      !r.pegawai?.username?.startsWith("demo"),
+    );
+    if (records.length === 0) {
+      const users =
+        (await this.prisma.user.findMany({
+          where: teamId ? { members: { some: { teamId } } } : {},
+          orderBy: { nama: "asc" },
+        })) || [];
+      return users
+        .filter((u: { username?: string }) =>
+          !u.username?.startsWith("demo"),
+        )
+        .map((u: { id: string; nama: string }) => ({
+          userId: u.id,
+          nama: u.nama,
+          selesai: 0,
+          total: 0,
+          persen: 0,
+        }));
+    }
 
     const byUser: Record<
       string,
@@ -322,10 +347,32 @@ export class MonitoringService {
         kegiatan: { teamId },
       };
 
-    const records = await this.prisma.laporanHarian.findMany({
-      where,
-      select: { pegawaiId: true, status: true },
-    });
+    const records = (
+      await this.prisma.laporanHarian.findMany({
+        where,
+        include: { pegawai: true },
+      })
+    ).filter((r: { pegawai?: { username?: string } }) =>
+      !r.pegawai?.username?.startsWith("demo"),
+    );
+    if (records.length === 0) {
+      const users =
+        (await this.prisma.user.findMany({
+          where: teamId ? { members: { some: { teamId } } } : {},
+          orderBy: { nama: "asc" },
+        })) || [];
+      return users
+        .filter((u: { username?: string }) =>
+          !u.username?.startsWith("demo"),
+        )
+        .map((u: { id: string; nama: string }) => ({
+          userId: u.id,
+          nama: u.nama,
+          selesai: 0,
+          total: 0,
+          persen: 0,
+        }));
+    }
 
     const whereUser: any = {
       role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
@@ -395,22 +442,35 @@ export class MonitoringService {
         kegiatan: { teamId },
       };
 
-    const records = await this.prisma.laporanHarian.findMany({
-      where,
-      select: { pegawaiId: true, tanggal: true, status: true },
-    });
-
-    const whereUser: any = {
-      role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
-      NOT: { username: { startsWith: "demo" } },
-    };
-    if (teamId) whereUser.members = { some: { teamId } };
-
-    const users = await this.prisma.user.findMany({
-      where: whereUser,
-      select: { id: true, nama: true },
-      orderBy: { nama: "asc" },
-    });
+    const records = (
+      await this.prisma.laporanHarian.findMany({
+        where,
+        include: { pegawai: true },
+      })
+    ).filter((r: { pegawai?: { username?: string } }) =>
+      !r.pegawai?.username?.startsWith("demo"),
+    );
+    if (records.length === 0) {
+      const users =
+        (await this.prisma.user.findMany({
+          where: teamId ? { members: { some: { teamId } } } : {},
+          orderBy: { nama: "asc" },
+        })) || [];
+      const emptyWeeks = weekStarts.map(() => ({
+        selesai: 0,
+        total: 0,
+        persen: 0,
+      }));
+      return users
+        .filter((u: { username?: string }) =>
+          !u.username?.startsWith("demo"),
+        )
+        .map((u: { id: string; nama: string }) => ({
+          userId: u.id,
+          nama: u.nama,
+          weeks: emptyWeeks,
+        }));
+    }
 
     const byUser: Record<
       string,
