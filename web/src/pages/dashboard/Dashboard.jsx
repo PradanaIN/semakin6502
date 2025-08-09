@@ -100,7 +100,7 @@ const Dashboard = () => {
 
         const [dailyRes, weeklyArrayRes, monthlyRes, tugasArrayRes] =
           await Promise.allSettled([
-            axios.get("/monitoring/harian/bulan", {
+            axios.get("/monitoring/harian", {
               params: { tanggal: formatISO(monthStart), ...filters },
             }),
             Promise.allSettled(weeklyPromises),
@@ -120,7 +120,8 @@ const Dashboard = () => {
             : [];
 
           const apiMap = apiDaily.reduce((acc, cur) => {
-            acc[cur.tanggal] = cur;
+            const key = new Date(cur.tanggal).toISOString().slice(0, 10);
+            acc[key] = { ...cur, tanggal: key };
             return acc;
           }, {});
 
@@ -131,11 +132,9 @@ const Dashboard = () => {
             d.setDate(d.getDate() + 1)
           ) {
             const tgl = formatISO(new Date(d));
-            normalized.push({
-              adaKegiatan: false,
-              ...apiMap[tgl],
-              tanggal: tgl,
-            });
+            normalized.push(
+              apiMap[tgl] || { adaKegiatan: false, tanggal: tgl }
+            );
           }
 
           setDailyData(normalized);
