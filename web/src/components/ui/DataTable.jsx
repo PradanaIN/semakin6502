@@ -13,6 +13,7 @@ import Pagination from "../Pagination";
 import SelectDataShow from "./SelectDataShow";
 import SearchInput from "../SearchInput";
 import Input from "./Input";
+import EmptyState from "./EmptyState";
 
 function GlobalFilter({ table }) {
   return (
@@ -61,6 +62,8 @@ export default function DataTable({
   onRowSelectionChange,
   showPagination = true,
   selectable = true,
+  emptyMessage = "Data tidak ditemukan",
+  emptyAction,
 }) {
   const tableColumns = React.useMemo(() => {
     const base = columns.map((col) => ({
@@ -172,7 +175,7 @@ export default function DataTable({
                 colSpan={table.getAllColumns().length}
                 className="py-4 text-center"
               >
-                Data tidak ditemukan
+                <EmptyState message={emptyMessage} action={emptyAction} />
               </td>
             </tr>
           ) : (

@@ -53,7 +53,14 @@ export default function WeeklyTasksPage() {
       {loading ? (
         <TableSkeleton cols={columns.length} />
       ) : (
-        <DataTable columns={columns} data={rows} showGlobalFilter={false} showPagination={false} selectable={false} />
+        <DataTable
+          columns={columns}
+          data={rows}
+          showGlobalFilter={false}
+          showPagination={false}
+          selectable={false}
+          emptyMessage="Belum ada tugas"
+        />
       )}
     </div>
   );

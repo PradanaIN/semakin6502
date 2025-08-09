@@ -217,6 +217,13 @@ export default function UsersPage() {
           showGlobalFilter={false}
           showPagination={false}
           selectable={false}
+          emptyMessage="Belum ada pengguna"
+          emptyAction={
+            <Button onClick={openCreateForm} className="add-button">
+              <Plus size={16} />
+              <span className="hidden sm:inline">Tambah Pengguna</span>
+            </Button>
+          }
         />
       )}
 

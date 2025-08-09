@@ -331,6 +331,7 @@ export default function LaporanHarianPage() {
             showGlobalFilter={false}
             showPagination={false}
             selectable={false}
+            emptyMessage="Belum ada laporan"
           />
         )}
         <div className="flex items-center justify-between mt-2">

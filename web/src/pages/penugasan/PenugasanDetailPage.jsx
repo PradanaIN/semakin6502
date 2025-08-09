@@ -568,6 +568,19 @@ export default function PenugasanDetailPage() {
             showGlobalFilter={false}
             showPagination={false}
             selectable={false}
+            emptyMessage="Belum ada laporan"
+            emptyAction={
+              item.status !== STATUS.SELESAI_DIKERJAKAN && canAddReport ? (
+                <Button
+                  onClick={openLaporan}
+                  className="flex items-center gap-2 px-3 py-2 sm:px-4"
+                  aria-label="Tambah Laporan"
+                >
+                  <Plus size={18} />
+                  <span className="hidden sm:inline">Tambah Laporan</span>
+                </Button>
+              ) : null
+            }
           />
         </div>
       </div>

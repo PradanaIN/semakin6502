@@ -227,7 +227,20 @@ export default function MasterKegiatanPage() {
         {loading ? (
           <TableSkeleton cols={columns.length} />
         ) : (
-          <DataTable columns={columns} data={items} showGlobalFilter={false} showPagination={false} selectable={false} />
+          <DataTable
+            columns={columns}
+            data={items}
+            showGlobalFilter={false}
+            showPagination={false}
+            selectable={false}
+            emptyMessage="Belum ada kegiatan"
+            emptyAction={
+              <Button onClick={openCreate} className="add-button">
+                <Plus size={16} />
+                <span className="hidden sm:inline">Tambah Kegiatan</span>
+              </Button>
+            }
+          />
         )}
       </div>
 

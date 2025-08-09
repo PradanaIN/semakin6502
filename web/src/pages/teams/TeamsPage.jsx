@@ -184,7 +184,20 @@ export default function TeamsPage() {
         {loading ? (
           <TableSkeleton cols={columns.length} />
         ) : (
-          <DataTable columns={columns} data={paginated} showGlobalFilter={false} showPagination={false} selectable={false} />
+          <DataTable
+            columns={columns}
+            data={paginated}
+            showGlobalFilter={false}
+            showPagination={false}
+            selectable={false}
+            emptyMessage="Belum ada tim"
+            emptyAction={
+              <Button onClick={openCreate} className="add-button">
+                <Plus size={16} />
+                <span className="hidden sm:inline">Tambah Tim</span>
+              </Button>
+            }
+          />
         )}
       </div>
 

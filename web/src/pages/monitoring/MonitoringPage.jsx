@@ -11,7 +11,7 @@ import dayjs from "../../utils/dayjs";
 
 const formatWita = (iso) =>
   dayjs.utc(iso).tz("Asia/Makassar").format("DD MMM YYYY HH:mm:ss");
-
+// eslint-disable-next-line react-refresh/only-export-components
 export const getWeekStarts = (month, year) => {
   const firstOfMonth = new Date(Date.UTC(year, month, 1));
   const monthEnd = new Date(Date.UTC(year, month + 1, 0));
