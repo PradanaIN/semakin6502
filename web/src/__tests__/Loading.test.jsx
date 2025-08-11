@@ -12,3 +12,9 @@ it('supports custom message and size', () => {
   const svg = container.querySelector('svg');
   expect(svg).toHaveClass('h-8 w-8');
 });
+
+it('renders full screen overlay', () => {
+  const { container } = render(<Loading fullScreen />);
+  const overlay = container.firstChild;
+  expect(overlay).toHaveClass('fixed', 'inset-0');
+});
