@@ -7,7 +7,7 @@ import { ulid } from "ulid";
 
 const prisma = new PrismaClient();
 
-const BASE_DATE = new Date("2025-08-21T00:00:00Z");
+const BASE_DATE = new Date("2025-08-17T00:00:00Z");
 BASE_DATE.setUTCHours(0, 0, 0, 0);
 
 function randomInt(min: number, max: number): number {
@@ -471,7 +471,7 @@ async function main() {
     new Date("2025-06-15T00:00:00Z"),
     new Date("2025-07-14T00:00:00Z"),
     new Date("2025-07-31T00:00:00Z"),
-    new Date("2025-08-21T00:00:00Z"),
+    new Date("2025-08-17T00:00:00Z"),
   ];
   sampleDates.forEach((d) => console.log("Seeded:", d.toISOString()));
   const tambahanRows: any[] = [];
