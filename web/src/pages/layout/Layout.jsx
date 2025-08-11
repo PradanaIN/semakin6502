@@ -80,11 +80,11 @@ export default function Layout() {
   const markAsRead = async (id, link) => {
     try {
       await axios.post(`/notifications/${id}/read`);
+      if (link) navigate(link);
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
       );
       setNotifCount((c) => Math.max(0, c - 1));
-      if (link) navigate(link);
     } catch (err) {
       console.error("Failed to mark notification", err);
     }
