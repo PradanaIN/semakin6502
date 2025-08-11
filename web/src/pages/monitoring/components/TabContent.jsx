@@ -16,13 +16,6 @@ export default function TabContent({
   year,
   teamId = "",
 }) {
-  const hiddenUserNames = new Set(["Admin Utama", "Yuda Agus Irianto"]);
-  const hiddenUserIds = new Set([
-    // add unique user IDs here when available
-  ]);
-  const isHiddenUser = ({ id, nama }) =>
-    hiddenUserIds.has(id) || hiddenUserNames.has(nama);
-
   const [loading, setLoading] = useState(false);
   const [dailyData, setDailyData] = useState([]);
   const [weeklyMonthData, setWeeklyMonthData] = useState([]);
@@ -45,7 +38,7 @@ export default function TabContent({
         const res = await axios.get("/monitoring/harian/bulan", {
           params: { tanggal: first, teamId: teamId || undefined },
         });
-        setDailyData(res.data.filter((u) => !isHiddenUser(u)));
+        setDailyData(res.data);
       } catch (err) {
         handleAxiosError(err, "Gagal mengambil monitoring harian");
       } finally {
@@ -64,7 +57,7 @@ export default function TabContent({
         const res = await axios.get("/monitoring/mingguan/all", {
           params: { minggu, teamId: teamId || undefined },
         });
-        setWeeklyData(res.data.filter((u) => !isHiddenUser(u)));
+        setWeeklyData(res.data);
       } catch (err) {
         handleAxiosError(err, "Gagal mengambil monitoring mingguan");
       } finally {
@@ -83,7 +76,7 @@ export default function TabContent({
         const res = await axios.get("/monitoring/mingguan/bulan", {
           params: { tanggal: first, teamId: teamId || undefined },
         });
-        setWeeklyMonthData(res.data.filter((u) => !isHiddenUser(u)));
+        setWeeklyMonthData(res.data);
       } catch (err) {
         handleAxiosError(err, "Gagal mengambil monitoring mingguan per bulan");
       } finally {

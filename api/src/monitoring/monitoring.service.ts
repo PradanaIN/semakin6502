@@ -192,29 +192,34 @@ export class MonitoringService {
     const start = new Date(Date.UTC(year, month, 1));
     const end = new Date(Date.UTC(year, month + 1, 0));
 
-    const where: any = { tanggal: { gte: start, lte: end } };
+    const where: any = {
+      tanggal: { gte: start, lte: end },
+      pegawai: {
+        role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
+        NOT: { username: { startsWith: "demo" } },
+      },
+    };
     if (teamId)
       where.penugasan = {
         kegiatan: { teamId },
       };
 
-    const records = (
-      await this.prisma.laporanHarian.findMany({
-        where,
-        include: { pegawai: true },
-      })
-    ).filter(
-      (r: { pegawai?: { username?: string } }) =>
-        !r.pegawai?.username?.startsWith("demo")
-    );
+    const records = await this.prisma.laporanHarian.findMany({
+      where,
+      include: { pegawai: true },
+    });
 
-    const users = (
-      await this.prisma.user.findMany({
-        where: teamId ? { members: { some: { teamId } } } : {},
-        select: { id: true, nama: true, username: true },
-        orderBy: { nama: "asc" },
-      })
-    ).filter((u: { username?: string }) => !u.username?.startsWith("demo"));
+    const userWhere: any = {
+      role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
+      NOT: { username: { startsWith: "demo" } },
+    };
+    if (teamId) userWhere.members = { some: { teamId } };
+
+    const users = await this.prisma.user.findMany({
+      where: userWhere,
+      select: { id: true, nama: true },
+      orderBy: { nama: "asc" },
+    });
 
     if (records.length === 0) {
       return users.map((u: { id: string; nama: string }) => {
@@ -264,11 +269,23 @@ export class MonitoringService {
     if (isNaN(date.getTime()))
       throw new BadRequestException("tanggal tidak valid");
 
-    const where: any = { tanggal: date };
+    const where: any = {
+      tanggal: date,
+      pegawai: {
+        role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
+        NOT: { username: { startsWith: "demo" } },
+      },
+    };
     if (teamId)
       where.penugasan = {
         kegiatan: { teamId },
       };
+
+    const whereUser: any = {
+      role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
+      NOT: { username: { startsWith: "demo" } },
+    };
+    if (teamId) whereUser.members = { some: { teamId } };
 
     const [records, users] = await Promise.all([
       this.prisma.laporanHarian.findMany({
@@ -276,41 +293,20 @@ export class MonitoringService {
         include: { pegawai: true },
       }),
       this.prisma.user.findMany({
-        where: teamId ? { members: { some: { teamId } } } : {},
+        where: whereUser,
+        select: { id: true, nama: true },
         orderBy: { nama: "asc" },
       }),
     ]);
-    const filteredRecords = records.filter(
-      (r: { pegawai?: { username?: string } }) =>
-        !r.pegawai?.username?.startsWith("demo")
-    );
-    if (filteredRecords.length === 0) {
-      const filteredUsers = (users || []).filter(
-        (u: { username?: string }) => !u.username?.startsWith("demo")
-      );
-      return filteredUsers.map((u: { id: string; nama: string }) => ({
+
+    if (records.length === 0) {
+      return users.map((u: { id: string; nama: string }) => ({
         userId: u.id,
         nama: u.nama,
         selesai: 0,
         total: 0,
         persen: 0,
       }));
-    }
-    if (records.length === 0) {
-      const users =
-        (await this.prisma.user.findMany({
-          where: teamId ? { members: { some: { teamId } } } : {},
-          orderBy: { nama: "asc" },
-        })) || [];
-      return users
-        .filter((u: { username?: string }) => !u.username?.startsWith("demo"))
-        .map((u: { id: string; nama: string }) => ({
-          userId: u.id,
-          nama: u.nama,
-          selesai: 0,
-          total: 0,
-          persen: 0,
-        }));
     }
 
     const byUser: Record<
@@ -323,10 +319,10 @@ export class MonitoringService {
     }
 
     for (const r of records) {
-      if (!byUser[r.pegawaiId]) continue;
-      byUser[r.pegawaiId].total += 1;
-      if (r.status === STATUS.SELESAI_DIKERJAKAN)
-        byUser[r.pegawaiId].selesai += 1;
+      const u = byUser[r.pegawaiId];
+      if (!u) continue;
+      u.total += 1;
+      if (r.status === STATUS.SELESAI_DIKERJAKAN) u.selesai += 1;
     }
 
     return Object.entries(byUser)
@@ -464,44 +460,34 @@ export class MonitoringService {
         kegiatan: { teamId },
       };
 
-    const records = (
-      await this.prisma.laporanHarian.findMany({
-        where,
-        include: { pegawai: true },
-      })
-    ).filter(
-      (r: { pegawai?: { username?: string } }) =>
-        !r.pegawai?.username?.startsWith("demo")
-    );
-    let users: { id: string; nama: string; username?: string }[] = [];
+    const records = await this.prisma.laporanHarian.findMany({
+      where,
+      include: { pegawai: true },
+    });
+
+    const whereUser: any = {
+      role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
+      NOT: { username: { startsWith: "demo" } },
+    };
+    if (teamId) whereUser.members = { some: { teamId } };
+
+    const users = await this.prisma.user.findMany({
+      where: whereUser,
+      select: { id: true, nama: true },
+      orderBy: { nama: "asc" },
+    });
+
     if (records.length === 0) {
-      users =
-        (await this.prisma.user.findMany({
-          where: teamId ? { members: { some: { teamId } } } : {},
-          orderBy: { nama: "asc" },
-        })) || [];
       const emptyWeeks = weekStarts.map(() => ({
         selesai: 0,
         total: 0,
         persen: 0,
       }));
-      return users
-        .filter((u: { username?: string }) => !u.username?.startsWith("demo"))
-        .map((u: { id: string; nama: string }) => ({
-          userId: u.id,
-          nama: u.nama,
-          weeks: emptyWeeks,
-        }));
-    } else {
-      users =
-        (await this.prisma.user.findMany({
-          where: teamId ? { members: { some: { teamId } } } : {},
-          select: { id: true, nama: true, username: true },
-          orderBy: { nama: "asc" },
-        })) || [];
-      users = users.filter(
-        (u: { username?: string }) => !u.username?.startsWith("demo")
-      );
+      return users.map((u: { id: string; nama: string }) => ({
+        userId: u.id,
+        nama: u.nama,
+        weeks: emptyWeeks,
+      }));
     }
 
     const byUser: Record<
@@ -632,7 +618,13 @@ export class MonitoringService {
     const yr = parseInt(year, 10);
     if (isNaN(yr)) throw new BadRequestException("year tidak valid");
 
-    const where: any = { tahun: yr };
+    const where: any = {
+      tahun: yr,
+      pegawai: {
+        role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
+        NOT: { username: { startsWith: "demo" } },
+      },
+    };
     if (bulan) {
       const bln = parseInt(bulan, 10);
       if (isNaN(bln) || bln < 1 || bln > 12)
@@ -641,16 +633,11 @@ export class MonitoringService {
     }
     if (teamId) where.kegiatan = { teamId };
 
-    const tugas = (
-      await this.prisma.penugasan.findMany({
-        where,
-        include: { pegawai: true },
-      })
-    ).filter(
-      (t: { pegawai?: { username?: string } }) =>
-        !t.pegawai?.username?.startsWith("demo")
-    );
-
+    const tugas = await this.prisma.penugasan.findMany({
+      where,
+      include: { pegawai: true },
+    });
+    
     const byUser: Record<
       string,
       { nama: string; selesai: number; total: number }
@@ -679,18 +666,19 @@ export class MonitoringService {
     const yr = parseInt(year, 10);
     if (isNaN(yr)) throw new BadRequestException("year tidak valid");
 
-    const where: any = { tahun: yr };
+    const where: any = {
+      tahun: yr,
+      pegawai: {
+        role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
+        NOT: { username: { startsWith: "demo" } },
+      },
+    };
     if (teamId) where.kegiatan = { teamId };
 
-    const tugas = (
-      await this.prisma.penugasan.findMany({
-        where,
-        include: { pegawai: true },
-      })
-    ).filter(
-      (t: { pegawai?: { username?: string } }) =>
-        !t.pegawai?.username?.startsWith("demo")
-    );
+    const tugas = await this.prisma.penugasan.findMany({
+      where,
+      include: { pegawai: true },
+    });
 
     const byUser: Record<
       string,
