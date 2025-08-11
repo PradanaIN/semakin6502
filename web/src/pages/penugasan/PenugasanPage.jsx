@@ -72,15 +72,21 @@ export default function PenugasanPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(""); // NEW: error state
-  const { showForm, form, setForm, openCreate: openForm, closeForm, resetForm } =
-    useModalForm({
-      kegiatanId: "",
-      pegawaiIds: [],
-      deskripsi: "",
-      minggu: getCurrentWeek(),
-      bulan: new Date().getMonth() + 1,
-      tahun: new Date().getFullYear(),
-    });
+  const {
+    showForm,
+    form,
+    setForm,
+    openCreate: openForm,
+    closeForm,
+    resetForm,
+  } = useModalForm({
+    kegiatanId: "",
+    pegawaiIds: [],
+    deskripsi: "",
+    minggu: getCurrentWeek(),
+    bulan: new Date().getMonth() + 1,
+    tahun: new Date().getFullYear(),
+  });
   const [search, setSearch] = useState("");
   const [filterBulan, setFilterBulan] = useState("");
   const [filterTahun, setFilterTahun] = useState(new Date().getFullYear());
@@ -415,11 +421,7 @@ export default function PenugasanPage() {
             </Button>
           </div>
         ) : paginated.length === 0 ? (
-          <EmptyState
-            message="Belum ada penugasan untuk minggu ini"
-            actionLabel="Tambah Penugasan"
-            onAction={openForm}
-          />
+          <EmptyState message="Belum ada penugasan untuk minggu ini" />
         ) : (
           <DataTable
             columns={columns}

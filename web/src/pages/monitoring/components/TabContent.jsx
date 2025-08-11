@@ -16,9 +16,12 @@ export default function TabContent({
   year,
   teamId = "",
 }) {
-  const isHiddenUser = ({ nama, role }) =>
-    (nama === "Admin Utama" && role === "admin") ||
-    (nama === "Yuda Agus Irianto" && role === "pimpinan");
+  const hiddenUserNames = new Set(["Admin Utama", "Yuda Agus Irianto"]);
+  const hiddenUserIds = new Set([
+    // add unique user IDs here when available
+  ]);
+  const isHiddenUser = ({ id, nama }) =>
+    hiddenUserIds.has(id) || hiddenUserNames.has(nama);
 
   const [loading, setLoading] = useState(false);
   const [dailyData, setDailyData] = useState([]);
