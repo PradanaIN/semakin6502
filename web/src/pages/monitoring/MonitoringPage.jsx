@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import FilterToolbar from "./components/FilterToolbar";
 import TabNavigation from "./components/TabNavigation";
@@ -36,8 +36,6 @@ export default function MonitoringPage() {
   const [teamId, setTeamId] = useState("");
   const [teams, setTeams] = useState([]);
   const [lastUpdate, setLastUpdate] = useState("");
-  const containerRef = useRef(null);
-  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const headings = {
     harian: "📅 Daftar Laporan Harian",
@@ -46,24 +44,6 @@ export default function MonitoringPage() {
   };
 
   const { user } = useAuth();
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement && containerRef.current) {
-      containerRef.current.requestFullscreen();
-    } else {
-      document.exitFullscreen();
-    }
-  };
-
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => {
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-    };
-  }, []);
 
   // Ambil daftar tim jika admin/ketua/pimpinan
   useEffect(() => {
@@ -106,10 +86,7 @@ export default function MonitoringPage() {
   }, [monthIndex]);
 
   return (
-    <div
-      ref={containerRef}
-      className="max-w-screen-xl mx-auto px-4 flex flex-col gap-4 pb-10"
-    >
+    <div className="max-w-screen-xl mx-auto px-4 flex flex-col gap-4 pb-10">
       <TabNavigation activeTab={tab} onChange={setTab} />
 
       <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg space-y-6">
@@ -119,13 +96,6 @@ export default function MonitoringPage() {
             <h2 className="text-xl font-bold text-gray-800 dark:text-white tracking-tight">
               {headings[tab]}
             </h2>
-            <button
-              type="button"
-              onClick={toggleFullscreen}
-              className="px-3 py-1.5 text-sm rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600"
-            >
-              {isFullscreen ? "Keluar Layar Penuh" : "Tampilan Penuh"}
-            </button>
           </div>
           <FilterToolbar
             tab={tab}
@@ -166,7 +136,6 @@ export default function MonitoringPage() {
               weekStarts={weekStarts}
               year={year}
               teamId={teamId}
-              isFullscreen={isFullscreen}
             />
           </Motion.div>
         </AnimatePresence>

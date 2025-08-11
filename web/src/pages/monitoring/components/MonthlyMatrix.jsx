@@ -3,7 +3,7 @@ import getProgressColor from "../../../utils/progressColor";
 import months from "../../../utils/months";
 import { useAuth } from "../../auth/useAuth";
 
-const MonthlyMatrix = ({ data = [], isFullscreen = false }) => {
+const MonthlyMatrix = ({ data = [] }) => {
   const { user: currentUser } = useAuth();
   if (!Array.isArray(data) || data.length === 0) return null;
 
@@ -11,9 +11,7 @@ const MonthlyMatrix = ({ data = [], isFullscreen = false }) => {
 
   return (
     <div
-      className={`overflow-x-auto w-full mt-4 rounded-md border border-gray-200 dark:border-gray-700 shadow bg-white dark:bg-gray-900 ${
-        isFullscreen ? "" : "max-h-[65vh]"
-      }`}
+      className="overflow-x-auto w-full mt-4 rounded-md border border-gray-200 dark:border-gray-700 shadow bg-white dark:bg-gray-900 max-h-[65vh]"
     >
       <table className="min-w-[1000px] w-full table-fixed text-sm border-collapse">
         <thead className="sticky top-0 bg-gray-50 dark:bg-gray-800 z-20 border-b border-gray-300 dark:border-gray-700">

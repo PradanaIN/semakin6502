@@ -59,7 +59,6 @@ const WeeklyMatrix = ({
   weeks = [],
   onSelectWeek,
   selectedWeek,
-  isFullscreen = false,
 }) => {
   const { user: currentUser } = useAuth();
   const safeData = Array.isArray(data) ? data : [];
@@ -67,9 +66,7 @@ const WeeklyMatrix = ({
 
   return (
     <div
-      className={`overflow-x-auto w-full rounded-md shadow border border-gray-200 dark:border-gray-700 ${
-        isFullscreen ? "" : "max-h-[65vh]"
-      }`}
+      className="overflow-x-auto w-full rounded-md shadow border border-gray-200 dark:border-gray-700 max-h-[65vh]"
     >
       <table className="min-w-[1000px] w-full table-fixed text-sm border-collapse">
         <thead className="sticky top-0 bg-white dark:bg-gray-900 z-20 border-b border-gray-300 dark:border-gray-700">
