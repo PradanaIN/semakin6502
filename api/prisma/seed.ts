@@ -7,7 +7,7 @@ import { ulid } from "ulid";
 
 const prisma = new PrismaClient();
 
-const BASE_DATE = new Date("2025-07-31T00:00:00Z");
+const BASE_DATE = new Date("2025-08-21T00:00:00Z");
 BASE_DATE.setUTCHours(0, 0, 0, 0);
 
 function randomInt(min: number, max: number): number {
@@ -431,11 +431,34 @@ async function main() {
     await prisma.member.createMany({ data: memberRows, skipDuplicates: true });
   }
 
-  // seed penugasan for June and July 2025
+  // seed penugasan for June to August 2025
   const months = [
     { bulan: "6", monthIndex: 5, year: 2025, days: 30 },
     { bulan: "7", monthIndex: 6, year: 2025, days: 31 },
+    { bulan: "8", monthIndex: 7, year: 2025, days: 31 },
   ];
+
+  type WeekRange = { start: number; end: number };
+  function getWeekRanges(year: number, monthIndex: number): WeekRange[] {
+    const daysInMonth = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
+    const firstDay = new Date(Date.UTC(year, monthIndex, 1)).getUTCDay();
+    const firstWeekEnd = firstDay === 0 ? 7 : 7 - firstDay + 1;
+    const weeks: WeekRange[] = [{ start: 1, end: firstWeekEnd }];
+    let start = firstWeekEnd;
+    if (firstWeekEnd < 7) {
+      const end = Math.min(start + 7, daysInMonth);
+      weeks.push({ start, end });
+      start = end + 1;
+    } else {
+      start = firstWeekEnd + 1;
+    }
+    while (start <= daysInMonth) {
+      const end = Math.min(start + 6, daysInMonth);
+      weeks.push({ start, end });
+      start = end + 1;
+    }
+    return weeks;
+  }
 
   const members = await prisma.member.findMany({ include: { user: true } });
   const leaderByTeam = new Map<string, string>();
@@ -448,6 +471,7 @@ async function main() {
     new Date("2025-06-15T00:00:00Z"),
     new Date("2025-07-14T00:00:00Z"),
     new Date("2025-07-31T00:00:00Z"),
+    new Date("2025-08-21T00:00:00Z"),
   ];
   sampleDates.forEach((d) => console.log("Seeded:", d.toISOString()));
   const tambahanRows: any[] = [];
@@ -498,8 +522,10 @@ async function main() {
     if (!masters.length) continue;
 
     for (const info of months) {
-      const weeks = Math.ceil(info.days / 7);
-      const maxWeeks = info.bulan === "7" ? Math.min(3, weeks) : weeks;
+      const weekRanges = getWeekRanges(info.year, info.monthIndex);
+      const maxWeeks = ["7", "8"].includes(info.bulan)
+        ? Math.min(3, weekRanges.length)
+        : weekRanges.length;
       for (let w = 1; w <= maxWeeks; w++) {
         const taskCount = randomInt(5, 7);
         for (let i = 0; i < taskCount; i++) {
@@ -529,7 +555,7 @@ async function main() {
 
   // seed laporan harian based on penugasan
   const penugasans = await prisma.penugasan.findMany({
-    where: { tahun: 2025, bulan: { in: ["6", "7"] } },
+    where: { tahun: 2025, bulan: { in: ["6", "7", "8"] } },
   });
 
   if (penugasans.length) {
@@ -540,8 +566,10 @@ async function main() {
     for (const m of members) {
       if (m.user.role === "admin") continue;
       for (const info of months) {
-        const weeks = Math.ceil(info.days / 7);
-        const maxWeeks = info.bulan === "7" ? Math.min(3, weeks) : weeks;
+        const weekRanges = getWeekRanges(info.year, info.monthIndex);
+        const maxWeeks = ["7", "8"].includes(info.bulan)
+          ? Math.min(3, weekRanges.length)
+          : weekRanges.length;
         for (let w = 1; w <= maxWeeks; w++) {
           const tugas = penugasans.filter(
             (p) =>
@@ -550,8 +578,7 @@ async function main() {
               p.minggu === w
           );
           if (!tugas.length) continue;
-          const start = 1 + (w - 1) * 7;
-          const end = Math.min(start + 6, info.days);
+          const { start, end } = weekRanges[w - 1];
           for (let d = start; d <= end; d++) {
             const date = new Date(Date.UTC(info.year, info.monthIndex, d));
             const day = date.getDay();
@@ -620,7 +647,7 @@ async function main() {
         where: {
           pegawaiId: m.userId,
           tahun: 2025,
-          bulan: { in: ["6", "7"] },
+          bulan: { in: ["6", "7", "8"] },
         },
       });
       if (!penugasan) continue;
