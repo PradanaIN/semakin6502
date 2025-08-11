@@ -105,12 +105,21 @@ export default function PenugasanPage() {
     [user, viewTab]
   );
 
-  const kegiatanOptions = useMemo(() => kegiatan.map((k) => ({ value: Number(k.id), label: k.namaKegiatan })), [kegiatan]);
+  const kegiatanOptions = useMemo(
+    () => kegiatan.map((k) => ({ value: k.id, label: k.namaKegiatan })),
+    [kegiatan]
+  );
 
-  const pegawaiOptions = useMemo(() =>
-    users
-      .filter((u) => u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN && !EXCLUDED_TB_NAMES.includes(u.nama))
-      .map((u) => ({ value: Number(u.id), label: u.nama })),
+  const pegawaiOptions = useMemo(
+    () =>
+      users
+        .filter(
+          (u) =>
+            u.role !== ROLES.ADMIN &&
+            u.role !== ROLES.PIMPINAN &&
+            !EXCLUDED_TB_NAMES.includes(u.nama)
+        )
+        .map((u) => ({ value: u.id, label: u.nama })),
     [users]
   );
 
@@ -513,7 +522,7 @@ export default function PenugasanPage() {
                     onChange={(o) =>
                       setForm((prev) => ({
                         ...prev,
-                        kegiatanId: o ? Number(o.value) : "",
+                        kegiatanId: o?.value || "",
                       }))
                     }
                     placeholder="Pilih kegiatan..."
@@ -545,7 +554,7 @@ export default function PenugasanPage() {
                     onChange={(vals) =>
                       setForm((prev) => ({
                         ...prev,
-                        pegawaiIds: vals ? vals.map((v) => Number(v.value)) : [],
+                        pegawaiIds: vals?.map((v) => v.value) || [],
                       }))
                     }
                     placeholder="Pilih pegawai..."
