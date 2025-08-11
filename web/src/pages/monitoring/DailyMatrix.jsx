@@ -36,7 +36,7 @@ export const DailyMatrixRow = ({ user, boxClass, currentUser }) => {
   );
 };
 
-const DailyMatrix = ({ data = [], monthIndex, year }) => {
+const DailyMatrix = ({ data = [], monthIndex, year, isFullscreen = false }) => {
   const { user: currentUser } = useAuth();
 
   const rows = Array.isArray(data) ? data : [];
@@ -67,7 +67,11 @@ const DailyMatrix = ({ data = [], monthIndex, year }) => {
   const dayCount = dayjs().year(year).month(monthIndex).daysInMonth();
 
   return (
-    <div className="overflow-x-auto max-h-[65vh] overflow-y-auto w-full rounded-md shadow border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+    <div
+      className={`overflow-x-auto w-full rounded-md shadow border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 ${
+        isFullscreen ? "" : "max-h-[65vh] overflow-y-auto"
+      }`}
+    >
       <table className="min-w-[1000px] w-full table-fixed text-sm">
         <thead className="sticky top-0 bg-gray-50 dark:bg-gray-800 z-20 border-b border-gray-300 dark:border-gray-700">
           <tr>
