@@ -99,14 +99,6 @@ export default function PenugasanDetailPage() {
     axios
       .get(`/laporan-harian/penugasan/${id}`)
       .then((r) => setLaporan(r.data));
-    axios.get("/master-kegiatan?limit=1000").then((r) => {
-      const kData = r.data.data || r.data;
-      const sorted = [...kData].sort((a, b) =>
-        a.namaKegiatan.localeCompare(b.namaKegiatan)
-      );
-      setKegiatan(sorted);
-    });
-
     if (canManage) {
       axios.get("/users").then((r) => {
         const sorted = [...r.data].sort((a, b) => a.nama.localeCompare(b.nama));
@@ -116,6 +108,32 @@ export default function PenugasanDetailPage() {
       setUsers([user]);
     }
   }, [id, canManage, user, fetchDetail]);
+
+  useEffect(() => {
+    if (!canManage) return;
+    const fetchKegiatan = async () => {
+      try {
+        let url = "/master-kegiatan?limit=1000";
+        if (user?.role !== ROLES.ADMIN) {
+          const teamId = item?.kegiatan?.teamId || user?.teamId;
+          if (!teamId) {
+            setKegiatan([]);
+            return;
+          }
+          url = `/master-kegiatan?team=${teamId}`;
+        }
+        const r = await axios.get(url);
+        const kData = r.data.data || r.data;
+        const sorted = [...kData].sort((a, b) =>
+          a.namaKegiatan.localeCompare(b.namaKegiatan)
+        );
+        setKegiatan(sorted);
+      } catch {
+        // ignore error
+      }
+    };
+    fetchKegiatan();
+  }, [canManage, user, item]);
 
   const save = async () => {
     try {
