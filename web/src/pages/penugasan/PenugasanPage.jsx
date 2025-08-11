@@ -493,23 +493,24 @@ export default function PenugasanPage() {
                     styles={selectStyles}
                     menuPortalTarget={document.body}
                     options={kegiatan.map((k) => ({
-                      value: k.id,
+                      value: Number(k.id),
                       label: k.namaKegiatan,
                     }))}
                     value={
                       form.kegiatanId
                         ? {
                             value: form.kegiatanId,
-                            label: kegiatan.find(
-                              (k) => k.id === form.kegiatanId
-                            )?.namaKegiatan,
+                            label:
+                              kegiatan.find(
+                                (k) => Number(k.id) === form.kegiatanId
+                              )?.namaKegiatan || "",
                           }
                         : null
                     }
                     onChange={(o) =>
                       setForm({
                         ...form,
-                        kegiatanId: o ? parseInt(o.value, 10) : "",
+                        kegiatanId: o ? o.value : "",
                       })
                     }
                     placeholder="Pilih kegiatan..."
@@ -541,19 +542,20 @@ export default function PenugasanPage() {
                           u.role !== ROLES.PIMPINAN &&
                           !EXCLUDED_TB_NAMES.includes(u.nama)
                       )
-                      .map((u) => ({ value: u.id, label: `${u.nama}` }))}
+                      .map((u) => ({
+                        value: Number(u.id),
+                        label: `${u.nama}`,
+                      }))}
                     value={form.pegawaiIds
                       .map((id) => {
-                        const u = users.find((x) => x.id === id);
+                        const u = users.find((x) => Number(x.id) === id);
                         return u ? { value: u.id, label: u.nama } : null;
                       })
                       .filter(Boolean)}
                     onChange={(vals) =>
                       setForm({
                         ...form,
-                        pegawaiIds: vals
-                          ? vals.map((v) => parseInt(v.value, 10))
-                          : [],
+                        pegawaiIds: vals ? vals.map((v) => v.value) : [],
                       })
                     }
                     placeholder="Pilih pegawai..."
