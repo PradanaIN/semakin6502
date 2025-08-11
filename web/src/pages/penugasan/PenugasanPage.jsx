@@ -513,7 +513,7 @@ export default function PenugasanPage() {
                     onChange={(o) =>
                       setForm((prev) => ({
                         ...prev,
-                        kegiatanId: o ? o.value : "",
+                        kegiatanId: o ? Number(o.value) : "",
                       }))
                     }
                     placeholder="Pilih kegiatan..."
@@ -545,7 +545,7 @@ export default function PenugasanPage() {
                     onChange={(vals) =>
                       setForm((prev) => ({
                         ...prev,
-                        pegawaiIds: vals ? vals.map((v) => v.value) : [],
+                        pegawaiIds: vals ? vals.map((v) => Number(v.value)) : [],
                       }))
                     }
                     placeholder="Pilih pegawai..."

@@ -7,7 +7,8 @@ export default function useModalForm(initialForm) {
 
   const openCreate = () => {
     setEditing(null);
-    setForm(initialForm);
+    // create a fresh copy so components receive a new reference
+    setForm({ ...initialForm });
     setShowForm(true);
   };
 
@@ -23,7 +24,8 @@ export default function useModalForm(initialForm) {
   };
 
   const resetForm = () => {
-    setForm(initialForm);
+    // reset using a new object to avoid stale references
+    setForm({ ...initialForm });
   };
 
   return {
