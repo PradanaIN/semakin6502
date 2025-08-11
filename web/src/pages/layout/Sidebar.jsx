@@ -81,7 +81,8 @@ export default function Sidebar({ setSidebarOpen }) {
   const visibleMainLinks = mainLinks.filter(isLinkVisible);
   const visibleManageLinks = manageLinks.filter(isLinkVisible);
   const isPimpinan = user?.role === ROLES.PIMPINAN;
-  const isKetuaOrAnggota = [ROLES.KETUA, ROLES.ANGGOTA].includes(user?.role);
+  const isKetuaOrAnggota =
+    user?.role === ROLES.KETUA || user?.role === ROLES.ANGGOTA;
 
   const getLink = (path) => visibleMainLinks.find((l) => l.to === path);
   const monitoringLink = getLink("/monitoring");
@@ -147,7 +148,17 @@ export default function Sidebar({ setSidebarOpen }) {
             {terlambatLink && renderLink(terlambatLink)}
           </>
         ) : (
-          visibleMainLinks.map(renderLink)
+          visibleMainLinks.flatMap((link) =>
+            isKetuaOrAnggota && link.to === "/monitoring"
+              ? [
+                  renderLink(link),
+                  <hr
+                    key="monitoring-separator"
+                    className="my-4 border-gray-200 dark:border-gray-700"
+                  />,
+                ]
+              : [renderLink(link)]
+          )
         )}
         {visibleManageLinks.length > 0 && (
           <hr className="my-4 border-gray-200 dark:border-gray-700" />

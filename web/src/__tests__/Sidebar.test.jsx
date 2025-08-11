@@ -42,4 +42,23 @@ describe('Sidebar role visibility', () => {
     expect(screen.getByText(/Monitoring/i)).toBeInTheDocument();
     expect(screen.getByText(/Keterlambatan/i)).toBeInTheDocument();
   });
+
+  test.each([
+    ['ketua'],
+    ['anggota'],
+  ])('role %s has a separator between Monitoring and Keterlambatan', (role) => {
+    mockedUseAuth.mockReturnValue({ user: { role } });
+    render(
+      <MemoryRouter>
+        <Sidebar setSidebarOpen={() => {}} />
+      </MemoryRouter>
+    );
+
+    const monitoringLink = screen.getByText(/Monitoring/i).closest('a');
+    const terlambatLink = screen.getByText(/Keterlambatan/i).closest('a');
+    const separator = monitoringLink.nextElementSibling;
+
+    expect(separator).toBeInstanceOf(HTMLHRElement);
+    expect(separator).toBe(terlambatLink.previousElementSibling);
+  });
 });
