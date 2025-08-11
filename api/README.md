@@ -81,7 +81,7 @@ Aplikasi menggunakan JWT yang dikirim via cookie dan header Authorization. Setia
 |-------------|------------------------------------------------------------|
 | `admin`     | CRUD user & tim, akses penuh monitoring                     |
 | `pimpinan`  | Membaca seluruh monitoring                                 |
-| `ketua_tim` | Mengelola kegiatan, penugasan, monitoring tim               |
+| `ketua`     | Mengelola kegiatan, penugasan, monitoring tim               |
 | `anggota`   | Mengisi laporan harian & tugas tambahan                    |
 
 ## Rate Limiting
