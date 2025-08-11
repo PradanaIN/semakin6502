@@ -27,14 +27,16 @@
 /* Wrapper (Card Style) */
 .wrapper {
   border-radius: 1rem;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
   background-color: var(--table-bg);
 }
 
 /* Table Base */
 .table {
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
   border-collapse: collapse;
   font-size: 0.875rem;
   color: var(--text-color);
