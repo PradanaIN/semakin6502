@@ -135,6 +135,18 @@ export default function Sidebar({ setSidebarOpen }) {
             {mingguanLink && renderLink(mingguanLink)}
             {tambahanLink && renderLink(tambahanLink)}
           </>
+        ) : isKetuaOrAnggota ? (
+          <>
+            {visibleMainLinks
+              .filter(
+                (link) =>
+                  !["/monitoring", "/laporan-terlambat"].includes(link.to)
+              )
+              .map(renderLink)}
+            {monitoringLink && renderLink(monitoringLink)}
+            <hr className="my-4 border-gray-200 dark:border-gray-700" />
+            {terlambatLink && renderLink(terlambatLink)}
+          </>
         ) : (
           visibleMainLinks.flatMap((link) =>
             isKetuaOrAnggota && link.to === "/monitoring"
