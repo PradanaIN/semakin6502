@@ -2,16 +2,14 @@ import React from "react";
 import getProgressColor from "../../../utils/progressColor";
 import { useAuth } from "../../auth/useAuth";
 
-const WeeklyProgressTable = ({ data = [], isFullscreen = false }) => {
+const WeeklyProgressTable = ({ data = [] }) => {
   const { user: currentUser } = useAuth();
   const rows = Array.isArray(data) ? data : [];
   const progressColor = getProgressColor;
 
   return (
     <div
-      className={`overflow-x-auto w-full mt-4 rounded-md border border-gray-200 dark:border-gray-700 shadow bg-white dark:bg-gray-900 ${
-        isFullscreen ? "" : "max-h-[65vh]"
-      }`}
+      className="overflow-x-auto w-full mt-4 rounded-md border border-gray-200 dark:border-gray-700 shadow bg-white dark:bg-gray-900 max-h-[65vh]"
     >
       <table className="min-w-[1000px] w-full table-fixed text-sm border-collapse">
         <thead className="sticky top-0 bg-gray-50 dark:bg-gray-800 z-20 border-b border-gray-300 dark:border-gray-700">

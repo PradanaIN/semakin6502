@@ -15,7 +15,6 @@ export default function TabContent({
   weekStarts,
   year,
   teamId = "",
-  isFullscreen = false,
 }) {
   const isHiddenUser = ({ nama, role }) =>
     (nama === "Admin Utama" && role === "admin") ||
@@ -119,12 +118,7 @@ export default function TabContent({
       {activeTab === "harian" && (
         <>
           <Legend className="mb-3" />
-          <DailyMatrix
-            data={dailyData}
-            monthIndex={monthIndex}
-            year={year}
-            isFullscreen={isFullscreen}
-          />
+          <DailyMatrix data={dailyData} monthIndex={monthIndex} year={year} />
         </>
       )}
 
@@ -160,17 +154,13 @@ export default function TabContent({
               weeks={weekStarts}
               selectedWeek={weekIndex}
               onSelectWeek={() => {}}
-              isFullscreen={isFullscreen}
             />
           ) : (
             <div>
               <h3 className="font-semibold mb-2 text-blue-600 dark:text-blue-400">
                 Ringkasan Minggu ke-{weekIndex + 1}
               </h3>
-              <WeeklyProgressTable
-                data={weeklyData}
-                isFullscreen={isFullscreen}
-              />
+              <WeeklyProgressTable data={weeklyData} />
             </div>
           )}
         </>
@@ -179,7 +169,7 @@ export default function TabContent({
       {/* BULANAN */}
       {activeTab === "bulanan" &&
         (monthlyData.length > 0 ? (
-          <MonthlyMatrix data={monthlyData} isFullscreen={isFullscreen} />
+          <MonthlyMatrix data={monthlyData} />
         ) : (
           <div className="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
             Tidak ada data untuk tahun ini.
