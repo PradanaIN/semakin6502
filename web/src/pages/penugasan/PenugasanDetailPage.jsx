@@ -419,17 +419,17 @@ export default function PenugasanDetailPage() {
               styles={selectStyles}
               menuPortalTarget={document.body}
               options={kegiatan.map((k) => ({
-                value: k.id,
+                value: Number(k.id),
                 label: k.namaKegiatan,
               }))}
               value={{
                 value: form.kegiatanId,
                 label:
-                  kegiatan.find((k) => k.id === form.kegiatanId)
+                  kegiatan.find((k) => Number(k.id) === form.kegiatanId)
                     ?.namaKegiatan || "",
               }}
               onChange={(o) =>
-                setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })
+                setForm({ ...form, kegiatanId: o ? o.value : "" })
               }
               isSearchable
             />
@@ -447,13 +447,14 @@ export default function PenugasanDetailPage() {
                 .filter(
                   (u) => u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN
                 )
-                .map((u) => ({ value: u.id, label: u.nama }))}
+                .map((u) => ({ value: Number(u.id), label: u.nama }))}
               value={{
                 value: form.pegawaiId,
-                label: users.find((u) => u.id === form.pegawaiId)?.nama || "",
+                label:
+                  users.find((u) => Number(u.id) === form.pegawaiId)?.nama || "",
               }}
               onChange={(o) =>
-                setForm({ ...form, pegawaiId: o ? parseInt(o.value, 10) : "" })
+                setForm({ ...form, pegawaiId: o ? o.value : "" })
               }
               isSearchable
             />
