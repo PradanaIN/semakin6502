@@ -166,6 +166,7 @@ export default function MonitoringPage() {
               weekStarts={weekStarts}
               year={year}
               teamId={teamId}
+              isFullscreen={isFullscreen}
             />
           </Motion.div>
         </AnimatePresence>
