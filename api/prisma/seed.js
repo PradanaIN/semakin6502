@@ -147,7 +147,7 @@ function main() {
                             "Podes",
                             "Polkam",
                             "Sakernas Feb",
-                            "Sakernas Ags",
+                            "Sakernas Agustus",
                             "Supas",
                             "Desa Cantik",
                         ],
