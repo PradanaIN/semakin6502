@@ -22,5 +22,18 @@ export default function useModalForm(initialForm) {
     setEditing(null);
   };
 
-  return { showForm, form, setForm, editing, openCreate, openEdit, closeForm };
+  const resetForm = () => {
+    setForm(initialForm);
+  };
+
+  return {
+    showForm,
+    form,
+    setForm,
+    editing,
+    openCreate,
+    openEdit,
+    closeForm,
+    resetForm,
+  };
 }
