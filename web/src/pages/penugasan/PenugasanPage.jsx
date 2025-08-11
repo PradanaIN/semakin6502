@@ -6,7 +6,7 @@ import {
   confirmCancel,
   handleAxiosError,
 } from "../../utils/alerts";
-import { Plus, Filter as FilterIcon, Eye } from "lucide-react";
+import { Plus, Filter as FilterIcon, Eye, CheckSquare } from "lucide-react";
 import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
 import StatusBadge from "../../components/ui/StatusBadge";
@@ -259,8 +259,9 @@ export default function PenugasanPage() {
         ? p.kegiatan?.teamId === parseInt(filterTeam, 10)
         : true;
       if (viewTab === "mine") return matchesSearch && p.pegawaiId === user?.id;
-      if (viewTab === "dariSaya") return matchesSearch && matchTeam;
-      return matchesSearch && matchTeam;
+      if (viewTab === "dariSaya")
+        return matchesSearch && matchTeam && p.pegawaiId !== user?.id;
+      return matchesSearch && matchTeam && p.pegawaiId !== user?.id;
     });
   }, [penugasan, search, viewTab, user?.id, filterTeam]);
   const paginated = useMemo(
@@ -297,23 +298,24 @@ export default function PenugasanPage() {
         Header: "Status",
         accessor: "status",
         Cell: ({ row }) => <StatusBadge status={row.original.status} />,
-      },
-      {
-        Header: "Aksi",
-        accessor: "id",
-        Cell: ({ row }) =>
-          viewTab === "all" && row.original.pegawaiId !== user?.id ? null : (
-            <Button
-              onClick={() => navigate(`/tugas-mingguan/${row.original.id}`)}
-              variant="icon"
-              icon
-              aria-label="Detail"
-            >
-              <Eye size={16} />
-            </Button>
-          ),
       }
     );
+    if (viewTab !== "all") {
+      cols.push({
+        Header: "Aksi",
+        accessor: "id",
+        Cell: ({ row }) => (
+          <Button
+            onClick={() => navigate(`/tugas-mingguan/${row.original.id}`)}
+            variant="icon"
+            icon
+            aria-label="Detail"
+          >
+            <Eye size={16} />
+          </Button>
+        ),
+      });
+    }
     return cols;
   }, [currentPage, pageSize, navigate, showPegawaiColumn, viewTab, user?.id]);
 
@@ -516,8 +518,9 @@ export default function PenugasanPage() {
                     menuPortalTarget={document.body}
                     options={kegiatanOptions}
                     value={
-                      kegiatanOptions.find((o) => o.value === form.kegiatanId) ||
-                      null
+                      kegiatanOptions.find(
+                        (o) => o.value === form.kegiatanId
+                      ) || null
                     }
                     onChange={(o) =>
                       setForm((prev) => ({
@@ -565,6 +568,14 @@ export default function PenugasanPage() {
                     type="button"
                     size="xs"
                     variant="ghost"
+                    className="
+    flex items-center gap-1
+    text-blue-600 hover:bg-blue-100
+    dark:text-blue-400 dark:hover:bg-blue-950
+    border border-gray-300 dark:border-gray-700
+    rounded-md
+    transition-colors duration-200
+  "
                     onClick={() =>
                       setForm((prev) => ({
                         ...prev,
@@ -572,6 +583,7 @@ export default function PenugasanPage() {
                       }))
                     }
                   >
+                    <CheckSquare className="w-4 h-4" />
                     Pilih Semua
                   </Button>
                   {formTouched && form.pegawaiIds.length === 0 && (
