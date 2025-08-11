@@ -12,7 +12,7 @@ export class MonitoringService {
 
   async lastUpdate() {
     const latest = await this.prisma.laporanHarian.findFirst({
-      orderBy: { tanggal: 'desc' },
+      orderBy: { tanggal: "desc" },
       select: { tanggal: true },
     });
     return latest?.tanggal || null;
@@ -41,7 +41,7 @@ export class MonitoringService {
     });
 
     const exists = new Set(
-      records.map((r: { tanggal: Date }) => r.tanggal.toISOString()),
+      records.map((r: { tanggal: Date }) => r.tanggal.toISOString())
     );
 
     const result = [] as { tanggal: string; adaKegiatan: boolean }[];
@@ -99,8 +99,7 @@ export class MonitoringService {
       const dateStr = r.tanggal.toISOString();
       if (!perDay[dateStr]) perDay[dateStr] = { selesai: 0, total: 0 };
       perDay[dateStr].total += 1;
-      if (r.status === STATUS.SELESAI_DIKERJAKAN)
-        perDay[dateStr].selesai += 1;
+      if (r.status === STATUS.SELESAI_DIKERJAKAN) perDay[dateStr].selesai += 1;
     }
 
     const hari = [
@@ -122,7 +121,7 @@ export class MonitoringService {
     }[];
 
     const totalSelesai = tugas.filter(
-      (t: { status: string }) => t.status === STATUS.SELESAI_DIKERJAKAN,
+      (t: { status: string }) => t.status === STATUS.SELESAI_DIKERJAKAN
     ).length;
     const totalTugas = tugas.length;
     for (let i = 0; i < 7; i++) {
@@ -166,7 +165,7 @@ export class MonitoringService {
       const weeks = await this.penugasanBulan(
         first.toISOString(),
         teamId,
-        userId,
+        userId
       );
 
       if (weeks.length === 0) {
@@ -204,8 +203,9 @@ export class MonitoringService {
         where,
         include: { pegawai: true },
       })
-    ).filter((r: { pegawai?: { username?: string } }) =>
-      !r.pegawai?.username?.startsWith("demo"),
+    ).filter(
+      (r: { pegawai?: { username?: string } }) =>
+        !r.pegawai?.username?.startsWith("demo")
     );
 
     const users = (
@@ -214,9 +214,7 @@ export class MonitoringService {
         select: { id: true, nama: true, username: true },
         orderBy: { nama: "asc" },
       })
-    ).filter((u: { username?: string }) =>
-      !u.username?.startsWith("demo"),
-    );
+    ).filter((u: { username?: string }) => !u.username?.startsWith("demo"));
 
     if (records.length === 0) {
       return users.map((u: { id: string; nama: string }) => {
@@ -259,7 +257,7 @@ export class MonitoringService {
         return { userId: id, nama: v.nama, detail };
       })
       .sort((a, b) => a.nama.localeCompare(b.nama));
-    }
+  }
 
   async harianAll(tanggal: string, teamId?: string) {
     const date = new Date(tanggal);
@@ -276,10 +274,28 @@ export class MonitoringService {
       this.prisma.laporanHarian.findMany({
         where,
         include: { pegawai: true },
-      })
-    ).filter((r: { pegawai?: { username?: string } }) =>
-      !r.pegawai?.username?.startsWith("demo"),
+      }),
+      this.prisma.user.findMany({
+        where: teamId ? { members: { some: { teamId } } } : {},
+        orderBy: { nama: "asc" },
+      }),
+    ]);
+    const filteredRecords = records.filter(
+      (r: { pegawai?: { username?: string } }) =>
+        !r.pegawai?.username?.startsWith("demo")
     );
+    if (filteredRecords.length === 0) {
+      const filteredUsers = (users || []).filter(
+        (u: { username?: string }) => !u.username?.startsWith("demo")
+      );
+      return filteredUsers.map((u: { id: string; nama: string }) => ({
+        userId: u.id,
+        nama: u.nama,
+        selesai: 0,
+        total: 0,
+        persen: 0,
+      }));
+    }
     if (records.length === 0) {
       const users =
         (await this.prisma.user.findMany({
@@ -287,9 +303,7 @@ export class MonitoringService {
           orderBy: { nama: "asc" },
         })) || [];
       return users
-        .filter((u: { username?: string }) =>
-          !u.username?.startsWith("demo"),
-        )
+        .filter((u: { username?: string }) => !u.username?.startsWith("demo"))
         .map((u: { id: string; nama: string }) => ({
           userId: u.id,
           nama: u.nama,
@@ -311,7 +325,8 @@ export class MonitoringService {
     for (const r of records) {
       if (!byUser[r.pegawaiId]) continue;
       byUser[r.pegawaiId].total += 1;
-      if (r.status === STATUS.SELESAI_DIKERJAKAN) byUser[r.pegawaiId].selesai += 1;
+      if (r.status === STATUS.SELESAI_DIKERJAKAN)
+        byUser[r.pegawaiId].selesai += 1;
     }
 
     return Object.entries(byUser)
@@ -354,8 +369,9 @@ export class MonitoringService {
         where,
         include: { pegawai: true },
       })
-    ).filter((r: { pegawai?: { username?: string } }) =>
-      !r.pegawai?.username?.startsWith("demo"),
+    ).filter(
+      (r: { pegawai?: { username?: string } }) =>
+        !r.pegawai?.username?.startsWith("demo")
     );
     if (records.length === 0) {
       const users =
@@ -364,9 +380,7 @@ export class MonitoringService {
           orderBy: { nama: "asc" },
         })) || [];
       return users
-        .filter((u: { username?: string }) =>
-          !u.username?.startsWith("demo"),
-        )
+        .filter((u: { username?: string }) => !u.username?.startsWith("demo"))
         .map((u: { id: string; nama: string }) => ({
           userId: u.id,
           nama: u.nama,
@@ -388,8 +402,10 @@ export class MonitoringService {
       orderBy: { nama: "asc" },
     });
 
-    const byUser: Record<string, { nama: string; selesai: number; total: number }> =
-      {};
+    const byUser: Record<
+      string,
+      { nama: string; selesai: number; total: number }
+    > = {};
     for (const u of users) {
       byUser[u.id] = { nama: u.nama, selesai: 0, total: 0 };
     }
@@ -425,10 +441,14 @@ export class MonitoringService {
 
     const firstMonday = new Date(monthStart);
     firstMonday.setUTCDate(
-      monthStart.getUTCDate() - ((monthStart.getUTCDay() + 6) % 7),
+      monthStart.getUTCDate() - ((monthStart.getUTCDay() + 6) % 7)
     );
     const weekStarts: Date[] = [];
-    for (let d = new Date(firstMonday); d <= monthEnd; d.setUTCDate(d.getUTCDate() + 7)) {
+    for (
+      let d = new Date(firstMonday);
+      d <= monthEnd;
+      d.setUTCDate(d.getUTCDate() + 7)
+    ) {
       weekStarts.push(new Date(d));
     }
 
@@ -449,11 +469,13 @@ export class MonitoringService {
         where,
         include: { pegawai: true },
       })
-    ).filter((r: { pegawai?: { username?: string } }) =>
-      !r.pegawai?.username?.startsWith("demo"),
+    ).filter(
+      (r: { pegawai?: { username?: string } }) =>
+        !r.pegawai?.username?.startsWith("demo")
     );
+    let users: { id: string; nama: string; username?: string }[] = [];
     if (records.length === 0) {
-      const users =
+      users =
         (await this.prisma.user.findMany({
           where: teamId ? { members: { some: { teamId } } } : {},
           orderBy: { nama: "asc" },
@@ -464,19 +486,30 @@ export class MonitoringService {
         persen: 0,
       }));
       return users
-        .filter((u: { username?: string }) =>
-          !u.username?.startsWith("demo"),
-        )
+        .filter((u: { username?: string }) => !u.username?.startsWith("demo"))
         .map((u: { id: string; nama: string }) => ({
           userId: u.id,
           nama: u.nama,
           weeks: emptyWeeks,
         }));
+    } else {
+      users =
+        (await this.prisma.user.findMany({
+          where: teamId ? { members: { some: { teamId } } } : {},
+          select: { id: true, nama: true, username: true },
+          orderBy: { nama: "asc" },
+        })) || [];
+      users = users.filter(
+        (u: { username?: string }) => !u.username?.startsWith("demo")
+      );
     }
 
     const byUser: Record<
       string,
-      { nama: string; perWeek: Record<number, { selesai: number; total: number }> }
+      {
+        nama: string;
+        perWeek: Record<number, { selesai: number; total: number }>;
+      }
     > = {};
     for (const u of users) {
       byUser[u.id] = { nama: u.nama, perWeek: {} };
@@ -486,12 +519,12 @@ export class MonitoringService {
       const u = byUser[r.pegawaiId];
       if (!u) continue;
       const idx = Math.floor(
-        (r.tanggal.getTime() - weekStarts[0].getTime()) / (7 * 24 * 60 * 60 * 1000),
+        (r.tanggal.getTime() - weekStarts[0].getTime()) /
+          (7 * 24 * 60 * 60 * 1000)
       );
       if (!u.perWeek[idx]) u.perWeek[idx] = { selesai: 0, total: 0 };
       u.perWeek[idx].total += 1;
-      if (r.status === STATUS.SELESAI_DIKERJAKAN)
-        u.perWeek[idx].selesai += 1;
+      if (r.status === STATUS.SELESAI_DIKERJAKAN) u.perWeek[idx].selesai += 1;
     }
 
     return Object.entries(byUser)
@@ -506,11 +539,7 @@ export class MonitoringService {
       .sort((a, b) => a.nama.localeCompare(b.nama));
   }
 
-  async penugasanMinggu(
-    minggu: string,
-    teamId?: string,
-    userId?: string,
-  ) {
+  async penugasanMinggu(minggu: string, teamId?: string, userId?: string) {
     const targetDate = new Date(minggu);
     if (isNaN(targetDate.getTime()))
       throw new BadRequestException("minggu tidak valid");
@@ -548,11 +577,7 @@ export class MonitoringService {
     return { total: tugas.length, selesai, belum };
   }
 
-  async penugasanBulan(
-    tanggal: string,
-    teamId?: string,
-    userId?: string,
-  ) {
+  async penugasanBulan(tanggal: string, teamId?: string, userId?: string) {
     const base = new Date(tanggal);
     if (isNaN(base.getTime()))
       throw new BadRequestException("tanggal tidak valid");
@@ -565,10 +590,14 @@ export class MonitoringService {
 
     const firstMonday = new Date(monthStart);
     firstMonday.setUTCDate(
-      monthStart.getUTCDate() - ((monthStart.getUTCDay() + 6) % 7),
+      monthStart.getUTCDate() - ((monthStart.getUTCDay() + 6) % 7)
     );
     const weekStarts: Date[] = [];
-    for (let d = new Date(firstMonday); d <= monthEnd; d.setUTCDate(d.getUTCDate() + 7)) {
+    for (
+      let d = new Date(firstMonday);
+      d <= monthEnd;
+      d.setUTCDate(d.getUTCDate() + 7)
+    ) {
       weekStarts.push(new Date(d));
     }
 
@@ -617,10 +646,11 @@ export class MonitoringService {
         where,
         include: { pegawai: true },
       })
-    ).filter((t: { pegawai?: { username?: string } }) =>
-      !t.pegawai?.username?.startsWith("demo"),
+    ).filter(
+      (t: { pegawai?: { username?: string } }) =>
+        !t.pegawai?.username?.startsWith("demo")
     );
-    
+
     const byUser: Record<
       string,
       { nama: string; selesai: number; total: number }
@@ -630,7 +660,8 @@ export class MonitoringService {
       if (!byUser[t.pegawaiId])
         byUser[t.pegawaiId] = { nama: t.pegawai.nama, selesai: 0, total: 0 };
       byUser[t.pegawaiId].total += 1;
-      if (t.status === STATUS.SELESAI_DIKERJAKAN) byUser[t.pegawaiId].selesai += 1;
+      if (t.status === STATUS.SELESAI_DIKERJAKAN)
+        byUser[t.pegawaiId].selesai += 1;
     }
 
     return Object.entries(byUser)
@@ -656,13 +687,17 @@ export class MonitoringService {
         where,
         include: { pegawai: true },
       })
-    ).filter((t: { pegawai?: { username?: string } }) =>
-      !t.pegawai?.username?.startsWith("demo"),
+    ).filter(
+      (t: { pegawai?: { username?: string } }) =>
+        !t.pegawai?.username?.startsWith("demo")
     );
 
     const byUser: Record<
       string,
-      { nama: string; perMonth: Record<number, { selesai: number; total: number }> }
+      {
+        nama: string;
+        perMonth: Record<number, { selesai: number; total: number }>;
+      }
     > = {};
 
     for (const t of tugas) {
@@ -696,15 +731,15 @@ export class MonitoringService {
 
     const users = await this.prisma.user.findMany({
       where: whereUser,
-      include: { laporan: { orderBy: { tanggal: 'desc' }, take: 1 } },
-      orderBy: { nama: 'asc' },
+      include: { laporan: { orderBy: { tanggal: "desc" }, take: 1 } },
+      orderBy: { nama: "asc" },
     });
 
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
 
     const result = { day1: [], day3: [], day7: [] } as Record<
-      'day1' | 'day3' | 'day7',
+      "day1" | "day3" | "day7",
       { userId: string; nama: string; lastDate: string | null }[]
     >;
 
