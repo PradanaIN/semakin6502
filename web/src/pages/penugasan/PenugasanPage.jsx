@@ -417,8 +417,8 @@ export default function PenugasanPage() {
         ) : paginated.length === 0 ? (
           <EmptyState
             message="Belum ada penugasan untuk minggu ini"
-            actionLabel="Tambah Penugasan"
-            onAction={openForm}
+            actionLabel={canManage ? "Tambah Penugasan" : undefined}
+            onAction={canManage ? openForm : undefined}
           />
         ) : (
           <DataTable
