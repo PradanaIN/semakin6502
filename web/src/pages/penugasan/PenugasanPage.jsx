@@ -256,7 +256,7 @@ export default function PenugasanPage() {
       }`.toLowerCase();
       const matchesSearch = text.includes(search.toLowerCase());
       const matchTeam = filterTeam
-        ? p.kegiatan?.teamId === parseInt(filterTeam, 10)
+        ? String(p.kegiatan?.teamId) === filterTeam
         : true;
       if (viewTab === "mine") return matchesSearch && p.pegawaiId === user?.id;
       if (viewTab === "dariSaya")
@@ -385,7 +385,7 @@ export default function PenugasanPage() {
             >
               <option value="">Semua Tim</option>
               {teams.map((t) => (
-                <option key={t.id} value={t.id}>
+                <option key={t.id} value={String(t.id)}>
                   {t.namaTim}
                 </option>
               ))}

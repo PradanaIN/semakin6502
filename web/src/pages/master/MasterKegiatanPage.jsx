@@ -53,7 +53,11 @@ export default function MasterKegiatanPage() {
         accessor: (row) => row.team?.namaTim || row.teamId,
         disableFilters: true,
       },
-      { Header: "Nama Kegiatan", accessor: "namaKegiatan", disableFilters: true },
+      {
+        Header: "Nama Kegiatan",
+        accessor: "namaKegiatan",
+        disableFilters: true,
+      },
       {
         Header: "Deskripsi",
         accessor: (row) => row.deskripsi || "-",
@@ -137,7 +141,7 @@ export default function MasterKegiatanPage() {
   }
 
   const saveItem = async () => {
-    if (!form.teamId || isNaN(form.teamId) || !form.namaKegiatan) {
+    if (!form.teamId || !form.namaKegiatan) {
       showWarning("Lengkapi data", "Tim dan nama kegiatan wajib diisi");
       return;
     }
@@ -227,7 +231,13 @@ export default function MasterKegiatanPage() {
         {loading ? (
           <TableSkeleton cols={columns.length} />
         ) : (
-          <DataTable columns={columns} data={items} showGlobalFilter={false} showPagination={false} selectable={false} />
+          <DataTable
+            columns={columns}
+            data={items}
+            showGlobalFilter={false}
+            showPagination={false}
+            selectable={false}
+          />
         )}
       </div>
 
@@ -268,9 +278,7 @@ export default function MasterKegiatanPage() {
               <select
                 id="teamId"
                 value={form.teamId}
-                onChange={(e) =>
-                  setForm({ ...form, teamId: parseInt(e.target.value, 10) })
-                }
+                onChange={(e) => setForm({ ...form, teamId: e.target.value })}
                 className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               >
                 <option value="">Pilih tim</option>

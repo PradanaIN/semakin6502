@@ -23,7 +23,6 @@ import Spinner from "../../components/Spinner";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 
-
 export default function TugasTambahanDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -59,7 +58,7 @@ export default function TugasTambahanDetailPage() {
       setItem(dRes.data);
       setKegiatan(kRes.data.data || kRes.data);
       setForm({
-        kegiatanId: dRes.data.kegiatanId,
+        kegiatanId: String(dRes.data.kegiatanId),
         tanggal: dRes.data.tanggal.slice(0, 10),
         status: dRes.data.status,
         deskripsi: dRes.data.deskripsi || "",
@@ -163,12 +162,7 @@ export default function TugasTambahanDetailPage() {
             >
               <Pencil size={16} />
             </Button>
-            <Button
-              onClick={remove}
-              variant="danger"
-              icon
-              aria-label="Hapus"
-            >
+            <Button onClick={remove} variant="danger" icon aria-label="Hapus">
               <Trash2 size={16} />
             </Button>
           </div>
@@ -182,25 +176,35 @@ export default function TugasTambahanDetailPage() {
           </div>
           <div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Tim</div>
-            <div className="font-medium">{item.kegiatan.team?.namaTim || "-"}</div>
+            <div className="font-medium">
+              {item.kegiatan.team?.namaTim || "-"}
+            </div>
           </div>
           <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Tanggal</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Tanggal
+            </div>
             <div className="font-medium">{formatDate(item.tanggal)}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Deskripsi</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Deskripsi
+            </div>
             <div className="font-medium">{item.deskripsi || "-"}</div>
           </div>
           <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Status</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Status
+            </div>
             <div className="font-medium">
               <StatusBadge status={item.status} />
             </div>
           </div>
           {item.tanggalSelesai && (
             <div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">Tanggal Selesai</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Tanggal Selesai
+              </div>
               <div className="font-medium">
                 {formatDate(item.tanggalSelesai)}
                 {item.tanggalSelesaiAkhir &&
@@ -210,7 +214,9 @@ export default function TugasTambahanDetailPage() {
           )}
           {item.buktiLink && (
             <div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">Bukti</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Bukti
+              </div>
               <a
                 href={item.buktiLink}
                 target="_blank"
@@ -225,29 +231,45 @@ export default function TugasTambahanDetailPage() {
       ) : (
         <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <div>
-            <label htmlFor="kegiatan" className="block text-sm mb-1">Kegiatan</label>
+            <label htmlFor="kegiatan" className="block text-sm mb-1">
+              Kegiatan
+            </label>
             <Select
               inputId="kegiatan"
               classNamePrefix="react-select"
               styles={selectStyles}
               menuPortalTarget={document.body}
-              options={kegiatan.map((k) => ({ value: k.id, label: k.namaKegiatan }))}
+              options={kegiatan.map((k) => ({
+                value: k.id.toString(),
+                label: k.namaKegiatan,
+              }))}
               value={
                 form.kegiatanId
-                  ? { value: form.kegiatanId, label: kegiatan.find((k) => k.id === form.kegiatanId)?.namaKegiatan }
+                  ? {
+                      value: form.kegiatanId,
+                      label: kegiatan.find(
+                        (k) => k.id.toString() === form.kegiatanId
+                      )?.namaKegiatan,
+                    }
                   : null
               }
-              onChange={(o) => setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })}
+              onChange={(o) =>
+                setForm({ ...form, kegiatanId: o ? o.value : "" })
+              }
               placeholder="Pilih kegiatan..."
             />
             {form.kegiatanId && (
               <p className="text-sm mt-1 text-gray-600 dark:text-gray-300">
-                Tim: {kegiatan.find((k) => k.id === form.kegiatanId)?.team?.namaTim || "-"}
+                Tim:
+                {kegiatan.find((k) => k.id.toString() === form.kegiatanId)?.team
+                  ?.namaTim || "-"}
               </p>
             )}
           </div>
           <div>
-            <label htmlFor="tanggal" className="block text-sm mb-1">Tanggal</label>
+            <label htmlFor="tanggal" className="block text-sm mb-1">
+              Tanggal
+            </label>
             <Input
               id="tanggal"
               type="date"
@@ -257,7 +279,9 @@ export default function TugasTambahanDetailPage() {
             />
           </div>
           <div>
-            <label htmlFor="deskripsi" className="block text-sm mb-1">Deskripsi</label>
+            <label htmlFor="deskripsi" className="block text-sm mb-1">
+              Deskripsi
+            </label>
             <textarea
               id="deskripsi"
               value={form.deskripsi}
@@ -267,17 +291,23 @@ export default function TugasTambahanDetailPage() {
           </div>
 
           <div>
-            <label htmlFor="capaianKegiatan" className="block text-sm mb-1">Capaian Kegiatan <span className="text-red-500">*</span></label>
+            <label htmlFor="capaianKegiatan" className="block text-sm mb-1">
+              Capaian Kegiatan <span className="text-red-500">*</span>
+            </label>
             <textarea
               id="capaianKegiatan"
               value={form.capaianKegiatan}
-              onChange={(e) => setForm({ ...form, capaianKegiatan: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, capaianKegiatan: e.target.value })
+              }
               className="form-input resize-y w-full min-h-[48px] border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
               required
             />
           </div>
           <div>
-            <label htmlFor="status" className="block text-sm mb-1">Status</label>
+            <label htmlFor="status" className="block text-sm mb-1">
+              Status
+            </label>
             <select
               id="status"
               value={form.status}
@@ -311,10 +341,7 @@ export default function TugasTambahanDetailPage() {
         <h3 className="text-lg font-semibold">Laporan Harian</h3>
         {canManage && (
           <div className="flex justify-end">
-            <Button
-              onClick={() => setShowUpload(true)}
-              className="add-button"
-            >
+            <Button onClick={() => setShowUpload(true)} className="add-button">
               <Plus size={16} />
               <span className="hidden sm:inline">Laporan Harian</span>
             </Button>
@@ -323,7 +350,10 @@ export default function TugasTambahanDetailPage() {
       </div>
 
       {showUpload && (
-        <Modal onClose={() => setShowUpload(false)} titleId="laporan-form-title">
+        <Modal
+          onClose={() => setShowUpload(false)}
+          titleId="laporan-form-title"
+        >
           <div className="space-y-4">
             <h3 id="laporan-form-title" className="text-lg font-semibold">
               Tambah Laporan Harian
@@ -376,7 +406,9 @@ export default function TugasTambahanDetailPage() {
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                   required
                 >
-                  <option value={STATUS.BELUM}>{formatStatus(STATUS.BELUM)}</option>
+                  <option value={STATUS.BELUM}>
+                    {formatStatus(STATUS.BELUM)}
+                  </option>
                   <option value={STATUS.SEDANG_DIKERJAKAN}>
                     {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
                   </option>

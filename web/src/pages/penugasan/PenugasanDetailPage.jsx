@@ -193,7 +193,7 @@ export default function PenugasanDetailPage() {
       } else {
         await axios.post("/laporan-harian", {
           ...payload,
-          penugasanId: parseInt(id, 10),
+          penugasanId: id,
           pegawaiId: item.pegawaiId,
         });
       }
@@ -201,7 +201,6 @@ export default function PenugasanDetailPage() {
       showSuccess("Berhasil", "Laporan disimpan");
       setShowLaporanForm(false);
 
-      // Delay fetch laporan agar modal sudah tertutup dulu
       setTimeout(async () => {
         const r = await axios.get(`/laporan-harian/penugasan/${id}`);
         setLaporan(r.data);
