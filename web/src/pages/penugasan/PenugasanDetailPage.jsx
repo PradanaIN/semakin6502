@@ -34,11 +34,11 @@ export default function PenugasanDetailPage() {
   const canManage = [ROLES.ADMIN, ROLES.KETUA].includes(user?.role);
   const canManageLaporan =
     [ROLES.ADMIN, ROLES.KETUA].includes(user?.role) ||
-    user?.id === item?.pegawaiId;
+    String(user?.id) === String(item?.pegawaiId);
   const canAddReport =
     user?.role === ROLES.ADMIN ||
     user?.role === ROLES.KETUA ||
-    user?.id === item?.pegawaiId;
+    String(user?.id) === String(item?.pegawaiId);
   const [kegiatan, setKegiatan] = useState([]);
   const [users, setUsers] = useState([]);
   const [form, setForm] = useState({
@@ -75,8 +75,8 @@ export default function PenugasanDetailPage() {
       const res = await axios.get(`/penugasan/${id}`);
       const normalized = {
         ...res.data,
-        kegiatanId: Number(res.data.kegiatanId),
-        pegawaiId: Number(res.data.pegawaiId),
+        kegiatanId: String(res.data.kegiatanId),
+        pegawaiId: String(res.data.pegawaiId),
         bulan: parseInt(res.data.bulan, 10) || 1,
       };
       setItem(normalized);
@@ -425,16 +425,16 @@ export default function PenugasanDetailPage() {
               styles={selectStyles}
               menuPortalTarget={document.body}
               options={kegiatan.map((k) => ({
-                value: Number(k.id),
+                value: String(k.id),
                 label: k.namaKegiatan,
               }))}
               value={
                 form.kegiatanId
                   ? {
-                      value: Number(form.kegiatanId),
+                      value: form.kegiatanId,
                       label:
                         kegiatan.find(
-                          (k) => Number(k.id) === Number(form.kegiatanId)
+                          (k) => String(k.id) === String(form.kegiatanId)
                         )?.namaKegiatan || "",
                     }
                   : null
@@ -442,7 +442,7 @@ export default function PenugasanDetailPage() {
               onChange={(o) =>
                 setForm({
                   ...form,
-                  kegiatanId: o ? Number(o.value) : "",
+                  kegiatanId: o ? o.value : "",
                 })
               }
               isSearchable
@@ -461,14 +461,14 @@ export default function PenugasanDetailPage() {
                 .filter(
                   (u) => u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN
                 )
-                .map((u) => ({ value: Number(u.id), label: u.nama }))}
+                .map((u) => ({ value: String(u.id), label: u.nama }))}
               value={
                 form.pegawaiId
                   ? {
-                      value: Number(form.pegawaiId),
+                      value: form.pegawaiId,
                       label:
                         users.find(
-                          (u) => Number(u.id) === Number(form.pegawaiId)
+                          (u) => String(u.id) === String(form.pegawaiId)
                         )?.nama || "",
                     }
                   : null
@@ -476,7 +476,7 @@ export default function PenugasanDetailPage() {
               onChange={(o) =>
                 setForm({
                   ...form,
-                  pegawaiId: o ? Number(o.value) : "",
+                  pegawaiId: o ? o.value : "",
                 })
               }
               isSearchable
