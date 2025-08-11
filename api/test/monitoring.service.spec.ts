@@ -111,7 +111,15 @@ describe('MonitoringService aggregated', () => {
     ]);
     const res = await service.bulananAll('2024', '3', '1');
     expect(prisma.penugasan.findMany).toHaveBeenCalledWith({
-      where: { tahun: 2024, bulan: '1', kegiatan: { teamId: '3' } },
+      where: {
+        tahun: 2024,
+        bulan: '1',
+        kegiatan: { teamId: '3' },
+        pegawai: {
+          role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
+          NOT: { username: { startsWith: 'demo' } },
+        },
+      },
       include: { pegawai: true },
     });
     expect(res).toEqual([
