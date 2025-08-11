@@ -73,13 +73,19 @@ export default function PenugasanDetailPage() {
   const fetchDetail = useCallback(async () => {
     try {
       const res = await axios.get(`/penugasan/${id}`);
-      setItem(res.data);
+      const normalized = {
+        ...res.data,
+        kegiatanId: Number(res.data.kegiatanId),
+        pegawaiId: Number(res.data.pegawaiId),
+        bulan: parseInt(res.data.bulan, 10) || 1,
+      };
+      setItem(normalized);
       setForm({
-        kegiatanId: res.data.kegiatanId,
-        pegawaiId: res.data.pegawaiId,
+        kegiatanId: normalized.kegiatanId,
+        pegawaiId: normalized.pegawaiId,
         deskripsi: res.data.deskripsi || "",
         minggu: res.data.minggu,
-        bulan: parseInt(res.data.bulan, 10) || 1,
+        bulan: normalized.bulan,
         tahun: res.data.tahun,
         status: res.data.status,
       });
@@ -419,17 +425,21 @@ export default function PenugasanDetailPage() {
               styles={selectStyles}
               menuPortalTarget={document.body}
               options={kegiatan.map((k) => ({
-                value: k.id,
+                value: Number(k.id),
                 label: k.namaKegiatan,
               }))}
-              value={{
-                value: form.kegiatanId,
-                label:
-                  kegiatan.find((k) => k.id === form.kegiatanId)
-                    ?.namaKegiatan || "",
-              }}
+              value={
+                form.kegiatanId
+                  ? {
+                      value: form.kegiatanId,
+                      label:
+                        kegiatan.find((k) => Number(k.id) === form.kegiatanId)
+                          ?.namaKegiatan || "",
+                    }
+                  : null
+              }
               onChange={(o) =>
-                setForm({ ...form, kegiatanId: o ? parseInt(o.value, 10) : "" })
+                setForm({ ...form, kegiatanId: o ? o.value : "" })
               }
               isSearchable
             />
@@ -447,13 +457,19 @@ export default function PenugasanDetailPage() {
                 .filter(
                   (u) => u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN
                 )
-                .map((u) => ({ value: u.id, label: u.nama }))}
-              value={{
-                value: form.pegawaiId,
-                label: users.find((u) => u.id === form.pegawaiId)?.nama || "",
-              }}
+                .map((u) => ({ value: Number(u.id), label: u.nama }))}
+              value={
+                form.pegawaiId
+                  ? {
+                      value: form.pegawaiId,
+                      label:
+                        users.find((u) => Number(u.id) === form.pegawaiId)
+                          ?.nama || "",
+                    }
+                  : null
+              }
               onChange={(o) =>
-                setForm({ ...form, pegawaiId: o ? parseInt(o.value, 10) : "" })
+                setForm({ ...form, pegawaiId: o ? o.value : "" })
               }
               isSearchable
             />
