@@ -537,10 +537,10 @@ export default function PenugasanPage() {
                     value={
                       form.kegiatanId
                         ? {
-                            value: form.kegiatanId,
+                            value: Number(form.kegiatanId),
                             label:
                               kegiatan.find(
-                                (k) => Number(k.id) === form.kegiatanId
+                                (k) => Number(k.id) === Number(form.kegiatanId)
                               )?.namaKegiatan || "",
                           }
                         : null
@@ -548,7 +548,7 @@ export default function PenugasanPage() {
                     onChange={(o) =>
                       setForm({
                         ...form,
-                        kegiatanId: o ? o.value : "",
+                        kegiatanId: o ? Number(o.value) : "",
                       })
                     }
                     placeholder="Pilih kegiatan..."
@@ -586,14 +586,18 @@ export default function PenugasanPage() {
                       }))}
                     value={form.pegawaiIds
                       .map((id) => {
-                        const u = users.find((x) => Number(x.id) === id);
-                        return u ? { value: u.id, label: u.nama } : null;
+                        const u = users.find((x) => Number(x.id) === Number(id));
+                        return u
+                          ? { value: Number(u.id), label: u.nama }
+                          : null;
                       })
                       .filter(Boolean)}
                     onChange={(vals) =>
                       setForm({
                         ...form,
-                        pegawaiIds: vals ? vals.map((v) => v.value) : [],
+                        pegawaiIds: vals
+                          ? vals.map((v) => Number(v.value))
+                          : [],
                       })
                     }
                     placeholder="Pilih pegawai..."

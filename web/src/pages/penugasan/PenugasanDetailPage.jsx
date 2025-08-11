@@ -431,15 +431,19 @@ export default function PenugasanDetailPage() {
               value={
                 form.kegiatanId
                   ? {
-                      value: form.kegiatanId,
+                      value: Number(form.kegiatanId),
                       label:
-                        kegiatan.find((k) => Number(k.id) === form.kegiatanId)
-                          ?.namaKegiatan || "",
+                        kegiatan.find(
+                          (k) => Number(k.id) === Number(form.kegiatanId)
+                        )?.namaKegiatan || "",
                     }
                   : null
               }
               onChange={(o) =>
-                setForm({ ...form, kegiatanId: o ? o.value : "" })
+                setForm({
+                  ...form,
+                  kegiatanId: o ? Number(o.value) : "",
+                })
               }
               isSearchable
             />
@@ -461,15 +465,19 @@ export default function PenugasanDetailPage() {
               value={
                 form.pegawaiId
                   ? {
-                      value: form.pegawaiId,
+                      value: Number(form.pegawaiId),
                       label:
-                        users.find((u) => Number(u.id) === form.pegawaiId)
-                          ?.nama || "",
+                        users.find(
+                          (u) => Number(u.id) === Number(form.pegawaiId)
+                        )?.nama || "",
                     }
                   : null
               }
               onChange={(o) =>
-                setForm({ ...form, pegawaiId: o ? o.value : "" })
+                setForm({
+                  ...form,
+                  pegawaiId: o ? Number(o.value) : "",
+                })
               }
               isSearchable
             />
