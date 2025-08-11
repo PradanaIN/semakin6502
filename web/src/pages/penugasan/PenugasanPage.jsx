@@ -25,7 +25,11 @@ import months from "../../utils/months";
 import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
 import TableSkeleton from "../../components/ui/TableSkeleton";
-import { AnimatePresence, motion as Motion } from "framer-motion";
+import {
+  AnimatePresence,
+  motion as Motion,
+  useReducedMotion,
+} from "framer-motion";
 import Spinner from "../../components/Spinner";
 import { STATUS } from "../../utils/status";
 import EmptyState from "../../components/ui/EmptyState";
@@ -63,6 +67,25 @@ export default function PenugasanPage() {
   const { user } = useAuth();
   const canManage = [ROLES.ADMIN, ROLES.KETUA].includes(user?.role);
   const navigate = useNavigate();
+
+  const reduceMotion = useReducedMotion();
+  const modalVariants = {
+    hidden: {
+      opacity: 0,
+      scale: reduceMotion ? 1 : 0.98,
+      y: reduceMotion ? 0 : 8,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+    },
+    exit: {
+      opacity: 0,
+      scale: reduceMotion ? 1 : 0.95,
+      y: reduceMotion ? 0 : 4,
+    },
+  };
 
   // --- State
   const [penugasan, setPenugasan] = useState([]);
@@ -450,7 +473,7 @@ export default function PenugasanPage() {
       </div>
 
       {/* MODAL FORM */}
-      <AnimatePresence>
+      <AnimatePresence initial={false} mode="wait">
         {canManage && showForm && (
           <Modal
             onClose={closeForm}
@@ -458,21 +481,36 @@ export default function PenugasanPage() {
             initialFocusRef={descriptionRef}
           >
             <Motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
+              key="penugasan-modal"
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 22,
+                duration: 0.2,
+              }}
             >
-              <div className="flex items-center justify-between mb-3">
-                <h2
-                  id="penugasan-form-title"
-                  className="text-xl font-semibold mb-2"
-                >
-                  Tambah Penugasan
-                </h2>
-                <p className="text-xs text-red-600 dark:text-red-500">
+              {/* Header */}
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h2
+                    id="penugasan-form-title"
+                    className="text-xl font-semibold tracking-tight"
+                  >
+                    Tambah Penugasan
+                  </h2>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Lengkapi data di bawah ini dengan benar.
+                  </p>
+                </div>
+                <p className="text-xs font-medium text-red-600 dark:text-red-500">
                   * Fardu 'Ain
                 </p>
               </div>
+
               <form
                 className="space-y-2"
                 onSubmit={(e) => {

@@ -77,7 +77,8 @@ const manageLinks = [
 export default function Sidebar({ setSidebarOpen }) {
   const { user } = useAuth();
 
-  const isLinkVisible = (link) => !link.roles || link.roles.includes(user?.role);
+  const isLinkVisible = (link) =>
+    !link.roles || link.roles.includes(user?.role);
   const visibleMainLinks = mainLinks.filter(isLinkVisible);
   const visibleManageLinks = manageLinks.filter(isLinkVisible);
   const isPimpinan = user?.role === ROLES.PIMPINAN;
