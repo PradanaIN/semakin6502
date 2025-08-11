@@ -81,6 +81,7 @@ export default function Sidebar({ setSidebarOpen }) {
   const visibleMainLinks = mainLinks.filter(isLinkVisible);
   const visibleManageLinks = manageLinks.filter(isLinkVisible);
   const isPimpinan = user?.role === ROLES.PIMPINAN;
+  const isKetuaOrAnggota = [ROLES.KETUA, ROLES.ANGGOTA].includes(user?.role);
 
   const getLink = (path) => visibleMainLinks.find((l) => l.to === path);
   const monitoringLink = getLink("/monitoring");
@@ -132,6 +133,18 @@ export default function Sidebar({ setSidebarOpen }) {
             </div>
             {mingguanLink && renderLink(mingguanLink)}
             {tambahanLink && renderLink(tambahanLink)}
+          </>
+        ) : isKetuaOrAnggota ? (
+          <>
+            {visibleMainLinks
+              .filter(
+                (link) =>
+                  !["/monitoring", "/laporan-terlambat"].includes(link.to)
+              )
+              .map(renderLink)}
+            {monitoringLink && renderLink(monitoringLink)}
+            <hr className="my-4 border-gray-200 dark:border-gray-700" />
+            {terlambatLink && renderLink(terlambatLink)}
           </>
         ) : (
           visibleMainLinks.map(renderLink)
