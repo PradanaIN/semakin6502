@@ -105,6 +105,15 @@ export default function PenugasanPage() {
     [user, viewTab]
   );
 
+  const kegiatanOptions = useMemo(() => kegiatan.map((k) => ({ value: Number(k.id), label: k.namaKegiatan })), [kegiatan]);
+
+  const pegawaiOptions = useMemo(() =>
+    users
+      .filter((u) => u.role !== ROLES.ADMIN && u.role !== ROLES.PIMPINAN && !EXCLUDED_TB_NAMES.includes(u.nama))
+      .map((u) => ({ value: Number(u.id), label: u.nama })),
+    [users]
+  );
+
   // --- Ref for initial focus
   const descriptionRef = useRef();
 
@@ -496,25 +505,16 @@ export default function PenugasanPage() {
                     className="mb-1"
                     styles={selectStyles}
                     menuPortalTarget={document.body}
-                    options={kegiatan.map((k) => ({
-                      value: k.id,
-                      label: k.namaKegiatan,
-                    }))}
+                    options={kegiatanOptions}
                     value={
-                      form.kegiatanId
-                        ? {
-                            value: form.kegiatanId,
-                            label: kegiatan.find(
-                              (k) => k.id === form.kegiatanId
-                            )?.namaKegiatan,
-                          }
-                        : null
+                      kegiatanOptions.find((o) => o.value === form.kegiatanId) ||
+                      null
                     }
                     onChange={(o) =>
-                      setForm({
-                        ...form,
-                        kegiatanId: o ? parseInt(o.value, 10) : "",
-                      })
+                      setForm((prev) => ({
+                        ...prev,
+                        kegiatanId: o ? o.value : "",
+                      }))
                     }
                     placeholder="Pilih kegiatan..."
                     isSearchable
@@ -538,27 +538,15 @@ export default function PenugasanPage() {
                     className="mb-1"
                     styles={selectStyles}
                     menuPortalTarget={document.body}
-                    options={users
-                      .filter(
-                        (u) =>
-                          u.role !== ROLES.ADMIN &&
-                          u.role !== ROLES.PIMPINAN &&
-                          !EXCLUDED_TB_NAMES.includes(u.nama)
-                      )
-                      .map((u) => ({ value: u.id, label: `${u.nama}` }))}
-                    value={form.pegawaiIds
-                      .map((id) => {
-                        const u = users.find((x) => x.id === id);
-                        return u ? { value: u.id, label: u.nama } : null;
-                      })
-                      .filter(Boolean)}
+                    options={pegawaiOptions}
+                    value={pegawaiOptions.filter((o) =>
+                      form.pegawaiIds.includes(o.value)
+                    )}
                     onChange={(vals) =>
-                      setForm({
-                        ...form,
-                        pegawaiIds: vals
-                          ? vals.map((v) => parseInt(v.value, 10))
-                          : [],
-                      })
+                      setForm((prev) => ({
+                        ...prev,
+                        pegawaiIds: vals ? vals.map((v) => v.value) : [],
+                      }))
                     }
                     placeholder="Pilih pegawai..."
                     isSearchable
@@ -569,17 +557,10 @@ export default function PenugasanPage() {
                     size="xs"
                     variant="ghost"
                     onClick={() =>
-                      setForm({
-                        ...form,
-                        pegawaiIds: users
-                          .filter(
-                            (u) =>
-                              u.role !== ROLES.ADMIN &&
-                              u.role !== ROLES.PIMPINAN &&
-                              !EXCLUDED_TB_NAMES.includes(u.nama)
-                          )
-                          .map((u) => u.id),
-                      })
+                      setForm((prev) => ({
+                        ...prev,
+                        pegawaiIds: pegawaiOptions.map((o) => o.value),
+                      }))
                     }
                   >
                     Pilih Semua
@@ -598,7 +579,10 @@ export default function PenugasanPage() {
                     ref={descriptionRef}
                     value={form.deskripsi}
                     onChange={(e) =>
-                      setForm({ ...form, deskripsi: e.target.value })
+                      setForm((prev) => ({
+                        ...prev,
+                        deskripsi: e.target.value,
+                      }))
                     }
                     className="form-input resize-y w-full min-h-[48px] border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
                   />
@@ -616,10 +600,10 @@ export default function PenugasanPage() {
                       min="1"
                       max="6"
                       onChange={(e) =>
-                        setForm({
-                          ...form,
+                        setForm((prev) => ({
+                          ...prev,
                           minggu: parseInt(e.target.value, 10),
-                        })
+                        }))
                       }
                       className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
                     />
@@ -632,10 +616,10 @@ export default function PenugasanPage() {
                       id="bulan"
                       value={form.bulan}
                       onChange={(e) =>
-                        setForm({
-                          ...form,
+                        setForm((prev) => ({
+                          ...prev,
                           bulan: parseInt(e.target.value, 10),
-                        })
+                        }))
                       }
                       className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                     >
@@ -655,10 +639,10 @@ export default function PenugasanPage() {
                       type="number"
                       value={form.tahun}
                       onChange={(e) =>
-                        setForm({
-                          ...form,
+                        setForm((prev) => ({
+                          ...prev,
                           tahun: parseInt(e.target.value, 10),
-                        })
+                        }))
                       }
                       className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
                     />
