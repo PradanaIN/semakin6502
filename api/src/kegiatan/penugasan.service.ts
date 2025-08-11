@@ -46,6 +46,7 @@ export class PenugasanService {
     role = normalizeRole(role);
     const master = await this.prisma.masterKegiatan.findUnique({
       where: { id: data.kegiatanId },
+      include: { team: true },
     });
     if (!master) {
       throw new NotFoundException("master kegiatan tidak ditemukan");
@@ -72,9 +73,10 @@ export class PenugasanService {
       },
     });
 
+    const text = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
     await this.notifications.create(
       data.pegawaiId,
-      "Penugasan baru tersedia",
+      text,
       `/tugas-mingguan/${penugasan.id}`,
     );
 
@@ -85,6 +87,7 @@ export class PenugasanService {
     role = normalizeRole(role);
     const master = await this.prisma.masterKegiatan.findUnique({
       where: { id: data.kegiatanId },
+      include: { team: true },
     });
     if (!master) {
       throw new NotFoundException("master kegiatan tidak ditemukan");
@@ -113,13 +116,10 @@ export class PenugasanService {
       rows.map((r) => this.prisma.penugasan.create({ data: r })),
     );
 
+    const text = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
     await Promise.all(
       created.map((p: { pegawaiId: string; id: string }) =>
-        this.notifications.create(
-          p.pegawaiId,
-          "Penugasan baru tersedia",
-          `/tugas-mingguan/${p.id}`,
-        ),
+        this.notifications.create(p.pegawaiId, text, `/tugas-mingguan/${p.id}`),
       ),
     );
 
