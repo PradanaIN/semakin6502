@@ -1,14 +1,10 @@
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe, LogLevel } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
 import { AppModule } from "./app.module";
 import { LoggingInterceptor } from "./common/logging.interceptor";
-
-const databaseUrl = process.env.DATABASE_URL;
-if (!databaseUrl) {
-  // Fail fast when DATABASE_URL is missing
-  throw new Error("DATABASE_URL environment variable is required");
-}
 
 async function bootstrap() {
   const isProd = process.env.NODE_ENV === "production";
@@ -17,8 +13,10 @@ async function bootstrap() {
     : ["log", "warn", "error", "debug", "verbose"];
   const app = await NestFactory.create(AppModule, { logger: logLevels });
   app.use(cookieParser());
+  app.use(helmet());
 
-  const origins = (process.env.CORS_ORIGIN || "http://localhost:5173")
+  const config = app.get(ConfigService);
+  const origins = (config.get<string>("CORS_ORIGIN") || "http://localhost:5173")
     .split(",")
     .map((o) => o.trim())
     .filter(Boolean);
@@ -32,7 +30,7 @@ async function bootstrap() {
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })
   );
   app.useGlobalInterceptors(new LoggingInterceptor());
-  const port = process.env.PORT || 3000;
+  const port = config.get<number>("PORT") || 3000;
   await app.listen(port);
 }
 bootstrap();
