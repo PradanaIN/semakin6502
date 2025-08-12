@@ -27,6 +27,7 @@ export class AuthController {
       sameSite,
       secure: process.env.NODE_ENV === "production",
       ...(domain ? { domain } : {}),
+      ...(body.remember ? { maxAge: 30 * 24 * 60 * 60 * 1000 } : {}),
     });
     return { user: result.user };
   }

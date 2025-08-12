@@ -13,7 +13,8 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const u = localStorage.getItem("user");
+    const u =
+      localStorage.getItem("user") || sessionStorage.getItem("user");
     return u ? camelizeKeys(JSON.parse(u)) : null;
   });
 
@@ -22,9 +23,12 @@ export function AuthProvider({ children }) {
       const res = await axios.get("/auth/me");
       const userData = camelizeKeys(res.data.user);
       setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
+      const storage =
+        localStorage.getItem("user") !== null ? localStorage : sessionStorage;
+      storage.setItem("user", JSON.stringify(userData));
     } catch {
       localStorage.removeItem("user");
+      sessionStorage.removeItem("user");
       setUser(null);
     }
   };

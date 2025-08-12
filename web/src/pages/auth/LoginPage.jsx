@@ -7,7 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ identifier: "", password: "" });
+  const [form, setForm] = useState({ identifier: "", password: "", remember: false });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const { setUser } = useAuth();
@@ -24,7 +24,13 @@ export default function LoginPage() {
       });
 
       setUser(res.data.user);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      if (form.remember) {
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        sessionStorage.removeItem("user");
+      } else {
+        sessionStorage.setItem("user", JSON.stringify(res.data.user));
+        localStorage.removeItem("user");
+      }
 
       setError("");
       navigate("/dashboard");
@@ -113,9 +119,22 @@ export default function LoginPage() {
             <div className="text-red-500 text-sm text-center">{error}</div>
           )}
 
-          <Button type="submit" className="w-full font-semibold">
-            Login
-          </Button>
+          <div className="flex items-center justify-between">
+            <label className="inline-flex items-center text-sm text-zinc-700 dark:text-zinc-300">
+              <input
+                type="checkbox"
+                className="form-checkbox mr-2"
+                checked={form.remember}
+                onChange={(e) =>
+                  setForm({ ...form, remember: e.target.checked })
+                }
+              />
+              Ingat Saya
+            </label>
+            <Button type="submit" className="font-semibold">
+              Login
+            </Button>
+          </div>
         </form>
 
         <p className="text-xs text-zinc-400 text-center">
