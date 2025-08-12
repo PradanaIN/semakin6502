@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException } from "@nestjs/common";
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from "@nestjs/common";
 import { ulid } from "ulid";
 import { ROLES } from "../common/roles.constants";
 import { PrismaService } from "../prisma.service";
@@ -125,6 +130,14 @@ export class TambahanService {
       });
       if (!any) throw new NotFoundException("tugas tambahan tidak ditemukan");
       throw new ForbiddenException("bukan tugas tambahan anda");
+    }
+    const count = await this.prisma.laporanHarian.count({
+      where: { tambahanId: id },
+    });
+    if (count > 0) {
+      throw new BadRequestException(
+        "Hapus laporan harian tugas tambahan ini terlebih dahulu",
+      );
     }
     return this.prisma.kegiatanTambahan.delete({ where: { id } });
   }
