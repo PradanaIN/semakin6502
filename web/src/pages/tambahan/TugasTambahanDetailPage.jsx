@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -46,6 +46,8 @@ export default function TugasTambahanDetailPage() {
     deskripsi: "",
     capaianKegiatan: "",
   });
+  const tanggalRef = useRef(null);
+  const laporanTanggalRef = useRef(null);
 
   const fetchDetail = useCallback(async () => {
     try {
@@ -284,6 +286,8 @@ export default function TugasTambahanDetailPage() {
               type="date"
               value={form.tanggal}
               onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
+              ref={tanggalRef}
+              onFocus={() => tanggalRef.current?.showPicker?.()}
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
             />
           </div>
@@ -398,6 +402,8 @@ export default function TugasTambahanDetailPage() {
                       tanggal: e.target.value,
                     })
                   }
+                  ref={laporanTanggalRef}
+                  onFocus={() => laporanTanggalRef.current?.showPicker?.()}
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
                   required
                 />
