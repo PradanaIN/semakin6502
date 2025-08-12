@@ -31,6 +31,7 @@ export default function TugasTambahanDetailPage() {
   const canManage = user?.id === item?.userId;
   const [editing, setEditing] = useState(false);
   const [kegiatan, setKegiatan] = useState([]);
+  const [teams, setTeams] = useState([]);
   const [showUpload, setShowUpload] = useState(false);
   const [laporanForm, setLaporanForm] = useState({
     capaianKegiatan: "",
@@ -40,6 +41,7 @@ export default function TugasTambahanDetailPage() {
     deskripsi: "",
   });
   const [form, setForm] = useState({
+    teamId: "",
     kegiatanId: "",
     tanggal: "",
     status: STATUS.BELUM,
@@ -47,25 +49,30 @@ export default function TugasTambahanDetailPage() {
     capaianKegiatan: "",
   });
 
+  const fetchKegiatanForTeam = useCallback(async (teamId) => {
+    if (!teamId) {
+      setKegiatan([]);
+      return;
+    }
+    try {
+      const res = await axios.get(`/master-kegiatan?team=${teamId}`);
+      setKegiatan(res.data.data || res.data);
+    } catch (err) {
+      handleAxiosError(err, "Gagal mengambil kegiatan");
+      setKegiatan([]);
+    }
+  }, []);
+
   const fetchDetail = useCallback(async () => {
     try {
       const dRes = await axios.get(`/tugas-tambahan/${id}`);
       setItem(dRes.data);
 
-      let kegiatanList = [];
-      if (user?.role === ROLES.ADMIN || user?.role === ROLES.KETUA) {
-        const kRes = await axios.get("/master-kegiatan?limit=1000");
-        kegiatanList = kRes.data.data || kRes.data;
-      } else {
-        const teamId = dRes.data.kegiatan?.teamId || user?.teamId;
-        if (teamId) {
-          const kRes = await axios.get(`/master-kegiatan?team=${teamId}`);
-          kegiatanList = kRes.data.data || kRes.data;
-        }
-      }
-      setKegiatan(kegiatanList);
+      const teamId = dRes.data.kegiatan?.teamId || "";
+      await fetchKegiatanForTeam(teamId);
 
       setForm({
+        teamId: teamId ? String(teamId) : "",
         kegiatanId: String(dRes.data.kegiatanId),
         tanggal: dRes.data.tanggal.slice(0, 10),
         status: dRes.data.status,
@@ -75,11 +82,33 @@ export default function TugasTambahanDetailPage() {
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil data");
     }
-  }, [id, user]);
+  }, [id, fetchKegiatanForTeam]);
+
+  useEffect(() => {
+    const fetchTeams = async () => {
+      try {
+        const res = await axios.get("/teams/all");
+        setTeams(
+          res.data.filter(
+            (t) => t.namaTim !== "Admin" && t.namaTim !== "Pimpinan"
+          )
+        );
+      } catch (err) {
+        handleAxiosError(err, "Gagal mengambil tim");
+      }
+    };
+    fetchTeams();
+  }, []);
 
   useEffect(() => {
     fetchDetail();
   }, [fetchDetail]);
+
+  const handleTeamChange = async (o) => {
+    const teamId = o ? o.value : "";
+    setForm({ ...form, teamId, kegiatanId: "" });
+    await fetchKegiatanForTeam(teamId);
+  };
 
   const save = async () => {
     try {
@@ -88,6 +117,7 @@ export default function TugasTambahanDetailPage() {
         return;
       }
       const payload = { ...form };
+      delete payload.teamId;
       Object.keys(payload).forEach((k) => {
         if (payload[k] === "") delete payload[k];
       });
@@ -240,6 +270,33 @@ export default function TugasTambahanDetailPage() {
       ) : (
         <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <div>
+            <label htmlFor="team" className="block text-sm mb-1">
+              Tim
+            </label>
+            <Select
+              inputId="team"
+              classNamePrefix="react-select"
+              styles={selectStyles}
+              menuPortalTarget={document.body}
+              options={teams.map((t) => ({
+                value: t.id.toString(),
+                label: t.namaTim,
+              }))}
+              value={
+                form.teamId
+                  ? {
+                      value: form.teamId,
+                      label: teams.find(
+                        (t) => t.id.toString() === form.teamId
+                      )?.namaTim,
+                    }
+                  : null
+              }
+              onChange={handleTeamChange}
+              placeholder="Pilih tim..."
+            />
+          </div>
+          <div>
             <label htmlFor="kegiatan" className="block text-sm mb-1">
               Kegiatan
             </label>
@@ -265,15 +322,11 @@ export default function TugasTambahanDetailPage() {
               onChange={(o) =>
                 setForm({ ...form, kegiatanId: o ? o.value : "" })
               }
-              placeholder="Pilih kegiatan..."
+              placeholder={
+                form.teamId ? "Pilih kegiatan..." : "Pilih tim terlebih dahulu"
+              }
+              isDisabled={!form.teamId}
             />
-            {form.kegiatanId && (
-              <p className="text-sm mt-1 text-gray-600 dark:text-gray-300">
-                Tim:
-                {kegiatan.find((k) => k.id.toString() === form.kegiatanId)?.team
-                  ?.namaTim || "-"}
-              </p>
-            )}
           </div>
           <div>
             <label htmlFor="tanggal" className="block text-sm mb-1">
