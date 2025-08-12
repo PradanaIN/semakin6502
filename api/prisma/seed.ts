@@ -510,6 +510,20 @@ async function main() {
       data: tambahanRows,
       skipDuplicates: true,
     });
+
+    const laporanTambahanRows = tambahanRows.map((t) => ({
+      id: ulid(),
+      tambahanId: t.id,
+      pegawaiId: t.userId,
+      tanggal: t.tanggal,
+      status: t.status,
+      capaianKegiatan: t.capaianKegiatan,
+    }));
+
+    await prisma.laporanHarian.createMany({
+      data: laporanTambahanRows,
+      skipDuplicates: true,
+    });
   }
 
   const penugasanRows: any[] = [];
