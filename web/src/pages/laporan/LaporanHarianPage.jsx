@@ -25,6 +25,7 @@ import { ROLES } from "../../utils/roles";
 import ExportModal from "../../components/ExportModal";
 import exportFileName from "../../utils/exportFileName";
 import confirmAlert from "../../utils/confirmAlert";
+import formatDate from "../../utils/formatDate";
 
 function getWeekOfMonth(date) {
   const first = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -223,6 +224,11 @@ export default function LaporanHarianPage() {
       Header: "Tim",
       accessor: (row) =>
         row.penugasan?.tim?.namaTim || row.kegiatan?.team?.namaTim || "-",
+      disableFilters: true,
+    },
+    {
+      Header: "Tanggal",
+      accessor: (row) => formatDate(row.tanggal, "-"),
       disableFilters: true,
     },
     {
