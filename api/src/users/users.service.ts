@@ -2,6 +2,9 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { ulid } from "ulid";
 import { PrismaService } from "../prisma.service";
 import { hashPassword } from "../common/hash";
+import type { Prisma, User } from "@prisma/client";
+import { CreateUserDto } from "./create-user.dto";
+import { UpdateUserDto } from "./update-user.dto";
 
 @Injectable()
 export class UsersService {
@@ -20,7 +23,7 @@ export class UsersService {
     return user;
   }
 
-  async create(data: any) {
+  async create(data: CreateUserDto) {
     if (data.password) {
       data.password = await hashPassword(data.password);
     }
@@ -30,7 +33,7 @@ export class UsersService {
     return this.prisma.user.create({ data: { id: ulid(), ...data } });
   }
 
-  async update(id: string, data: any) {
+  async update(id: string, data: UpdateUserDto) {
     if (data.password) {
       data.password = await hashPassword(data.password);
     }
@@ -41,22 +44,28 @@ export class UsersService {
   }
 
   async findProfile(id: string) {
+    type UserWithMembers = Prisma.UserGetPayload<{
+      include: { members: { include: { team: true } } };
+    }>;
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: { members: { include: { team: true } } },
     });
     if (!user) throw new NotFoundException("not found");
-    const member = user.members?.[0];
-    const sanitized: any = {
-      ...user,
+    const member = (user as UserWithMembers).members?.[0];
+    const { password: _password, members, ...rest } = user as UserWithMembers;
+    const sanitized: Omit<User, "password"> & {
+      teamId?: string;
+      teamName?: string;
+    } = {
+      ...rest,
       teamId: member?.teamId,
       teamName: member?.team?.namaTim,
     };
-    delete sanitized.password;
     return sanitized;
   }
 
-  async updateProfile(id: string, data: any) {
+  async updateProfile(id: string, data: UpdateUserDto) {
     if (data.password) {
       data.password = await hashPassword(data.password);
     }
@@ -68,12 +77,15 @@ export class UsersService {
       where: { userId: id },
       include: { team: true },
     });
-    const sanitized: any = {
-      ...user,
+    const { password: _password, ...rest } = user;
+    const sanitized: Omit<User, "password"> & {
+      teamId?: string;
+      teamName?: string;
+    } = {
+      ...rest,
       teamId: member?.teamId,
       teamName: member?.team?.namaTim,
     };
-    delete sanitized.password;
     return sanitized;
   }
 

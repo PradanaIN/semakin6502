@@ -14,8 +14,8 @@ import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/guards/roles.decorator";
 import { ROLES } from "../common/roles.constants";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
+import { CreateUserDto } from "./create-user.dto";
+import { UpdateUserDto } from "./update-user.dto";
 import { Request } from "express";
 import { AuthRequestUser } from "../common/auth-request-user.interface";
 
@@ -45,8 +45,8 @@ export class UsersController {
   @Put("profile")
   updateProfile(@Req() req: Request, @Body() body: UpdateUserDto) {
     const { userId, role } = req.user as AuthRequestUser;
-    const data = { ...body } as any;
-    if (role !== ROLES.ADMIN) delete data.role;
+    const data: UpdateUserDto = { ...body };
+    if (role !== ROLES.ADMIN) data.role = undefined;
     return this.usersService.updateProfile(userId, data);
   }
 
