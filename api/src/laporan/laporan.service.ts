@@ -35,6 +35,7 @@ export class LaporanService {
       include: {
         pegawai: true,
         penugasan: { include: { kegiatan: true } },
+        tambahan: { include: { kegiatan: true } },
       },
     });
   }
@@ -142,6 +143,7 @@ export class LaporanService {
       include: {
         pegawai: true,
         penugasan: { include: { kegiatan: true } },
+        tambahan: { include: { kegiatan: true } },
       },
     });
   }
@@ -149,7 +151,10 @@ export class LaporanService {
   getByUserTanggal(userId: string, tanggal: string) {
     return this.prisma.laporanHarian.findMany({
       where: { pegawaiId: userId, tanggal: new Date(tanggal) },
-      include: { penugasan: { include: { kegiatan: true } } },
+      include: {
+        penugasan: { include: { kegiatan: true } },
+        tambahan: { include: { kegiatan: true } },
+      },
       orderBy: { tanggal: "desc" },
     });
   }
@@ -160,6 +165,7 @@ export class LaporanService {
       include: {
         pegawai: true,
         penugasan: { include: { kegiatan: true } },
+        tambahan: { include: { kegiatan: true } },
       },
     });
   }
@@ -170,6 +176,7 @@ export class LaporanService {
       orderBy: { tanggal: "desc" },
       include: {
         penugasan: { include: { kegiatan: true } },
+        tambahan: { include: { kegiatan: true } },
       },
     });
   }
@@ -181,19 +188,21 @@ export class LaporanService {
     }
     const existing = await this.prisma.laporanHarian.findUnique({
       where: { id },
-      include: { penugasan: { include: { kegiatan: true } } },
+      include: {
+        penugasan: { include: { kegiatan: true } },
+        tambahan: true,
+      },
     });
     if (!existing) throw new NotFoundException("not found");
     if (existing.pegawaiId !== userId) {
       if (role === ROLES.ADMIN) {
         // admins can modify any report
       } else if (role === ROLES.KETUA) {
+        const teamId = existing.penugasan
+          ? existing.penugasan.kegiatan.teamId
+          : existing.tambahan?.teamId;
         const leader = await this.prisma.member.findFirst({
-          where: {
-            teamId: existing.penugasan.kegiatan.teamId,
-            userId,
-            isLeader: true,
-          },
+          where: { teamId, userId, isLeader: true },
         });
         if (!leader) throw new ForbiddenException("bukan laporan anda");
       } else {
@@ -213,7 +222,8 @@ export class LaporanService {
     });
 
     try {
-      await this.syncPenugasanStatus(existing.penugasanId);
+      if (existing.penugasanId)
+        await this.syncPenugasanStatus(existing.penugasanId);
     } catch (err) {
       console.error("Failed to sync penugasan status", err);
     }
@@ -228,19 +238,21 @@ export class LaporanService {
     }
     const existing = await this.prisma.laporanHarian.findUnique({
       where: { id },
-      include: { penugasan: { include: { kegiatan: true } } },
+      include: {
+        penugasan: { include: { kegiatan: true } },
+        tambahan: true,
+      },
     });
     if (!existing) throw new NotFoundException("not found");
     if (existing.pegawaiId !== userId) {
       if (role === ROLES.ADMIN) {
         // admins can remove any report
       } else if (role === ROLES.KETUA) {
+        const teamId = existing.penugasan
+          ? existing.penugasan.kegiatan.teamId
+          : existing.tambahan?.teamId;
         const leader = await this.prisma.member.findFirst({
-          where: {
-            teamId: existing.penugasan.kegiatan.teamId,
-            userId,
-            isLeader: true,
-          },
+          where: { teamId, userId, isLeader: true },
         });
         if (!leader) throw new ForbiddenException("bukan laporan anda");
       } else {
@@ -250,7 +262,8 @@ export class LaporanService {
     await this.prisma.laporanHarian.delete({ where: { id } });
 
     try {
-      await this.syncPenugasanStatus(existing.penugasanId);
+      if (existing.penugasanId)
+        await this.syncPenugasanStatus(existing.penugasanId);
     } catch (err) {
       console.error("Failed to sync penugasan status", err);
     }

@@ -119,7 +119,7 @@ export class TambahanService {
     return this.prisma.laporanHarian.create({
       data: {
         id: ulid(),
-        penugasanId: id,
+        tambahanId: id,
         pegawaiId: targetId,
         tanggal: new Date(data.tanggal),
         status: data.status,
