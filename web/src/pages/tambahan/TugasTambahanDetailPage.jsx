@@ -112,9 +112,7 @@ export default function TugasTambahanDetailPage() {
 
   useEffect(() => {
     fetchDetail();
-    axios
-      .get(`/laporan-harian/tambahan/${id}`)
-      .then((r) => setLaporan(r.data));
+    axios.get(`/laporan-harian/tambahan/${id}`).then((r) => setLaporan(r.data));
   }, [fetchDetail, id]);
 
   const handleTeamChange = async (o) => {
@@ -179,7 +177,9 @@ export default function TugasTambahanDetailPage() {
       }
       if (
         laporanForm.status === STATUS.SELESAI_DIKERJAKAN &&
-        !(typeof laporanForm.buktiLink === "string" ? laporanForm.buktiLink : "").trim()
+        !(
+          typeof laporanForm.buktiLink === "string" ? laporanForm.buktiLink : ""
+        ).trim()
       ) {
         showWarning("Lengkapi data", "Link bukti wajib diisi");
         return;
@@ -443,9 +443,8 @@ export default function TugasTambahanDetailPage() {
                 form.teamId
                   ? {
                       value: form.teamId,
-                      label: teams.find(
-                        (t) => t.id.toString() === form.teamId
-                      )?.namaTim,
+                      label: teams.find((t) => t.id.toString() === form.teamId)
+                        ?.namaTim,
                     }
                   : null
               }
@@ -567,11 +566,20 @@ export default function TugasTambahanDetailPage() {
           {canManageLaporan && (
             <Button onClick={openLaporan} className="add-button">
               <Plus size={16} />
-              <span className="hidden sm:inline">Laporan Harian</span>
+              <span className="hidden sm:inline">Tambah Laporan</span>
             </Button>
           )}
         </div>
-        <DataTable columns={columns} data={laporan} />
+
+        <div className="overflow-x-auto md:overflow-x-visible rounded-lg border dark:border-gray-700">
+          <DataTable
+            columns={columns}
+            data={laporan}
+            showGlobalFilter={false}
+            showPagination={false}
+            selectable={false}
+          />
+        </div>
       </div>
 
       {showLaporanForm && (
@@ -647,7 +655,9 @@ export default function TugasTambahanDetailPage() {
                   required
                   className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
                 >
-                  <option value={STATUS.BELUM}>{formatStatus(STATUS.BELUM)}</option>
+                  <option value={STATUS.BELUM}>
+                    {formatStatus(STATUS.BELUM)}
+                  </option>
                   <option value={STATUS.SEDANG_DIKERJAKAN}>
                     {formatStatus(STATUS.SEDANG_DIKERJAKAN)}
                   </option>
