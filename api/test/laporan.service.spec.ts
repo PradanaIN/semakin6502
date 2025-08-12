@@ -214,4 +214,22 @@ describe('LaporanService getByMonthWeek', () => {
     const tambahan = res.find((r: any) => r.id === id2);
     expect(tambahan.type).toBe('tambahan');
   });
+
+  it('handles laporan without penugasan when including tambahan', async () => {
+    prisma.laporanHarian.findMany.mockResolvedValue([
+      {
+        id: id1,
+        tanggal: new Date('2024-05-03'),
+        status: STATUS.BELUM,
+        deskripsi: 'no penugasan',
+        penugasan: null,
+      },
+    ]);
+    prisma.kegiatanTambahan.findMany.mockResolvedValue([]);
+
+    const res = await service.getByMonthWeek(id1, undefined, undefined, true);
+
+    expect(res).toHaveLength(1);
+    expect(res[0].penugasan).toBeNull();
+  });
 });

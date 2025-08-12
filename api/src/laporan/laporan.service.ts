@@ -288,7 +288,7 @@ export class LaporanService {
     minggu?: number,
     includeTambahan = false
   ) {
-    const where: any = { pegawaiId: userId };
+    const where: any = { pegawaiId: userId, tambahanId: null };
     if (bulan || minggu) {
       where.penugasan = {};
       if (bulan) where.penugasan.bulan = bulan;
@@ -305,7 +305,9 @@ export class LaporanService {
     const mapped = laporan.map((l: any) => ({
       ...l,
       type: "mingguan",
-      penugasan: { ...l.penugasan, tim: l.penugasan.kegiatan.team },
+      penugasan: l.penugasan
+        ? { ...l.penugasan, tim: l.penugasan.kegiatan.team }
+        : null,
     }));
 
     if (!includeTambahan) return mapped;
