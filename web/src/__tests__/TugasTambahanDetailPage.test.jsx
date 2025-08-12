@@ -109,17 +109,12 @@ test('shows backend error message when deletion fails', async () => {
   fireEvent.click(deleteButton);
 
   await waitFor(() =>
-    expect(mockShowError).toHaveBeenCalledWith('Error', backendMessage)
+    expect(mockShowError).toHaveBeenCalledWith(
+      'Gagal',
+      'Harap hapus laporan harian terlebih dahulu!'
+    )
   );
-  expect(mockHandleAxiosError).toHaveBeenCalledWith(
-    expect.objectContaining({
-      response: expect.objectContaining({
-        status: 400,
-        data: expect.objectContaining({ message: backendMessage }),
-      }),
-    }),
-    'Gagal menghapus'
-  );
+  expect(mockHandleAxiosError).not.toHaveBeenCalled();
   expect(mockNavigate).not.toHaveBeenCalled();
   expect(mockShowSuccess).not.toHaveBeenCalled();
 });

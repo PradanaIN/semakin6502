@@ -331,10 +331,10 @@ export default function TugasTambahanDetailPage() {
       setTimeout(() => showSuccess("Dihapus", "Kegiatan dihapus"), 100);
     } catch (err) {
       if ([400, 403].includes(err?.response?.status)) {
-        const msg = err?.response?.data?.message || "";
-        showError("Gagal", `${msg ? `${msg}. ` : ""}Harap hapus laporan harian terlebih dahulu`);
+        showError("Gagal", "Harap hapus laporan harian terlebih dahulu!");
+      } else {
+        handleAxiosError(err, "Gagal menghapus");
       }
-      handleAxiosError(err, "Gagal menghapus");
     }
   };
 
