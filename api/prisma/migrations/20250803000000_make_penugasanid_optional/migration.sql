@@ -1,0 +1,2 @@
+ALTER TABLE `LaporanHarian`
+  MODIFY COLUMN `penugasanId` VARCHAR(191) NULL;
