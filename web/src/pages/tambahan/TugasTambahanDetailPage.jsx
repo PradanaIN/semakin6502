@@ -7,6 +7,7 @@ import {
   confirmCancel,
   handleAxiosError,
   showWarning,
+  showError,
 } from "../../utils/alerts";
 import { Pencil, Trash2, Plus, ExternalLink } from "lucide-react";
 import Select from "react-select";
@@ -329,6 +330,10 @@ export default function TugasTambahanDetailPage() {
       navigate(-1);
       setTimeout(() => showSuccess("Dihapus", "Kegiatan dihapus"), 100);
     } catch (err) {
+      if ([400, 403].includes(err?.response?.status)) {
+        const msg = err?.response?.data?.message || "";
+        showError("Gagal", `${msg ? `${msg}. ` : ""}Harap hapus laporan harian terlebih dahulu`);
+      }
       handleAxiosError(err, "Gagal menghapus");
     }
   };
