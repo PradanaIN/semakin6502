@@ -14,12 +14,18 @@ jest.mock('react-router-dom', () => ({
 
 const mockShowSuccess = jest.fn();
 const mockConfirmDelete = jest.fn();
+const mockShowError = jest.fn();
+const mockHandleAxiosError = jest.fn((error, defaultMessage) => {
+  const message = error?.response?.data?.message || defaultMessage;
+  mockShowError('Error', message);
+});
 
 jest.mock('../utils/alerts', () => ({
   showSuccess: (...args) => mockShowSuccess(...args),
   confirmDelete: (...args) => mockConfirmDelete(...args),
   confirmCancel: jest.fn(),
-  handleAxiosError: jest.fn(),
+  handleAxiosError: (...args) => mockHandleAxiosError(...args),
+  showError: (...args) => mockShowError(...args),
   showWarning: jest.fn(),
 }));
 
@@ -69,5 +75,52 @@ test('navigates back before showing success toast', async () => {
   });
 
   expect(mockShowSuccess).toHaveBeenCalledWith('Dihapus', 'Kegiatan dihapus');
+});
+
+test('shows backend error message when deletion fails', async () => {
+  const backendMessage = 'Backend error';
+
+  axios.get.mockImplementation((url) => {
+    if (url === '/tugas-tambahan/1') {
+      return Promise.resolve({
+        data: {
+          kegiatanId: 1,
+          userId: 1,
+          tanggal: '2024-01-01',
+          status: 'BELUM',
+          nama: 'Test',
+          kegiatan: { team: { namaTim: 'Tim A' } },
+        },
+      });
+    }
+    if (url.startsWith('/master-kegiatan')) {
+      return Promise.resolve({ data: [] });
+    }
+    return Promise.resolve({ data: [] });
+  });
+  axios.delete.mockRejectedValue({
+    response: { status: 400, data: { message: backendMessage } },
+  });
+  mockConfirmDelete.mockResolvedValue({ isConfirmed: true });
+
+  render(<TugasTambahanDetailPage />);
+  const deleteButton = await screen.findByRole('button', { name: /hapus/i });
+
+  fireEvent.click(deleteButton);
+
+  await waitFor(() =>
+    expect(mockShowError).toHaveBeenCalledWith('Error', backendMessage)
+  );
+  expect(mockHandleAxiosError).toHaveBeenCalledWith(
+    expect.objectContaining({
+      response: expect.objectContaining({
+        status: 400,
+        data: expect.objectContaining({ message: backendMessage }),
+      }),
+    }),
+    'Gagal menghapus'
+  );
+  expect(mockNavigate).not.toHaveBeenCalled();
+  expect(mockShowSuccess).not.toHaveBeenCalled();
 });
 
