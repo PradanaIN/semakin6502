@@ -49,6 +49,11 @@ export class LaporanController {
     return this.laporanService.getByPenugasan(id);
   }
 
+  @Get("tambahan/:id")
+  getByTambahan(@Param("id") id: string) {
+    return this.laporanService.getByTambahan(id);
+  }
+
   @Get("mine")
   myReports(@Req() req: Request) {
     const userId = (req.user as AuthRequestUser).userId;
