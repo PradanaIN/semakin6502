@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createFocusTrap } from "focus-trap";
 
 export default function Modal({
   onClose,
@@ -10,6 +11,7 @@ export default function Modal({
 }) {
   const containerRef = useRef(null);
   const onCloseRef = useRef(onClose);
+  const trapRef = useRef(null);
   const [visible, setVisible] = useState(false);
   const [closing, setClosing] = useState(false);
 
@@ -19,33 +21,19 @@ export default function Modal({
 
   useEffect(() => {
     function handleKey(e) {
-      if (e.key === "Escape") onCloseRef.current();
-      if (e.key === "Tab") {
-        const focusable = containerRef.current?.querySelectorAll(
-          "a[href], button, textarea, input, select, [tabindex]:not([tabindex='-1'])"
-        );
-        if (!focusable || focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
+      if (e.key === "Escape") handleClose();
     }
-    document.addEventListener("keydown", handleKey);
 
-    const firstInput = containerRef.current?.querySelector(
-      "a[href], button, textarea, input, select, [tabindex]:not([tabindex='-1'])"
-    );
-    if (initialFocusRef?.current) {
-      initialFocusRef.current.focus();
-    } else {
-      firstInput?.focus();
-    }
+    const trap = createFocusTrap(containerRef.current, {
+      escapeDeactivates: false,
+      allowOutsideClick: true,
+      initialFocus: initialFocusRef?.current || undefined,
+      returnFocusOnDeactivate: true,
+    });
+    trapRef.current = trap;
+    trap.activate();
+
+    document.addEventListener("keydown", handleKey);
 
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -54,11 +42,13 @@ export default function Modal({
 
     return () => {
       document.removeEventListener("keydown", handleKey);
+      trap.deactivate();
       document.body.style.overflow = originalOverflow;
     };
   }, []);
 
   function handleClose() {
+    trapRef.current?.deactivate();
     setClosing(true);
     setVisible(false);
     setTimeout(() => onCloseRef.current(), 300);

@@ -2,6 +2,7 @@ import { Outlet, useLocation, Link, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../auth/useAuth";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { createFocusTrap } from "focus-trap";
 import { useTheme } from "../../theme/useTheme.jsx";
 import Swal from "sweetalert2";
 import confirmAlert from "../../utils/confirmAlert";
@@ -37,6 +38,9 @@ export default function Layout() {
 
   const profileRef = useRef();
   const notifRef = useRef();
+  const profileMenuRef = useRef(null);
+  const notifMenuRef = useRef(null);
+  const sidebarRef = useRef(null);
 
   const fetchNotifications = useCallback(async () => {
     if (!user || user.role === ROLES.PIMPINAN) return;
@@ -127,10 +131,57 @@ export default function Layout() {
     document.title = `SEMAKIN - ${getPageTitle()}`;
   }, [getPageTitle]);
 
+  useEffect(() => {
+    let trap;
+    if (showProfileMenu && profileMenuRef.current) {
+      trap = createFocusTrap(profileMenuRef.current, {
+        onDeactivate: () => setShowProfileMenu(false),
+        escapeDeactivates: true,
+        allowOutsideClick: true,
+        returnFocusOnDeactivate: true,
+        fallbackFocus: profileMenuRef.current,
+      });
+      trap.activate();
+    }
+    return () => trap?.deactivate();
+  }, [showProfileMenu]);
+
+  useEffect(() => {
+    let trap;
+    if (showNotifMenu && notifMenuRef.current) {
+      trap = createFocusTrap(notifMenuRef.current, {
+        onDeactivate: () => setShowNotifMenu(false),
+        escapeDeactivates: true,
+        allowOutsideClick: true,
+        returnFocusOnDeactivate: true,
+        fallbackFocus: notifMenuRef.current,
+      });
+      trap.activate();
+    }
+    return () => trap?.deactivate();
+  }, [showNotifMenu]);
+
+  useEffect(() => {
+    let trap;
+    if (sidebarOpen && sidebarRef.current && window.innerWidth < 768) {
+      trap = createFocusTrap(sidebarRef.current, {
+        onDeactivate: () => setSidebarOpen(false),
+        escapeDeactivates: true,
+        allowOutsideClick: true,
+        returnFocusOnDeactivate: true,
+      });
+      trap.activate();
+    }
+    return () => trap?.deactivate();
+  }, [sidebarOpen]);
+
   return (
-    <div className="h-screen overflow-hidden flex text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-900">
+    <>
+      <a href="#main-content" className="skip-link">Lewati ke konten</a>
+      <div className="h-screen overflow-hidden flex text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-900">
       {/* Sidebar */}
       <div
+        ref={sidebarRef}
         className={`fixed md:static top-0 left-0 z-40 h-full overflow-hidden transition-all duration-300 w-64 ${
           sidebarOpen ? "translate-x-0 md:w-64" : "-translate-x-full md:w-0"
         } md:translate-x-0`}
@@ -178,7 +229,10 @@ export default function Layout() {
                 )}
               </button>
               {showNotifMenu && (
-                <div className="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50 py-2">
+                <div
+                  ref={notifMenuRef}
+                  className="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50 py-2"
+                >
                   <div className="px-4 py-2 font-semibold border-b dark:border-gray-600 flex justify-between items-center">
                     <span>Notifikasi</span>
                     <button
@@ -274,7 +328,10 @@ export default function Layout() {
                 </div>
               </button>
               {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50 py-2">
+                <div
+                  ref={profileMenuRef}
+                  className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50 py-2"
+                >
                   <Link
                     to="/profile"
                     onClick={() => setShowProfileMenu(false)}
@@ -295,11 +352,15 @@ export default function Layout() {
         </div>
 
         {/* Konten */}
-        <main className="p-4 overflow-y-auto flex-1 bg-gray-100 dark:bg-gray-900">
+        <main
+          id="main-content"
+          className="p-4 overflow-y-auto flex-1 bg-gray-100 dark:bg-gray-900"
+        >
           <Outlet />
         </main>
         <ToastContainer position="top-right" autoClose={3000} theme={theme} />
       </div>
-    </div>
+      </div>
+    </>
   );
 }
