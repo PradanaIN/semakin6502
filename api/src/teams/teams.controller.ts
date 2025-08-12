@@ -16,6 +16,9 @@ import { Roles } from "../common/guards/roles.decorator";
 import { Request } from "express";
 import { ROLES } from "../common/roles.constants";
 import { AuthRequestUser } from "../common/auth-request-user.interface";
+import { CreateTeamDto } from "./dto/create-team.dto";
+import { UpdateTeamDto } from "./dto/update-team.dto";
+import { AddMemberDto } from "./dto/add-member.dto";
 
 @Controller("teams")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -50,13 +53,13 @@ export class TeamsController {
 
   @Post()
   @Roles(ROLES.ADMIN)
-  create(@Body() body: any) {
+  create(@Body() body: CreateTeamDto) {
     return this.teamsService.create(body);
   }
 
   @Put(":id")
   @Roles(ROLES.ADMIN)
-  update(@Param("id") id: string, @Body() body: any) {
+  update(@Param("id") id: string, @Body() body: UpdateTeamDto) {
     return this.teamsService.update(id, body);
   }
 
@@ -68,7 +71,7 @@ export class TeamsController {
 
   @Post(":id/members")
   @Roles(ROLES.ADMIN)
-  addMember(@Param("id") teamId: string, @Body() member: any) {
+  addMember(@Param("id") teamId: string, @Body() member: AddMemberDto) {
     return this.teamsService.addMember(teamId, member);
   }
 }
