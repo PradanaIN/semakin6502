@@ -69,15 +69,17 @@ export default function TeamsPage() {
   );
 
   const saveTeam = async () => {
-    if (!form.namaTim) {
+    const namaTim = form.namaTim.trim();
+    if (!namaTim) {
       showWarning("Lengkapi data", "Nama tim wajib diisi");
       return;
     }
     try {
+      const payload = { ...form, namaTim };
       if (editingTeam) {
-        await axios.put(`/teams/${editingTeam.id}`, form);
+        await axios.put(`/teams/${editingTeam.id}`, payload);
       } else {
-        await axios.post("/teams", form);
+        await axios.post("/teams", payload);
       }
       close();
       fetchTeams();
@@ -225,6 +227,7 @@ export default function TeamsPage() {
                 type="text"
                 value={form.namaTim}
                 onChange={(e) => setForm({ ...form, namaTim: e.target.value })}
+                required
                 className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               />
             </div>
