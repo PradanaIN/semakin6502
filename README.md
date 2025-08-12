@@ -34,10 +34,14 @@ semakin6502/
    cd semakin6502
    ```
 2. **Instal dependensi**
+
+   Jalankan sekali dari direktori root:
+
    ```bash
-   cd api && npm install
-   cd ../web && npm install
+   npm install
    ```
+
+   Perintah ini memanfaatkan [npm workspaces](https://docs.npmjs.com/cli/v9/using-npm/workspaces) untuk mengelola dependensi `api/` dan `web/` secara bersamaan.
 3. **Konfigurasi environment** sesuai dengan contoh yang terdapat pada masing‑masing subproyek (`api/.env` dan `web/.env`).
 4. **Menjalankan server pengembangan**
    ```bash
