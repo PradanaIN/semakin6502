@@ -2,6 +2,8 @@ import { Module, ExecutionContext } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule, minutes } from "@nestjs/throttler";
 import { ScheduleModule } from "@nestjs/schedule";
+import { CacheModule } from "@nestjs/cache-manager";
+import { redisStore } from "cache-manager-redis-store";
 import { PrismaService } from "./prisma.service";
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
@@ -23,6 +25,18 @@ const limit = process.env.THROTTLE_LIMIT
 
 @Module({
   imports: [
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: async () => {
+        if (process.env.REDIS_URL) {
+          return {
+            store: await redisStore({ url: process.env.REDIS_URL }),
+            ttl: 0,
+          };
+        }
+        return { ttl: 0 };
+      },
+    }),
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot({
       throttlers: [{ ttl, limit }],
