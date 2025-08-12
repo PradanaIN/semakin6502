@@ -19,6 +19,7 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 import { ROLES } from "../../utils/roles";
+import dayjs from "../../utils/dayjs";
 
 export default function Layout() {
   const { user, setUser } = useAuth();
@@ -202,7 +203,12 @@ export default function Layout() {
                           notif.isRead ? "text-green-400" : "text-gray-400"
                         }`}
                       />
-                      <span>{notif.text}</span>
+                      <div className="flex flex-col">
+                        <span>{notif.text}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {dayjs(notif.createdAt).fromNow()}
+                        </span>
+                      </div>
                     </div>
                   ))}
                 </div>
