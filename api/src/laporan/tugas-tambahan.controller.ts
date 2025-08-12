@@ -22,7 +22,9 @@ import { AddTambahanDto } from "./dto/add-tambahan.dto";
 import { UpdateTambahanDto } from "./dto/update-tambahan.dto";
 import { SubmitTambahanLaporanDto } from "./dto/submit-tambahan-laporan.dto";
 import { AuthRequestUser } from "../common/auth-request-user.interface";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("tugas-tambahan")
 @Controller("tugas-tambahan")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class TambahanController {

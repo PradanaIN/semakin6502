@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install backend deps and run tests
+        working-directory: api
+        run: |
+          npm ci
+          npm test
+      - name: Upload backend coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-coverage
+          path: api/coverage
+      - name: Install frontend deps and run tests
+        working-directory: web
+        run: |
+          npm ci
+          npm test
+      - name: Upload frontend coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-coverage
+          path: web/coverage

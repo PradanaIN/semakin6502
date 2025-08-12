@@ -64,18 +64,27 @@ export default function Modal({
     setTimeout(() => onCloseRef.current(), 300);
   }
 
+  function handleOverlayClick(e) {
+    if (e.target === e.currentTarget) {
+      handleClose();
+    }
+  }
+
   return (
     <div
       className={`fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 transition-opacity duration-300 ${visible && !closing ? 'opacity-100' : 'opacity-0'}`}
-      onClick={handleClose}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby={titleId}
-      aria-describedby={descriptionId}
+      onClick={handleOverlayClick}
+      onKeyDown={(e) => e.key === 'Enter' && handleOverlayClick(e)}
+      role="button"
+      tabIndex={0}
+      aria-label="Close modal"
     >
       <div
         ref={containerRef}
-        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={descriptionId}
         className={`bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg space-y-4 transform transition-all duration-300 ${visible && !closing ? 'scale-100 opacity-100' : 'scale-95 opacity-0'} ${widthClass}`}
       >
         {children}

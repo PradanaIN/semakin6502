@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet";
 import axios from "axios";
 import { useAuth } from "./useAuth";
 import { handleAxiosError } from "../../utils/alerts";
@@ -45,8 +46,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-200 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 p-4">
-      <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md shadow-xl rounded-2xl ring-1 ring-zinc-200 dark:ring-zinc-800 w-full max-w-md p-8 space-y-6">
+    <>
+      <Helmet>
+        <title>Login - SEMAKIN 6502</title>
+      </Helmet>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-200 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 p-4">
+        <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md shadow-xl rounded-2xl ring-1 ring-zinc-200 dark:ring-zinc-800 w-full max-w-md p-8 space-y-6">
         <div className="flex items-center justify-center gap-2 mb-6">
           <img
             src="/logo.png"
@@ -140,7 +145,8 @@ export default function LoginPage() {
         <p className="text-xs text-zinc-400 text-center">
           &copy; 2025 Badan Pusat Statistik Kabupaten Bulungan
         </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

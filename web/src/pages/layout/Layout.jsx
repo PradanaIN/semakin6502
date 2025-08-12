@@ -2,6 +2,7 @@ import { Outlet, useLocation, Link, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../auth/useAuth";
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Helmet } from "react-helmet";
 import { useTheme } from "../../theme/useTheme.jsx";
 import Swal from "sweetalert2";
 import confirmAlert from "../../utils/confirmAlert";
@@ -123,20 +124,28 @@ export default function Layout() {
       .join(" ");
   }, [location.pathname]);
 
-  useEffect(() => {
-    document.title = `SEMAKIN - ${getPageTitle()}`;
-  }, [getPageTitle]);
-
   return (
-    <div className="h-screen overflow-hidden flex text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-900">
-      {/* Sidebar */}
-      <div
-        className={`fixed md:static top-0 left-0 z-40 h-full overflow-hidden transition-all duration-300 w-64 ${
+    <>
+      <Helmet>
+        <title>{`SEMAKIN 6502 - ${getPageTitle()}`}</title>
+        <meta
+          name="description"
+          content="Sistem Evaluasi dan Monitoring Kinerja"
+        />
+        <meta
+          property="og:title"
+          content={`SEMAKIN 6502 - ${getPageTitle()}`}
+        />
+      </Helmet>
+      <div className="h-screen overflow-hidden flex text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-900">
+        {/* Sidebar */}
+        <div
+          className={`fixed md:static top-0 left-0 z-40 h-full overflow-hidden transition-all duration-300 w-64 ${
           sidebarOpen ? "translate-x-0 md:w-64" : "-translate-x-full md:w-0"
         } md:translate-x-0`}
-      >
-        <Sidebar setSidebarOpen={setSidebarOpen} />
-      </div>
+        >
+          <Sidebar setSidebarOpen={setSidebarOpen} />
+        </div>
 
       {/* Overlay untuk mobile */}
       {sidebarOpen && (
@@ -189,10 +198,12 @@ export default function Layout() {
                     </button>
                   </div>
                   {displayedNotifications.map((notif) => (
-                    <div
+                    <button
                       key={notif.id}
+                      type="button"
                       onClick={() => markAsRead(notif.id, notif.link)}
-                      className={`px-4 py-2 text-sm flex items-start gap-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      aria-label={`Buka notifikasi ${notif.text}`}
+                      className={`w-full text-left px-4 py-2 text-sm flex items-start gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 ${
                         notif.isRead
                           ? "text-gray-400"
                           : "text-gray-800 dark:text-gray-100"
@@ -209,7 +220,7 @@ export default function Layout() {
                           {dayjs(notif.createdAt).fromNow()}
                         </span>
                       </div>
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -301,5 +312,6 @@ export default function Layout() {
         <ToastContainer position="top-right" autoClose={3000} theme={theme} />
       </div>
     </div>
+    </>
   );
 }

@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
 } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { UsersService } from "./users.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -19,6 +20,7 @@ import { UpdateUserDto } from "./update-user.dto";
 import { Request } from "express";
 import { AuthRequestUser } from "../common/auth-request-user.interface";
 
+@ApiTags("users")
 @Controller("users")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
