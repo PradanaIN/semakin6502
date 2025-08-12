@@ -170,6 +170,17 @@ export class LaporanService {
     });
   }
 
+  getByTambahan(tambahanId: string) {
+    return this.prisma.laporanHarian.findMany({
+      where: { tambahanId },
+      include: {
+        pegawai: true,
+        penugasan: { include: { kegiatan: true } },
+        tambahan: { include: { kegiatan: true } },
+      },
+    });
+  }
+
   getByUser(userId: string) {
     return this.prisma.laporanHarian.findMany({
       where: { pegawaiId: userId },
