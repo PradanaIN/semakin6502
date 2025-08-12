@@ -114,15 +114,19 @@ export default function TugasTambahanDetailPage() {
 
   const save = async () => {
     try {
-      if (form.capaianKegiatan.trim() === "") {
-        showWarning("Lengkapi data", "Capaian Kegiatan wajib diisi");
+      if (
+        form.teamId === "" ||
+        form.kegiatanId === "" ||
+        form.tanggal === "" ||
+        form.deskripsi.trim() === "" ||
+        form.capaianKegiatan.trim() === "" ||
+        form.status === ""
+      ) {
+        showWarning("Lengkapi data", "Semua field wajib diisi");
         return;
       }
       const payload = { ...form };
       delete payload.teamId;
-      Object.keys(payload).forEach((k) => {
-        if (payload[k] === "") delete payload[k];
-      });
       await axios.put(`/tugas-tambahan/${id}`, payload);
       showSuccess("Berhasil", "Kegiatan diperbarui");
       setEditing(false);
@@ -277,7 +281,7 @@ export default function TugasTambahanDetailPage() {
         <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <div>
             <label htmlFor="team" className="block text-sm mb-1">
-              Tim
+              Tim <span className="text-red-500">*</span>
             </label>
             <Select
               inputId="team"
@@ -304,7 +308,7 @@ export default function TugasTambahanDetailPage() {
           </div>
           <div>
             <label htmlFor="kegiatan" className="block text-sm mb-1">
-              Kegiatan
+              Kegiatan <span className="text-red-500">*</span>
             </label>
             <Select
               inputId="kegiatan"
@@ -336,7 +340,7 @@ export default function TugasTambahanDetailPage() {
           </div>
           <div>
             <label htmlFor="tanggal" className="block text-sm mb-1">
-              Tanggal
+              Tanggal <span className="text-red-500">*</span>
             </label>
             <Input
               id="tanggal"
@@ -346,17 +350,19 @@ export default function TugasTambahanDetailPage() {
               ref={tanggalRef}
               onFocus={() => tanggalRef.current?.showPicker?.()}
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              required
             />
           </div>
           <div>
             <label htmlFor="deskripsi" className="block text-sm mb-1">
-              Deskripsi
+              Deskripsi <span className="text-red-500">*</span>
             </label>
             <textarea
               id="deskripsi"
               value={form.deskripsi}
               onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
               className="form-input"
+              required
             />
           </div>
 
@@ -376,13 +382,14 @@ export default function TugasTambahanDetailPage() {
           </div>
           <div>
             <label htmlFor="status" className="block text-sm mb-1">
-              Status
+              Status <span className="text-red-500">*</span>
             </label>
             <select
               id="status"
               value={form.status}
               onChange={(e) => setForm({ ...form, status: e.target.value })}
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+              required
             >
               <option value={STATUS.BELUM}>{formatStatus(STATUS.BELUM)}</option>
               <option value={STATUS.SEDANG_DIKERJAKAN}>
