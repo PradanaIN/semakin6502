@@ -49,14 +49,22 @@ export default function TugasTambahanDetailPage() {
 
   const fetchDetail = useCallback(async () => {
     try {
-      const [dRes, kRes] = await Promise.all([
-        axios.get(`/tugas-tambahan/${id}`),
-        user?.role === ROLES.ADMIN || user?.role === ROLES.KETUA
-          ? axios.get("/master-kegiatan?limit=1000")
-          : Promise.resolve({ data: [] }),
-      ]);
+      const dRes = await axios.get(`/tugas-tambahan/${id}`);
       setItem(dRes.data);
-      setKegiatan(kRes.data.data || kRes.data);
+
+      let kegiatanList = [];
+      if (user?.role === ROLES.ADMIN || user?.role === ROLES.KETUA) {
+        const kRes = await axios.get("/master-kegiatan?limit=1000");
+        kegiatanList = kRes.data.data || kRes.data;
+      } else {
+        const teamId = dRes.data.kegiatan?.teamId || user?.teamId;
+        if (teamId) {
+          const kRes = await axios.get(`/master-kegiatan?team=${teamId}`);
+          kegiatanList = kRes.data.data || kRes.data;
+        }
+      }
+      setKegiatan(kegiatanList);
+
       setForm({
         kegiatanId: String(dRes.data.kegiatanId),
         tanggal: dRes.data.tanggal.slice(0, 10),
@@ -67,7 +75,7 @@ export default function TugasTambahanDetailPage() {
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil data");
     }
-  }, [id]);
+  }, [id, user]);
 
   useEffect(() => {
     fetchDetail();
