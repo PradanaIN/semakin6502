@@ -98,8 +98,7 @@ export class TambahanService {
     if (data.tanggalSelesaiAkhir !== undefined) {
       updateData.tanggalSelesaiAkhir = new Date(data.tanggalSelesaiAkhir);
     }
-
-    return this.prisma.kegiatanTambahan.update({
+    const existing = await this.prisma.kegiatanTambahan.findFirst({
       where: { id, userId },
     });
     if (!existing) {
