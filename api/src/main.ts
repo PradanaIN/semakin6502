@@ -28,7 +28,9 @@ async function bootstrap() {
       ? { origin: origins, credentials: true }
       : { credentials: true }
   );
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })
+  );
   app.useGlobalInterceptors(new LoggingInterceptor());
   const port = process.env.PORT || 3000;
   await app.listen(port);
