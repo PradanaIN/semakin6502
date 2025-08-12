@@ -1,4 +1,3 @@
-import React from "react";
 import getProgressColor from "../../../utils/progressColor";
 import months from "../../../utils/months";
 import { useAuth } from "../../auth/useAuth";

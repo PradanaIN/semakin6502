@@ -1,5 +1,4 @@
 import { CheckCircle, Clock, ClipboardList, Calendar } from "lucide-react";
-import React from "react";
 
 const StatsSummary = ({ weeklyData }) => {
   if (!weeklyData) return null;

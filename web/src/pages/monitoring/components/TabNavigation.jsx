@@ -1,5 +1,3 @@
-import React from "react";
-
 const tabs = [
   { key: "harian", label: "Harian" },
   { key: "mingguan", label: "Mingguan" },
