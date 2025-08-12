@@ -2,29 +2,34 @@ import { IsDateString, IsOptional, IsString } from "class-validator";
 import { Transform } from "class-transformer";
 
 export class UpdateTambahanDto {
+  @IsOptional()
   @IsString()
-  kegiatanId: string;
+  kegiatanId?: string;
 
   @Transform(({ value }) => (value === "" ? undefined : value))
+  @IsOptional()
   @IsDateString()
-  tanggal: string;
+  tanggal?: string;
 
   @Transform(({ value }) => (value === "" ? undefined : value))
+  @IsOptional()
   @IsString()
-  status: string;
+  status?: string;
 
   @IsOptional()
   @Transform(({ value }) => (value === "" ? undefined : value))
   @IsString()
   buktiLink?: string;
 
+  @IsOptional()
   @Transform(({ value }) => (value === "" ? undefined : value))
   @IsString()
-  deskripsi: string;
+  deskripsi?: string;
 
+  @IsOptional()
   @Transform(({ value }) => (value === "" ? undefined : value))
   @IsString()
-  capaianKegiatan: string;
+  capaianKegiatan?: string;
 
   @IsOptional()
   @Transform(({ value }) => (value === "" ? undefined : value))
