@@ -3,7 +3,10 @@ import {
   NotFoundException,
   ForbiddenException,
   BadRequestException,
+  Inject,
 } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import type { Cache } from "cache-manager";
 import { ulid } from "ulid";
 import { ROLES } from "../common/roles.constants";
 import { STATUS } from "../common/status.constants";
@@ -15,7 +18,10 @@ import { normalizeRole } from "../common/roles";
 
 @Injectable()
 export class TambahanService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cache?: Cache,
+  ) {}
 
   private async syncStatus(tambahanId: string) {
     try {
@@ -222,7 +228,7 @@ export class TambahanService {
     });
 
     await this.syncStatus(id);
-
+    await (this.cache as any)?.reset?.();
     return laporan;
   }
 }
