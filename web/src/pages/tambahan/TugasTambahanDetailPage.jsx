@@ -179,14 +179,18 @@ export default function TugasTambahanDetailPage() {
       {!editing ? (
         <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
           <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Nama</div>
-            <div className="font-medium">{item.nama}</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Tim</div>
-            <div className="font-medium">
-              {item.kegiatan.team?.namaTim || "-"}
+            <div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Tim
+              </div>
+              <div className="font-medium">
+                {item.kegiatan.team?.namaTim || "-"}
+              </div>
             </div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Nama Kegiatan
+            </div>
+            <div className="font-medium">{item.nama}</div>
           </div>
           <div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -268,7 +272,6 @@ export default function TugasTambahanDetailPage() {
             />
             {form.kegiatanId && (
               <p className="text-sm mt-1 text-gray-600 dark:text-gray-300">
-                Tim:
                 {kegiatan.find((k) => k.id.toString() === form.kegiatanId)?.team
                   ?.namaTim || "-"}
               </p>
