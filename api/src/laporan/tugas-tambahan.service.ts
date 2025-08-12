@@ -6,6 +6,7 @@ import {
 } from "@nestjs/common";
 import { ulid } from "ulid";
 import { ROLES } from "../common/roles.constants";
+import { STATUS } from "../common/status.constants";
 import { PrismaService } from "../prisma.service";
 import { AddTambahanDto } from "./dto/add-tambahan.dto";
 import { UpdateTambahanDto } from "./dto/update-tambahan.dto";
@@ -15,6 +16,39 @@ import { normalizeRole } from "../common/roles";
 @Injectable()
 export class TambahanService {
   constructor(private prisma: PrismaService) {}
+
+  private async syncStatus(tambahanId: string) {
+    try {
+      const tambahan = await this.prisma.kegiatanTambahan.findUnique({
+        where: { id: tambahanId },
+      });
+      if (!tambahan) return;
+
+      const finished = await this.prisma.laporanHarian.findFirst({
+        where: { tambahanId, status: STATUS.SELESAI_DIKERJAKAN },
+      });
+      if (finished) {
+        if (tambahan.status !== STATUS.SELESAI_DIKERJAKAN) {
+          await this.prisma.kegiatanTambahan.update({
+            where: { id: tambahanId },
+            data: { status: STATUS.SELESAI_DIKERJAKAN },
+          });
+        }
+        return;
+      }
+
+      const latest = await this.prisma.laporanHarian.findFirst({
+        where: { tambahanId },
+        orderBy: { tanggal: "desc" },
+      });
+      await this.prisma.kegiatanTambahan.update({
+        where: { id: tambahanId },
+        data: { status: latest?.status || STATUS.BELUM },
+      });
+    } catch (err) {
+      console.error("Failed to sync tambahan status", err);
+    }
+  }
   async add(data: AddTambahanDto & { userId: string }) {
     const master = await this.prisma.masterKegiatan.findUnique({
       where: { id: data.kegiatanId },
@@ -173,7 +207,7 @@ export class TambahanService {
       }
     }
 
-    return this.prisma.laporanHarian.create({
+    const laporan = await this.prisma.laporanHarian.create({
       data: {
         id: ulid(),
         tambahanId: id,
@@ -186,5 +220,9 @@ export class TambahanService {
         catatan: data.catatan || undefined,
       },
     });
+
+    await this.syncStatus(id);
+
+    return laporan;
   }
 }
