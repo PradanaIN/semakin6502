@@ -31,9 +31,10 @@ export class MonitoringService {
     const where: any = { tanggal: { gte: start, lte: end } };
     if (userId) where.pegawaiId = userId;
     if (teamId)
-      where.penugasan = {
-        kegiatan: { teamId },
-      };
+      where.OR = [
+        { penugasan: { kegiatan: { teamId } } },
+        { tambahan: { teamId } },
+      ];
 
     const records = await this.prisma.laporanHarian.findMany({
       where,
@@ -72,9 +73,10 @@ export class MonitoringService {
     const laporanWhere: any = { tanggal: { gte: start, lte: end } };
     if (userId) laporanWhere.pegawaiId = userId;
     if (teamId)
-      laporanWhere.penugasan = {
-        kegiatan: { teamId },
-      };
+      laporanWhere.OR = [
+        { penugasan: { kegiatan: { teamId } } },
+        { tambahan: { teamId } },
+      ];
 
     const records = await this.prisma.laporanHarian.findMany({
       where: laporanWhere,
@@ -200,9 +202,10 @@ export class MonitoringService {
       },
     };
     if (teamId)
-      where.penugasan = {
-        kegiatan: { teamId },
-      };
+      where.OR = [
+        { penugasan: { kegiatan: { teamId } } },
+        { tambahan: { teamId } },
+      ];
 
     const records = await this.prisma.laporanHarian.findMany({
       where,
@@ -277,9 +280,10 @@ export class MonitoringService {
       },
     };
     if (teamId)
-      where.penugasan = {
-        kegiatan: { teamId },
-      };
+      where.OR = [
+        { penugasan: { kegiatan: { teamId } } },
+        { tambahan: { teamId } },
+      ];
 
     const whereUser: any = {
       role: { notIn: [ROLES.ADMIN, ROLES.PIMPINAN] },
@@ -356,9 +360,10 @@ export class MonitoringService {
       },
     };
     if (teamId)
-      where.penugasan = {
-        kegiatan: { teamId },
-      };
+      where.OR = [
+        { penugasan: { kegiatan: { teamId } } },
+        { tambahan: { teamId } },
+      ];
 
     const records = (
       await this.prisma.laporanHarian.findMany({
@@ -456,9 +461,10 @@ export class MonitoringService {
       },
     };
     if (teamId)
-      where.penugasan = {
-        kegiatan: { teamId },
-      };
+      where.OR = [
+        { penugasan: { kegiatan: { teamId } } },
+        { tambahan: { teamId } },
+      ];
 
     const records = await this.prisma.laporanHarian.findMany({
       where,

@@ -69,7 +69,8 @@ model Penugasan {
 
 model LaporanHarian {
   id          String    @id
-  penugasanId String
+  penugasanId String?
+  tambahanId  String?
   tanggal     DateTime
   status      String
   capaianKegiatan String @default("")
@@ -77,8 +78,9 @@ model LaporanHarian {
   buktiLink   String?
   catatan     String?
   pegawaiId   String
-  penugasan   Penugasan @relation(fields: [penugasanId], references: [id])
-  pegawai     User      @relation(fields: [pegawaiId], references: [id])
+  penugasan   Penugasan?        @relation(fields: [penugasanId], references: [id])
+  tambahan    KegiatanTambahan? @relation(fields: [tambahanId], references: [id])
+  pegawai     User             @relation(fields: [pegawaiId], references: [id])
 }
 
 model KegiatanTambahan {
@@ -97,6 +99,7 @@ model KegiatanTambahan {
   user                User           @relation(fields: [userId], references: [id])
   kegiatan            MasterKegiatan @relation(fields: [kegiatanId], references: [id])
   team                Team           @relation(fields: [teamId], references: [id])
+  laporan             LaporanHarian[]
 }
 
 model Role {
