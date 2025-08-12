@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import FilterToolbar from "./components/FilterToolbar";
 import TabNavigation from "./components/TabNavigation";
