@@ -174,9 +174,8 @@ export default function TugasTambahanDetailPage() {
     if (!r.isConfirmed) return;
     try {
       await axios.delete(`/tugas-tambahan/${id}`);
-      showSuccess("Dihapus", "Kegiatan dihapus");
-      await new Promise((r) => setTimeout(r, 300));
       navigate(-1);
+      setTimeout(() => showSuccess("Dihapus", "Kegiatan dihapus"), 100);
     } catch (err) {
       handleAxiosError(err, "Gagal menghapus");
     }

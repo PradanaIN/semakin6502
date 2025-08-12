@@ -32,7 +32,9 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
-test.skip('shows success toast before navigating back', async () => {
+test('navigates back before showing success toast', async () => {
+  jest.useFakeTimers();
+
   axios.get.mockImplementation((url) => {
     if (url === '/tugas-tambahan/1') {
       return Promise.resolve({
@@ -58,14 +60,14 @@ test.skip('shows success toast before navigating back', async () => {
   const deleteButton = await screen.findByRole('button', { name: /hapus/i });
 
   fireEvent.click(deleteButton);
-  await waitFor(() =>
-    expect(mockShowSuccess).toHaveBeenCalledWith('Dihapus', 'Kegiatan dihapus')
-  );
-  expect(mockNavigate).not.toHaveBeenCalled();
+
+  await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith(-1));
+  expect(mockShowSuccess).not.toHaveBeenCalled();
 
   await act(async () => {
-    await new Promise((r) => setTimeout(r, 310));
+    jest.runAllTimers();
   });
-  expect(mockNavigate).toHaveBeenCalledWith(-1);
+
+  expect(mockShowSuccess).toHaveBeenCalledWith('Dihapus', 'Kegiatan dihapus');
 });
 
