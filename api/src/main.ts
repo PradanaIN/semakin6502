@@ -1,6 +1,7 @@
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe, LogLevel } from "@nestjs/common";
 import cookieParser from "cookie-parser";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { LoggingInterceptor } from "./common/logging.interceptor";
 
@@ -32,6 +33,13 @@ async function bootstrap() {
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })
   );
   app.useGlobalInterceptors(new LoggingInterceptor());
+  const config = new DocumentBuilder()
+    .setTitle("SEMAKIN 6502 API")
+    .setDescription("API documentation")
+    .setVersion("1.0")
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup("docs", app, document);
   const port = process.env.PORT || 3000;
   await app.listen(port);
 }

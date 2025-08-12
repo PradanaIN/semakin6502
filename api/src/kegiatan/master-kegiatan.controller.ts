@@ -18,7 +18,9 @@ import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
 import { Roles } from "../common/guards/roles.decorator";
 import { ROLES } from "../common/roles.constants";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("master-kegiatan")
 @Controller("master-kegiatan")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class MasterKegiatanController {
