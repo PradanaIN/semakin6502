@@ -44,7 +44,7 @@ export class LaporanService {
     try {
       const pen = await this.prisma.penugasan.findUnique({
         where: { id: penugasanId },
-        include: { kegiatan: true },
+        include: { kegiatan: true, pegawai: true },
       });
       if (!pen) return;
 
@@ -62,13 +62,10 @@ export class LaporanService {
             where: { teamId: pen.kegiatan.teamId, isLeader: true },
             select: { userId: true },
           });
+          const text = `${pen.pegawai?.nama ?? "Seorang pegawai"} telah menyelesaikan penugasan ${pen.kegiatan.namaKegiatan}`;
           await Promise.all(
             leaders.map((l: { userId: string }) =>
-              this.notifications.create(
-                l.userId,
-                `Penugasan ${pen.kegiatan.namaKegiatan} selesai`,
-                `/tugas-mingguan/${pen.id}`
-              )
+              this.notifications.create(l.userId, text, `/tugas-mingguan/${pen.id}`)
             )
           );
         }
