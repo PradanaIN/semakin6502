@@ -87,6 +87,39 @@ export class LaporanService {
       console.error("Failed to sync penugasan status", err);
     }
   }
+
+  private async syncTambahanStatus(tambahanId: string) {
+    try {
+      const tambahan = await this.prisma.kegiatanTambahan.findUnique({
+        where: { id: tambahanId },
+      });
+      if (!tambahan) return;
+
+      const finished = await this.prisma.laporanHarian.findFirst({
+        where: { tambahanId, status: STATUS.SELESAI_DIKERJAKAN },
+      });
+      if (finished) {
+        if (tambahan.status !== STATUS.SELESAI_DIKERJAKAN) {
+          await this.prisma.kegiatanTambahan.update({
+            where: { id: tambahanId },
+            data: { status: STATUS.SELESAI_DIKERJAKAN },
+          });
+        }
+        return;
+      }
+
+      const latest = await this.prisma.laporanHarian.findFirst({
+        where: { tambahanId },
+        orderBy: { tanggal: "desc" },
+      });
+      await this.prisma.kegiatanTambahan.update({
+        where: { id: tambahanId },
+        data: { status: latest?.status || STATUS.BELUM },
+      });
+    } catch (err) {
+      console.error("Failed to sync tambahan status", err);
+    }
+  }
   async submit(data: any, userId: string, role: string) {
     console.log('Service Payload:', data);
     role = normalizeRole(role);
@@ -235,8 +268,10 @@ export class LaporanService {
     try {
       if (existing.penugasanId)
         await this.syncPenugasanStatus(existing.penugasanId);
+      if (existing.tambahanId)
+        await this.syncTambahanStatus(existing.tambahanId);
     } catch (err) {
-      console.error("Failed to sync penugasan status", err);
+      console.error("Failed to sync status", err);
     }
 
     return laporan;
@@ -275,8 +310,10 @@ export class LaporanService {
     try {
       if (existing.penugasanId)
         await this.syncPenugasanStatus(existing.penugasanId);
+      if (existing.tambahanId)
+        await this.syncTambahanStatus(existing.tambahanId);
     } catch (err) {
-      console.error("Failed to sync penugasan status", err);
+      console.error("Failed to sync status", err);
     }
 
     return { success: true };
