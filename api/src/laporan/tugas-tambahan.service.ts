@@ -101,13 +101,33 @@ export class TambahanService {
 
     return this.prisma.kegiatanTambahan.update({
       where: { id, userId },
+    });
+    if (!existing) {
+      const any = await this.prisma.kegiatanTambahan.findUnique({
+        where: { id },
+      });
+      if (!any) throw new NotFoundException("tugas tambahan tidak ditemukan");
+      throw new ForbiddenException("bukan tugas tambahan anda");
+    }
+    return this.prisma.kegiatanTambahan.update({
+      where: { id },
       data: updateData,
       include: { kegiatan: { include: { team: true } } },
     });
   }
 
-  remove(id: string, userId: string) {
-    return this.prisma.kegiatanTambahan.delete({ where: { id, userId } });
+  async remove(id: string, userId: string) {
+    const existing = await this.prisma.kegiatanTambahan.findFirst({
+      where: { id, userId },
+    });
+    if (!existing) {
+      const any = await this.prisma.kegiatanTambahan.findUnique({
+        where: { id },
+      });
+      if (!any) throw new NotFoundException("tugas tambahan tidak ditemukan");
+      throw new ForbiddenException("bukan tugas tambahan anda");
+    }
+    return this.prisma.kegiatanTambahan.delete({ where: { id } });
   }
 
   async addLaporan(
