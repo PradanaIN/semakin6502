@@ -468,10 +468,8 @@ export default function TugasTambahanPage() {
                 onChange={(e) =>
                   setForm({ ...form, tanggal: e.target.value })
                 }
-                onClick={() => tanggalRef.current?.showPicker()}
-                onFocus={() => tanggalRef.current?.showPicker()}
                 required
-                className="w-full cursor-pointer border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
               />
             </div>
 
