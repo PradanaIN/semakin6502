@@ -34,7 +34,7 @@ export default function TugasTambahanDetailPage() {
   const [showUpload, setShowUpload] = useState(false);
   const [laporanForm, setLaporanForm] = useState({
     capaianKegiatan: "",
-    tanggalSelesai: "",
+    tanggal: "",
     status: STATUS.SELESAI_DIKERJAKAN,
     buktiLink: "",
     deskripsi: "",
@@ -104,7 +104,7 @@ export default function TugasTambahanDetailPage() {
     try {
       if (
         laporanForm.capaianKegiatan.trim() === "" ||
-        laporanForm.tanggalSelesai === "" ||
+        laporanForm.tanggal === "" ||
         laporanForm.status === ""
       ) {
         showWarning("Lengkapi data", "Semua field wajib diisi");
@@ -121,11 +121,11 @@ export default function TugasTambahanDetailPage() {
       Object.keys(payload).forEach((k) => {
         if (payload[k] === "") delete payload[k];
       });
-      await axios.put(`/tugas-tambahan/${id}`, payload);
+      await axios.post(`/tugas-tambahan/${id}/laporan`, payload);
       showSuccess("Berhasil", "Laporan ditambah");
       setLaporanForm({
         capaianKegiatan: "",
-        tanggalSelesai: "",
+        tanggal: "",
         status: STATUS.SELESAI_DIKERJAKAN,
         buktiLink: "",
         deskripsi: "",
@@ -391,11 +391,11 @@ export default function TugasTambahanDetailPage() {
                 <Input
                   id="laporanTanggal"
                   type="date"
-                  value={laporanForm.tanggalSelesai}
+                  value={laporanForm.tanggal}
                   onChange={(e) =>
                     setLaporanForm({
                       ...laporanForm,
-                      tanggalSelesai: e.target.value,
+                      tanggal: e.target.value,
                     })
                   }
                   className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
