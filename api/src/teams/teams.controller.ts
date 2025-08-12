@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
 } from "@nestjs/common";
+import { ApiTags } from "@nestjs/swagger";
 import { TeamsService } from "./teams.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -20,6 +21,7 @@ import { CreateTeamDto } from "./dto/create-team.dto";
 import { UpdateTeamDto } from "./dto/update-team.dto";
 import { AddMemberDto } from "./dto/add-member.dto";
 
+@ApiTags("teams")
 @Controller("teams")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class TeamsController {

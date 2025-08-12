@@ -18,7 +18,9 @@ import { RolesGuard } from "../common/guards/roles.guard";
 import { AuthRequestUser } from "../common/auth-request-user.interface";
 import { AssignPenugasanDto } from "./dto/assign-penugasan.dto";
 import { AssignPenugasanBulkDto } from "./dto/assign-penugasan-bulk.dto";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("penugasan")
 @Controller("penugasan")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class PenugasanController {
