@@ -143,6 +143,7 @@ export default function DataTable({
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
+                  scope="col"
                   className="px-4 py-3 font-semibold text-center border-t border-b border-gray-300 dark:border-gray-700 select-none"
                   onClick={header.column.getToggleSortingHandler()}
                 >
@@ -171,6 +172,7 @@ export default function DataTable({
               <td
                 colSpan={table.getAllColumns().length}
                 className="py-4 text-center"
+                aria-label="Data tidak ditemukan"
               >
                 Data tidak ditemukan
               </td>
@@ -181,22 +183,26 @@ export default function DataTable({
                 key={row.id}
                 className="text-center odd:bg-white even:bg-gray-50 dark:odd:bg-gray-900 dark:even:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                {row.getVisibleCells().map((cell) => {
+                {row.getVisibleCells().map((cell, index) => {
                   let extra = cell.column.columnDef.meta?.cellClassName;
                   if (typeof extra === "function") {
                     extra = extra(cell);
                   }
                   if (!extra) extra = "px-4 py-3";
-                  return (
-                    <td
-                      key={cell.id}
-                      className={`${extra} border-t border-b border-gray-300 dark:border-gray-700`}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell ?? cell.getValue(),
-                        cell.getContext()
-                      )}
-                    </td>
+                  const common = {
+                    key: cell.id,
+                    className: `${extra} border-t border-b border-gray-300 dark:border-gray-700`,
+                  };
+                  const content = flexRender(
+                    cell.column.columnDef.cell ?? cell.getValue(),
+                    cell.getContext()
+                  );
+                  return index === 0 ? (
+                    <th scope="row" {...common}>
+                      {content}
+                    </th>
+                  ) : (
+                    <td {...common}>{content}</td>
                   );
                 })}
               </tr>
