@@ -39,6 +39,7 @@ export default function TugasTambahanDetailPage() {
     status: STATUS.SELESAI_DIKERJAKAN,
     buktiLink: "",
     deskripsi: "",
+    catatan: "",
   });
   const [form, setForm] = useState({
     teamId: "",
@@ -141,7 +142,9 @@ export default function TugasTambahanDetailPage() {
       if (
         laporanForm.capaianKegiatan.trim() === "" ||
         laporanForm.tanggal === "" ||
-        laporanForm.status === ""
+        laporanForm.status === "" ||
+        typeof laporanForm.deskripsi !== "string" ||
+        laporanForm.deskripsi.trim() === ""
       ) {
         showWarning("Lengkapi data", "Semua field wajib diisi");
         return;
@@ -155,7 +158,7 @@ export default function TugasTambahanDetailPage() {
       }
       const payload = { ...laporanForm };
       Object.keys(payload).forEach((k) => {
-        if (payload[k] === "") delete payload[k];
+        if (k !== "deskripsi" && payload[k] === "") delete payload[k];
       });
       await axios.post(`/tugas-tambahan/${id}/laporan`, payload);
       showSuccess("Berhasil", "Laporan ditambah");
@@ -165,6 +168,7 @@ export default function TugasTambahanDetailPage() {
         status: STATUS.SELESAI_DIKERJAKAN,
         buktiLink: "",
         deskripsi: "",
+        catatan: "",
       });
       setShowUpload(false);
       fetchDetail();
@@ -516,14 +520,30 @@ export default function TugasTambahanDetailPage() {
                 </div>
               )}
               <div>
-                <Label htmlFor="laporanCatatan">Catatan</Label>
+                <Label htmlFor="laporanDeskripsi">
+                  Deskripsi <span className="text-red-500">*</span>
+                </Label>
                 <Textarea
-                  id="laporanCatatan"
+                  id="laporanDeskripsi"
                   value={laporanForm.deskripsi}
                   onChange={(e) =>
                     setLaporanForm({
                       ...laporanForm,
                       deskripsi: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="laporanCatatan">Catatan</Label>
+                <Textarea
+                  id="laporanCatatan"
+                  value={laporanForm.catatan}
+                  onChange={(e) =>
+                    setLaporanForm({
+                      ...laporanForm,
+                      catatan: e.target.value,
                     })
                   }
                 />
