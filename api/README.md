@@ -100,6 +100,7 @@ Rate limit global diterapkan dengan `@nestjs/throttler`. Defaultnya 100 request 
 | POST   | `/penugasan`                 | Memberi penugasan ke anggota                     |
 | POST   | `/laporan-harian`            | Mengirim laporan harian                          |
 | POST   | `/tugas-tambahan`            | Mengirim laporan tugas tambahan                  |
+| PUT    | `/tugas-tambahan/:id`        | Memperbarui tugas tambahan (update parsial)     |
 | GET    | `/monitoring/harian`         | Monitoring harian                                |
 | GET    | `/monitoring/mingguan/all`   | Monitoring mingguan semua pegawai               |
 | GET    | `/monitoring/bulanan/all`    | Monitoring bulanan semua pegawai                |

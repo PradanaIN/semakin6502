@@ -65,16 +65,41 @@ export class TambahanService {
   }
 
   async update(id: string, data: UpdateTambahanDto, userId: string) {
-    const updateData: any = { ...data };
-    if (data.kegiatanId) {
+    const updateData: any = {};
+
+    if (data.kegiatanId !== undefined) {
       const master = await this.prisma.masterKegiatan.findUnique({
         where: { id: data.kegiatanId },
       });
       if (!master) throw new NotFoundException('master kegiatan tidak ditemukan');
+      updateData.kegiatanId = master.id;
       updateData.nama = master.namaKegiatan;
       updateData.teamId = master.teamId;
     }
-    const existing = await this.prisma.kegiatanTambahan.findFirst({
+
+    if (data.tanggal !== undefined) {
+      updateData.tanggal = new Date(data.tanggal);
+    }
+    if (data.status !== undefined) {
+      updateData.status = data.status;
+    }
+    if (data.buktiLink !== undefined) {
+      updateData.buktiLink = data.buktiLink;
+    }
+    if (data.deskripsi !== undefined) {
+      updateData.deskripsi = data.deskripsi;
+    }
+    if (data.capaianKegiatan !== undefined) {
+      updateData.capaianKegiatan = data.capaianKegiatan;
+    }
+    if (data.tanggalSelesai !== undefined) {
+      updateData.tanggalSelesai = new Date(data.tanggalSelesai);
+    }
+    if (data.tanggalSelesaiAkhir !== undefined) {
+      updateData.tanggalSelesaiAkhir = new Date(data.tanggalSelesaiAkhir);
+    }
+
+    return this.prisma.kegiatanTambahan.update({
       where: { id, userId },
     });
     if (!existing) {
