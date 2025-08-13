@@ -4,13 +4,11 @@ import {
   Get,
   Body,
   UseGuards,
-  UsePipes,
   Req,
   Param,
   Query,
   Put,
   Delete,
-  ValidationPipe,
 } from "@nestjs/common";
 import { Request } from "express";
 import { TambahanService } from "./tugas-tambahan.service";
@@ -53,7 +51,6 @@ export class TambahanController {
   }
 
   @Post(":id/laporan")
-  @UsePipes(new ValidationPipe({ whitelist: true }))
   addLaporan(
     @Param("id") id: string,
     @Body() body: SubmitTambahanLaporanDto,
@@ -71,7 +68,6 @@ export class TambahanController {
 
   @Put(":id")
   @Roles(ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA)
-  @UsePipes(new ValidationPipe({ whitelist: true }))
   update(
     @Param("id") id: string,
     @Body() body: UpdateTambahanDto,
