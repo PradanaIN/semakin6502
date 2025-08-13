@@ -1,4 +1,6 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, Inject } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import type { Cache } from "cache-manager";
 import { PrismaService } from "../prisma.service";
 import MONTHS from "../common/months";
 import { STATUS } from "../common/status.constants";
@@ -6,9 +8,14 @@ import { ROLES } from "../common/roles.constants";
 
 // Tanggal pada service monitoring diasumsikan diproses dalam timezone UTC.
 
+const CACHE_TTL = 600; // seconds
+
 @Injectable()
 export class MonitoringService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cache?: Cache,
+  ) {}
 
   async lastUpdate() {
     const latest = await this.prisma.laporanHarian.findFirst({
@@ -18,6 +25,10 @@ export class MonitoringService {
     return latest?.tanggal || null;
   }
   async harian(tanggal: string, teamId?: string, userId?: string) {
+    const key = `monitoring:harian:${tanggal}:${teamId || ""}:${userId || ""}`;
+    const cached = await this.cache?.get<any>(key);
+    if (cached) return cached;
+
     const base = new Date(tanggal);
     if (isNaN(base.getTime()))
       throw new BadRequestException("tanggal tidak valid");
@@ -51,10 +62,15 @@ export class MonitoringService {
       const dateStr = date.toISOString();
       result.push({ tanggal: dateStr, adaKegiatan: exists.has(dateStr) });
     }
+    await this.cache?.set(key, result, CACHE_TTL);
     return result;
   }
 
   async mingguan(minggu: string, teamId?: string, userId?: string) {
+    const key = `monitoring:mingguan:${minggu}:${teamId || ""}:${userId || ""}`;
+    const cached = await this.cache?.get<any>(key);
+    if (cached) return cached;
+
     const targetDate = new Date(minggu);
     if (isNaN(targetDate.getTime()))
       throw new BadRequestException("minggu tidak valid");
@@ -145,7 +161,7 @@ export class MonitoringService {
       ? Math.round((totalSelesai / totalTugas) * 100)
       : 0;
 
-    return {
+    const result = {
       minggu: mingguKe,
       bulan: monthName(targetDate),
       tanggal: `${start.toISOString()} - ${end.toISOString()}`,
@@ -154,6 +170,8 @@ export class MonitoringService {
       totalTugas,
       detail,
     };
+    await this.cache?.set(key, result, CACHE_TTL);
+    return result;
   }
 
   async bulanan(year: string, teamId?: string, userId?: string) {
@@ -669,6 +687,10 @@ export class MonitoringService {
   }
 
   async bulananMatrix(year: string, teamId?: string) {
+    const key = `monitoring:bulananMatrix:${year}:${teamId || ""}`;
+    const cached = await this.cache?.get<any>(key);
+    if (cached) return cached;
+
     const yr = parseInt(year, 10);
     if (isNaN(yr)) throw new BadRequestException("year tidak valid");
 
@@ -705,7 +727,7 @@ export class MonitoringService {
         byUser[t.pegawaiId].perMonth[idx].selesai += 1;
     }
 
-    return Object.entries(byUser)
+    const result = Object.entries(byUser)
       .map(([id, v]) => {
         const months = MONTHS.map((_, i) => {
           const m = v.perMonth[i] || { selesai: 0, total: 0 };
@@ -715,9 +737,16 @@ export class MonitoringService {
         return { userId: id, nama: v.nama, months };
       })
       .sort((a, b) => a.nama.localeCompare(b.nama));
+
+    await this.cache?.set(key, result, CACHE_TTL);
+    return result;
   }
 
   async laporanTerlambat(teamId?: string) {
+    const key = `monitoring:laporanTerlambat:${teamId || ""}`;
+    const cached = await this.cache?.get<any>(key);
+    if (cached) return cached;
+
     const whereUser: any = {
       NOT: { role: { in: [ROLES.ADMIN, ROLES.PIMPINAN] } },
     };
@@ -755,6 +784,7 @@ export class MonitoringService {
       else if (diff >= 1) result.day1.push(entry);
     }
 
+    await this.cache?.set(key, result, CACHE_TTL);
     return result;
   }
 }

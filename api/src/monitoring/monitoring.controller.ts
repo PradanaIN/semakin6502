@@ -14,7 +14,9 @@ import { PrismaService } from "../prisma.service";
 import { Request } from "express";
 import { ROLES } from "../common/roles.constants";
 import { AuthRequestUser } from "../common/auth-request-user.interface";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags("monitoring")
 @Controller("monitoring")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class MonitoringController {

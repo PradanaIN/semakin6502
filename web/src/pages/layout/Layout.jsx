@@ -198,10 +198,12 @@ export default function Layout() {
                     </button>
                   </div>
                   {displayedNotifications.map((notif) => (
-                    <div
+                    <button
                       key={notif.id}
+                      type="button"
                       onClick={() => markAsRead(notif.id, notif.link)}
-                      className={`px-4 py-2 text-sm flex items-start gap-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      aria-label={`Buka notifikasi ${notif.text}`}
+                      className={`w-full text-left px-4 py-2 text-sm flex items-start gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 ${
                         notif.isRead
                           ? "text-gray-400"
                           : "text-gray-800 dark:text-gray-100"
@@ -218,7 +220,7 @@ export default function Layout() {
                           {dayjs(notif.createdAt).fromNow()}
                         </span>
                       </div>
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}

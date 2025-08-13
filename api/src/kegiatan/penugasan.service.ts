@@ -3,7 +3,10 @@ import {
   ForbiddenException,
   NotFoundException,
   BadRequestException,
+  Inject,
 } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import type { Cache } from "cache-manager";
 import { PrismaService } from "../prisma.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { ROLES } from "../common/roles.constants";
@@ -18,6 +21,7 @@ export class PenugasanService {
   constructor(
     private prisma: PrismaService,
     private notifications: NotificationsService,
+    @Inject(CACHE_MANAGER) private cache?: Cache,
   ) {}
 
   findAll(
@@ -79,7 +83,7 @@ export class PenugasanService {
       text,
       `/tugas-mingguan/${penugasan.id}`,
     );
-
+    await (this.cache as any)?.reset?.();
     return penugasan;
   }
 
@@ -122,7 +126,7 @@ export class PenugasanService {
         this.notifications.create(p.pegawaiId, text, `/tugas-mingguan/${p.id}`),
       ),
     );
-
+    await (this.cache as any)?.reset?.();
     return { count: created.length };
   }
 
@@ -171,7 +175,7 @@ export class PenugasanService {
         if (!leader) throw new ForbiddenException("bukan penugasan anda");
       }
     }
-    return this.prisma.penugasan.update({
+    const pen = await this.prisma.penugasan.update({
       where: { id },
       data: {
         kegiatanId: data.kegiatanId,
@@ -184,6 +188,8 @@ export class PenugasanService {
       },
       include: { kegiatan: { include: { team: true } }, pegawai: true },
     });
+    await (this.cache as any)?.reset?.();
+    return pen;
   }
 
   async remove(id: string, userId: string, role: string) {
@@ -212,6 +218,7 @@ export class PenugasanService {
         "Hapus laporan harian penugasan ini terlebih dahulu"
       );
     await this.prisma.penugasan.delete({ where: { id } });
+    await (this.cache as any)?.reset?.();
     return { success: true };
   }
 

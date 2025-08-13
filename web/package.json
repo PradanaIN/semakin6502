@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "test": "jest",
+    "test": "jest --coverage",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -47,6 +47,7 @@
     "autoprefixer": "^10.4.21",
     "babel-jest": "^30.0.4",
     "eslint": "^9.29.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.2.0",

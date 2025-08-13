@@ -2,8 +2,8 @@ import { Module, ExecutionContext } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule, minutes } from "@nestjs/throttler";
 import { ScheduleModule } from "@nestjs/schedule";
-import { ConfigModule } from "@nestjs/config";
-import * as Joi from "joi";
+import { CacheModule } from "@nestjs/cache-manager";
+import { redisStore } from "cache-manager-redis-store";
 import { PrismaService } from "./prisma.service";
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
@@ -25,24 +25,17 @@ const limit = process.env.THROTTLE_LIMIT
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
+    CacheModule.registerAsync({
       isGlobal: true,
-      validationSchema: Joi.object({
-        DATABASE_URL: Joi.string().uri().required(),
-        JWT_SECRET: Joi.string().required(),
-        JWT_EXPIRES_IN: Joi.string().default("1d"),
-        NODE_ENV: Joi.string()
-          .valid("development", "production", "test")
-          .default("development"),
-        PORT: Joi.number().default(3000),
-        CORS_ORIGIN: Joi.string().optional(),
-        THROTTLE_TTL: Joi.number().optional(),
-        THROTTLE_LIMIT: Joi.number().optional(),
-        COOKIE_DOMAIN: Joi.string().optional(),
-        COOKIE_SAMESITE: Joi.string()
-          .valid("strict", "lax", "none")
-          .optional(),
-      }),
+      useFactory: async () => {
+        if (process.env.REDIS_URL) {
+          return {
+            store: await redisStore({ url: process.env.REDIS_URL }),
+            ttl: 0,
+          };
+        }
+        return { ttl: 0 };
+      },
     }),
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot({

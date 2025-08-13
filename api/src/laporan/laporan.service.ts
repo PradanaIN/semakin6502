@@ -2,7 +2,10 @@ import {
   Injectable,
   ForbiddenException,
   NotFoundException,
+  Inject,
 } from "@nestjs/common";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import type { Cache } from "cache-manager";
 import { ulid } from "ulid";
 import { PrismaService } from "../prisma.service";
 import { NotificationsService } from "../notifications/notifications.service";
@@ -26,7 +29,8 @@ function getWeekOfMonth(date: Date) {
 export class LaporanService {
   constructor(
     private prisma: PrismaService,
-    private notifications: NotificationsService
+    private notifications: NotificationsService,
+    @Inject(CACHE_MANAGER) private cache?: Cache
   ) {}
 
   getAll() {
@@ -163,7 +167,7 @@ export class LaporanService {
       // Ignore sync errors so laporan is still returned
       console.error("Failed to sync penugasan status", err);
     }
-
+    await (this.cache as any)?.reset?.();
     return laporan;
   }
 
@@ -270,7 +274,7 @@ export class LaporanService {
     } catch (err) {
       console.error("Failed to sync status", err);
     }
-
+    await (this.cache as any)?.reset?.();
     return laporan;
   }
 
@@ -312,7 +316,7 @@ export class LaporanService {
     } catch (err) {
       console.error("Failed to sync status", err);
     }
-
+    await (this.cache as any)?.reset?.();
     return { success: true };
   }
 
