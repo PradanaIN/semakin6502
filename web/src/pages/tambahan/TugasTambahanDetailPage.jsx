@@ -40,7 +40,6 @@ export default function TugasTambahanDetailPage() {
   const [laporan, setLaporan] = useState([]);
   const [showLaporanForm, setShowLaporanForm] = useState(false);
   const [laporanForm, setLaporanForm] = useState({
-    id: null,
     tanggal: new Date().toISOString().slice(0, 10),
     deskripsi: "",
     capaianKegiatan: "",
@@ -152,7 +151,6 @@ export default function TugasTambahanDetailPage() {
 
   const openLaporan = () => {
     setLaporanForm({
-      id: null,
       tanggal: new Date().toISOString().slice(0, 10),
       deskripsi: "",
       capaianKegiatan: "",
@@ -186,14 +184,15 @@ export default function TugasTambahanDetailPage() {
         return;
       }
 
+      const { id: laporanId, ...rest } = laporanForm;
       const payload = {
-        ...laporanForm,
-        buktiLink: laporanForm.buktiLink || "",
-        catatan: laporanForm.catatan || "",
+        ...rest,
+        buktiLink: rest.buktiLink || "",
+        catatan: rest.catatan || "",
       };
 
-      if (laporanForm.id) {
-        await axios.put(`/laporan-harian/${laporanForm.id}`, payload);
+      if (laporanId) {
+        await axios.put(`/laporan-harian/${laporanId}`, payload);
       } else {
         await axios.post(`/tugas-tambahan/${id}/laporan`, payload);
       }
