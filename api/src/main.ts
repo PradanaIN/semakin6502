@@ -16,8 +16,10 @@ async function bootstrap() {
   app.use(cookieParser());
   app.use(helmet());
 
-  const config = app.get(ConfigService);
-  const origins = (config.get<string>("CORS_ORIGIN") || "http://localhost:5173")
+  const configService = app.get(ConfigService);
+  const origins = (
+    configService.get<string>("CORS_ORIGIN") || "http://localhost:5173"
+  )
     .split(",")
     .map((o) => o.trim())
     .filter(Boolean);
@@ -31,14 +33,14 @@ async function bootstrap() {
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })
   );
   app.useGlobalInterceptors(new LoggingInterceptor());
-  const config = new DocumentBuilder()
+  const swaggerConfig = new DocumentBuilder()
     .setTitle("SEMAKIN 6502 API")
     .setDescription("API documentation")
     .setVersion("1.0")
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup("docs", app, document);
-  const port = process.env.PORT || 3000;
+  const port = configService.get<number>("PORT") || 3000;
   await app.listen(port);
 }
 bootstrap();
