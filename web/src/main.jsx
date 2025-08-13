@@ -27,7 +27,10 @@ axios.interceptors.response.use(undefined, (error) => {
   if (message) {
     toast.error(message);
   }
-  if (error.response?.status === 401) {
+  if (
+    error.response?.status === 401 &&
+    window.location.pathname !== "/login"
+  ) {
     window.location.href = "/login";
   }
   return Promise.reject(error);

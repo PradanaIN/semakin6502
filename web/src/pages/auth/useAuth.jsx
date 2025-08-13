@@ -34,7 +34,12 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    verifyToken();
+    const hasUser =
+      localStorage.getItem("user") || sessionStorage.getItem("user");
+    const isLoginPage = window.location.pathname === "/login";
+    if (hasUser || !isLoginPage) {
+      verifyToken();
+    }
   }, []);
 
   const value = useMemo(
