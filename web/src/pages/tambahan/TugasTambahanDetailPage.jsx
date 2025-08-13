@@ -212,16 +212,15 @@ export default function TugasTambahanDetailPage() {
     }
   };
 
-  const editLaporan = (item) => {
+  const editLaporan = (lap) => {
     setLaporanForm({
-      ...item,
-      id: item.id,
-      tanggal: item.tanggal.slice(0, 10),
-      deskripsi: item.deskripsi || "",
-      capaianKegiatan: item.capaianKegiatan || "",
-      status: item.status,
-      catatan: item.catatan ?? "",
-      buktiLink: item.buktiLink ?? "",
+      id: lap.id,
+      tanggal: lap.tanggal.slice(0, 10),
+      deskripsi: lap.deskripsi || "",
+      capaianKegiatan: lap.capaianKegiatan || "",
+      status: lap.status,
+      catatan: lap.catatan ?? "",
+      buktiLink: lap.buktiLink ?? "",
     });
     setShowLaporanForm(true);
   };
