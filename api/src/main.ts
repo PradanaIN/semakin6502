@@ -27,21 +27,9 @@ async function bootstrap() {
       ? { origin: origins, credentials: true }
       : { credentials: true }
   );
-  let validationPipe: ValidationPipe | null = null;
-  try {
-    require("class-validator");
-    validationPipe = new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    });
-  } catch {
-    console.warn(
-      "class-validator is not installed; skipping ValidationPipe setup."
-    );
-  }
-  if (validationPipe) {
-    app.useGlobalPipes(validationPipe);
-  }
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })
+  );
   app.useGlobalInterceptors(new LoggingInterceptor());
   const swaggerConfig = new DocumentBuilder()
     .setTitle("SEMAKIN 6502 API")
