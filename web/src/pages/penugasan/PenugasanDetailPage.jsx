@@ -54,7 +54,7 @@ export default function PenugasanDetailPage() {
   const [laporan, setLaporan] = useState([]);
   const [showLaporanForm, setShowLaporanForm] = useState(false);
   const [laporanForm, setLaporanForm] = useState({
-    id: null,
+    id: undefined,
     tanggal: new Date().toISOString().slice(0, 10),
     deskripsi: "",
     capaianKegiatan: "",
@@ -148,7 +148,7 @@ export default function PenugasanDetailPage() {
 
   const openLaporan = () => {
     setLaporanForm({
-      id: null,
+      id: undefined,
       tanggal: new Date().toISOString().slice(0, 10),
       deskripsi: "",
       capaianKegiatan: "",
@@ -182,14 +182,15 @@ export default function PenugasanDetailPage() {
         return;
       }
 
+      const { id: laporanId, ...data } = laporanForm;
       const payload = {
-        ...laporanForm,
-        buktiLink: laporanForm.buktiLink || "",
-        catatan: laporanForm.catatan || "",
+        ...data,
+        buktiLink: data.buktiLink || "",
+        catatan: data.catatan || "",
       };
 
-      if (laporanForm.id) {
-        await axios.put(`/laporan-harian/${laporanForm.id}`, payload);
+      if (laporanId) {
+        await axios.put(`/laporan-harian/${laporanId}`, payload);
       } else {
         await axios.post("/laporan-harian", {
           ...payload,
