@@ -1,12 +1,12 @@
 import months from "./months";
 
-export default function formatDate(iso = "", separator = " ") {
+export default function formatDate(iso = "") {
   if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) {
-    // fallback to the raw value when date is invalid
-    return iso.slice(0, 10).replace(/-/g, separator);
+    // fallback ke raw value saat date invalid
+    return iso.slice(0, 10).replace(/-/g, " ");
   }
   const day = String(d.getDate()).padStart(2, "0");
-  return `${day}${separator}${months[d.getMonth()]}${separator}${d.getFullYear()}`;
+  return `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
