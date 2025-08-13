@@ -1,12 +1,13 @@
 import { AuthController } from '../src/auth/auth.controller';
 import { UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 const service = {
   login: jest.fn(),
   me: jest.fn(),
 } as any;
 
-const controller = new AuthController(service);
+const controller = new AuthController(service, new ConfigService());
 
 describe('AuthController login', () => {
   beforeEach(() => {
