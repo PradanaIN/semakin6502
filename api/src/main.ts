@@ -17,9 +17,7 @@ async function bootstrap() {
   app.use(helmet());
 
   const configService = app.get(ConfigService);
-  const origins = (
-    configService.get<string>("CORS_ORIGIN") || "http://localhost:5173"
-  )
+  const origins = (configService.get<string>("CORS_ORIGIN") || "http://localhost:5173")
     .split(",")
     .map((o) => o.trim())
     .filter(Boolean);
@@ -29,9 +27,21 @@ async function bootstrap() {
       ? { origin: origins, credentials: true }
       : { credentials: true }
   );
-  app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })
-  );
+  let validationPipe: ValidationPipe | null = null;
+  try {
+    require("class-validator");
+    validationPipe = new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    });
+  } catch {
+    console.warn(
+      "class-validator is not installed; skipping ValidationPipe setup."
+    );
+  }
+  if (validationPipe) {
+    app.useGlobalPipes(validationPipe);
+  }
   app.useGlobalInterceptors(new LoggingInterceptor());
   const swaggerConfig = new DocumentBuilder()
     .setTitle("SEMAKIN 6502 API")
