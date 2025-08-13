@@ -54,7 +54,6 @@ export default function TugasTambahanDetailPage() {
     tanggal: "",
     status: STATUS.BELUM,
     deskripsi: "",
-    capaianKegiatan: "",
   });
   const tanggalRef = useRef(null);
   const laporanTanggalRef = useRef(null);
@@ -87,7 +86,6 @@ export default function TugasTambahanDetailPage() {
         tanggal: dRes.data.tanggal.slice(0, 10),
         status: dRes.data.status,
         deskripsi: dRes.data.deskripsi || "",
-        capaianKegiatan: dRes.data.capaianKegiatan || "",
       });
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil data");
@@ -128,7 +126,6 @@ export default function TugasTambahanDetailPage() {
         form.kegiatanId === "" ||
         form.tanggal === "" ||
         form.deskripsi.trim() === "" ||
-        form.capaianKegiatan.trim() === "" ||
         form.status === ""
       ) {
         showWarning("Lengkapi data", "Semua field wajib diisi");
@@ -136,6 +133,7 @@ export default function TugasTambahanDetailPage() {
       }
       const payload = { ...form };
       delete payload.teamId;
+      delete payload.capaianKegiatan;
       await axios.put(`/tugas-tambahan/${id}`, payload);
       showSuccess("Berhasil", "Kegiatan diperbarui");
       setEditing(false);
@@ -511,21 +509,6 @@ export default function TugasTambahanDetailPage() {
               value={form.deskripsi}
               onChange={(e) => setForm({ ...form, deskripsi: e.target.value })}
               className="form-input"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="capaianKegiatan" className="block text-sm mb-1">
-              Capaian Kegiatan <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              id="capaianKegiatan"
-              value={form.capaianKegiatan}
-              onChange={(e) =>
-                setForm({ ...form, capaianKegiatan: e.target.value })
-              }
-              className="form-input resize-y w-full min-h-[48px] border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
               required
             />
           </div>
