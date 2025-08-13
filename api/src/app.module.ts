@@ -4,6 +4,8 @@ import { ThrottlerGuard, ThrottlerModule, minutes } from "@nestjs/throttler";
 import { ScheduleModule } from "@nestjs/schedule";
 import { CacheModule } from "@nestjs/cache-manager";
 import { redisStore } from "cache-manager-redis-store";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import Joi from "joi";
 import { PrismaService } from "./prisma.service";
 import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
@@ -15,22 +17,29 @@ import { RolesModule } from "./roles/roles.module";
 import { NotificationsModule } from "./notifications/notifications.module";
 import { HealthController } from "./health.controller";
 
-const ttl = process.env.THROTTLE_TTL
-  ? parseInt(process.env.THROTTLE_TTL, 10)
-  : minutes(15);
-
-const limit = process.env.THROTTLE_LIMIT
-  ? parseInt(process.env.THROTTLE_LIMIT, 10)
-  : 1000;
-
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: Joi.object({
+        THROTTLE_TTL: Joi.number().default(minutes(15)),
+        THROTTLE_LIMIT: Joi.number().default(1000),
+        REDIS_URL: Joi.string().uri().optional(),
+        COOKIE_DOMAIN: Joi.string().allow(""),
+        COOKIE_SAMESITE: Joi.string().valid("lax", "strict", "none"),
+        NODE_ENV: Joi.string(),
+        CORS_ORIGIN: Joi.string(),
+        PORT: Joi.number(),
+      }),
+    }),
     CacheModule.registerAsync({
       isGlobal: true,
-      useFactory: async () => {
-        if (process.env.REDIS_URL) {
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => {
+        const redisUrl = config.get<string>("REDIS_URL");
+        if (redisUrl) {
           return {
-            store: await redisStore({ url: process.env.REDIS_URL }),
+            store: await redisStore({ url: redisUrl }),
             ttl: 0,
           };
         }
@@ -38,11 +47,18 @@ const limit = process.env.THROTTLE_LIMIT
       },
     }),
     ScheduleModule.forRoot(),
-    ThrottlerModule.forRoot({
-      throttlers: [{ ttl, limit }],
-      skipIf: (context: ExecutionContext) => {
-        const req = context.switchToHttp().getRequest();
-        return req.path.startsWith("/health");
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const ttl = config.get<number>("THROTTLE_TTL") ?? minutes(15);
+        const limit = config.get<number>("THROTTLE_LIMIT") ?? 1000;
+        return {
+          throttlers: [{ ttl, limit }],
+          skipIf: (context: ExecutionContext) => {
+            const req = context.switchToHttp().getRequest();
+            return req.path.startsWith("/health");
+          },
+        };
       },
     }),
     AuthModule,

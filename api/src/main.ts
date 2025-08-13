@@ -8,15 +8,16 @@ import { AppModule } from "./app.module";
 import { LoggingInterceptor } from "./common/logging.interceptor";
 
 async function bootstrap() {
-  const isProd = process.env.NODE_ENV === "production";
-  const logLevels: LogLevel[] = isProd
-    ? ["log", "warn", "error"]
-    : ["log", "warn", "error", "debug", "verbose"];
-  const app = await NestFactory.create(AppModule, { logger: logLevels });
+  const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
   app.use(helmet());
 
   const configService = app.get(ConfigService);
+  const isProd = configService.get<string>("NODE_ENV") === "production";
+  const logLevels: LogLevel[] = isProd
+    ? ["log", "warn", "error"]
+    : ["log", "warn", "error", "debug", "verbose"];
+  app.useLogger(logLevels);
   const origins = (configService.get<string>("CORS_ORIGIN") || "http://localhost:5173")
     .split(",")
     .map((o) => o.trim())
