@@ -322,9 +322,10 @@ export default function TugasTambahanDetailPage() {
     const r = await confirmDelete("Hapus kegiatan ini?");
     if (!r.isConfirmed) return;
     try {
-      await axios.delete(`/tugas-tambahan/${id}`, { toastError: false });
-      navigate(-1);
-      setTimeout(() => showSuccess("Dihapus", "Kegiatan dihapus"), 100);
+      await axios.delete(`/tugas-tambahan/${id}`);
+      navigate("/tugas-tambahan", {
+        state: { success: "Kegiatan dihapus" },
+      });
     } catch (err) {
       if ([400, 403].includes(err?.response?.status)) {
         showError("Gagal", "Harap hapus laporan harian terlebih dahulu!");
