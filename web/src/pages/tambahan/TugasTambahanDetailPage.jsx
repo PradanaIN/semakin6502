@@ -227,7 +227,9 @@ export default function TugasTambahanDetailPage() {
     const r = await confirmDelete("Hapus laporan ini?");
     if (!r.isConfirmed) return;
     try {
-      await axios.delete(`/laporan-harian/${laporanId}`);
+      await axios.delete(`/laporan-harian/${laporanId}`, {
+        suppressToast: true,
+      });
       const res = await axios.get(`/laporan-harian/tambahan/${id}`);
       setLaporan(res.data);
       fetchDetail();
@@ -322,7 +324,7 @@ export default function TugasTambahanDetailPage() {
     const r = await confirmDelete("Hapus kegiatan ini?");
     if (!r.isConfirmed) return;
     try {
-      await axios.delete(`/tugas-tambahan/${id}`);
+      await axios.delete(`/tugas-tambahan/${id}`, { suppressToast: true });
       navigate("/tugas-tambahan", {
         state: { success: "Kegiatan dihapus" },
       });

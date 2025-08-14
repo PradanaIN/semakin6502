@@ -24,7 +24,7 @@ axios.interceptors.response.use((response) => {
 
 axios.interceptors.response.use(undefined, (error) => {
   const message = error.response?.data?.message || error.message;
-  if (message && error.config?.toastError !== false) {
+  if (message && !error.config?.suppressToast) {
     toast.error(message);
   }
   if (
