@@ -109,6 +109,9 @@ test('shows backend error message when deletion fails', async () => {
       'Harap hapus laporan harian terlebih dahulu!'
     )
   );
+  expect(axios.delete).toHaveBeenCalledWith('/tugas-tambahan/1', {
+    toastError: false,
+  });
   expect(mockHandleAxiosError).not.toHaveBeenCalled();
   expect(mockNavigate).not.toHaveBeenCalled();
   expect(mockShowSuccess).not.toHaveBeenCalled();
