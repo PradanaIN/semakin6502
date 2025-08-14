@@ -7,10 +7,24 @@ import { useAuth } from "../auth/useAuth";
 import axios from "axios";
 import { ROLES } from "../../utils/roles";
 import { handleAxiosError } from "../../utils/alerts";
-import dayjs from "../../utils/dayjs";
 
-const formatWita = (iso) =>
-  dayjs.utc(iso).tz("Asia/Makassar").format("DD MMM YYYY HH:mm:ss");
+const formatWita = (iso) => {
+  const date = new Date(iso);
+  const formattedDate = date.toLocaleDateString("id-ID", {
+    timeZone: "Asia/Makassar",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const formattedTime = date.toLocaleTimeString("id-ID", {
+    timeZone: "Asia/Makassar",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+  return `${formattedDate} pukul ${formattedTime} WITA`;
+};
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const getWeekStarts = (month, year) => {
@@ -71,6 +85,8 @@ export default function MonitoringPage() {
       }
     };
     getUpdate();
+    const id = setInterval(getUpdate, 60000);
+    return () => clearInterval(id);
   }, []);
 
   // Hitung awal minggu setiap kali bulan atau tahun berubah
@@ -115,8 +131,8 @@ export default function MonitoringPage() {
 
         {/* Info terakhir diperbarui */}
         {lastUpdate && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 italic">
-            Terakhir diperbarui: {formatWita(lastUpdate)}
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Data terakhir diperbarui: <strong>{formatWita(lastUpdate)}</strong>
           </p>
         )}
 
