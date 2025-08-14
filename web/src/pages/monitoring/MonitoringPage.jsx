@@ -14,16 +14,17 @@ const formatWita = (iso) =>
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const getWeekStarts = (month, year) => {
-  const firstOfMonth = new Date(Date.UTC(year, month, 1));
-  const monthEnd = new Date(Date.UTC(year, month + 1, 0));
-  const firstMonday = new Date(firstOfMonth);
-  const offset = (1 - firstOfMonth.getUTCDay() + 7) % 7;
-  firstMonday.setUTCDate(firstOfMonth.getUTCDate() + offset);
-
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month + 1, 0);
   const starts = [];
-  for (let d = new Date(firstMonday); d <= monthEnd; d.setUTCDate(d.getUTCDate() + 7)) {
+
+  const start = new Date(first);
+  start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+
+  for (let d = new Date(start); d <= last; d.setDate(d.getDate() + 7)) {
     starts.push(new Date(d));
   }
+
   return starts;
 };
 
@@ -77,13 +78,24 @@ export default function MonitoringPage() {
   useEffect(() => {
     const starts = getWeekStarts(monthIndex, year);
     setWeekStarts(starts);
-    if (weekIndex >= starts.length) setWeekIndex(0);
-  }, [monthIndex, year]);
 
-  // Reset ke minggu pertama saat bulan berubah
-  useEffect(() => {
-    setWeekIndex(0);
-  }, [monthIndex]);
+    const today = new Date();
+    const idx = starts.findIndex((start) => {
+      const end = new Date(start);
+      end.setDate(start.getDate() + 7);
+      return today >= start && today < end;
+    });
+
+    if (
+      monthIndex === today.getMonth() &&
+      year === today.getFullYear() &&
+      idx !== -1
+    ) {
+      setWeekIndex(idx);
+    } else {
+      setWeekIndex(0);
+    }
+  }, [monthIndex, year]);
 
   return (
     <div className="max-w-screen-xl mx-auto px-4 flex flex-col gap-4 pb-10">
