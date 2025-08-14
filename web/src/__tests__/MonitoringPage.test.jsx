@@ -16,11 +16,15 @@ test('displays last update note', async () => {
   axios.get.mockImplementation((url) => {
     if (url === '/monitoring/last-update')
       return Promise.resolve({ data: { lastUpdate: '2024-06-01T00:00:00.000Z' } });
-    if (url === '/teams') return Promise.resolve({ data: [] });
+    if (url === '/teams/all') return Promise.resolve({ data: [] });
     return Promise.resolve({ data: [] });
   });
   render(<MonitoringPage />);
   expect(
-    await screen.findByText(/Terakhir diperbarui/i)
+    await screen.findByText(
+      (_, el) =>
+        el.textContent ===
+        'Data terakhir diperbarui: 1 Juni 2024 pukul 08.00.00 WITA'
+    )
   ).toBeInTheDocument();
 });
