@@ -3,6 +3,8 @@ import MissedReportsPage from '../pages/monitoring/MissedReportsPage';
 import axios from 'axios';
 
 jest.mock('axios');
+jest.mock('jspdf', () => jest.fn());
+jest.mock('jspdf-autotable', () => jest.fn());
 
 test('shows last update note', async () => {
   axios.get.mockImplementation((url) => {
@@ -13,5 +15,11 @@ test('shows last update note', async () => {
     return Promise.resolve({ data: [] });
   });
   render(<MissedReportsPage />);
-  expect(await screen.findByText(/Data terakhir diperbarui/i)).toBeInTheDocument();
+  expect(
+    await screen.findByText(
+      (_, el) =>
+        el.textContent ===
+        'Data terakhir diperbarui: 1 Juni 2024 pukul 08.00.00 WITA'
+    )
+  ).toBeInTheDocument();
 });
