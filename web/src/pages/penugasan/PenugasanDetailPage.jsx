@@ -328,7 +328,7 @@ export default function PenugasanDetailPage() {
     const r = await confirmDelete("Hapus penugasan ini?");
     if (!r.isConfirmed) return;
     try {
-      await axios.delete(`/penugasan/${id}`);
+      await axios.delete(`/penugasan/${id}`, { suppressToast: true });
       showSuccess("Dihapus", "Penugasan dihapus");
       navigate(-1);
     } catch (err) {
@@ -338,10 +338,8 @@ export default function PenugasanDetailPage() {
           "Hanya admin atau ketua tim yang dapat menghapus penugasan."
         );
       } else {
-        const msg = err?.response?.data?.message || "Gagal menghapus";
-        showError("Error", msg);
+        handleAxiosError(err, "Gagal menghapus penugasan");
       }
-      handleAxiosError(err, "Gagal menghapus penugasan");
     }
   };
 

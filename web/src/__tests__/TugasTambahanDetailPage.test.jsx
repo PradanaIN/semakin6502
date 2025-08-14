@@ -110,7 +110,7 @@ test('shows backend error message when deletion fails', async () => {
     )
   );
   expect(axios.delete).toHaveBeenCalledWith('/tugas-tambahan/1', {
-    toastError: false,
+    suppressToast: true,
   });
   expect(mockHandleAxiosError).not.toHaveBeenCalled();
   expect(mockNavigate).not.toHaveBeenCalled();
