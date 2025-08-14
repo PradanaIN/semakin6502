@@ -1,82 +1,171 @@
-# SEMAKIN 6502
+# SEMAKIN 6502 – Dokumentasi Fitur Lengkap
 
-SEMAKIN 6502 (Sistem Evaluasi dan Monitoring Kinerja) adalah aplikasi internal untuk mencatat aktivitas harian pegawai, memberi tugas mingguan maupun tambahan, serta menampilkan rekap kinerja bagi pimpinan.
+SEMAKIN 6502 (Sistem Monitoring Kinerja) adalah aplikasi internal untuk mencatat aktivitas harian pegawai, memberi tugas mingguan maupun tambahan, serta menampilkan rekap kinerja bagi pimpinan.
 
-Repositori ini merupakan **monorepo** yang berisi dua proyek utama:
+## Peran & Hak Akses
 
-- **api/** – backend NestJS + Prisma + MySQL.
-- **web/** – frontend React + Vite + Tailwind.
-- **docker/** – skrip dan konfigurasi docker-compose untuk menjalankan stack secara terintegrasi.
+| Peran        | Deskripsi Singkat                            |
+| ------------ | -------------------------------------------- |
+| **admin**    | Mengelola seluruh data & konfigurasi sistem. |
+| **pimpinan** | Melihat ringkasan kinerja lintas tim.        |
+| **ketua**    | Memimpin tim, membuat/menugaskan pekerjaan.  |
+| **anggota**  | Mengisi laporan & menerima penugasan.        |
 
-## Prasyarat
+Sistem hanya mengenali keempat peran di atas.
 
-- [Node.js](https://nodejs.org/) ≥ 18
-- [npm](https://www.npmjs.com/) (terpasang bersama Node.js)
-- [MySQL](https://www.mysql.com/) 8 untuk menjalankan backend secara lokal
-- [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/) (opsional, jika ingin menjalankan melalui kontainer)
+## Alur Penggunaan Umum
 
-## Struktur Direktori
+1. **Admin** membuat tim dan akun pegawai.
+2. **Ketua** menyiapkan _master kegiatan_ lalu memberi penugasan mingguan kepada anggota.
+3. **Anggota** atau ketua mengisi _laporan harian_ atas penugasan atau tugas tambahan.
+4. **Notifikasi** dikirim saat ada penugasan baru atau laporan selesai.
+5. **Pimpinan** dan admin memantau progres melalui menu _Monitoring_.
 
-```
-semakin6502/
-├── api/            # Backend NestJS
-├── web/            # Frontend React + Vite
-├── docker/         # Konfigurasi Docker & skrip inisialisasi
-├── docker-compose.yml
-└── README.md
-```
+---
 
-## Memulai Pengembangan Lokal
+## Fitur & Menu
 
-1. **Kloning repositori**
-   ```bash
-   git clone <repo-url>
-   cd semakin6502
-   ```
-2. **Instal dependensi**
+### 1. Autentikasi
 
-   Jalankan sekali dari direktori root:
+- **Tujuan**: Otentikasi pengguna melalui cookie JWT.
+- **Akses**: Semua peran.
+- **Cara Pakai**: `POST /auth/login` untuk masuk dan `POST /auth/logout` untuk keluar. Endpoint `GET /auth/me` mengembalikan profil pengguna saat ini.
+- **Contoh Skenario**: Pegawai memasukkan kredensial di halaman login; token disimpan sebagai cookie.
+- **Batasan**: Cookie bersifat HTTP-only; opsi _remember me_ menetapkan masa kedaluwarsa 30 hari.
+- **Catatan Teknis**: Properti `COOKIE_DOMAIN`, `COOKIE_SAMESITE`, dan `NODE_ENV` memengaruhi konfigurasi cookie.
 
-   ```bash
-   npm install
-   ```
+### 2. Manajemen Pengguna
 
-   Perintah ini memanfaatkan [npm workspaces](https://docs.npmjs.com/cli/v9/using-npm/workspaces) untuk mengelola dependensi `api/` dan `web/` secara bersamaan.
-3. **Konfigurasi environment** sesuai dengan contoh yang terdapat pada masing‑masing subproyek (`api/.env` dan `web/.env`).
-4. **Menjalankan server pengembangan**
-   ```bash
-   # Terminal 1 – backend
-   cd api
-   npm run start:dev
+- **Tujuan**: CRUD data pegawai dan pembaruan profil.
+- **Akses**:
+  - Admin: seluruh operasi.
+  - Ketua: hanya dapat melihat daftar (`GET /users`).
+  - Semua peran: melihat/memperbarui profil sendiri.
+- **Alur**: Admin membuat pengguna → pengguna login → pengguna memperbarui profil via `PUT /users/profile` (role hanya dapat diubah oleh admin).
+- **Contoh**: Admin menambahkan pegawai baru dengan role “anggota”.
+- **Batasan**: Endpoint selain profil dilindungi oleh guard `RolesGuard`; hanya admin yang dapat menghapus pengguna.
+- **Catatan Teknis**: Password di-hash melalui util `hash.ts`.
 
-   # Terminal 2 – frontend
-   cd web
-   npm run dev
-   ```
-5. **Pengujian**
-   ```bash
-   cd api && npm test
-   cd ../web && npm test
-   ```
+### 3. Manajemen Tim
 
-Backend akan berjalan pada `http://localhost:3000` dan frontend pada `http://localhost:5173`.
+- **Tujuan**: Menyusun tim kerja dan anggotanya.
+- **Akses**:
+  - Admin: CRUD tim dan anggota.
+  - Ketua: Melihat tim yang dipimpinnya.
+  - Anggota: Melihat tim yang diikutinya.
+- **Alur**: Admin membuat tim → menambahkan anggota → ketua otomatis memiliki hak ketua jika `isLeader` bernilai true.
+- **Contoh**: Admin menambahkan anggota baru ke tim A melalui `POST /teams/:id/members`.
+- **Batasan**: Operasi selain `GET /teams`/`GET /teams/all` memerlukan peran admin.
+- **Catatan Teknis**: Endpoint `GET /teams` mengembalikan seluruh tim bila role admin, atau hanya tim yang dipimpin jika role ketua.
 
-## Menjalankan dengan Docker
+### 4. Master Kegiatan
 
-Semua layanan dapat dijalankan menggunakan Docker Compose. Pastikan Docker telah terinstal, kemudian jalankan:
+- **Tujuan**: Daftar master aktivitas sebagai dasar penugasan.
+- **Akses**:
+  - Admin & Ketua: membuat, memperbarui, menghapus.
+  - Semua peran: melihat daftar.
+- **Alur**: Ketua membuat master kegiatan (`POST /master-kegiatan`) → dapat difilter berdasarkan tim dan pencarian.
+- **Contoh**: Ketua tim memasukkan “Menyusun Laporan Bulanan” ke master.
+- **Batasan**: Perubahan membutuhkan otorisasi admin atau ketua.
+- **Catatan Teknis**: ID menggunakan format ULID (lihat Prisma schema).
 
-```bash
-docker-compose up --build
-```
+### 5. Penugasan Mingguan
 
-Docker akan menyiapkan kontainer API, web, dan MySQL. Data MySQL tersimpan pada volume `mysql-data` dan akan diinisialisasi oleh skrip `docker/mysql/init.sql`.
+- **Tujuan**: Menetapkan tugas mingguan dari master kegiatan kepada pegawai.
+- **Akses**:
+  - Admin atau ketua tim: membuat, memperbarui, menghapus.
+  - Semua peran: melihat penugasan yang relevan.
+- **Alur**:
+  1. Ketua memilih master kegiatan & anggota.
+  2. Sistem mengirim notifikasi kepada anggota.
+  3. Anggota mengisi laporan harian terkait.
+- **Contoh**: Ketua menugaskan tiga anggota sekaligus via `POST /penugasan/bulk`.
+- **Batasan**:
+  - Hanya admin atau ketua tim terkait yang boleh menugaskan.
+  - Penugasan tak dapat dihapus jika sudah memiliki laporan harian.
+- **Catatan Teknis**: Filter pencarian tersedia (`bulan`, `tahun`, `minggu`, `creator`).
 
-## Kontribusi
+### 6. Laporan Harian
 
-1. Fork proyek ini
-2. Buat branch fitur: `git checkout -b feature/nama-fitur`
-3. Ajukan pull request ke repo utama
+- **Tujuan**: Mencatat progres harian dari penugasan atau tugas tambahan.
+- **Akses**:
+  - Admin/Ketua/Anggota: membuat, mengubah, menghapus laporan yang dimiliki.
+  - Pimpinan: hanya melihat melalui menu monitoring.
+- **Alur**: Pegawai memilih penugasan → mengisi capaian, deskripsi, bukti → sistem menyinkronkan status penugasan.
+- **Contoh**: Anggota mengirim laporan status _selesai_ untuk tugas minggu ini.
+- **Batasan**:
+  - Pimpinan dilarang membuat atau memodifikasi laporan.
+  - Server mengasumsikan timezone UTC untuk perhitungan tanggal.
+- **Catatan Teknis**: Ekspor laporan tersedia dalam format XLSX (`GET /laporan-harian/mine/export`).
 
-## Lisensi
+### 7. Tugas Tambahan
 
-Proyek ini dirilis dengan lisensi [MIT](LICENSE).
+- **Tujuan**: Mencatat pekerjaan di luar penugasan mingguan.
+- **Akses**:
+  - Anggota/ketua/admin: menambah & memperbarui tugas tambahan sendiri.
+  - Admin & pimpinan: melihat semua melalui `GET /tugas-tambahan/all`.
+- **Alur**: Pengguna menambahkan tugas tambahan → mengisi laporan harian khusus jika ada perkembangan.
+- **Contoh**: Anggota mencatat tugas mendadak “Membantu acara”.
+- **Batasan**:
+  - Tidak bisa dihapus bila sudah memiliki laporan harian.
+  - Pimpinan tidak boleh menambahkan laporan tambahan.
+- **Catatan Teknis**: Status tugas tambahan disinkronkan otomatis dengan laporan harian.
+
+### 8. Monitoring Kinerja
+
+- **Tujuan**: Menyajikan ringkasan aktivitas harian, mingguan, dan bulanan.
+- **Akses**:
+  - Admin & Pimpinan: melihat seluruh tim.
+  - Ketua: melihat timnya dan, jika bukan ketua, hanya data sendiri.
+- **Alur**:
+  - Endpoint `GET /monitoring/harian`, `.../mingguan`, `.../bulanan` menerima parameter tanggal/minggu/tahun.
+  - Sistem memvalidasi keanggotaan tim sebelum menampilkan data.
+- **Contoh**: Pimpinan memeriksa laporan terlambat semua tim via `GET /monitoring/laporan/terlambat`.
+- **Batasan**: Pengguna non-admin/pimpinan yang bukan anggota tim tertentu ditolak dengan error _Forbidden._
+- **Catatan Teknis**: Endpoint `last-update` memberi cap waktu data terakhir.
+
+### 9. Notifikasi
+
+- **Tujuan**: Memberi informasi real‑time (misal penugasan baru, penugasan selesai).
+- **Akses**: Semua pengguna terotentikasi.
+- **Alur**: Sistem membuat notifikasi (`NotificationsService.create`) ketika penugasan dibuat atau selesai; pengguna menandainya sebagai telah dibaca.
+- **Contoh**: Anggota menerima notifikasi “Penugasan baru dari Tim A”.
+- **Batasan**: Notifikasi hanya dapat ditandai dibaca oleh pemiliknya.
+- **Catatan Teknis**: Endpoint `POST /notifications/read-all` menandai seluruh notifikasi pengguna sebagai telah dibaca.
+
+### 10. Profil & Dashboard
+
+- **Tujuan**: Menyediakan halaman ringkasan dan pengaturan pribadi.
+- **Akses**: Semua peran (konten dashboard berbeda sesuai role).
+- **Contoh Skenario**: Ketika anggota login, dashboard menampilkan statistik laporan mingguan; pimpinan melihat tab monitoring.
+- **Batasan**: Tidak ada.
+
+---
+
+## Contoh Skenario End-to-End
+
+1. **Setup**Admin membuat tim “Tim A” dan menambahkan tiga anggota. Ketua ditandai sebagai `isLeader=true`.
+2. **Penugasan Mingguan**Ketua membuat _master kegiatan_ “Penyusunan Laporan” lalu menugaskan dua anggota menggunakan fitur _bulk assign_.
+3. **Pelaporan**Setiap hari anggota mengisi laporan. Sistem memperbarui status penugasan; ketua menerima notifikasi saat status menjadi selesai.
+4. **Monitoring**Pimpinan membuka halaman monitoring mingguan untuk melihat progres semua tim dan daftar laporan terlambat.
+5. **Tugas Tambahan**
+   Salah satu anggota mencatat tugas tambahan “Bantu Workshop” dan mengirim laporan ketika selesai.
+
+---
+
+## Batasan Umum
+
+- Perhitungan tanggal menggunakan zona waktu UTC; sesuaikan konfigurasi server jika diperlukan.
+- ID utama menggunakan ULID sehingga tidak berurutan secara numerik.
+- Penugasan atau tugas tambahan harus dihapus setelah seluruh laporan harian terkait dihapus.
+
+## Catatan Teknis
+
+- Backend dibangun dengan NestJS + Prisma + MySQL.
+- Frontend menggunakan React 19, Vite, dan Tailwind.
+- Pengujian unit tersedia untuk backend dan frontend (Jest/Testing Library).
+- Middleware `JwtAuthGuard` dan `RolesGuard` menegakkan otentikasi dan otorisasi di semua endpoint utama.
+
+---
+
+Lisensi: [MIT](LICENSE).
