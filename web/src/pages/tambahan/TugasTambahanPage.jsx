@@ -8,7 +8,7 @@ import {
 } from "../../utils/alerts";
 import { Plus, Eye } from "lucide-react";
 import DataTable from "../../components/ui/DataTable";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import Label from "../../components/ui/Label";
 import MonthYearPicker from "../../components/ui/MonthYearPicker";
@@ -59,12 +59,20 @@ export default function TugasTambahanPage() {
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
+  const location = useLocation();
   const tanggalRef = useRef(null);
   const { user } = useAuth();
   const canManage = user?.role !== ROLES.PIMPINAN;
   const [filterTeam, setFilterTeam] = useState("");
   const [filterMinggu, setFilterMinggu] = useState("");
   const [weekOptions, setWeekOptions] = useState([]);
+
+  useEffect(() => {
+    if (location.state?.success) {
+      showSuccess("Dihapus", location.state.success);
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, navigate]);
   const fetchKegiatanForTeam = async (teamId) => {
     if (!teamId) {
       setKegiatan([]);

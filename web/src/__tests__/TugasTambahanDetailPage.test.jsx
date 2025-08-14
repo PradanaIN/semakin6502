@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import TugasTambahanDetailPage from '../pages/tambahan/TugasTambahanDetailPage';
 import axios from 'axios';
 
@@ -35,47 +35,42 @@ jest.mock('../pages/auth/useAuth', () => ({
 
 afterEach(() => {
   jest.clearAllMocks();
-  jest.useRealTimers();
 });
 
-test('navigates back before showing success toast', async () => {
-  jest.useFakeTimers();
-
-  axios.get.mockImplementation((url) => {
-    if (url === '/tugas-tambahan/1') {
-      return Promise.resolve({
-        data: {
-          kegiatanId: 1,
-          userId: 1,
-          tanggal: '2024-01-01',
-          status: 'BELUM',
-          nama: 'Test',
-          kegiatan: { team: { namaTim: 'Tim A' } },
-        },
-      });
-    }
-    if (url.startsWith('/master-kegiatan')) {
+  test('navigates to list with success state after deletion', async () => {
+    axios.get.mockImplementation((url) => {
+      if (url === '/tugas-tambahan/1') {
+        return Promise.resolve({
+          data: {
+            kegiatanId: 1,
+            userId: 1,
+            tanggal: '2024-01-01',
+            status: 'BELUM',
+            nama: 'Test',
+            kegiatan: { team: { namaTim: 'Tim A' } },
+          },
+        });
+      }
+      if (url.startsWith('/master-kegiatan')) {
+        return Promise.resolve({ data: [] });
+      }
       return Promise.resolve({ data: [] });
-    }
-    return Promise.resolve({ data: [] });
+    });
+    axios.delete.mockResolvedValue({});
+    mockConfirmDelete.mockResolvedValue({ isConfirmed: true });
+
+    render(<TugasTambahanDetailPage />);
+    const deleteButton = await screen.findByRole('button', { name: /hapus/i });
+
+    fireEvent.click(deleteButton);
+
+    await waitFor(() =>
+      expect(mockNavigate).toHaveBeenCalledWith('/tugas-tambahan', {
+        state: { success: 'Kegiatan dihapus' },
+      })
+    );
+    expect(mockShowSuccess).not.toHaveBeenCalled();
   });
-  axios.delete.mockResolvedValue({});
-  mockConfirmDelete.mockResolvedValue({ isConfirmed: true });
-
-  render(<TugasTambahanDetailPage />);
-  const deleteButton = await screen.findByRole('button', { name: /hapus/i });
-
-  fireEvent.click(deleteButton);
-
-  await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith(-1));
-  expect(mockShowSuccess).not.toHaveBeenCalled();
-
-  await act(async () => {
-    jest.runAllTimers();
-  });
-
-  expect(mockShowSuccess).toHaveBeenCalledWith('Dihapus', 'Kegiatan dihapus');
-});
 
 test('shows backend error message when deletion fails', async () => {
   const backendMessage = 'Backend error';
