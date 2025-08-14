@@ -38,6 +38,9 @@ export default function TugasTambahanDetailPage() {
   const [kegiatan, setKegiatan] = useState([]);
   const [teams, setTeams] = useState([]);
   const [laporan, setLaporan] = useState([]);
+  const canAddLaporan =
+    canManageLaporan &&
+    !laporan.some((l) => l.status === STATUS.SELESAI_DIKERJAKAN);
   const [showLaporanForm, setShowLaporanForm] = useState(false);
   const [laporanForm, setLaporanForm] = useState({
     tanggal: new Date().toISOString().slice(0, 10),
@@ -552,7 +555,7 @@ export default function TugasTambahanDetailPage() {
       <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold">Laporan Harian</h3>
-          {canManageLaporan && (
+          {canAddLaporan && (
             <Button onClick={openLaporan} className="add-button">
               <Plus size={16} />
               <span className="hidden sm:inline">Tambah Laporan</span>
