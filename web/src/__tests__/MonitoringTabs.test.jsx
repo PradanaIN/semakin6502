@@ -82,9 +82,15 @@ test("changing month and week selections does not throw", async () => {
   expect(onWeekChange).toHaveBeenCalledWith(1);
 });
 
-test("week 1 for June starts with a June date", () => {
-  const starts = getWeekStarts(5, 2024);
-  expect(starts[0].getUTCMonth()).toBe(5);
+test("August 14 2025 falls on week 3", () => {
+  const starts = getWeekStarts(7, 2025);
+  const today = new Date(2025, 7, 14);
+  const idx = starts.findIndex((start) => {
+    const end = new Date(start);
+    end.setDate(start.getDate() + 7);
+    return today >= start && today < end;
+  });
+  expect(idx).toBe(2);
 });
 
 test("changing month resets week index", async () => {
