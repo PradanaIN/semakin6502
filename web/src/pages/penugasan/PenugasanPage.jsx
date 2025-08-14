@@ -11,7 +11,7 @@ import Select from "react-select";
 import selectStyles from "../../utils/selectStyles";
 import StatusBadge from "../../components/ui/StatusBadge";
 import { useAuth } from "../auth/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/ui/Modal";
 import useModalForm from "../../hooks/useModalForm";
@@ -63,6 +63,7 @@ export default function PenugasanPage() {
   const { user } = useAuth();
   const canManage = [ROLES.ADMIN, ROLES.KETUA].includes(user?.role);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // --- State
   const [penugasan, setPenugasan] = useState([]);
@@ -97,6 +98,13 @@ export default function PenugasanPage() {
   // Default tab is "Tugas Saya" to show the current user's tasks first
   const [viewTab, setViewTab] = useState("mine");
   const [formTouched, setFormTouched] = useState(false); // for validation
+
+  useEffect(() => {
+    if (location.state?.success) {
+      showSuccess("Berhasil", location.state.success);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   const showPegawaiColumn = useMemo(
     () =>
