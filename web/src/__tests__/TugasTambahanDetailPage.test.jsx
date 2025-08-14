@@ -68,6 +68,9 @@ test('navigates back before showing success toast', async () => {
   fireEvent.click(deleteButton);
 
   await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith(-1));
+  expect(axios.delete).toHaveBeenCalledWith('/tugas-tambahan/1', {
+    toastError: false,
+  });
   expect(mockShowSuccess).not.toHaveBeenCalled();
 
   await act(async () => {
@@ -114,6 +117,9 @@ test('shows backend error message when deletion fails', async () => {
       'Harap hapus laporan harian terlebih dahulu!'
     )
   );
+  expect(axios.delete).toHaveBeenCalledWith('/tugas-tambahan/1', {
+    toastError: false,
+  });
   expect(mockHandleAxiosError).not.toHaveBeenCalled();
   expect(mockNavigate).not.toHaveBeenCalled();
   expect(mockShowSuccess).not.toHaveBeenCalled();
