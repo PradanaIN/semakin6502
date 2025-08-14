@@ -21,6 +21,10 @@ test('displays last update note', async () => {
   });
   render(<MonitoringPage />);
   expect(
-    await screen.findByText(/Terakhir diperbarui/i)
+    await screen.findByText(
+      (_, el) =>
+        el.textContent ===
+        'Data terakhir diperbarui: 1 Juni 2024 pukul 08.00.00 WITA'
+    )
   ).toBeInTheDocument();
 });
