@@ -322,7 +322,7 @@ export default function TugasTambahanDetailPage() {
     const r = await confirmDelete("Hapus kegiatan ini?");
     if (!r.isConfirmed) return;
     try {
-      await axios.delete(`/tugas-tambahan/${id}`);
+      await axios.delete(`/tugas-tambahan/${id}`, { toastError: false });
       navigate(-1);
       setTimeout(() => showSuccess("Dihapus", "Kegiatan dihapus"), 100);
     } catch (err) {
