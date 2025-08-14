@@ -109,7 +109,8 @@ export default function PenugasanPage() {
   const showPegawaiColumn = useMemo(
     () =>
       viewTab === "all" ||
-      [ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role),
+      viewTab === "dariSaya" ||
+      [ROLES.ADMIN, ROLES.PIMPINAN].includes(user?.role),
     [user, viewTab]
   );
 

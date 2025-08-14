@@ -329,8 +329,9 @@ export default function PenugasanDetailPage() {
     if (!r.isConfirmed) return;
     try {
       await axios.delete(`/penugasan/${id}`, { suppressToast: true });
-      showSuccess("Dihapus", "Penugasan dihapus");
-      navigate(-1);
+      navigate("/tugas-mingguan", {
+        state: { success: "Penugasan dihapus" },
+      });
     } catch (err) {
       if (err?.response?.status === 403) {
         showError(
