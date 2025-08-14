@@ -14,7 +14,6 @@ export default function FilterToolbar({
   teamId,
   setTeamId,
   teams = [],
-  userRole,
 }) {
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
@@ -144,26 +143,22 @@ export default function FilterToolbar({
       )}
 
       {/* Filter Tim */}
-      {(userRole === "admin" ||
-        userRole === "ketua" ||
-        userRole === "pimpinan") && (
-        <div className="w-40">
-          <select
-            value={teamId}
-            onChange={(e) => setTeamId(e.target.value)}
-            className={baseSelectClass}
-          >
-            <option value="">Semua Tim</option>
-            {teams
-              .filter((t) => t.namaTim !== "Pimpinan")
-              .map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.namaTim}
-                </option>
-              ))}
-          </select>
-        </div>
-      )}
+      <div className="w-40">
+        <select
+          value={teamId}
+          onChange={(e) => setTeamId(e.target.value)}
+          className={baseSelectClass}
+        >
+          <option value="">Semua Tim</option>
+          {teams
+            .filter((t) => t.namaTim !== "Pimpinan")
+            .map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.namaTim}
+              </option>
+            ))}
+        </select>
+      </div>
     </div>
   );
 }

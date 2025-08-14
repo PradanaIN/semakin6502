@@ -109,7 +109,6 @@ export default function MonitoringPage() {
             teamId={teamId}
             setTeamId={setTeamId}
             teams={teams}
-            userRole={user?.role}
           />
         </div>
 
