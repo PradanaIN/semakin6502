@@ -8,8 +8,23 @@ import autoTable from "jspdf-autotable";
 import formatDate from "../../utils/formatDate";
 import exportFileName from "../../utils/exportFileName";
 
-const formatWita = (iso) =>
-  new Date(iso).toLocaleString("id-ID", { timeZone: "Asia/Makassar" });
+const formatWita = (iso) => {
+  const date = new Date(iso);
+  const formattedDate = date.toLocaleDateString("id-ID", {
+    timeZone: "Asia/Makassar",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const formattedTime = date.toLocaleTimeString("id-ID", {
+    timeZone: "Asia/Makassar",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+  return `${formattedDate} pukul ${formattedTime} WITA`;
+};
 
 const MissedReportsPage = () => {
   const [data, setData] = useState({ day1: [], day3: [], day7: [] });
@@ -26,6 +41,7 @@ const MissedReportsPage = () => {
         ]);
         setData(reportRes.data);
         setLastUpdate(updateRes.data.lastUpdate);
+        setError(false);
       } catch {
         setError(true);
       } finally {
@@ -33,6 +49,8 @@ const MissedReportsPage = () => {
       }
     };
     fetchData();
+    const intervalId = setInterval(fetchData, 60000);
+    return () => clearInterval(intervalId);
   }, []);
 
   const formatToday = () =>
