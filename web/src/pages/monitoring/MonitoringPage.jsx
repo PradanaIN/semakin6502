@@ -5,7 +5,6 @@ import TabNavigation from "./components/TabNavigation";
 import TabContent from "./components/TabContent";
 import { useAuth } from "../auth/useAuth";
 import axios from "axios";
-import { ROLES } from "../../utils/roles";
 import { handleAxiosError } from "../../utils/alerts";
 import dayjs from "../../utils/dayjs";
 
@@ -45,16 +44,14 @@ export default function MonitoringPage() {
 
   const { user } = useAuth();
 
-  // Ambil daftar tim jika admin/ketua/pimpinan
+  // Ambil semua daftar tim untuk filter
   useEffect(() => {
     const fetchTeams = async () => {
-      if ([ROLES.ADMIN, ROLES.KETUA, ROLES.PIMPINAN].includes(user?.role)) {
-        try {
-          const res = await axios.get("/teams");
-          setTeams(res.data);
-        } catch (err) {
-          handleAxiosError(err, "Gagal mengambil tim");
-        }
+      try {
+        const res = await axios.get("/teams/all");
+        setTeams(res.data);
+      } catch (err) {
+        handleAxiosError(err, "Gagal mengambil tim");
       }
     };
     fetchTeams();
