@@ -74,13 +74,20 @@ export default function MonitoringPage() {
   useEffect(() => {
     const starts = getWeekStarts(monthIndex, year);
     setWeekStarts(starts);
-    if (weekIndex >= starts.length) setWeekIndex(0);
-  }, [monthIndex, year]);
 
-  // Reset ke minggu pertama saat bulan berubah
-  useEffect(() => {
-    setWeekIndex(0);
-  }, [monthIndex]);
+    const today = new Date();
+    const idx = starts.findIndex((start) => {
+      const end = new Date(start);
+      end.setUTCDate(start.getUTCDate() + 7);
+      return today >= start && today < end;
+    });
+
+    if (monthIndex === today.getMonth() && year === today.getFullYear() && idx !== -1) {
+      setWeekIndex(idx);
+    } else {
+      setWeekIndex(0);
+    }
+  }, [monthIndex, year]);
 
   return (
     <div className="max-w-screen-xl mx-auto px-4 flex flex-col gap-4 pb-10">
