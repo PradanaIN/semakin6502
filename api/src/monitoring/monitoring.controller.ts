@@ -69,47 +69,23 @@ export class MonitoringController {
   @Get("harian/all")
   async harianAll(
     @Query("tanggal") tanggal?: string,
-    @Req() req?: Request,
     @Query("teamId") teamId?: string,
   ) {
     if (!tanggal) {
       throw new BadRequestException("query 'tanggal' diperlukan");
     }
-    const user = req?.user as AuthRequestUser;
-    const role = user?.role;
-    const tId = teamId;
-
-    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
-      const member = await this.prisma.member.findFirst({
-        where: { teamId: tId, userId: user.userId },
-      });
-      if (!member) throw new ForbiddenException("bukan anggota tim ini");
-    }
-
-    return this.monitoringService.harianAll(tanggal, tId);
+    return this.monitoringService.harianAll(tanggal, teamId);
   }
 
   @Get("harian/bulan")
   async harianBulan(
     @Query("tanggal") tanggal?: string,
-    @Req() req?: Request,
     @Query("teamId") teamId?: string,
   ) {
     if (!tanggal) {
       throw new BadRequestException("query 'tanggal' diperlukan");
     }
-    const user = req?.user as AuthRequestUser;
-    const role = user?.role;
-    const tId = teamId;
-
-    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
-      const member = await this.prisma.member.findFirst({
-        where: { teamId: tId, userId: user.userId },
-      });
-      if (!member) throw new ForbiddenException("bukan anggota tim ini");
-    }
-
-    return this.monitoringService.harianBulan(tanggal, tId);
+    return this.monitoringService.harianBulan(tanggal, teamId);
   }
 
   @Get("mingguan")
@@ -150,24 +126,12 @@ export class MonitoringController {
   @Get("mingguan/all")
   async mingguanAll(
     @Query("minggu") minggu?: string,
-    @Req() req?: Request,
     @Query("teamId") teamId?: string,
   ) {
     if (!minggu) {
       throw new BadRequestException("query 'minggu' diperlukan");
     }
-    const user = req?.user as AuthRequestUser;
-    const role = user?.role;
-    const tId = teamId;
-
-    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
-      const member = await this.prisma.member.findFirst({
-        where: { teamId: tId, userId: user.userId },
-      });
-      if (!member) throw new ForbiddenException("bukan anggota tim ini");
-    }
-
-    return this.monitoringService.mingguanAll(minggu, tId);
+    return this.monitoringService.mingguanAll(minggu, teamId);
   }
 
   @Get("penugasan/minggu")
@@ -208,24 +172,12 @@ export class MonitoringController {
   @Get("mingguan/bulan")
   async mingguanBulan(
     @Query("tanggal") tanggal?: string,
-    @Req() req?: Request,
     @Query("teamId") teamId?: string,
   ) {
     if (!tanggal) {
       throw new BadRequestException("query 'tanggal' diperlukan");
     }
-    const user = req?.user as AuthRequestUser;
-    const role = user?.role;
-    const tId = teamId;
-
-    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
-      const member = await this.prisma.member.findFirst({
-        where: { teamId: tId, userId: user.userId },
-      });
-      if (!member) throw new ForbiddenException("bukan anggota tim ini");
-    }
-
-    return this.monitoringService.mingguanBulan(tanggal, tId);
+    return this.monitoringService.mingguanBulan(tanggal, teamId);
   }
 
   @Get("bulanan")
@@ -266,66 +218,30 @@ export class MonitoringController {
   @Get("bulanan/all")
   async bulananAll(
     @Query("year") year?: string,
-    @Req() req?: Request,
     @Query("teamId") teamId?: string,
     @Query("bulan") bulan?: string,
   ) {
     if (!year) {
       throw new BadRequestException("query 'year' diperlukan");
     }
-    const user = req?.user as AuthRequestUser;
-    const role = user?.role;
-    const tId = teamId;
-
-    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
-      const member = await this.prisma.member.findFirst({
-        where: { teamId: tId, userId: user.userId },
-      });
-      if (!member) throw new ForbiddenException("bukan anggota tim ini");
-    }
-
-    return this.monitoringService.bulananAll(year, tId, bulan);
+    return this.monitoringService.bulananAll(year, teamId, bulan);
   }
 
   @Get("bulanan/matrix")
   async bulananMatrix(
     @Query("year") year?: string,
-    @Req() req?: Request,
     @Query("teamId") teamId?: string,
   ) {
     if (!year) {
       throw new BadRequestException("query 'year' diperlukan");
     }
-    const user = req?.user as AuthRequestUser;
-    const role = user?.role;
-    const tId = teamId;
-
-    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
-      const member = await this.prisma.member.findFirst({
-        where: { teamId: tId, userId: user.userId },
-      });
-      if (!member) throw new ForbiddenException("bukan anggota tim ini");
-    }
-
-    return this.monitoringService.bulananMatrix(year, tId);
+    return this.monitoringService.bulananMatrix(year, teamId);
   }
 
   @Get("laporan/terlambat")
   async laporanTerlambat(
-    @Req() req?: Request,
     @Query("teamId") teamId?: string,
   ) {
-    const user = req?.user as AuthRequestUser;
-    const role = user?.role;
-    const tId = teamId;
-
-    if (role !== ROLES.ADMIN && role !== ROLES.PIMPINAN && tId) {
-      const member = await this.prisma.member.findFirst({
-        where: { teamId: tId, userId: user.userId },
-      });
-      if (!member) throw new ForbiddenException("bukan anggota tim ini");
-    }
-
-    return this.monitoringService.laporanTerlambat(tId);
+    return this.monitoringService.laporanTerlambat(teamId);
   }
 }
