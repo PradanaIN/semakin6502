@@ -21,8 +21,20 @@ export class PenugasanService {
   constructor(
     private prisma: PrismaService,
     private notifications: NotificationsService,
-    @Inject(CACHE_MANAGER) private cache?: Cache,
+    @Inject(CACHE_MANAGER)
+    private cache?: Cache & { reset: () => Promise<void> },
   ) {}
+
+  private async invalidateCache(keys?: string | string[]) {
+    // TODO: replace global reset with targeted invalidation
+    if (!this.cache) return;
+    if (keys) {
+      const arr = Array.isArray(keys) ? keys : [keys];
+      await Promise.all(arr.map((key) => this.cache!.del(key)));
+    } else {
+      await this.cache.reset();
+    }
+  }
 
   findAll(
     _role: string,
@@ -83,7 +95,7 @@ export class PenugasanService {
       text,
       `/tugas-mingguan/${penugasan.id}`,
     );
-    await (this.cache as any)?.reset?.();
+    await this.invalidateCache();
     return penugasan;
   }
 
@@ -126,7 +138,7 @@ export class PenugasanService {
         this.notifications.create(p.pegawaiId, text, `/tugas-mingguan/${p.id}`),
       ),
     );
-    await (this.cache as any)?.reset?.();
+    await this.invalidateCache();
     return { count: created.length };
   }
 
@@ -188,7 +200,7 @@ export class PenugasanService {
       },
       include: { kegiatan: { include: { team: true } }, pegawai: true },
     });
-    await (this.cache as any)?.reset?.();
+    await this.invalidateCache();
     return pen;
   }
 
@@ -218,7 +230,7 @@ export class PenugasanService {
         "Hapus laporan harian penugasan ini terlebih dahulu"
       );
     await this.prisma.penugasan.delete({ where: { id } });
-    await (this.cache as any)?.reset?.();
+    await this.invalidateCache();
     return { success: true };
   }
 

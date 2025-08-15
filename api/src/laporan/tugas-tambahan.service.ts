@@ -20,8 +20,20 @@ import { normalizeRole } from "../common/roles";
 export class TambahanService {
   constructor(
     private prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private cache?: Cache,
+    @Inject(CACHE_MANAGER)
+    private cache?: Cache & { reset: () => Promise<void> },
   ) {}
+
+  private async invalidateCache(keys?: string | string[]) {
+    // TODO: replace global reset with targeted invalidation
+    if (!this.cache) return;
+    if (keys) {
+      const arr = Array.isArray(keys) ? keys : [keys];
+      await Promise.all(arr.map((key) => this.cache!.del(key)));
+    } else {
+      await this.cache.reset();
+    }
+  }
 
   private async syncStatus(tambahanId: string) {
     try {
@@ -228,7 +240,7 @@ export class TambahanService {
     });
 
     await this.syncStatus(id);
-    await (this.cache as any)?.reset?.();
+    await this.invalidateCache();
     return laporan;
   }
 }
