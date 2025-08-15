@@ -20,7 +20,7 @@ import { ROLES } from "../common/roles.constants";
 import { SubmitLaporanDto } from "./dto/submit-laporan.dto";
 import { UpdateLaporanDto } from "./dto/update-laporan.dto";
 import { AuthRequestUser } from "../common/auth-request-user.interface";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiQuery, ApiTags } from "@nestjs/swagger";
 
 @ApiTags("laporan-harian")
 @Controller("laporan-harian")
@@ -30,8 +30,12 @@ export class LaporanController {
 
   @Get("all")
   @Roles(ROLES.ADMIN)
-  getAll() {
-    return this.laporanService.getAll();
+  @ApiQuery({ name: "skip", required: false, type: Number })
+  @ApiQuery({ name: "take", required: false, type: Number })
+  getAll(@Query("skip") skip?: string, @Query("take") take?: string) {
+    const s = skip ? parseInt(skip, 10) : undefined;
+    const t = take ? parseInt(take, 10) : undefined;
+    return this.laporanService.getAll(s, t);
   }
 
   @Post()

@@ -34,7 +34,11 @@ export class LaporanService {
     @Inject(CACHE_MANAGER) private cache?: Cache
   ) {}
 
-  getAll() {
+  getAll(skip?: number, take?: number) {
+    const pagination: { skip?: number; take?: number } = {};
+    if (typeof skip === "number" && skip > 0) pagination.skip = skip;
+    if (typeof take === "number" && take > 0) pagination.take = take;
+
     return this.prisma.laporanHarian.findMany({
       orderBy: { tanggal: "desc" },
       include: {
@@ -42,6 +46,7 @@ export class LaporanService {
         penugasan: { include: { kegiatan: true } },
         tambahan: { include: { kegiatan: true } },
       },
+      ...pagination,
     });
   }
 
