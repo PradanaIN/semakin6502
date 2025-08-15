@@ -28,7 +28,7 @@
     "react-router-dom": "^7.6.3",
     "react-select": "^5.10.2",
     "react-toastify": "^11.0.5",
-    "sweetalert2": "10.16.9",
+    "sweetalert2": "^11.10.0",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "xlsx": "^0.18.5"
