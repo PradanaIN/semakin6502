@@ -15,6 +15,7 @@ import { id } from "date-fns/locale";
 import { normalizeRole } from "../common/roles";
 import { ROLES } from "../common/roles.constants";
 import { STATUS } from "../common/status.constants";
+import { SubmitLaporanDto } from "./dto/submit-laporan.dto";
 
 function getWeekOfMonth(date: Date) {
   const first = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -121,8 +122,7 @@ export class LaporanService {
       console.error("Failed to sync tambahan status", err);
     }
   }
-  async submit(data: any, userId: string, role: string) {
-    console.log('Service Payload:', data);
+  async submit(data: SubmitLaporanDto, userId: string, role: string) {
     role = normalizeRole(role);
     if (role === ROLES.PIMPINAN) {
       throw new ForbiddenException("pimpinan tidak diizinkan");
