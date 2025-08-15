@@ -40,6 +40,24 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
+describe('LaporanService getAll', () => {
+  it('passes skip and take to prisma', async () => {
+    prisma.laporanHarian.findMany.mockResolvedValue([]);
+    await service.getAll(5, 10);
+    expect(prisma.laporanHarian.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ skip: 5, take: 10 })
+    );
+  });
+
+  it('ignores invalid pagination values', async () => {
+    prisma.laporanHarian.findMany.mockResolvedValue([]);
+    await service.getAll(-1, 0);
+    expect(prisma.laporanHarian.findMany).toHaveBeenCalledWith(
+      expect.not.objectContaining({ skip: expect.anything(), take: expect.anything() })
+    );
+  });
+});
+
 describe('LaporanService submit', () => {
   const data = {
     penugasanId: id1,

@@ -35,6 +35,11 @@ export class LaporanService {
     private cache?: Cache & { reset: () => Promise<void> }
   ) {}
 
+  getAll(skip?: number, take?: number) {
+    const pagination: { skip?: number; take?: number } = {};
+    if (typeof skip === "number" && skip > 0) pagination.skip = skip;
+    if (typeof take === "number" && take > 0) pagination.take = take;
+
   private async invalidateCache(keys?: string | string[]) {
     // TODO: replace global reset with targeted invalidation
     if (!this.cache) return;
@@ -54,6 +59,7 @@ export class LaporanService {
         penugasan: { include: { kegiatan: true } },
         tambahan: { include: { kegiatan: true } },
       },
+      ...pagination,
     });
   }
 
