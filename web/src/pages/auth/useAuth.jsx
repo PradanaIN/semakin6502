@@ -5,6 +5,7 @@ import {
   useState,
   useMemo,
   useEffect,
+  useCallback,
 } from "react";
 import axios from "axios";
 import camelizeKeys from "../../utils/camelizeKeys.js";
@@ -18,7 +19,7 @@ export function AuthProvider({ children }) {
     return u ? camelizeKeys(JSON.parse(u)) : null;
   });
 
-  const verifyToken = async () => {
+  const verifyToken = useCallback(async () => {
     try {
       const res = await axios.get("/auth/me");
       const userData = camelizeKeys(res.data.user);
@@ -31,7 +32,7 @@ export function AuthProvider({ children }) {
       sessionStorage.removeItem("user");
       setUser(null);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const hasUser =
@@ -40,7 +41,7 @@ export function AuthProvider({ children }) {
     if (hasUser || !isLoginPage) {
       verifyToken();
     }
-  }, []);
+  }, [verifyToken]);
 
   const value = useMemo(
     () => ({ user, setUser }),
