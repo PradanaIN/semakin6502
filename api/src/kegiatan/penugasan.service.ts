@@ -9,6 +9,7 @@ import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import type { Cache } from "cache-manager";
 import { PrismaService } from "../prisma.service";
 import { NotificationsService } from "../notifications/notifications.service";
+import { WhatsappService } from "../notifications/whatsapp.service";
 import { ROLES } from "../common/roles.constants";
 import { STATUS } from "../common/status.constants";
 import { normalizeRole } from "../common/roles";
@@ -21,6 +22,7 @@ export class PenugasanService {
   constructor(
     private prisma: PrismaService,
     private notifications: NotificationsService,
+    private whatsappService: WhatsappService,
     @Inject(CACHE_MANAGER)
     private cache?: Cache & { reset: () => Promise<void> },
   ) {}
@@ -89,12 +91,16 @@ export class PenugasanService {
       },
     });
 
-    const text = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
-    await this.notifications.create(
-      data.pegawaiId,
-      text,
-      `/tugas-mingguan/${penugasan.id}`,
-    );
+    const link = `/tugas-mingguan/${penugasan.id}`;
+    const text = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}. Lihat tugas: ${link}`;
+    await this.notifications.create(data.pegawaiId, text, link);
+    const pegawai = await this.prisma.user.findUnique({
+      where: { id: data.pegawaiId },
+      select: { phone: true },
+    });
+    if (pegawai?.phone) {
+      await this.whatsappService.sendMessage(pegawai.phone, text);
+    }
     await this.invalidateCache();
     return penugasan;
   }
@@ -132,11 +138,19 @@ export class PenugasanService {
       rows.map((r) => this.prisma.penugasan.create({ data: r })),
     );
 
-    const text = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
     await Promise.all(
-      created.map((p: { pegawaiId: string; id: string }) =>
-        this.notifications.create(p.pegawaiId, text, `/tugas-mingguan/${p.id}`),
-      ),
+      created.map(async (p: { pegawaiId: string; id: string }) => {
+        const link = `/tugas-mingguan/${p.id}`;
+        const text = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}. Lihat tugas: ${link}`;
+        await this.notifications.create(p.pegawaiId, text, link);
+        const pegawai = await this.prisma.user.findUnique({
+          where: { id: p.pegawaiId },
+          select: { phone: true },
+        });
+        if (pegawai?.phone) {
+          await this.whatsappService.sendMessage(pegawai.phone, text);
+        }
+      }),
     );
     await this.invalidateCache();
     return { count: created.length };

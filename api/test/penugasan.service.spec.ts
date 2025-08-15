@@ -8,8 +8,9 @@ const prisma = {
 } as any;
 
 const notifications = { create: jest.fn() } as any;
+const whatsappService = { sendMessage: jest.fn() } as any;
 
-const service = new PenugasanService(prisma, notifications);
+const service = new PenugasanService(prisma, notifications, whatsappService);
 
 describe("PenugasanService remove", () => {
   beforeEach(() => {
