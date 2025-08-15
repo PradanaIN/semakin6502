@@ -52,5 +52,13 @@ export class WhatsappService {
       throw err;
     }
   }
+
+  async sendMessage(
+    to: string,
+    message: string,
+    extra: Record<string, unknown> = {},
+  ) {
+    return this.send(to, message, extra);
+  }
 }
 
