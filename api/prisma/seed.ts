@@ -26,6 +26,7 @@ const rawUsers = [
     password: "password",
     team: "Pimpinan",
     role: "Pimpinan",
+    phone: "081234567801",
   },
   {
     nama: "Warsidi",
@@ -34,6 +35,7 @@ const rawUsers = [
     password: "password",
     team: "Sosial",
     role: "Anggota Tim",
+    phone: "081234567802",
   },
   {
     nama: "Muhamadsyah",
@@ -42,6 +44,7 @@ const rawUsers = [
     password: "password",
     team: "Neraca",
     role: "Anggota Tim",
+    phone: "081234567803",
   },
   {
     nama: "Dwi Prasetyono",
@@ -50,6 +53,7 @@ const rawUsers = [
     password: "password",
     team: "Produksi",
     role: "Ketua Tim",
+    phone: "081234567804",
   },
   {
     nama: "Tiara Kusuma Widianingrum",
@@ -58,6 +62,7 @@ const rawUsers = [
     password: "password",
     team: "Sosial",
     role: "Ketua Tim",
+    phone: "081234567805",
   },
   {
     nama: "Idhamsyah",
@@ -66,6 +71,7 @@ const rawUsers = [
     password: "password",
     team: "Umum",
     role: "Anggota Tim",
+    phone: "081234567806",
   },
   {
     nama: "Mohammad Agusti Rahman",
@@ -74,6 +80,7 @@ const rawUsers = [
     password: "password",
     team: "Distribusi",
     role: "Ketua Tim",
+    phone: "081234567807",
   },
   {
     nama: "Okta Wahyu Nugraha",
@@ -82,6 +89,7 @@ const rawUsers = [
     password: "password",
     team: "Umum",
     role: "Anggota Tim",
+    phone: "081234567808",
   },
   {
     nama: "Rosetina Fini Alsera",
@@ -90,6 +98,7 @@ const rawUsers = [
     password: "password",
     team: "Umum",
     role: "Anggota Tim",
+    phone: "081234567809",
   },
   {
     nama: "Shafa",
@@ -98,6 +107,7 @@ const rawUsers = [
     password: "password",
     team: "Umum",
     role: "Anggota Tim",
+    phone: "081234567810",
   },
   {
     nama: "Ari Susilowati",
@@ -106,6 +116,7 @@ const rawUsers = [
     password: "password",
     team: "Umum",
     role: "Ketua Tim",
+    phone: "081234567811",
   },
   {
     nama: "Rifki Maulana",
@@ -114,6 +125,7 @@ const rawUsers = [
     password: "password",
     team: "Neraca",
     role: "Ketua Tim",
+    phone: "081234567812",
   },
   {
     nama: "Sega Purwa Wika",
@@ -122,6 +134,7 @@ const rawUsers = [
     password: "password",
     team: "Distribusi",
     role: "Anggota Tim",
+    phone: "081234567813",
   },
   {
     nama: "Alphin Pratama Husada",
@@ -130,6 +143,7 @@ const rawUsers = [
     password: "password",
     team: "Produksi",
     role: "Anggota Tim",
+    phone: "081234567814",
   },
   {
     nama: "Bambang Luhat",
@@ -138,6 +152,7 @@ const rawUsers = [
     password: "password",
     team: "Produksi",
     role: "Anggota Tim",
+    phone: "081234567815",
   },
   {
     nama: "Fachri Izzudin Lazuardi",
@@ -146,6 +161,7 @@ const rawUsers = [
     password: "password",
     team: "IPDS",
     role: "Ketua Tim",
+    phone: "081234567816",
   },
   {
     nama: "Andi Nurdiansyah",
@@ -154,6 +170,7 @@ const rawUsers = [
     password: "password",
     team: "Sosial",
     role: "Anggota Tim",
+    phone: "081234567817",
   },
   {
     nama: "Afnita Rahma Auliya Putri",
@@ -162,6 +179,7 @@ const rawUsers = [
     password: "password",
     team: "IPDS",
     role: "Anggota Tim",
+    phone: "081234567818",
   },
   {
     nama: "Anissa Nurullya Fernanda",
@@ -170,6 +188,7 @@ const rawUsers = [
     password: "password",
     team: "Neraca",
     role: "Anggota Tim",
+    phone: "081234567819",
   },
   {
     nama: "Febri Fatika Sari",
@@ -178,6 +197,7 @@ const rawUsers = [
     password: "password",
     team: "Distribusi",
     role: "Anggota Tim",
+    phone: "081234567820",
   },
   {
     nama: "Marini Safa Aziza",
@@ -186,6 +206,7 @@ const rawUsers = [
     password: "password",
     team: "Sosial",
     role: "Anggota Tim",
+    phone: "081234567821",
   },
   {
     nama: "Najwa Fairus Samaya",
@@ -194,6 +215,7 @@ const rawUsers = [
     password: "password",
     team: "Neraca",
     role: "Anggota Tim",
+    phone: "081234567822",
   },
   {
     nama: "Fiqah Rochmah Ningtyas Duana Putri",
@@ -202,6 +224,7 @@ const rawUsers = [
     password: "password",
     team: "Produksi",
     role: "Anggota Tim",
+    phone: "081234567823",
   },
   {
     nama: "Lia Aulia Hayati",
@@ -210,6 +233,7 @@ const rawUsers = [
     password: "password",
     team: "Produksi",
     role: "Anggota Tim",
+    phone: "081234567824",
   },
   {
     nama: "Mardiana",
@@ -218,6 +242,7 @@ const rawUsers = [
     password: "password",
     team: "Distribusi",
     role: "Anggota Tim",
+    phone: "081234567825",
   },
   {
     nama: "Novanni Indi Pradana",
@@ -226,6 +251,7 @@ const rawUsers = [
     password: "password",
     team: "IPDS",
     role: "Anggota Tim",
+    phone: "081234567826",
   },
   {
     nama: "Elly Astutik",
@@ -234,6 +260,7 @@ const rawUsers = [
     password: "password",
     team: "Umum",
     role: "Anggota Tim",
+    phone: "081234567827",
   },
   {
     nama: "Ayu Pinta Gabina Siregar",
@@ -242,6 +269,7 @@ const rawUsers = [
     password: "password",
     team: "Umum",
     role: "Anggota Tim",
+    phone: "6281396487889",
   },
 ];
 
@@ -407,7 +435,7 @@ async function main() {
   const memberRows: any[] = [];
   for (const u of rawUsers) {
     const role = roleMap[u.role] || "anggota";
-    const phone = randomPhone();
+    const phone = u.phone ?? randomPhone();
     const user = await prisma.user.upsert({
       where: { email: u.email },
       update: { phone },
