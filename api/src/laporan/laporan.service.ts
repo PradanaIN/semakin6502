@@ -42,18 +42,6 @@ export class LaporanService {
     if (typeof skip === "number" && skip > 0) pagination.skip = skip;
     if (typeof take === "number" && take > 0) pagination.take = take;
 
-  private async invalidateCache(keys?: string | string[]) {
-    // TODO: replace global reset with targeted invalidation
-    if (!this.cache) return;
-    if (keys) {
-      const arr = Array.isArray(keys) ? keys : [keys];
-      await Promise.all(arr.map((key) => this.cache!.del(key)));
-    } else {
-      await this.cache.reset();
-    }
-  }
-
-  getAll() {
     return this.prisma.laporanHarian.findMany({
       orderBy: { tanggal: "desc" },
       include: {
@@ -63,6 +51,17 @@ export class LaporanService {
       },
       ...pagination,
     });
+  }
+
+  private async invalidateCache(keys?: string | string[]) {
+    // TODO: replace global reset with targeted invalidation
+    if (!this.cache) return;
+    if (keys) {
+      const arr = Array.isArray(keys) ? keys : [keys];
+      await Promise.all(arr.map((key) => this.cache!.del(key)));
+    } else {
+      await this.cache.reset();
+    }
   }
 
   private async syncPenugasanStatus(penugasanId: string) {
@@ -87,10 +86,16 @@ export class LaporanService {
             where: { teamId: pen.kegiatan.teamId, isLeader: true },
             select: { userId: true },
           });
-          const text = `${pen.pegawai?.nama ?? "Seorang pegawai"} telah menyelesaikan penugasan ${pen.kegiatan.namaKegiatan}`;
+          const text = `${
+            pen.pegawai?.nama ?? "Seorang pegawai"
+          } telah menyelesaikan penugasan ${pen.kegiatan.namaKegiatan}`;
           await Promise.all(
             leaders.map((l: { userId: string }) =>
-              this.notifications.create(l.userId, text, `/tugas-mingguan/${pen.id}`)
+              this.notifications.create(
+                l.userId,
+                text,
+                `/tugas-mingguan/${pen.id}`
+              )
             )
           );
         }
