@@ -14,6 +14,10 @@ function randomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function randomPhone(): string {
+  return `08${randomInt(1000000000, 9999999999)}`;
+}
+
 const rawUsers = [
   {
     nama: "Yuda Agus Irianto",
@@ -403,9 +407,10 @@ async function main() {
   const memberRows: any[] = [];
   for (const u of rawUsers) {
     const role = roleMap[u.role] || "anggota";
+    const phone = randomPhone();
     const user = await prisma.user.upsert({
       where: { email: u.email },
-      update: {},
+      update: { phone },
       create: {
         id: ulid(),
         nama: u.nama,
@@ -413,6 +418,7 @@ async function main() {
         username: u.username,
         password: await hashPassword(u.password),
         role,
+        phone,
       },
     });
 

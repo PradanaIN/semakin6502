@@ -27,4 +27,9 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   role?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  phone?: string;
 }

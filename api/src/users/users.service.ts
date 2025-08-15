@@ -30,7 +30,9 @@ export class UsersService {
     if (!data.username && data.email) {
       data.username = data.email.split("@")[0];
     }
-    return this.prisma.user.create({ data: { id: ulid(), ...data } });
+    return this.prisma.user.create({
+      data: { id: ulid(), ...data, phone: data.phone },
+    });
   }
 
   async update(id: string, data: UpdateUserDto) {
@@ -40,7 +42,10 @@ export class UsersService {
     if (data.email) {
       data.username = data.email.split("@")[0];
     }
-    return this.prisma.user.update({ where: { id }, data });
+    return this.prisma.user.update({
+      where: { id },
+      data: { ...data, phone: data.phone },
+    });
   }
 
   async findProfile(id: string) {
@@ -72,7 +77,10 @@ export class UsersService {
     if (data.email) {
       data.username = data.email.split("@")[0];
     }
-    const user = await this.prisma.user.update({ where: { id }, data });
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: { ...data, phone: data.phone },
+    });
     const member = await this.prisma.member.findFirst({
       where: { userId: id },
       include: { team: true },
