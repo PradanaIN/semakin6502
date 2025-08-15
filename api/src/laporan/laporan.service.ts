@@ -31,7 +31,8 @@ export class LaporanService {
   constructor(
     private prisma: PrismaService,
     private notifications: NotificationsService,
-    @Inject(CACHE_MANAGER) private cache?: Cache
+    @Inject(CACHE_MANAGER)
+    private cache?: Cache & { reset: () => Promise<void> }
   ) {}
 
   getAll(skip?: number, take?: number) {
@@ -39,6 +40,18 @@ export class LaporanService {
     if (typeof skip === "number" && skip > 0) pagination.skip = skip;
     if (typeof take === "number" && take > 0) pagination.take = take;
 
+  private async invalidateCache(keys?: string | string[]) {
+    // TODO: replace global reset with targeted invalidation
+    if (!this.cache) return;
+    if (keys) {
+      const arr = Array.isArray(keys) ? keys : [keys];
+      await Promise.all(arr.map((key) => this.cache!.del(key)));
+    } else {
+      await this.cache.reset();
+    }
+  }
+
+  getAll() {
     return this.prisma.laporanHarian.findMany({
       orderBy: { tanggal: "desc" },
       include: {
@@ -172,7 +185,7 @@ export class LaporanService {
       // Ignore sync errors so laporan is still returned
       console.error("Failed to sync penugasan status", err);
     }
-    await (this.cache as any)?.reset?.();
+    await this.invalidateCache();
     return laporan;
   }
 
@@ -279,7 +292,7 @@ export class LaporanService {
     } catch (err) {
       console.error("Failed to sync status", err);
     }
-    await (this.cache as any)?.reset?.();
+    await this.invalidateCache();
     return laporan;
   }
 
@@ -321,7 +334,7 @@ export class LaporanService {
     } catch (err) {
       console.error("Failed to sync status", err);
     }
-    await (this.cache as any)?.reset?.();
+    await this.invalidateCache();
     return { success: true };
   }
 
