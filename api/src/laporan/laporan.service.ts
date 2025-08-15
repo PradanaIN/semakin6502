@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   NotFoundException,
   Inject,
+  Logger,
 } from "@nestjs/common";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import type { Cache } from "cache-manager";
@@ -28,6 +29,7 @@ function getWeekOfMonth(date: Date) {
 
 @Injectable()
 export class LaporanService {
+  private readonly logger = new Logger(LaporanService.name);
   constructor(
     private prisma: PrismaService,
     private notifications: NotificationsService,
@@ -104,7 +106,7 @@ export class LaporanService {
         data: { status: latest?.status || STATUS.BELUM },
       });
     } catch (err) {
-      console.error("Failed to sync penugasan status", err);
+      this.logger.error("Failed to sync penugasan status", err);
     }
   }
 
@@ -137,7 +139,7 @@ export class LaporanService {
         data: { status: latest?.status || STATUS.BELUM },
       });
     } catch (err) {
-      console.error("Failed to sync tambahan status", err);
+      this.logger.error("Failed to sync tambahan status", err);
     }
   }
   async submit(data: SubmitLaporanDto, userId: string, role: string) {
@@ -183,7 +185,7 @@ export class LaporanService {
       await this.syncPenugasanStatus(data.penugasanId);
     } catch (err) {
       // Ignore sync errors so laporan is still returned
-      console.error("Failed to sync penugasan status", err);
+      this.logger.error("Failed to sync penugasan status", err);
     }
     await this.invalidateCache();
     return laporan;
@@ -290,7 +292,7 @@ export class LaporanService {
       if (existing.tambahanId)
         await this.syncTambahanStatus(existing.tambahanId);
     } catch (err) {
-      console.error("Failed to sync status", err);
+      this.logger.error("Failed to sync status", err);
     }
     await this.invalidateCache();
     return laporan;
@@ -332,7 +334,7 @@ export class LaporanService {
       if (existing.tambahanId)
         await this.syncTambahanStatus(existing.tambahanId);
     } catch (err) {
-      console.error("Failed to sync status", err);
+      this.logger.error("Failed to sync status", err);
     }
     await this.invalidateCache();
     return { success: true };
