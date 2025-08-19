@@ -465,6 +465,18 @@ async function main() {
     await prisma.member.createMany({ data: memberRows, skipDuplicates: true });
   }
 
+  // Ensure users that need notifications have a phone number
+  const usersWithoutPhone = await prisma.user.findMany({
+    where: { phone: null, role: { not: "admin" } },
+    select: { id: true },
+  });
+  for (const u of usersWithoutPhone) {
+    await prisma.user.update({
+      where: { id: u.id },
+      data: { phone: randomPhone() },
+    });
+  }
+
   // seed penugasan for June to August 2025
   const months = [
     { bulan: "6", monthIndex: 5, year: 2025, days: 30 },
