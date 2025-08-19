@@ -68,11 +68,8 @@ export class WhatsappService {
       try {
         const res = await fetch(this.apiUrl, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${this.token}`,
-          },
-          body: JSON.stringify(payload),
+          headers,
+          body,
         });
 
         if (!res.ok) {
