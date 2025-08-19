@@ -229,12 +229,14 @@ export class PenugasanService {
           const waText =
             `Halo, ${pegawai.nama}!\n\n` +
             `Anda mendapat penugasan:\n\n` +
-            `• Tim: ${master.team.namaTim}\n` +
-            `• Kegiatan: ${master.namaKegiatan}\n` +
-            `• Deskripsi: ${data.deskripsi}\n` +
-            `• Link: ${waLink}\n\n` +
-            `Selamat bekerja!\n`;
-          this.logger.log(`Sending WhatsApp to ${pegawai.nama} (${pegawai.phone})`);
+            `👥 Tim       : ${master.team.namaTim}\n` +
+            `📌 Kegiatan  : ${master.namaKegiatan}\n` +
+            `📝 Deskripsi : ${data.deskripsi}\n` +
+            `🔗 Akses     : ${waLink}\n\n` +
+            `Selamat bekerja & tetap semangat!\n`;
+          this.logger.log(
+            `Sending WhatsApp to ${pegawai.nama} (${pegawai.phone})`
+          );
           try {
             const res = await this.whatsappService.sendMessage(
               pegawai.phone,

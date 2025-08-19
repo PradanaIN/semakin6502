@@ -35,13 +35,13 @@ describe("PenugasanService remove", () => {
 
   it("throws BadRequestException when laporan harian exists", async () => {
     prisma.penugasan.findUnique.mockResolvedValue({
-      id: '1',
-      kegiatan: { teamId: '2' },
+      id: "1",
+      kegiatan: { teamId: "2" },
     });
-    prisma.member.findFirst.mockResolvedValue({ id: '1' });
+    prisma.member.findFirst.mockResolvedValue({ id: "1" });
     prisma.laporanHarian.count.mockResolvedValue(1);
 
-    const action = service.remove('1', '1', "admin");
+    const action = service.remove("1", "1", "admin");
     await expect(action).rejects.toThrow(BadRequestException);
     await expect(action).rejects.toThrow(
       "Hapus laporan harian penugasan ini terlebih dahulu"
@@ -101,7 +101,7 @@ describe("PenugasanService assign", () => {
 
     expect(whatsappService.sendMessage).toHaveBeenCalledWith(
       "08123",
-      `Halo Budi,\n\nAnda mendapat penugasan:\n• Tim: Tim A\n• Kegiatan: Kegiatan A\n• Deskripsi: Kerjakan\n• Link: /tugas-mingguan/p1\n\nSelamat bekerja!\n`
+      `Halo, Budi!\n\nAnda mendapat penugasan:\n\n👥 Tim: Tim A\n📌 Kegiatan: Kegiatan A\n📝 Deskripsi: Kerjakan\n🔗  Link: /tugas-mingguan/p1\n\nSelamat bekerja & tetap semangat!\n`
     );
   });
 
