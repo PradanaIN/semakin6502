@@ -4,7 +4,9 @@ import { hashPassword } from "../src/common/hash";
 import { STATUS } from "../src/common/status.constants";
 import { getHolidays } from "../src/utils/holidays";
 import { ulid } from "ulid";
-import userPhones from "./user-phones.json";
+import userPhonesData from "./user-phones.json";
+
+const userPhones: Record<string, string> = userPhonesData;
 
 const prisma = new PrismaClient();
 
@@ -242,7 +244,7 @@ const baseUsers = [
   },
 ];
 
-const rawUsers = baseUsers.map((u) => ({ ...u, phone: userPhones[u.nama] }));
+const rawUsers = baseUsers.map(u => ({ ...u, phone: userPhones[u.nama] }));
 
 const roleMap: Record<string, string> = {
   Pimpinan: "pimpinan",
