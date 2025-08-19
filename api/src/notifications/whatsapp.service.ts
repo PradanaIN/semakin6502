@@ -4,6 +4,14 @@ import { ConfigService } from "@nestjs/config";
 interface WhatsappPayload {
   target: string;
   message: string;
+  schedule?: string | number;
+  delay?: number;
+  [key: string]: unknown;
+}
+
+interface SendOptions {
+  schedule?: string | number;
+  delay?: number;
   [key: string]: unknown;
 }
 
@@ -31,7 +39,30 @@ export class WhatsappService {
       return;
     }
 
-    const payload: WhatsappPayload = { target: to, message, ...extra };
+    const payload: WhatsappPayload = { target: to, message, ...options };
+
+    let body: string | FormData;
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${this.token}`,
+    };
+
+    const hasBinary = Object.values(payload).some((v) =>
+      typeof v === "object" && v !== null &&
+      (v instanceof Buffer || (typeof Blob !== "undefined" && v instanceof Blob)),
+    );
+
+    if (hasBinary) {
+      const form = new FormData();
+      for (const [k, v] of Object.entries(payload)) {
+        if (v !== undefined && v !== null) {
+          form.append(k, v as any);
+        }
+      }
+      body = form;
+    } else {
+      headers["Content-Type"] = "application/json";
+      body = JSON.stringify(payload);
+    }
 
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {

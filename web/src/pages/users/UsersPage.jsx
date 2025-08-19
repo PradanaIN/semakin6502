@@ -34,7 +34,7 @@ export default function UsersPage() {
     openCreate: openCreateForm,
     openEdit: openEditForm,
     closeForm,
-  } = useModalForm({ nama: "", email: "", password: "", role: "" });
+  } = useModalForm({ nama: "", email: "", phone: "", password: "", role: "" });
   const [query, setQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [pageSize, setPageSize] = useState(10);
@@ -67,7 +67,7 @@ export default function UsersPage() {
   };
   const openEdit = useCallback(
     (u) => {
-      openEditForm(u, (v) => ({ nama: v.nama, email: v.email, password: "", role: v.role }));
+      openEditForm(u, (v) => ({ nama: v.nama, email: v.email, phone: v.phone || "", password: "", role: v.role }));
     },
     [openEditForm]
   );
@@ -76,6 +76,7 @@ export default function UsersPage() {
     if (
       !form.nama ||
       !form.email ||
+      !form.phone ||
       (!editingUser && !form.password) ||
       !form.role
     ) {
@@ -129,6 +130,7 @@ export default function UsersPage() {
       },
       { Header: "Nama", accessor: "nama" },
       { Header: "Email", accessor: "email" },
+      { Header: "WhatsApp", accessor: "phone" },
       {
         Header: "Tim",
         accessor: (row) => row.members?.[0]?.team?.namaTim || "-",
@@ -271,6 +273,18 @@ export default function UsersPage() {
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
+              />
+            </div>
+            <div>
+              <Label htmlFor="phone">
+                Nomor WhatsApp <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="phone"
+                type="text"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               />
             </div>

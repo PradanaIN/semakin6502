@@ -11,18 +11,18 @@ import { User, Save } from "lucide-react";
 
 export default function ProfilePage() {
   const { user, setUser } = useAuth();
-  const [form, setForm] = useState({ nama: "", email: "", password: "" });
+  const [form, setForm] = useState({ nama: "", email: "", phone: "", password: "" });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
-      setForm({ nama: user.nama || "", email: user.email || "", password: "" });
+      setForm({ nama: user.nama || "", email: user.email || "", phone: user.phone || "", password: "" });
     }
   }, [user]);
 
   const save = async () => {
-    if (!form.nama || !form.email) {
-      showWarning("Lengkapi data", "Nama dan email wajib diisi");
+    if (!form.nama || !form.email || !form.phone) {
+      showWarning("Lengkapi data", "Nama, email, dan nomor WhatsApp wajib diisi");
       return;
     }
     try {
@@ -88,6 +88,17 @@ export default function ProfilePage() {
             placeholder="Alamat email aktif"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="phone">Nomor WhatsApp</Label>
+          <Input
+            id="phone"
+            type="text"
+            placeholder="Nomor WhatsApp aktif"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
         </div>
 
