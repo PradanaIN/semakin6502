@@ -13,7 +13,9 @@ const prisma = {
 const notifications = { create: jest.fn() } as any;
 const whatsappService = { sendMessage: jest.fn() } as any;
 const config = {
-  get: jest.fn().mockReturnValue(false),
+  get: jest.fn((key: string) =>
+    key === "PHONE_VALIDATION_ENABLED" ? false : ""
+  ),
 } as unknown as ConfigService;
 
 const service = new PenugasanService(
@@ -26,6 +28,9 @@ const service = new PenugasanService(
 describe("PenugasanService remove", () => {
   beforeEach(() => {
     jest.resetAllMocks();
+    (config.get as jest.Mock).mockImplementation((key: string) =>
+      key === "PHONE_VALIDATION_ENABLED" ? false : ""
+    );
   });
 
   it("throws BadRequestException when laporan harian exists", async () => {
@@ -65,6 +70,9 @@ describe("PenugasanService invalidateCache", () => {
 describe("PenugasanService assign", () => {
   beforeEach(() => {
     jest.resetAllMocks();
+    (config.get as jest.Mock).mockImplementation((key: string) =>
+      key === "PHONE_VALIDATION_ENABLED" ? false : ""
+    );
   });
 
   it("sends WhatsApp message when pegawai has phone", async () => {
@@ -75,7 +83,10 @@ describe("PenugasanService assign", () => {
       team: { namaTim: "Tim A" },
     });
     prisma.penugasan.create.mockResolvedValue({ id: "p1" });
-    prisma.user.findUnique.mockResolvedValue({ phone: "08123" });
+    prisma.user.findUnique.mockResolvedValue({
+      phone: "08123",
+      nama: "Budi",
+    });
 
     const data = {
       kegiatanId: "k1",
@@ -90,7 +101,7 @@ describe("PenugasanService assign", () => {
 
     expect(whatsappService.sendMessage).toHaveBeenCalledWith(
       "08123",
-      `Anda mendapat penugasan:\n• Tim: Tim A\n• Kegiatan: Kegiatan A\n• Deskripsi: Kerjakan\n• Link: /tugas-mingguan/p1\nSelamat bekerja!\n`
+      `Halo Budi,\n\nAnda mendapat penugasan:\n• Tim: Tim A\n• Kegiatan: Kegiatan A\n• Deskripsi: Kerjakan\n• Link: /tugas-mingguan/p1\n\nSelamat bekerja!\n`
     );
   });
 
