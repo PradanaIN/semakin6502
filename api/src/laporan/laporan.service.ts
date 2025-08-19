@@ -54,7 +54,7 @@ export class LaporanService {
   }
 
   private async invalidateCache(keys?: string | string[]) {
-    // TODO: replace global reset with targeted invalidation
+    // Issue #123 (https://github.com/semakin6502/semakin6502/issues/123): replace global reset with targeted invalidation
     if (!this.cache) return;
     if (keys) {
       const arr = Array.isArray(keys) ? keys : [keys];
