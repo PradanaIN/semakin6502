@@ -26,7 +26,10 @@ export class PenugasanService {
     private notifications: NotificationsService,
     private whatsappService: WhatsappService,
     @Inject(CACHE_MANAGER)
-    private cache?: Cache & { reset: () => Promise<void> }
+    private cache?: Cache & {
+      reset?: () => Promise<void>;
+      store?: { reset?: () => Promise<void> };
+    }
   ) {}
 
   private async invalidateCache(keys?: string | string[]) {
@@ -35,8 +38,10 @@ export class PenugasanService {
     if (keys) {
       const arr = Array.isArray(keys) ? keys : [keys];
       await Promise.all(arr.map((key) => this.cache!.del(key)));
-    } else {
+    } else if (typeof this.cache.reset === "function") {
       await this.cache.reset();
+    } else if (typeof this.cache.store?.reset === "function") {
+      await this.cache.store.reset();
     }
   }
 
