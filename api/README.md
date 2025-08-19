@@ -44,11 +44,13 @@ api/
    | `DATABASE_URL`     | URL koneksi MySQL, misal `mysql://user:pass@localhost:3306/semakin_6502`        |
    | `JWT_SECRET`       | *Required.* Rahasia untuk penandatanganan JWT                                   |
    | `PORT`             | Port HTTP (opsional, default `3000`)                                           |
-   | `CORS_ORIGIN`      | Daftar origin yang diizinkan, pisahkan dengan koma                             |
-   | `THROTTLE_TTL`     | Masa berlaku rate limiting dalam detik (opsional, default `900`)               |
-   | `THROTTLE_LIMIT`   | Jumlah request per TTL (opsional, default `100`)                               |
-   | `COOKIE_DOMAIN`    | Domain cookie (opsional)                                                       |
-   | `COOKIE_SAMESITE`  | Nilai SameSite cookie (opsional)                                               |
+    | `CORS_ORIGIN`      | Daftar origin yang diizinkan, pisahkan dengan koma                             |
+    | `THROTTLE_TTL`     | Masa berlaku rate limiting dalam detik (opsional, default `900`)               |
+    | `THROTTLE_LIMIT`   | Jumlah request per TTL (opsional, default `100`)                               |
+    | `FONNTE_TOKEN`/`WHATSAPP_TOKEN` | Token API WhatsApp, salah satu wajib diisi                         |
+    | `WHATSAPP_API_URL` | URL endpoint API WhatsApp                                                      |
+    | `COOKIE_DOMAIN`    | Domain cookie (opsional)                                                       |
+    | `COOKIE_SAMESITE`  | Nilai SameSite cookie (opsional)                                               |
 
 3. **Inisialisasi database**
    ```bash
