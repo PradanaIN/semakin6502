@@ -33,6 +33,7 @@ import { HealthController } from "./health.controller";
           WHATSAPP_TOKEN: Joi.string(),
           WHATSAPP_API_URL: Joi.string().uri().required(),
           PORT: Joi.number(),
+          PHONE_VALIDATION_ENABLED: Joi.boolean().default(true),
         }).or("FONNTE_TOKEN", "WHATSAPP_TOKEN"),
     }),
     CacheModule.registerAsync({
