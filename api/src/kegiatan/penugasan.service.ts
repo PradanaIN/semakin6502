@@ -41,16 +41,21 @@ export class PenugasanService {
       store?: { reset: () => Promise<void> };
     }
   ) {
-    this.validatePhone = this.config.get<boolean>("PHONE_VALIDATION_ENABLED") ?? true;
+    this.validatePhone =
+      this.config.get<boolean>("PHONE_VALIDATION_ENABLED") ?? true;
   }
 
-  private async invalidateCache(keys: string | string[] = PENUGASAN_CACHE_KEYS) {
+  private async invalidateCache(
+    keys: string | string[] = PENUGASAN_CACHE_KEYS
+  ) {
     if (!this.cache) return;
     const arr = Array.isArray(keys) ? keys : [keys];
     const store: any = (this.cache as any).store;
     if (typeof store?.keys === "function") {
       const patterns = arr.map((p) => (p.endsWith("*") ? p : `${p}*`));
-      const found = await Promise.all(patterns.map((p: string) => store.keys(p)));
+      const found = await Promise.all(
+        patterns.map((p: string) => store.keys(p))
+      );
       const toDelete = found.flat();
       if (toDelete.length) {
         await Promise.all(toDelete.map((k: string) => this.cache!.del(k)));
@@ -123,10 +128,12 @@ export class PenugasanService {
     const waLink = `${baseUrl}${relLink}`;
     const notifText = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
     const waText = `Anda mendapat penugasan:
+    /n
 • Tim: ${master.team.namaTim}
 • Kegiatan: ${master.namaKegiatan}
 • Deskripsi: ${data.deskripsi}
 • Link: ${waLink}
+/n
 Selamat bekerja!
 `;
     await this.notifications.create(data.pegawaiId, notifText, relLink);
@@ -135,13 +142,25 @@ Selamat bekerja!
       select: { phone: true, nama: true },
     });
     if (!pegawai?.phone) {
-      this.logger.warn(`No phone number for ${pegawai?.nama ?? "unknown"}, skipping WhatsApp message`);
-    } else if (this.validatePhone && !INDONESIAN_PHONE_REGEX.test(pegawai.phone)) {
-      this.logger.warn(`Invalid phone number for ${pegawai.nama}: ${pegawai.phone}, skipping WhatsApp message`);
+      this.logger.warn(
+        `No phone number for ${
+          pegawai?.nama ?? "unknown"
+        }, skipping WhatsApp message`
+      );
+    } else if (
+      this.validatePhone &&
+      !INDONESIAN_PHONE_REGEX.test(pegawai.phone)
+    ) {
+      this.logger.warn(
+        `Invalid phone number for ${pegawai.nama}: ${pegawai.phone}, skipping WhatsApp message`
+      );
     } else {
       this.logger.log(`Sending WhatsApp to ${pegawai.nama} (${pegawai.phone})`);
       try {
-        const res = await this.whatsappService.sendMessage(pegawai.phone, waText);
+        const res = await this.whatsappService.sendMessage(
+          pegawai.phone,
+          waText
+        );
         this.logger.debug(
           `WhatsApp response for ${pegawai.phone}: ${JSON.stringify(res)}`
         );
@@ -209,11 +228,22 @@ Selamat bekerja!
           select: { phone: true, nama: true },
         });
         if (!pegawai?.phone) {
-          this.logger.warn(`No phone number for ${pegawai?.nama ?? "unknown"}, skipping WhatsApp message`);
-        } else if (this.validatePhone && !INDONESIAN_PHONE_REGEX.test(pegawai.phone)) {
-          this.logger.warn(`Invalid phone number for ${pegawai.nama}: ${pegawai.phone}, skipping WhatsApp message`);
+          this.logger.warn(
+            `No phone number for ${
+              pegawai?.nama ?? "unknown"
+            }, skipping WhatsApp message`
+          );
+        } else if (
+          this.validatePhone &&
+          !INDONESIAN_PHONE_REGEX.test(pegawai.phone)
+        ) {
+          this.logger.warn(
+            `Invalid phone number for ${pegawai.nama}: ${pegawai.phone}, skipping WhatsApp message`
+          );
         } else {
-          this.logger.log(`Sending WhatsApp to ${pegawai.nama} (${pegawai.phone})`);
+          this.logger.log(
+            `Sending WhatsApp to ${pegawai.nama} (${pegawai.phone})`
+          );
           try {
             const res = await this.whatsappService.sendMessage(
               pegawai.phone,

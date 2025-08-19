@@ -32,7 +32,7 @@ export class WhatsappService {
     to: string,
     message: string,
     options: Record<string, unknown> = {},
-    maxAttempts = 1,
+    maxAttempts = 1
   ) {
     if (!this.apiUrl || !this.token) {
       this.logger.error("WhatsApp service is not configured properly");
@@ -49,7 +49,7 @@ export class WhatsappService {
     }
 
     const headers: Record<string, string> = {
-      Authorization: `Bearer ${this.token}`,
+      Authorization: this.token,
     };
 
     const formHeaders = (form as any).getHeaders?.();
@@ -85,7 +85,11 @@ export class WhatsappService {
           }
 
           const message =
-            data?.message || data?.detail || data?.error || text || "Unknown error";
+            data?.message ||
+            data?.detail ||
+            data?.error ||
+            text ||
+            "Unknown error";
           const quotaExceeded =
             res.status === 429 ||
             data?.code === "quota_exceeded" ||
@@ -94,7 +98,7 @@ export class WhatsappService {
           if (quotaExceeded) {
             this.logger.error(
               `WhatsApp quota exhausted: ${res.status} ${res.statusText} - ${message}`,
-              { status: res.status, message, payload },
+              { status: res.status, message, payload }
             );
             return {
               success: false,
@@ -107,7 +111,7 @@ export class WhatsappService {
 
           this.logger.error(
             `Failed to send WhatsApp message: ${res.status} ${res.statusText} - ${message}`,
-            { status: res.status, message, payload },
+            { status: res.status, message, payload }
           );
 
           if (res.status >= 500 && attempt + 1 < maxAttempts) {
@@ -149,9 +153,8 @@ export class WhatsappService {
     to: string,
     message: string,
     options: Record<string, unknown> = {},
-    maxAttempts = 1,
+    maxAttempts = 1
   ) {
     return this.send(to, message, options, maxAttempts);
   }
 }
-
