@@ -112,14 +112,15 @@ export class PenugasanService {
     });
 
     const link = `/tugas-mingguan/${penugasan.id}`;
-    const text = `Anda mendapat penugasan:
+    const notifText = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
+    const waText = `Anda mendapat penugasan:
 • Tim: ${master.team.namaTim}
 • Kegiatan: ${master.namaKegiatan}
 • Deskripsi: ${data.deskripsi}
 • Link: ${link}
 Selamat bekerja!
 `;
-    await this.notifications.create(data.pegawaiId, text, link);
+    await this.notifications.create(data.pegawaiId, notifText, link);
     const pegawai = await this.prisma.user.findUnique({
       where: { id: data.pegawaiId },
       select: { phone: true },
@@ -128,7 +129,7 @@ Selamat bekerja!
         try {
           const res = await this.whatsappService.sendMessage(
             pegawai.phone,
-            text
+            waText
           );
           this.logger.debug(
             `WhatsApp response for ${pegawai.phone}: ${JSON.stringify(res)}`
@@ -180,14 +181,15 @@ Selamat bekerja!
     await Promise.all(
       created.map(async (p: { pegawaiId: string; id: string }) => {
         const link = `/tugas-mingguan/${p.id}`;
-        const text = `Anda mendapat penugasan:
+        const notifText = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
+        const waText = `Anda mendapat penugasan:
 • Tim: ${master.team.namaTim}
 • Kegiatan: ${master.namaKegiatan}
 • Deskripsi: ${data.deskripsi}
 • Link: ${link}
 Selamat bekerja!
 `;
-        await this.notifications.create(p.pegawaiId, text, link);
+        await this.notifications.create(p.pegawaiId, notifText, link);
         const pegawai = await this.prisma.user.findUnique({
           where: { id: p.pegawaiId },
           select: { phone: true },
@@ -196,7 +198,7 @@ Selamat bekerja!
             try {
               const res = await this.whatsappService.sendMessage(
                 pegawai.phone,
-                text
+                waText
               );
               this.logger.debug(
                 `WhatsApp response for ${pegawai.phone}: ${JSON.stringify(res)}`
