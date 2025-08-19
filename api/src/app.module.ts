@@ -21,18 +21,19 @@ import { HealthController } from "./health.controller";
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      validationSchema: Joi.object({
-        THROTTLE_TTL: Joi.number().default(minutes(15)),
-        THROTTLE_LIMIT: Joi.number().default(1000),
-        REDIS_URL: Joi.string().uri().optional(),
-        COOKIE_DOMAIN: Joi.string().allow(""),
-        COOKIE_SAMESITE: Joi.string().valid("lax", "strict", "none"),
-        NODE_ENV: Joi.string(),
-        CORS_ORIGIN: Joi.string(),
-        FONNTE_TOKEN: Joi.string().required(),
-        WHATSAPP_API_URL: Joi.string().uri().required(),
-        PORT: Joi.number(),
-      }),
+        validationSchema: Joi.object({
+          THROTTLE_TTL: Joi.number().default(minutes(15)),
+          THROTTLE_LIMIT: Joi.number().default(1000),
+          REDIS_URL: Joi.string().uri().optional(),
+          COOKIE_DOMAIN: Joi.string().allow(""),
+          COOKIE_SAMESITE: Joi.string().valid("lax", "strict", "none"),
+          NODE_ENV: Joi.string(),
+          CORS_ORIGIN: Joi.string(),
+          FONNTE_TOKEN: Joi.string(),
+          WHATSAPP_TOKEN: Joi.string(),
+          WHATSAPP_API_URL: Joi.string().uri().required(),
+          PORT: Joi.number(),
+        }).or("FONNTE_TOKEN", "WHATSAPP_TOKEN"),
     }),
     CacheModule.registerAsync({
       isGlobal: true,

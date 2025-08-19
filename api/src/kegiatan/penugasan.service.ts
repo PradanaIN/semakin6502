@@ -124,16 +124,22 @@ Selamat bekerja!
       where: { id: data.pegawaiId },
       select: { phone: true },
     });
-    if (pegawai?.phone) {
-      try {
-        await this.whatsappService.sendMessage(pegawai.phone, text);
-      } catch (err) {
-        this.logger.error(
-          `Failed to send WhatsApp message to ${pegawai.phone}`,
-          err as Error
-        );
+      if (pegawai?.phone) {
+        try {
+          const res = await this.whatsappService.sendMessage(
+            pegawai.phone,
+            text
+          );
+          this.logger.debug(
+            `WhatsApp response for ${pegawai.phone}: ${JSON.stringify(res)}`
+          );
+        } catch (err) {
+          this.logger.error(
+            `Failed to send WhatsApp message to ${pegawai.phone}`,
+            err as Error
+          );
+        }
       }
-    }
     await this.invalidateCache(PENUGASAN_CACHE_KEYS);
     return penugasan;
   }
@@ -186,16 +192,22 @@ Selamat bekerja!
           where: { id: p.pegawaiId },
           select: { phone: true },
         });
-        if (pegawai?.phone) {
-          try {
-            await this.whatsappService.sendMessage(pegawai.phone, text);
-          } catch (err) {
-            this.logger.error(
-              `Failed to send WhatsApp message to ${pegawai.phone}`,
-              err as Error
-            );
+          if (pegawai?.phone) {
+            try {
+              const res = await this.whatsappService.sendMessage(
+                pegawai.phone,
+                text
+              );
+              this.logger.debug(
+                `WhatsApp response for ${pegawai.phone}: ${JSON.stringify(res)}`
+              );
+            } catch (err) {
+              this.logger.error(
+                `Failed to send WhatsApp message to ${pegawai.phone}`,
+                err as Error
+              );
+            }
           }
-        }
       })
     );
     await this.invalidateCache(PENUGASAN_CACHE_KEYS);
