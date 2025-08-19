@@ -33,7 +33,7 @@ export class PenugasanService {
     @Inject(CACHE_MANAGER)
     private cache?: Cache & {
       reset?: () => Promise<void>;
-      store?: { reset?: () => Promise<void> };
+      store?: { reset: () => Promise<void> };
     }
   ) {}
 
@@ -49,7 +49,12 @@ export class PenugasanService {
         await Promise.all(toDelete.map((k: string) => this.cache!.del(k)));
       }
     } else {
-      await Promise.all(arr.map((key) => this.cache!.del(key)));
+      const cache: any = this.cache;
+      if (typeof cache.reset === "function") {
+        await cache.reset();
+      } else if (typeof cache.store?.reset === "function") {
+        await cache.store.reset();
+      }
     }
   }
 
