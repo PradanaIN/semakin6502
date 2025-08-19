@@ -18,6 +18,11 @@ import { AssignPenugasanDto } from "./dto/assign-penugasan.dto";
 import { AssignPenugasanBulkDto } from "./dto/assign-penugasan-bulk.dto";
 import { ulid } from "ulid";
 
+const PENUGASAN_CACHE_KEYS = [
+  "monitoring:mingguan",
+  "monitoring:bulananMatrix",
+];
+
 @Injectable()
 export class PenugasanService {
   private readonly logger = new Logger(PenugasanService.name);
@@ -32,16 +37,19 @@ export class PenugasanService {
     }
   ) {}
 
-  private async invalidateCache(keys?: string | string[]) {
-    // TODO: replace global reset with targeted invalidation
+  private async invalidateCache(keys: string | string[] = PENUGASAN_CACHE_KEYS) {
     if (!this.cache) return;
-    if (keys) {
-      const arr = Array.isArray(keys) ? keys : [keys];
+    const arr = Array.isArray(keys) ? keys : [keys];
+    const store: any = (this.cache as any).store;
+    if (typeof store?.keys === "function") {
+      const patterns = arr.map((p) => (p.endsWith("*") ? p : `${p}*`));
+      const found = await Promise.all(patterns.map((p: string) => store.keys(p)));
+      const toDelete = found.flat();
+      if (toDelete.length) {
+        await Promise.all(toDelete.map((k: string) => this.cache!.del(k)));
+      }
+    } else {
       await Promise.all(arr.map((key) => this.cache!.del(key)));
-    } else if (typeof this.cache.reset === "function") {
-      await this.cache.reset();
-    } else if (typeof this.cache.store?.reset === "function") {
-      await this.cache.store.reset();
     }
   }
 
@@ -121,7 +129,7 @@ Selamat bekerja!
         );
       }
     }
-    await this.invalidateCache();
+    await this.invalidateCache(PENUGASAN_CACHE_KEYS);
     return penugasan;
   }
 
@@ -185,7 +193,7 @@ Selamat bekerja!
         }
       })
     );
-    await this.invalidateCache();
+    await this.invalidateCache(PENUGASAN_CACHE_KEYS);
     return { count: created.length };
   }
 
@@ -247,7 +255,7 @@ Selamat bekerja!
       },
       include: { kegiatan: { include: { team: true } }, pegawai: true },
     });
-    await this.invalidateCache();
+    await this.invalidateCache(PENUGASAN_CACHE_KEYS);
     return pen;
   }
 
@@ -277,7 +285,7 @@ Selamat bekerja!
         "Hapus laporan harian penugasan ini terlebih dahulu"
       );
     await this.prisma.penugasan.delete({ where: { id } });
-    await this.invalidateCache();
+    await this.invalidateCache(PENUGASAN_CACHE_KEYS);
     return { success: true };
   }
 
