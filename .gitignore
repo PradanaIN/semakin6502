@@ -4,3 +4,6 @@ node_modules/
 logs/
 .DS_Store
 dist/
+.env
+.vscode/
+# Ignore build artifacts

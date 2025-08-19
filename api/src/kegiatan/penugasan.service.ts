@@ -26,7 +26,7 @@ export class PenugasanService {
     private notifications: NotificationsService,
     private whatsappService: WhatsappService,
     @Inject(CACHE_MANAGER)
-    private cache?: Cache & { reset: () => Promise<void> },
+    private cache?: Cache & { reset: () => Promise<void> }
   ) {}
 
   private async invalidateCache(keys?: string | string[]) {
@@ -44,7 +44,7 @@ export class PenugasanService {
     _role: string,
     _userId: string,
     filter: { bulan?: string; tahun?: number; minggu?: number },
-    creatorId?: string,
+    creatorId?: string
   ) {
     const opts: any = {
       include: {
@@ -94,7 +94,7 @@ export class PenugasanService {
     });
 
     const link = `/tugas-mingguan/${penugasan.id}`;
-    const text = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}. Lihat tugas: ${link}`;
+    const text = `Anda mendapatkan penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}. Lihat tugas: ${link}`;
     await this.notifications.create(data.pegawaiId, text, link);
     const pegawai = await this.prisma.user.findUnique({
       where: { id: data.pegawaiId },
@@ -106,7 +106,7 @@ export class PenugasanService {
       } catch (err) {
         this.logger.error(
           `Failed to send WhatsApp message to ${pegawai.phone}`,
-          err as Error,
+          err as Error
         );
       }
     }
@@ -144,13 +144,13 @@ export class PenugasanService {
     }));
 
     const created = await this.prisma.$transaction(
-      rows.map((r) => this.prisma.penugasan.create({ data: r })),
+      rows.map((r) => this.prisma.penugasan.create({ data: r }))
     );
 
     await Promise.all(
       created.map(async (p: { pegawaiId: string; id: string }) => {
         const link = `/tugas-mingguan/${p.id}`;
-        const text = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}. Lihat tugas: ${link}`;
+        const text = `Anda mendapatkan penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}. Lihat tugas: ${link}`;
         await this.notifications.create(p.pegawaiId, text, link);
         const pegawai = await this.prisma.user.findUnique({
           where: { id: p.pegawaiId },
@@ -162,11 +162,11 @@ export class PenugasanService {
           } catch (err) {
             this.logger.error(
               `Failed to send WhatsApp message to ${pegawai.phone}`,
-              err as Error,
+              err as Error
             );
           }
         }
-      }),
+      })
     );
     await this.invalidateCache();
     return { count: created.length };
@@ -285,7 +285,10 @@ export class PenugasanService {
 
     const byUser: Record<
       string,
-      { nama: string; tugas: { tugas: string; deskripsi?: string; status: string }[] }
+      {
+        nama: string;
+        tugas: { tugas: string; deskripsi?: string; status: string }[];
+      }
     > = {};
 
     for (const t of tugas) {
