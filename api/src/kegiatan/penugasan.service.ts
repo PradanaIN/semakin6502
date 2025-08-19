@@ -94,11 +94,13 @@ export class PenugasanService {
     });
 
     const link = `/tugas-mingguan/${penugasan.id}`;
-    const text = `Anda mendapat penugasan baru:
-  • Tim: ${master.team.namaTim}
-  • Kegiatan: ${master.namaKegiatan}
-  • Deskripsi: ${data.deskripsi}
-  • Link: ${link}`;
+    const text = `Anda mendapat penugasan:
+• Tim: ${master.team.namaTim}
+• Kegiatan: ${master.namaKegiatan}
+• Deskripsi: ${data.deskripsi}
+• Link: ${link}
+Selamat bekerja!
+`;
     await this.notifications.create(data.pegawaiId, text, link);
     const pegawai = await this.prisma.user.findUnique({
       where: { id: data.pegawaiId },
@@ -154,11 +156,13 @@ export class PenugasanService {
     await Promise.all(
       created.map(async (p: { pegawaiId: string; id: string }) => {
         const link = `/tugas-mingguan/${p.id}`;
-        const text = `Anda mendapat penugasan baru:
-  • Tim: ${master.team.namaTim}
-  • Kegiatan: ${master.namaKegiatan}
-  • Deskripsi: ${data.deskripsi}
-  • Link: ${link}`;
+        const text = `Anda mendapat penugasan:
+• Tim: ${master.team.namaTim}
+• Kegiatan: ${master.namaKegiatan}
+• Deskripsi: ${data.deskripsi}
+• Link: ${link}
+Selamat bekerja!
+`;
         await this.notifications.create(p.pegawaiId, text, link);
         const pegawai = await this.prisma.user.findUnique({
           where: { id: p.pegawaiId },
