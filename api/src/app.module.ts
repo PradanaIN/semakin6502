@@ -3,7 +3,7 @@ import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule, minutes } from "@nestjs/throttler";
 import { ScheduleModule } from "@nestjs/schedule";
 import { CacheModule } from "@nestjs/cache-manager";
-import { redisStore } from "cache-manager-redis-store";
+import { redisStore } from "cache-manager-redis-yet";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import Joi from "joi";
 import { PrismaService } from "./prisma.service";
