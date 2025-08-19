@@ -34,7 +34,14 @@ export class LaporanService {
     private prisma: PrismaService,
     private notifications: NotificationsService,
     @Inject(CACHE_MANAGER)
-    private cache?: Cache & { reset: () => Promise<void> }
+    private cache?: Cache & {
+      reset?: () => Promise<void>;
+      store?: {
+        reset?: () => Promise<void>;
+        clear?: () => Promise<void>;
+        keys?: () => Promise<string[]>;
+      };
+    }
   ) {}
 
   getAll(skip?: number, take?: number) {
@@ -54,13 +61,24 @@ export class LaporanService {
   }
 
   private async invalidateCache(keys?: string | string[]) {
-    // TODO: replace global reset with targeted invalidation
     if (!this.cache) return;
+    const cache: any = this.cache;
     if (keys) {
       const arr = Array.isArray(keys) ? keys : [keys];
-      await Promise.all(arr.map((key) => this.cache!.del(key)));
-    } else {
-      await this.cache.reset();
+      await Promise.all(arr.map((key) => cache.del(key)));
+      return;
+    }
+    if (typeof cache.reset === "function") {
+      await cache.reset();
+    } else if (typeof cache.store?.reset === "function") {
+      await cache.store.reset();
+    } else if (typeof cache.store?.keys === "function") {
+      const allKeys = await cache.store.keys();
+      if (allKeys?.length) {
+        await Promise.all(allKeys.map((k: string) => cache.del(k)));
+      }
+    } else if (typeof cache.store?.clear === "function") {
+      await cache.store.clear();
     }
   }
 
