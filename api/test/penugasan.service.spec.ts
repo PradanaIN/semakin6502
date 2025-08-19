@@ -33,3 +33,19 @@ describe("PenugasanService remove", () => {
     expect(prisma.penugasan.delete).not.toHaveBeenCalled();
   });
 });
+
+describe("PenugasanService invalidateCache", () => {
+  it("falls back to store.reset when cache.reset is missing", async () => {
+    const store = { reset: jest.fn().mockResolvedValue(undefined) };
+    const cache = { store, del: jest.fn() } as any;
+    const svc = new PenugasanService(
+      prisma,
+      notifications,
+      whatsappService,
+      cache
+    );
+
+    await expect((svc as any).invalidateCache()).resolves.toBeUndefined();
+    expect(store.reset).toHaveBeenCalledTimes(1);
+  });
+});
