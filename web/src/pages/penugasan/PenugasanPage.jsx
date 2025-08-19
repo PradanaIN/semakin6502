@@ -100,6 +100,12 @@ export default function PenugasanPage() {
   const [formTouched, setFormTouched] = useState(false); // for validation
 
   useEffect(() => {
+    if (user?.role === ROLES.PIMPINAN) {
+      setViewTab("all");
+    }
+  }, [user]);
+
+  useEffect(() => {
     if (location.state?.success) {
       showSuccess("Berhasil", location.state.success);
       navigate(location.pathname, { replace: true, state: {} });
@@ -270,7 +276,11 @@ export default function PenugasanPage() {
       if (viewTab === "mine") return matchesSearch && p.pegawaiId === user?.id;
       if (viewTab === "dariSaya")
         return matchesSearch && matchTeam && p.pegawaiId !== user?.id;
-      return matchesSearch && matchTeam && p.pegawaiId !== user?.id;
+      return (
+        matchesSearch &&
+        matchTeam &&
+        (user?.role === ROLES.PIMPINAN || p.pegawaiId !== user?.id)
+      );
     });
   }, [penugasan, search, viewTab, user?.id, filterTeam]);
   const paginated = useMemo(
