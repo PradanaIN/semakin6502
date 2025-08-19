@@ -4,6 +4,7 @@ import {
   NotFoundException,
   BadRequestException,
   Inject,
+  Logger,
 } from "@nestjs/common";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import type { Cache } from "cache-manager";
@@ -19,6 +20,7 @@ import { ulid } from "ulid";
 
 @Injectable()
 export class PenugasanService {
+  private readonly logger = new Logger(PenugasanService.name);
   constructor(
     private prisma: PrismaService,
     private notifications: NotificationsService,
@@ -99,7 +101,14 @@ export class PenugasanService {
       select: { phone: true },
     });
     if (pegawai?.phone) {
-      await this.whatsappService.sendMessage(pegawai.phone, text);
+      try {
+        await this.whatsappService.sendMessage(pegawai.phone, text);
+      } catch (err) {
+        this.logger.error(
+          `Failed to send WhatsApp message to ${pegawai.phone}`,
+          err as Error,
+        );
+      }
     }
     await this.invalidateCache();
     return penugasan;
@@ -148,7 +157,14 @@ export class PenugasanService {
           select: { phone: true },
         });
         if (pegawai?.phone) {
-          await this.whatsappService.sendMessage(pegawai.phone, text);
+          try {
+            await this.whatsappService.sendMessage(pegawai.phone, text);
+          } catch (err) {
+            this.logger.error(
+              `Failed to send WhatsApp message to ${pegawai.phone}`,
+              err as Error,
+            );
+          }
         }
       }),
     );
