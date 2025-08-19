@@ -8,6 +8,7 @@ import {
 } from "@nestjs/common";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import type { Cache } from "cache-manager";
+import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../prisma.service";
 import { NotificationsService } from "../notifications/notifications.service";
 import { WhatsappService } from "../notifications/whatsapp.service";
@@ -23,19 +24,25 @@ const PENUGASAN_CACHE_KEYS = [
   "monitoring:bulananMatrix",
 ];
 
+const INDONESIAN_PHONE_REGEX = /^(?:\+?62|0)8\d{8,11}$/;
+
 @Injectable()
 export class PenugasanService {
   private readonly logger = new Logger(PenugasanService.name);
+  private readonly validatePhone: boolean;
   constructor(
     private prisma: PrismaService,
     private notifications: NotificationsService,
     private whatsappService: WhatsappService,
+    private config: ConfigService,
     @Inject(CACHE_MANAGER)
     private cache?: Cache & {
       reset?: () => Promise<void>;
       store?: { reset: () => Promise<void> };
     }
-  ) {}
+  ) {
+    this.validatePhone = this.config.get<boolean>("PHONE_VALIDATION_ENABLED") ?? true;
+  }
 
   private async invalidateCache(keys: string | string[] = PENUGASAN_CACHE_KEYS) {
     if (!this.cache) return;
@@ -123,24 +130,26 @@ Selamat bekerja!
     await this.notifications.create(data.pegawaiId, notifText, link);
     const pegawai = await this.prisma.user.findUnique({
       where: { id: data.pegawaiId },
-      select: { phone: true },
+      select: { phone: true, nama: true },
     });
-      if (pegawai?.phone) {
-        try {
-          const res = await this.whatsappService.sendMessage(
-            pegawai.phone,
-            waText
-          );
-          this.logger.debug(
-            `WhatsApp response for ${pegawai.phone}: ${JSON.stringify(res)}`
-          );
-        } catch (err) {
-          this.logger.error(
-            `Failed to send WhatsApp message to ${pegawai.phone}`,
-            err as Error
-          );
-        }
+    if (!pegawai?.phone) {
+      this.logger.warn(`No phone number for ${pegawai?.nama ?? "unknown"}, skipping WhatsApp message`);
+    } else if (this.validatePhone && !INDONESIAN_PHONE_REGEX.test(pegawai.phone)) {
+      this.logger.warn(`Invalid phone number for ${pegawai.nama}: ${pegawai.phone}, skipping WhatsApp message`);
+    } else {
+      this.logger.log(`Sending WhatsApp to ${pegawai.nama} (${pegawai.phone})`);
+      try {
+        const res = await this.whatsappService.sendMessage(pegawai.phone, waText);
+        this.logger.debug(
+          `WhatsApp response for ${pegawai.phone}: ${JSON.stringify(res)}`
+        );
+      } catch (err) {
+        this.logger.error(
+          `Failed to send WhatsApp message to ${pegawai.phone}`,
+          err as Error
+        );
       }
+    }
     await this.invalidateCache(PENUGASAN_CACHE_KEYS);
     return penugasan;
   }
@@ -192,24 +201,29 @@ Selamat bekerja!
         await this.notifications.create(p.pegawaiId, notifText, link);
         const pegawai = await this.prisma.user.findUnique({
           where: { id: p.pegawaiId },
-          select: { phone: true },
+          select: { phone: true, nama: true },
         });
-          if (pegawai?.phone) {
-            try {
-              const res = await this.whatsappService.sendMessage(
-                pegawai.phone,
-                waText
-              );
-              this.logger.debug(
-                `WhatsApp response for ${pegawai.phone}: ${JSON.stringify(res)}`
-              );
-            } catch (err) {
-              this.logger.error(
-                `Failed to send WhatsApp message to ${pegawai.phone}`,
-                err as Error
-              );
-            }
+        if (!pegawai?.phone) {
+          this.logger.warn(`No phone number for ${pegawai?.nama ?? "unknown"}, skipping WhatsApp message`);
+        } else if (this.validatePhone && !INDONESIAN_PHONE_REGEX.test(pegawai.phone)) {
+          this.logger.warn(`Invalid phone number for ${pegawai.nama}: ${pegawai.phone}, skipping WhatsApp message`);
+        } else {
+          this.logger.log(`Sending WhatsApp to ${pegawai.nama} (${pegawai.phone})`);
+          try {
+            const res = await this.whatsappService.sendMessage(
+              pegawai.phone,
+              waText
+            );
+            this.logger.debug(
+              `WhatsApp response for ${pegawai.phone}: ${JSON.stringify(res)}`
+            );
+          } catch (err) {
+            this.logger.error(
+              `Failed to send WhatsApp message to ${pegawai.phone}`,
+              err as Error
+            );
           }
+        }
       })
     );
     await this.invalidateCache(PENUGASAN_CACHE_KEYS);
