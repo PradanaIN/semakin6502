@@ -74,9 +74,37 @@ export class WhatsappService {
 
         if (!res.ok) {
           const text = await res.text();
+          let data: any;
+          try {
+            data = JSON.parse(text);
+          } catch {
+            data = undefined;
+          }
+
+          const message =
+            data?.message || data?.detail || data?.error || text || "Unknown error";
+          const quotaExceeded =
+            res.status === 429 ||
+            data?.code === "quota_exceeded" ||
+            /quota/i.test(message);
+
+          if (quotaExceeded) {
+            this.logger.warn(
+              `WhatsApp quota exhausted: ${res.status} ${res.statusText} - ${message}`,
+            );
+            return {
+              success: false,
+              quotaExceeded: true,
+              status: res.status,
+              message,
+              data,
+            };
+          }
+
           this.logger.error(
-            `Failed to send WhatsApp message: ${res.status} ${res.statusText} - ${text}`,
+            `Failed to send WhatsApp message: ${res.status} ${res.statusText} - ${message}`,
           );
+
           if (res.status >= 500 && attempt + 1 < maxAttempts) {
             continue;
           }
