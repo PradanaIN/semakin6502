@@ -43,13 +43,16 @@ export default function Layout() {
     if (!user || user.role === ROLES.PIMPINAN) return;
     try {
       const res = await axios.get("/notifications");
-      const data = res.data || [];
+      const data = Array.isArray(res.data) ? res.data : [];
+      if (!Array.isArray(res.data)) {
+        console.warn("Unexpected notifications response", res.data);
+      }
       setNotifications(data);
       setNotifCount(data.filter((n) => !n.isRead).length);
     } catch (err) {
       console.error("Failed to fetch notifications", err);
     }
-  }, [user]);
+    }, [user]);
 
   useEffect(() => {
     fetchNotifications();
