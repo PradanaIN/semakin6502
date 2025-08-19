@@ -40,6 +40,10 @@ describe('WhatsappService retries', () => {
     ).rejects.toThrow('WhatsApp API responded with 500');
 
     expect(fetchMock).toHaveBeenCalledTimes(3);
+
+    const options = fetchMock.mock.calls[0][1];
+    expect(options.body).toBeInstanceOf(FormData);
+    expect((options.body as FormData).get('message')).toBe('msg');
   });
 
   it('stops retrying after a successful attempt', async () => {
@@ -60,5 +64,8 @@ describe('WhatsappService retries', () => {
 
     expect(res).toEqual({ success: true });
     expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    const options = fetchMock.mock.calls[0][1];
+    expect(options.body).toBeInstanceOf(FormData);
   });
 });
