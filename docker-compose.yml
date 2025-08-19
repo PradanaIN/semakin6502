@@ -26,6 +26,8 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN}
       THROTTLE_TTL: ${THROTTLE_TTL}
       THROTTLE_LIMIT: ${THROTTLE_LIMIT}
+      FONNTE_TOKEN: ${FONNTE_TOKEN}
+      WHATSAPP_API_URL: ${WHATSAPP_API_URL}
     ports:
       - "3000:3000"
     depends_on:
