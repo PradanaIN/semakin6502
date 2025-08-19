@@ -41,27 +41,20 @@ export class WhatsappService {
 
     const payload: WhatsappPayload = { target: to, message, ...options };
 
-    let body: string | FormData;
+    const form = new FormData();
+    for (const [k, v] of Object.entries(payload)) {
+      if (v !== undefined && v !== null) {
+        form.append(k, v as any);
+      }
+    }
+
     const headers: Record<string, string> = {
       Authorization: `Bearer ${this.token}`,
     };
 
-    const hasBinary = Object.values(payload).some((v) =>
-      typeof v === "object" && v !== null &&
-      (v instanceof Buffer || (typeof Blob !== "undefined" && v instanceof Blob)),
-    );
-
-    if (hasBinary) {
-      const form = new FormData();
-      for (const [k, v] of Object.entries(payload)) {
-        if (v !== undefined && v !== null) {
-          form.append(k, v as any);
-        }
-      }
-      body = form;
-    } else {
-      headers["Content-Type"] = "application/json";
-      body = JSON.stringify(payload);
+    const formHeaders = (form as any).getHeaders?.();
+    if (formHeaders && formHeaders["content-type"]) {
+      headers["Content-Type"] = formHeaders["content-type"];
     }
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -69,7 +62,7 @@ export class WhatsappService {
         const res = await fetch(this.apiUrl, {
           method: "POST",
           headers,
-          body,
+          body: form,
         });
 
         if (!res.ok) {
