@@ -32,7 +32,7 @@ export class WhatsappService {
     to: string,
     message: string,
     options: Record<string, unknown> = {},
-    retries = 1,
+    maxAttempts = 1,
   ) {
     if (!this.apiUrl || !this.token) {
       this.logger.error("WhatsApp service is not configured properly");
@@ -64,7 +64,7 @@ export class WhatsappService {
       body = JSON.stringify(payload);
     }
 
-    for (let attempt = 0; attempt <= retries; attempt++) {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
       try {
         const res = await fetch(this.apiUrl, {
           method: "POST",
@@ -77,7 +77,7 @@ export class WhatsappService {
           this.logger.error(
             `Failed to send WhatsApp message: ${res.status} ${res.statusText} - ${text}`,
           );
-          if (res.status >= 500 && attempt < retries) {
+          if (res.status >= 500 && attempt + 1 < maxAttempts) {
             continue;
           }
           throw new Error(`WhatsApp API responded with ${res.status}`);
@@ -86,7 +86,7 @@ export class WhatsappService {
         return await res.json().catch(() => undefined);
       } catch (err) {
         this.logger.error("WhatsApp message send failed", err as Error);
-        if (attempt >= retries) {
+        if (attempt + 1 >= maxAttempts) {
           throw err;
         }
       }
@@ -97,9 +97,9 @@ export class WhatsappService {
     to: string,
     message: string,
     options: Record<string, unknown> = {},
-    retries = 1,
+    maxAttempts = 1,
   ) {
-    return this.send(to, message, options, retries);
+    return this.send(to, message, options, maxAttempts);
   }
 }
 
