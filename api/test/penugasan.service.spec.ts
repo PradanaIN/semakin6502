@@ -1,5 +1,6 @@
 import { PenugasanService } from "../src/kegiatan/penugasan.service";
 import { BadRequestException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 const prisma = {
   penugasan: { findUnique: jest.fn(), delete: jest.fn(), create: jest.fn() },
@@ -11,8 +12,16 @@ const prisma = {
 
 const notifications = { create: jest.fn() } as any;
 const whatsappService = { sendMessage: jest.fn() } as any;
+const config = {
+  get: jest.fn().mockReturnValue(false),
+} as unknown as ConfigService;
 
-const service = new PenugasanService(prisma, notifications, whatsappService);
+const service = new PenugasanService(
+  prisma,
+  notifications,
+  whatsappService,
+  config
+);
 
 describe("PenugasanService remove", () => {
   beforeEach(() => {
@@ -44,6 +53,7 @@ describe("PenugasanService invalidateCache", () => {
       prisma,
       notifications,
       whatsappService,
+      config,
       cache
     );
 
