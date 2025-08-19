@@ -2,9 +2,11 @@ import { PenugasanService } from "../src/kegiatan/penugasan.service";
 import { BadRequestException } from "@nestjs/common";
 
 const prisma = {
-  penugasan: { findUnique: jest.fn(), delete: jest.fn() },
+  penugasan: { findUnique: jest.fn(), delete: jest.fn(), create: jest.fn() },
   member: { findFirst: jest.fn() },
   laporanHarian: { count: jest.fn() },
+  masterKegiatan: { findUnique: jest.fn() },
+  user: { findUnique: jest.fn() },
 } as any;
 
 const notifications = { create: jest.fn() } as any;
@@ -47,5 +49,62 @@ describe("PenugasanService invalidateCache", () => {
 
     await expect((svc as any).invalidateCache()).resolves.toBeUndefined();
     expect(store.reset).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("PenugasanService assign", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it("sends WhatsApp message when pegawai has phone", async () => {
+    prisma.masterKegiatan.findUnique.mockResolvedValue({
+      id: "k1",
+      teamId: "t1",
+      namaKegiatan: "Kegiatan A",
+      team: { namaTim: "Tim A" },
+    });
+    prisma.penugasan.create.mockResolvedValue({ id: "p1" });
+    prisma.user.findUnique.mockResolvedValue({ phone: "08123" });
+
+    const data = {
+      kegiatanId: "k1",
+      pegawaiId: "u1",
+      minggu: 1,
+      bulan: 5,
+      tahun: 2024,
+      deskripsi: "Kerjakan",
+    } as any;
+
+    await service.assign(data, "adminUser", "admin");
+
+    expect(whatsappService.sendMessage).toHaveBeenCalledWith(
+      "08123",
+      `Anda mendapat penugasan:\n• Tim: Tim A\n• Kegiatan: Kegiatan A\n• Deskripsi: Kerjakan\n• Link: /tugas-mingguan/p1\nSelamat bekerja!\n`
+    );
+  });
+
+  it("does not send WhatsApp message when pegawai has no phone", async () => {
+    prisma.masterKegiatan.findUnique.mockResolvedValue({
+      id: "k1",
+      teamId: "t1",
+      namaKegiatan: "Kegiatan A",
+      team: { namaTim: "Tim A" },
+    });
+    prisma.penugasan.create.mockResolvedValue({ id: "p1" });
+    prisma.user.findUnique.mockResolvedValue({});
+
+    const data = {
+      kegiatanId: "k1",
+      pegawaiId: "u1",
+      minggu: 1,
+      bulan: 5,
+      tahun: 2024,
+      deskripsi: "Kerjakan",
+    } as any;
+
+    await service.assign(data, "adminUser", "admin");
+
+    expect(whatsappService.sendMessage).not.toHaveBeenCalled();
   });
 });
