@@ -104,7 +104,17 @@ export class WhatsappService {
           throw new Error(`WhatsApp API responded with ${res.status}`);
         }
 
-        return await res.json().catch(() => undefined);
+        const data = await res.json().catch(() => undefined);
+        if (
+          data?.success === false ||
+          (typeof data?.message === "string" && /error/i.test(data.message))
+        ) {
+          const errorMessage =
+            data?.message || "WhatsApp API returned success: false";
+          this.logger.error(`WhatsApp API error: ${errorMessage}`);
+          throw new Error(errorMessage);
+        }
+        return data;
       } catch (err) {
         this.logger.error("WhatsApp message send failed", err as Error);
         if (attempt + 1 >= maxAttempts) {
