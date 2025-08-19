@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import Layout from '../pages/layout/Layout';
+import { HelmetProvider } from 'react-helmet-async';
 import { useAuth } from '../pages/auth/useAuth';
 import { useTheme } from '../theme/useTheme.jsx';
 import axios from 'axios';
@@ -24,16 +25,18 @@ describe('notification navigation', () => {
     const user = userEvent.setup();
 
     render(
-      <MemoryRouter initialEntries={['/']}>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route
-              path="tugas-mingguan/:id"
-              element={<div>Detail tugas mingguan</div>}
-            />
-          </Route>
-        </Routes>
-      </MemoryRouter>
+      <HelmetProvider>
+        <MemoryRouter initialEntries={['/']}>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route
+                path="tugas-mingguan/:id"
+                element={<div>Detail tugas mingguan</div>}
+              />
+            </Route>
+          </Routes>
+        </MemoryRouter>
+      </HelmetProvider>
     );
 
     await waitFor(() => expect(axios.get).toHaveBeenCalled());

@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import Layout from '../pages/layout/Layout';
+import { HelmetProvider } from 'react-helmet-async';
 import { useAuth } from '../pages/auth/useAuth';
 import { useTheme } from '../theme/useTheme.jsx';
 import axios from 'axios';
@@ -27,13 +28,15 @@ describe('Layout', () => {
 
   it('renders page title and toggles dark mode', async () => {
     render(
-      <MemoryRouter initialEntries={['/dashboard']}>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route path="dashboard" element={<div />} />
-          </Route>
-        </Routes>
-      </MemoryRouter>
+      <HelmetProvider>
+        <MemoryRouter initialEntries={['/dashboard']}>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route path="dashboard" element={<div />} />
+            </Route>
+          </Routes>
+        </MemoryRouter>
+      </HelmetProvider>
     );
 
     await waitFor(() => expect(document.title).toContain('Dashboard'));

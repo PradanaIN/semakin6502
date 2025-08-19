@@ -11,6 +11,7 @@ import { BrowserRouter } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import camelizeKeys from "./utils/camelizeKeys.js";
+import { HelmetProvider } from "react-helmet-async";
 
 axios.defaults.baseURL =
   import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -41,12 +42,14 @@ export const apiClient = axios;
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <ThemeProvider>
-          <App />
-        </ThemeProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <ThemeProvider>
+            <App />
+          </ThemeProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   </React.StrictMode>
 );
