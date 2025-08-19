@@ -122,13 +122,6 @@ export class PenugasanService {
     const relLink = `/tugas-mingguan/${penugasan.id}`;
     const waLink = `${baseUrl}${relLink}`;
     const notifText = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
-    const waText = `Anda mendapat penugasan:
-• Tim: ${master.team.namaTim}
-• Kegiatan: ${master.namaKegiatan}
-• Deskripsi: ${data.deskripsi}
-• Link: ${waLink}
-Selamat bekerja!
-`;
     await this.notifications.create(data.pegawaiId, notifText, relLink);
     const pegawai = await this.prisma.user.findUnique({
       where: { id: data.pegawaiId },
@@ -139,6 +132,14 @@ Selamat bekerja!
     } else if (this.validatePhone && !INDONESIAN_PHONE_REGEX.test(pegawai.phone)) {
       this.logger.warn(`Invalid phone number for ${pegawai.nama}: ${pegawai.phone}, skipping WhatsApp message`);
     } else {
+      const waText =
+        `Halo, ${pegawai.nama}!\n\n` +
+        `Anda mendapat penugasan:\n\n` +
+        `• Tim: ${master.team.namaTim}\n` +
+        `• Kegiatan: ${master.namaKegiatan}\n` +
+        `• Deskripsi: ${data.deskripsi}\n` +
+        `• Link: ${waLink}\n\n` +
+        `Selamat bekerja!\n`;
       this.logger.log(`Sending WhatsApp to ${pegawai.nama} (${pegawai.phone})`);
       try {
         const res = await this.whatsappService.sendMessage(pegawai.phone, waText);
@@ -196,13 +197,6 @@ Selamat bekerja!
         const relLink = `/tugas-mingguan/${p.id}`;
         const waLink = `${baseUrl}${relLink}`;
         const notifText = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
-        const waText = `Anda mendapat penugasan:
-• Tim: ${master.team.namaTim}
-• Kegiatan: ${master.namaKegiatan}
-• Deskripsi: ${data.deskripsi}
-• Link: ${waLink}
-Selamat bekerja!
-`;
         await this.notifications.create(p.pegawaiId, notifText, relLink);
         const pegawai = await this.prisma.user.findUnique({
           where: { id: p.pegawaiId },
@@ -213,6 +207,14 @@ Selamat bekerja!
         } else if (this.validatePhone && !INDONESIAN_PHONE_REGEX.test(pegawai.phone)) {
           this.logger.warn(`Invalid phone number for ${pegawai.nama}: ${pegawai.phone}, skipping WhatsApp message`);
         } else {
+          const waText =
+            `Halo, ${pegawai.nama}!\n\n` +
+            `Anda mendapat penugasan:\n\n` +
+            `• Tim: ${master.team.namaTim}\n` +
+            `• Kegiatan: ${master.namaKegiatan}\n` +
+            `• Deskripsi: ${data.deskripsi}\n` +
+            `• Link: ${waLink}\n\n` +
+            `Selamat bekerja!\n`;
           this.logger.log(`Sending WhatsApp to ${pegawai.nama} (${pegawai.phone})`);
           try {
             const res = await this.whatsappService.sendMessage(
