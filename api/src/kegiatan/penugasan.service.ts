@@ -121,25 +121,18 @@ export class PenugasanService {
     const baseUrl = this.config.get<string>("WEB_URL");
     const relLink = `/tugas-mingguan/${penugasan.id}`;
     const waLink = `${baseUrl}${relLink}`;
-    const notifText = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
-    await this.notifications.create(data.pegawaiId, notifText, relLink);
     const pegawai = await this.prisma.user.findUnique({
       where: { id: data.pegawaiId },
       select: { phone: true, nama: true },
     });
+    const notifText = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
+    await this.notifications.create(data.pegawaiId, notifText, relLink);
     if (!pegawai?.phone) {
       this.logger.warn(`No phone number for ${pegawai?.nama ?? "unknown"}, skipping WhatsApp message`);
     } else if (this.validatePhone && !INDONESIAN_PHONE_REGEX.test(pegawai.phone)) {
       this.logger.warn(`Invalid phone number for ${pegawai.nama}: ${pegawai.phone}, skipping WhatsApp message`);
     } else {
-      const waText =
-        `Halo, ${pegawai.nama}!\n\n` +
-        `Anda mendapat penugasan:\n\n` +
-        `• Tim: ${master.team.namaTim}\n` +
-        `• Kegiatan: ${master.namaKegiatan}\n` +
-        `• Deskripsi: ${data.deskripsi}\n` +
-        `• Link: ${waLink}\n\n` +
-        `Selamat bekerja!\n`;
+      const waText = `Halo ${pegawai.nama},\n\nAnda mendapat penugasan:\n• Tim: ${master.team.namaTim}\n• Kegiatan: ${master.namaKegiatan}\n• Deskripsi: ${data.deskripsi}\n• Link: ${waLink}\n\nSelamat bekerja!\n`;
       this.logger.log(`Sending WhatsApp to ${pegawai.nama} (${pegawai.phone})`);
       try {
         const res = await this.whatsappService.sendMessage(pegawai.phone, waText);
