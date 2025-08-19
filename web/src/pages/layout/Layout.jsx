@@ -2,7 +2,7 @@ import { Outlet, useLocation, Link, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useAuth } from "../auth/useAuth";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { useTheme } from "../../theme/useTheme.jsx";
 import Swal from "sweetalert2";
 import confirmAlert from "../../utils/confirmAlert";
@@ -55,6 +55,11 @@ export default function Layout() {
     fetchNotifications();
   }, [fetchNotifications]);
 
+  useEffect(() => {
+    const interval = setInterval(fetchNotifications, 60000);
+    return () => clearInterval(interval);
+  }, [fetchNotifications]);
+
   const handleLogout = async () => {
     const r = await confirmAlert({
       title: "Logout?",
@@ -74,6 +79,7 @@ export default function Layout() {
       const updated = notifications.map((n) => ({ ...n, isRead: true }));
       setNotifications(updated);
       setNotifCount(0);
+      await fetchNotifications();
     } catch (err) {
       console.error("Failed to mark notifications", err);
     }
@@ -87,6 +93,7 @@ export default function Layout() {
         prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
       );
       setNotifCount((c) => Math.max(0, c - 1));
+      await fetchNotifications();
     } catch (err) {
       console.error("Failed to mark notification", err);
     }

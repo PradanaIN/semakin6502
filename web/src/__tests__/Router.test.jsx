@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import AppRoutes from '../routes/AppRoutes';
 import { AuthProvider } from '../pages/auth/useAuth';
+import { HelmetProvider } from 'react-helmet-async';
 
 beforeEach(() => {
   localStorage.clear();
@@ -9,11 +10,13 @@ beforeEach(() => {
 
 test('renders login page at /login', async () => {
   render(
-    <AuthProvider>
-      <MemoryRouter initialEntries={["/login"]}>
-        <AppRoutes />
-      </MemoryRouter>
-    </AuthProvider>
+    <HelmetProvider>
+      <AuthProvider>
+        <MemoryRouter initialEntries={["/login"]}>
+          <AppRoutes />
+        </MemoryRouter>
+      </AuthProvider>
+    </HelmetProvider>
   );
 
   // shows loading fallback while lazy component loads

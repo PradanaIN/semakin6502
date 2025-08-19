@@ -190,7 +190,6 @@ export default function DataTable({
                   }
                   if (!extra) extra = "px-4 py-3";
                   const common = {
-                    key: cell.id,
                     className: `${extra} border-t border-b border-gray-300 dark:border-gray-700`,
                   };
                   const content = flexRender(
@@ -198,11 +197,13 @@ export default function DataTable({
                     cell.getContext()
                   );
                   return index === 0 ? (
-                    <th scope="row" {...common}>
+                    <th key={cell.id} scope="row" {...common}>
                       {content}
                     </th>
                   ) : (
-                    <td {...common}>{content}</td>
+                    <td key={cell.id} {...common}>
+                      {content}
+                    </td>
                   );
                 })}
               </tr>
