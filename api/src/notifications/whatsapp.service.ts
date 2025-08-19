@@ -31,7 +31,7 @@ export class WhatsappService {
   async send(
     to: string,
     message: string,
-    extra: Record<string, unknown> = {},
+    options: Record<string, unknown> = {},
     retries = 1,
   ) {
     if (!this.apiUrl || !this.token) {
@@ -99,10 +99,10 @@ export class WhatsappService {
   async sendMessage(
     to: string,
     message: string,
-    extra: Record<string, unknown> = {},
+    options: Record<string, unknown> = {},
     retries = 1,
   ) {
-    return this.send(to, message, extra, retries);
+    return this.send(to, message, options, retries);
   }
 }
 
