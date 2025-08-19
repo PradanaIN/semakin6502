@@ -3,14 +3,17 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import LoginPage from '../pages/auth/LoginPage';
 import { AuthProvider } from '../pages/auth/useAuth';
+import { HelmetProvider } from 'react-helmet-async';
 
 function renderPage() {
   return render(
-    <BrowserRouter>
-      <AuthProvider>
-        <LoginPage />
-      </AuthProvider>
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <LoginPage />
+        </AuthProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }
 

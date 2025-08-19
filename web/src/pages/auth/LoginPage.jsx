@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import axios from "axios";
 import { useAuth } from "./useAuth";
 import { handleAxiosError } from "../../utils/alerts";
