@@ -118,16 +118,18 @@ export class PenugasanService {
       },
     });
 
-    const link = `/tugas-mingguan/${penugasan.id}`;
+    const baseUrl = this.config.get<string>("WEB_URL");
+    const relLink = `/tugas-mingguan/${penugasan.id}`;
+    const waLink = `${baseUrl}${relLink}`;
     const notifText = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
     const waText = `Anda mendapat penugasan:
 • Tim: ${master.team.namaTim}
 • Kegiatan: ${master.namaKegiatan}
 • Deskripsi: ${data.deskripsi}
-• Link: ${link}
+• Link: ${waLink}
 Selamat bekerja!
 `;
-    await this.notifications.create(data.pegawaiId, notifText, link);
+    await this.notifications.create(data.pegawaiId, notifText, relLink);
     const pegawai = await this.prisma.user.findUnique({
       where: { id: data.pegawaiId },
       select: { phone: true, nama: true },
@@ -187,18 +189,21 @@ Selamat bekerja!
       rows.map((r) => this.prisma.penugasan.create({ data: r }))
     );
 
+    const baseUrl = this.config.get<string>("WEB_URL");
+
     await Promise.all(
       created.map(async (p: { pegawaiId: string; id: string }) => {
-        const link = `/tugas-mingguan/${p.id}`;
+        const relLink = `/tugas-mingguan/${p.id}`;
+        const waLink = `${baseUrl}${relLink}`;
         const notifText = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
         const waText = `Anda mendapat penugasan:
 • Tim: ${master.team.namaTim}
 • Kegiatan: ${master.namaKegiatan}
 • Deskripsi: ${data.deskripsi}
-• Link: ${link}
+• Link: ${waLink}
 Selamat bekerja!
 `;
-        await this.notifications.create(p.pegawaiId, notifText, link);
+        await this.notifications.create(p.pegawaiId, notifText, relLink);
         const pegawai = await this.prisma.user.findUnique({
           where: { id: p.pegawaiId },
           select: { phone: true, nama: true },
