@@ -68,4 +68,14 @@ describe('WhatsappService retries', () => {
     const options = fetchMock.mock.calls[0][1];
     expect(options.body).toBeInstanceOf(FormData);
   });
+
+  it('throws when API returns success false', async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: jest.fn().mockResolvedValue({ success: false, message: 'error occurred' }),
+    });
+
+    await expect(service.send('1', 'msg')).rejects.toThrow('error occurred');
+  });
 });
