@@ -57,8 +57,18 @@ export class WhatsappService {
       headers["Content-Type"] = formHeaders["content-type"];
     }
 
+    const maskedToken = this.token.replace(/.(?=.{4})/g, "*");
+
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       try {
+        this.logger.debug("Sending WhatsApp message", {
+          target: payload.target,
+          options: {
+            method: "POST",
+            headers: { ...headers, Authorization: `Bearer ${maskedToken}` },
+          },
+        });
+
         const res = await fetch(this.apiUrl, {
           method: "POST",
           headers,
@@ -82,8 +92,9 @@ export class WhatsappService {
             /quota/i.test(message);
 
           if (quotaExceeded) {
-            this.logger.warn(
+            this.logger.error(
               `WhatsApp quota exhausted: ${res.status} ${res.statusText} - ${message}`,
+              { status: res.status, message, payload },
             );
             return {
               success: false,
@@ -96,6 +107,7 @@ export class WhatsappService {
 
           this.logger.error(
             `Failed to send WhatsApp message: ${res.status} ${res.statusText} - ${message}`,
+            { status: res.status, message, payload },
           );
 
           if (res.status >= 500 && attempt + 1 < maxAttempts) {
@@ -111,12 +123,21 @@ export class WhatsappService {
         ) {
           const errorMessage =
             data?.message || "WhatsApp API returned success: false";
-          this.logger.error(`WhatsApp API error: ${errorMessage}`);
+          this.logger.error("WhatsApp API error", {
+            status: res.status,
+            message: errorMessage,
+            payload,
+          });
           throw new Error(errorMessage);
         }
+        this.logger.debug("WhatsApp API response", data);
         return data;
       } catch (err) {
-        this.logger.error("WhatsApp message send failed", err as Error);
+        this.logger.error("WhatsApp message send failed", {
+          status: (err as any)?.status,
+          message: (err as Error).message,
+          payload,
+        });
         if (attempt + 1 >= maxAttempts) {
           throw err;
         }
