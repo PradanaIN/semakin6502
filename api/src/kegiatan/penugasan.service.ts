@@ -31,7 +31,10 @@ export class PenugasanService {
     private notifications: NotificationsService,
     private whatsappService: WhatsappService,
     @Inject(CACHE_MANAGER)
-    private cache?: Cache & { reset: () => Promise<void> }
+    private cache?: Cache & {
+      reset?: () => Promise<void>;
+      store?: { reset?: () => Promise<void> };
+    }
   ) {}
 
   private async invalidateCache(keys: string | string[] = PENUGASAN_CACHE_KEYS) {
