@@ -8,7 +8,22 @@ jest.mock('../pages/auth/useAuth');
 const mockedUseAuth = useAuth;
 
 describe('Sidebar role visibility', () => {
-  test('pimpinan sees only monitoring related links', () => {
+  test.each([
+    ['admin'],
+    ['pimpinan'],
+    ['ketua'],
+    ['anggota'],
+  ])('role %s sees Panduan link', (role) => {
+    mockedUseAuth.mockReturnValue({ user: { role } });
+    render(
+      <MemoryRouter>
+        <Sidebar setSidebarOpen={() => {}} />
+      </MemoryRouter>
+    );
+    expect(screen.getByText(/Panduan/i)).toBeVisible();
+  });
+
+  test('pimpinan sees monitoring links and Panduan', () => {
     mockedUseAuth.mockReturnValue({ user: { role: 'pimpinan' } });
     render(
       <MemoryRouter>
@@ -19,6 +34,7 @@ describe('Sidebar role visibility', () => {
     expect(screen.getByText(/Keterlambatan/i)).toBeVisible();
     expect(screen.getByText(/Tugas Mingguan/i)).toBeVisible();
     expect(screen.getByText(/Tugas Tambahan/i)).toBeVisible();
+    expect(screen.getByText(/Panduan/i)).toBeVisible();
     expect(screen.getByText(/Data Pegawai/i)).toBeVisible();
     expect(screen.queryByText(/Dashboard/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Laporan Harian/i)).not.toBeInTheDocument();
@@ -41,6 +57,7 @@ describe('Sidebar role visibility', () => {
     expect(screen.getByText(/Master Kegiatan/i)).toBeInTheDocument();
     expect(screen.getByText(/Monitoring/i)).toBeInTheDocument();
     expect(screen.getByText(/Keterlambatan/i)).toBeInTheDocument();
+    expect(screen.getByText(/Panduan/i)).toBeInTheDocument();
   });
 
   test.each([
