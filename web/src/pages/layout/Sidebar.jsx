@@ -11,6 +11,7 @@ import {
   List,
   Users,
   UserCog,
+  BookOpen,
 } from "lucide-react";
 import { ROLES } from "../../utils/roles";
 
@@ -49,6 +50,12 @@ const mainLinks = [
     to: "/laporan-terlambat",
     label: "Keterlambatan",
     icon: AlertCircle,
+    roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA, ROLES.PIMPINAN],
+  },
+  {
+    to: "/panduan",
+    label: "Panduan",
+    icon: BookOpen,
     roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA, ROLES.PIMPINAN],
   },
 ];

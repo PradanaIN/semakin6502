@@ -37,6 +37,9 @@ const MonitoringPage = React.lazy(() =>
 const MissedReportsPage = React.lazy(() =>
   import("../pages/monitoring/MissedReportsPage")
 );
+const PanduanPage = React.lazy(() =>
+  import("../pages/panduan/PanduanPage")
+);
 const ProfilePage = React.lazy(() => import("../pages/profile/ProfilePage"));
 const NotFound = React.lazy(() => import("../pages/NotFound"));
 
@@ -185,6 +188,21 @@ export default function AppRoutes() {
                   ]}
                 >
                   <MissedReportsPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="panduan"
+              element={
+                <RoleRoute
+                  roles={[
+                    ROLES.ADMIN,
+                    ROLES.KETUA,
+                    ROLES.ANGGOTA,
+                    ROLES.PIMPINAN,
+                  ]}
+                >
+                  <PanduanPage />
                 </RoleRoute>
               }
             />
