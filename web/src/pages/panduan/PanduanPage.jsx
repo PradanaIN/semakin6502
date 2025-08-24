@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { BookOpen } from "lucide-react";
 import bukuPanduan from "../../assets/buku_panduan_semakin.pdf";
 
@@ -17,6 +17,23 @@ const SECTIONS = [
 
 export default function PanduanPage() {
   const [page, setPage] = useState(SECTIONS[0].page);
+  const buttonRefs = useRef([]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      const buttons = buttonRefs.current;
+      const currentIndex = buttons.indexOf(e.target);
+      if (currentIndex === -1) return;
+
+      const nextIndex =
+        e.key === "ArrowDown"
+          ? (currentIndex + 1) % buttons.length
+          : (currentIndex - 1 + buttons.length) % buttons.length;
+
+      buttons[nextIndex]?.focus();
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto p-6 sm:p-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md space-y-6 animate-fade-in">
@@ -36,13 +53,15 @@ export default function PanduanPage() {
         <nav
           aria-label="Navigasi Panduan"
           className="w-full md:w-48"
+          onKeyDown={handleKeyDown}
         >
           <ul className="flex flex-col gap-2">
-            {SECTIONS.map((section) => (
+            {SECTIONS.map((section, index) => (
               <li key={section.title}>
                 <button
                   onClick={() => setPage(section.page)}
                   aria-current={page === section.page ? "true" : undefined}
+                  ref={(el) => (buttonRefs.current[index] = el)}
                   className={`px-3 py-1 text-sm rounded focus:outline-none focus:ring ${
                     page === section.page
                       ? "bg-blue-600 text-white"
