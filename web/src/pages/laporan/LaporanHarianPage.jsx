@@ -5,6 +5,7 @@ import Spinner from "../../components/Spinner";
 import {
   showSuccess,
   showError,
+  showWarning,
   handleAxiosError,
   confirmCancel,
 } from "../../utils/alerts";
@@ -98,6 +99,14 @@ export default function LaporanHarianPage() {
 
   const saveForm = async () => {
     try {
+      if (
+        (form.status === STATUS.SEDANG_DIKERJAKAN ||
+          form.status === STATUS.SELESAI_DIKERJAKAN) &&
+        !form.buktiLink.trim()
+      ) {
+        showWarning("Lengkapi data", "Link bukti wajib diisi");
+        return;
+      }
       if (form.id) {
         await axios.put(`/laporan-harian/${form.id}`, form);
       }
@@ -404,7 +413,8 @@ export default function LaporanHarianPage() {
                 </option>
               </select>
             </div>
-            {form.status === STATUS.SELESAI_DIKERJAKAN && (
+            {(form.status === STATUS.SEDANG_DIKERJAKAN ||
+              form.status === STATUS.SELESAI_DIKERJAKAN) && (
               <div>
                 <Label htmlFor="buktiLink">Link Bukti</Label>
                 <Input
@@ -414,6 +424,7 @@ export default function LaporanHarianPage() {
                   onChange={(e) =>
                     setForm({ ...form, buktiLink: e.target.value })
                   }
+                  required
                 />
               </div>
             )}
