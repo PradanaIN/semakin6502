@@ -4,9 +4,9 @@ import ReactPlayer from "react-player";
 import bukuPanduan from "../../assets/buku_panduan_semakin.pdf";
 
 const SECTIONS = [
-  { title: "Deskripsi Penggunaan", page: 1 },
+  { title: "Deskripsi Penggunaan", page: 2 },
   { title: "Workflow", page: 3 },
-  { title: "Dashboard", page: 5 },
+  { title: "Dashboard", page: 6 },
 ];
 
 export default function PanduanPage() {
