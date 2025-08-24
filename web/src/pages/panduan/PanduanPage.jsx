@@ -10,7 +10,7 @@ const SECTIONS = [
   { title: "Tugas Tambahan", page: 16 },
   { title: "Laporan Harian", page: 22 },
   { title: "Monitoring", page: 24 },
-  { title: "Keterlambatan", page: 26 },
+  { title: "Keterlambatan", page: 27 },
   { title: "Master Kegiatan", page: 28 },
   { title: "Penutup", page: 29 },
 ];
@@ -59,7 +59,11 @@ export default function PanduanPage() {
           >
             <p className="text-gray-600 dark:text-gray-400">
               PDF tidak dapat dimuat.{" "}
-              <a href={bukuPanduan} download className="text-blue-600 underline">
+              <a
+                href={bukuPanduan}
+                download
+                className="text-blue-600 underline"
+              >
                 Unduh Buku Panduan
               </a>
             </p>
