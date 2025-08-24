@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
-import { BookOpen, ChevronDown } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import { useState } from "react";
+import { BookOpen } from "lucide-react";
 import ReactPlayer from "react-player";
-import { loadGuide } from "./loadGuide";
+import bukuPanduan from "@/assets/buku_panduan_semakin.pdf";
 
 const VIDEO_URL = "https://www.youtube.com/watch?v=ysz5S6PUM-U";
 
-export default function PanduanPage() {
-  const [topics, setTopics] = useState([]);
-  const [open, setOpen] = useState(null);
-  const [playerError, setPlayerError] = useState(false);
+const SECTIONS = [
+  { title: "Deskripsi Penggunaan", page: 1 },
+  { title: "Workflow", page: 3 },
+  { title: "Dashboard", page: 5 },
+];
 
-  useEffect(() => {
-    loadGuide().then(setTopics).catch(() => setTopics([]));
-  }, []);
+export default function PanduanPage() {
+  const [playerError, setPlayerError] = useState(false);
+  const [page, setPage] = useState(SECTIONS[0].page);
 
   return (
     <div className="max-w-3xl mx-auto p-6 sm:p-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md space-y-6 animate-fade-in">
@@ -25,38 +25,35 @@ export default function PanduanPage() {
         </div>
       </div>
 
-      {topics.length > 0 && (
-        <nav className="p-4 bg-gray-50 dark:bg-gray-700 rounded-md">
-          <h3 className="font-semibold mb-2 text-gray-700 dark:text-gray-300">Daftar Isi</h3>
-          <ul className="list-disc list-inside space-y-1 text-blue-600 dark:text-blue-400">
-            {topics.map((t, idx) => (
-              <li key={t.title}>
-                <a href={`#section-${idx}`}>{t.title}</a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )}
-
-      <div className="space-y-4">
-        {topics.map((t, idx) => (
-          <div key={t.title} id={`section-${idx}`} className="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden">
-            <button
-              type="button"
-              className="w-full flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700 text-left"
-              onClick={() => setOpen(open === idx ? null : idx)}
-            >
-              <span className="font-semibold text-gray-700 dark:text-gray-300">{t.title}</span>
-              <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${open === idx ? "rotate-180" : ""}`} />
-            </button>
-            {open === idx && (
-              <div className="p-4 prose dark:prose-invert">
-                <ReactMarkdown>{t.content}</ReactMarkdown>
-              </div>
-            )}
-          </div>
+      <div className="flex flex-wrap gap-2">
+        {SECTIONS.map((section) => (
+          <button
+            key={section.title}
+            onClick={() => setPage(section.page)}
+            className={`px-3 py-1 text-sm rounded ${
+              page === section.page
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+            }`}
+          >
+            {section.title}
+          </button>
         ))}
       </div>
+
+      <object
+        data={`${bukuPanduan}#page=${page}`}
+        type="application/pdf"
+        className="w-full h-[80vh]"
+        title="Buku Panduan"
+      >
+        <p className="text-gray-600 dark:text-gray-400">
+          PDF tidak dapat dimuat.{" "}
+          <a href={bukuPanduan} download className="text-blue-600 underline">
+            Unduh Buku Panduan
+          </a>
+        </p>
+      </object>
 
       <div className="space-y-2">
         <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Video Panduan</h3>
@@ -72,7 +69,7 @@ export default function PanduanPage() {
           </div>
         ) : (
           <p className="text-gray-600 dark:text-gray-400">
-            Video tidak dapat ditampilkan. {" "}
+            Video tidak dapat ditampilkan.{" "}
             <a
               href={VIDEO_URL}
               target="_blank"
