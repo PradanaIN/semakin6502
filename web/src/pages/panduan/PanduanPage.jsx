@@ -16,7 +16,7 @@ const SECTIONS = [
 ];
 
 export default function PanduanPage() {
-  const [page, setPage] = useState(SECTIONS[0].page);
+  const [page, setPage] = useState(1);
 
   return (
     <div className="max-w-3xl mx-auto p-6 sm:p-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-md space-y-6 animate-fade-in">
