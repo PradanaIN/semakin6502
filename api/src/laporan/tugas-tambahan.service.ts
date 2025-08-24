@@ -86,6 +86,16 @@ export class TambahanService {
     }
   }
   async add(data: AddTambahanDto & { userId: string }) {
+    if (
+      [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN].includes(
+        data.status
+      ) &&
+      !data.buktiLink
+    ) {
+      throw new BadRequestException(
+        "buktiLink diperlukan ketika status sedang atau selesai"
+      );
+    }
     const master = await this.prisma.masterKegiatan.findUnique({
       where: { id: data.kegiatanId },
     });
@@ -183,6 +193,18 @@ export class TambahanService {
       if (!any) throw new NotFoundException("tugas tambahan tidak ditemukan");
       throw new ForbiddenException("bukan tugas tambahan anda");
     }
+    const finalStatus = data.status ?? existing.status;
+    const finalBukti = data.buktiLink ?? existing.buktiLink;
+    if (
+      [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN].includes(
+        finalStatus
+      ) &&
+      !finalBukti
+    ) {
+      throw new BadRequestException(
+        "buktiLink diperlukan ketika status sedang atau selesai"
+      );
+    }
     return this.prisma.kegiatanTambahan.update({
       where: { id },
       data: updateData,
@@ -221,6 +243,16 @@ export class TambahanService {
     role = normalizeRole(role);
     if (role === ROLES.PIMPINAN) {
       throw new ForbiddenException("pimpinan tidak diizinkan");
+    }
+    if (
+      [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN].includes(
+        data.status
+      ) &&
+      !data.buktiLink
+    ) {
+      throw new BadRequestException(
+        "buktiLink diperlukan ketika status sedang atau selesai"
+      );
     }
 
     const tambahan = await this.prisma.kegiatanTambahan.findUnique({

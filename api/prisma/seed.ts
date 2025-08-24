@@ -502,6 +502,10 @@ async function main() {
         nama: k.namaKegiatan,
         tanggal: date.toISOString(),
         status,
+        buktiLink:
+          status === STATUS.BELUM
+            ? undefined
+            : "https://example.com/bukti",
         userId: m.userId,
         kegiatanId: k.id,
         teamId: m.teamId,
@@ -524,6 +528,8 @@ async function main() {
       tanggal: t.tanggal,
       status: t.status,
       capaianKegiatan: t.capaianKegiatan,
+      buktiLink:
+        t.status === STATUS.BELUM ? undefined : "https://example.com/bukti",
     }));
 
     await prisma.laporanHarian.createMany({
@@ -615,6 +621,7 @@ async function main() {
                 tanggal: date.toISOString(),
                 status: STATUS.SELESAI_DIKERJAKAN,
                 capaianKegiatan: `Capaian ${p.id}`,
+                buktiLink: "https://example.com/bukti",
               });
               selesaiIds.add(p.id);
             }
@@ -687,6 +694,7 @@ async function main() {
           tanggal: tanggal.toISOString(),
           status: STATUS.SELESAI_DIKERJAKAN,
           capaianKegiatan: `Capaian ${penugasan.id}`,
+          buktiLink: "https://example.com/bukti",
         },
       });
     }

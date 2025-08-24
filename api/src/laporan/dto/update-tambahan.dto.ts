@@ -1,6 +1,7 @@
-import { IsDateString, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsOptional, IsString, ValidateIf } from "class-validator";
 import { Transform } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
+import { STATUS } from "../../common/status.constants";
 
 export class UpdateTambahanDto {
   @ApiProperty({ required: false })
@@ -21,8 +22,11 @@ export class UpdateTambahanDto {
   status?: string;
 
   @ApiProperty({ required: false })
-  @IsOptional()
   @Transform(({ value }) => (value === "" ? undefined : value))
+  @ValidateIf(
+    (o) =>
+      [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN].includes(o.status)
+  )
   @IsString()
   buktiLink?: string;
 
