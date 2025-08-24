@@ -51,6 +51,7 @@ export default function PanduanPage() {
 
         <div className="flex-1 h-[80vh]">
           <object
+            key={page}
             data={`${bukuPanduan}#page=${page}`}
             type="application/pdf"
             className="w-full h-full"
