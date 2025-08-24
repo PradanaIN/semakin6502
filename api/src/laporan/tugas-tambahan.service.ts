@@ -9,7 +9,7 @@ import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import type { Cache } from "cache-manager";
 import { ulid } from "ulid";
 import { ROLES } from "../common/roles.constants";
-import { STATUS } from "../common/status.constants";
+import { STATUS, Status } from "../common/status.constants";
 import { PrismaService } from "../prisma.service";
 import { AddTambahanDto } from "./dto/add-tambahan.dto";
 import { UpdateTambahanDto } from "./dto/update-tambahan.dto";
@@ -87,9 +87,9 @@ export class TambahanService {
   }
   async add(data: AddTambahanDto & { userId: string }) {
     if (
-      [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN].includes(
-        data.status
-      ) &&
+      (
+        [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN] as Status[]
+      ).includes(data.status) &&
       !data.buktiLink
     ) {
       throw new BadRequestException(
@@ -193,12 +193,12 @@ export class TambahanService {
       if (!any) throw new NotFoundException("tugas tambahan tidak ditemukan");
       throw new ForbiddenException("bukan tugas tambahan anda");
     }
-    const finalStatus = data.status ?? existing.status;
+    const finalStatus: Status = (data.status ?? existing.status) as Status;
     const finalBukti = data.buktiLink ?? existing.buktiLink;
     if (
-      [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN].includes(
-        finalStatus
-      ) &&
+      (
+        [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN] as Status[]
+      ).includes(finalStatus) &&
       !finalBukti
     ) {
       throw new BadRequestException(
@@ -245,9 +245,9 @@ export class TambahanService {
       throw new ForbiddenException("pimpinan tidak diizinkan");
     }
     if (
-      [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN].includes(
-        data.status
-      ) &&
+      (
+        [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN] as Status[]
+      ).includes(data.status) &&
       !data.buktiLink
     ) {
       throw new BadRequestException(

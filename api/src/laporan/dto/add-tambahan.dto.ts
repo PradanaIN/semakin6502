@@ -1,6 +1,7 @@
 import { IsDateString, IsOptional, IsString } from "class-validator";
 import { Transform } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
+import { Status } from "../../common/status.constants";
 
 export class AddTambahanDto {
   @ApiProperty()
@@ -13,7 +14,7 @@ export class AddTambahanDto {
 
   @ApiProperty()
   @IsString()
-  status!: string;
+  status!: Status;
 
   @ApiProperty({ required: false })
   @IsOptional()
