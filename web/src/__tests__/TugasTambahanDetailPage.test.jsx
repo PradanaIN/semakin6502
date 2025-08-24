@@ -65,6 +65,36 @@ test('displays week, month, and year information', async () => {
   expect(screen.getByText('2024')).toBeInTheDocument();
 });
 
+test('shows period text in edit mode based on selected date', async () => {
+  axios.get.mockImplementation((url) => {
+    if (url === '/tugas-tambahan/1') {
+      return Promise.resolve({
+        data: {
+          kegiatanId: 1,
+          userId: 1,
+          tanggal: '2024-01-01',
+          status: 'BELUM',
+          nama: 'Test',
+          kegiatan: { team: { namaTim: 'Tim A' } },
+        },
+      });
+    }
+    if (url.startsWith('/master-kegiatan')) {
+      return Promise.resolve({ data: [] });
+    }
+    return Promise.resolve({ data: [] });
+  });
+
+  render(<TugasTambahanDetailPage />);
+
+  const editButton = await screen.findByRole('button', { name: /edit/i });
+  fireEvent.click(editButton);
+
+  expect(
+    await screen.findByLabelText(/periode/i)
+  ).toHaveValue('Minggu ke-1 Bulan Januari Tahun 2024');
+});
+
   test('navigates to list with success state after deletion', async () => {
     axios.get.mockImplementation((url) => {
       if (url === '/tugas-tambahan/1') {
