@@ -33,20 +33,27 @@ export default function PanduanPage() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-4">
-        <nav className="flex flex-col gap-2 w-full md:w-48">
-          {SECTIONS.map((section) => (
-            <button
-              key={section.title}
-              onClick={() => setPage(section.page)}
-              className={`px-3 py-1 text-sm rounded ${
-                page === section.page
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-              }`}
-            >
-              {section.title}
-            </button>
-          ))}
+        <nav
+          aria-label="Navigasi Panduan"
+          className="w-full md:w-48"
+        >
+          <ul className="flex flex-col gap-2">
+            {SECTIONS.map((section) => (
+              <li key={section.title}>
+                <button
+                  onClick={() => setPage(section.page)}
+                  aria-current={page === section.page ? "true" : undefined}
+                  className={`px-3 py-1 text-sm rounded focus:outline-none focus:ring ${
+                    page === section.page
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                  }`}
+                >
+                  {section.title}
+                </button>
+              </li>
+            ))}
+          </ul>
         </nav>
 
         <div className="flex-1">
