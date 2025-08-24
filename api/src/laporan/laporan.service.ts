@@ -16,7 +16,7 @@ import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { normalizeRole } from "../common/roles";
 import { ROLES } from "../common/roles.constants";
-import { STATUS } from "../common/status.constants";
+import { STATUS, Status } from "../common/status.constants";
 import { SubmitLaporanDto } from "./dto/submit-laporan.dto";
 
 function getWeekOfMonth(date: Date) {
@@ -172,9 +172,9 @@ export class LaporanService {
       throw new ForbiddenException("pimpinan tidak diizinkan");
     }
     if (
-      [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN].includes(
-        data.status
-      ) &&
+      (
+        [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN] as Status[]
+      ).includes(data.status) &&
       !data.buktiLink
     ) {
       throw new BadRequestException(
@@ -310,9 +310,9 @@ export class LaporanService {
     }
     const finalBukti = data.buktiLink ?? existing.buktiLink;
     if (
-      [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN].includes(
-        data.status
-      ) &&
+      (
+        [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN] as Status[]
+      ).includes(data.status as Status) &&
       !finalBukti
     ) {
       throw new BadRequestException(
