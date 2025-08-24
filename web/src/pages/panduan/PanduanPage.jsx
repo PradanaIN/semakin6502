@@ -1,6 +1,18 @@
 import { useRef, useState } from "react";
-import { BookOpen } from "lucide-react";
+import {
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  Minus,
+  Plus,
+} from "lucide-react";
+import { Document, Page, pdfjs } from "react-pdf";
 import bukuPanduan from "../../assets/buku_panduan_semakin.pdf";
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url,
+).toString();
 
 const SECTIONS = [
   { title: "Pendahuluan", page: 2 },
@@ -17,7 +29,18 @@ const SECTIONS = [
 
 export default function PanduanPage() {
   const [page, setPage] = useState(SECTIONS[0].page);
+  const [numPages, setNumPages] = useState(0);
+  const [scale, setScale] = useState(1);
   const buttonRefs = useRef([]);
+
+  const handleDocumentLoadSuccess = ({ numPages }) => {
+    setNumPages(numPages);
+  };
+
+  const nextPage = () => setPage((p) => Math.min(p + 1, numPages));
+  const prevPage = () => setPage((p) => Math.max(p - 1, 1));
+  const zoomIn = () => setScale((s) => s + 0.25);
+  const zoomOut = () => setScale((s) => Math.max(s - 0.25, 0.5));
 
   const handleKeyDown = (e) => {
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
@@ -75,25 +98,50 @@ export default function PanduanPage() {
           </ul>
         </nav>
 
-        <div className="flex-1">
-          <object
-            key={page}
-            data={`${bukuPanduan}#page=${page}`}
-            type="application/pdf"
-            className="w-full md:h-[80vh]"
-            title="Buku Panduan"
-          >
-            <p className="text-gray-600 dark:text-gray-400">
-              PDF tidak dapat dimuat.{" "}
-              <a
-                href={bukuPanduan}
-                download
-                className="text-blue-600 underline"
+        <div className="flex-1 space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={prevPage}
+                disabled={page <= 1}
+                className="p-1 rounded border disabled:opacity-50"
               >
-                Unduh Buku Panduan
-              </a>
-            </p>
-          </object>
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="text-sm text-gray-700 dark:text-gray-300">
+                {page} / {numPages || "?"}
+              </span>
+              <button
+                onClick={nextPage}
+                disabled={page >= numPages}
+                className="p-1 rounded border disabled:opacity-50"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={zoomOut} className="p-1 rounded border">
+                <Minus className="w-4 h-4" />
+              </button>
+              <button onClick={zoomIn} className="p-1 rounded border">
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          <Document
+            file={bukuPanduan}
+            onLoadSuccess={handleDocumentLoadSuccess}
+            className="[&_.react-pdf__Page]:mx-auto"
+          >
+            <Page pageNumber={page} scale={scale} />
+          </Document>
+          <a
+            href={bukuPanduan}
+            download
+            className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Unduh Panduan
+          </a>
         </div>
       </div>
     </div>
