@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BookOpen } from "lucide-react";
-import bukuPanduan from "@/assets/buku_panduan_semakin.pdf";
+import ReactPlayer from "react-player";
+import bukuPanduan from "../../assets/buku_panduan_semakin.pdf";
 
 const SECTIONS = [
   { title: "Deskripsi Penggunaan", page: 1 },
@@ -16,8 +17,12 @@ export default function PanduanPage() {
       <div className="flex items-center gap-3">
         <BookOpen className="w-6 h-6 text-blue-600" />
         <div>
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white">Panduan Penggunaan</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Pelajari alur kerja dan menu aplikasi.</p>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+            Panduan Penggunaan
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Pelajari alur kerja dan menu aplikasi.
+          </p>
         </div>
       </div>
 
@@ -50,7 +55,6 @@ export default function PanduanPage() {
           </a>
         </p>
       </object>
-
     </div>
   );
 }

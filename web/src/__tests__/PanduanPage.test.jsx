@@ -2,6 +2,8 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import PanduanPage from '../pages/panduan/PanduanPage';
 
+jest.mock('react-player', () => () => null);
+
 test('renders PanduanPage elements', () => {
   render(
     <MemoryRouter>

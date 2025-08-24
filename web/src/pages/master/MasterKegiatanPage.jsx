@@ -37,9 +37,17 @@ export default function MasterKegiatanPage() {
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [filterTeam, setFilterTeam] = useState("");
+  const [filterTeam, setFilterTeam] = useState(
+    user?.role === ROLES.KETUA ? user.teamId : "",
+  );
   const [search, setSearch] = useState("");
   const totalPages = lastPage || 1;
+
+  useEffect(() => {
+    if (user?.role === ROLES.KETUA) {
+      setFilterTeam(user.teamId);
+    }
+  }, [user]);
 
   const columns = useMemo(
     () => [
@@ -209,7 +217,9 @@ export default function MasterKegiatanPage() {
       hover:border-blue-400 dark:hover:border-blue-400
       shadow-sm transition duration-150 ease-in-out text-center"
             >
-              <option value="">Semua</option>
+              {user.role !== ROLES.KETUA && (
+                <option value="">Semua</option>
+              )}
               {teams.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.namaTim}
