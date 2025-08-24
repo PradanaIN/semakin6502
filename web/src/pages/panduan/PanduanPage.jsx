@@ -3,9 +3,16 @@ import { BookOpen } from "lucide-react";
 import bukuPanduan from "../../assets/buku_panduan_semakin.pdf";
 
 const SECTIONS = [
-  { title: "Deskripsi Penggunaan", page: 2 },
-  { title: "Workflow", page: 3 },
-  { title: "Dashboard", page: 6 },
+  { title: "Pendahuluan", page: 2 },
+  { title: "Login", page: 4 },
+  { title: "Dashboard", page: 5 },
+  { title: "Tugas Mingguan", page: 9 },
+  { title: "Tugas Tambahan", page: 16 },
+  { title: "Laporan Harian", page: 22 },
+  { title: "Monitoring", page: 24 },
+  { title: "Keterlambatan", page: 26 },
+  { title: "Master Kegiatan", page: 28 },
+  { title: "Penutup", page: 29 },
 ];
 
 export default function PanduanPage() {
