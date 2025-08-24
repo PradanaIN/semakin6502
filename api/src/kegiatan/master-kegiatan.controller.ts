@@ -37,14 +37,20 @@ export class MasterKegiatanController {
   }
 
   @Get()
+  @Roles(ROLES.ADMIN, ROLES.KETUA)
   findAll(@Req() req: Request) {
     const { page, limit, team, search } = req.query;
-    return this.masterService.findAll({
-      page: page ? parseInt(page as string, 10) : undefined,
-      limit: limit ? parseInt(limit as string, 10) : undefined,
-      teamId: team as string | undefined,
-      search: search as string | undefined,
-    });
+    const u = req.user as AuthRequestUser;
+    return this.masterService.findAll(
+      {
+        page: page ? parseInt(page as string, 10) : undefined,
+        limit: limit ? parseInt(limit as string, 10) : undefined,
+        teamId: team as string | undefined,
+        search: search as string | undefined,
+      },
+      u.userId,
+      u.role,
+    );
   }
 
   @Put(":id")
