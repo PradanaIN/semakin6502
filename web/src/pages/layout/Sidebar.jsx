@@ -15,89 +15,94 @@ import {
 } from "lucide-react";
 import { ROLES } from "../../utils/roles";
 
-const mainLinks = [
-  {
+const links = {
+  dashboard: {
     to: "/dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
     roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA],
   },
-  {
+  tugasMingguan: {
     to: "/tugas-mingguan",
     label: "Tugas Mingguan",
     icon: ClipboardList,
     roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA, ROLES.PIMPINAN],
   },
-  {
+  tugasTambahan: {
     to: "/tugas-tambahan",
     label: "Tugas Tambahan",
     icon: FilePlus,
     roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA, ROLES.PIMPINAN],
   },
-  {
+  laporanHarian: {
     to: "/laporan-harian",
     label: "Laporan Harian",
     icon: FileText,
     roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA],
   },
-  {
+  monitoring: {
     to: "/monitoring",
     label: "Monitoring",
     icon: BarChart2,
     roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA, ROLES.PIMPINAN],
   },
-  {
+  keterlambatan: {
     to: "/laporan-terlambat",
     label: "Keterlambatan",
     icon: AlertCircle,
     roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA, ROLES.PIMPINAN],
   },
-  {
+  panduan: {
     to: "/panduan",
     label: "Panduan",
     icon: BookOpen,
     roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA, ROLES.PIMPINAN],
   },
-];
-
-const manageLinks = [
-  {
+  masterKegiatan: {
     to: "/master-kegiatan",
     label: "Master Kegiatan",
     icon: List,
     roles: [ROLES.ADMIN, ROLES.KETUA],
   },
-  {
+  kelolaPengguna: {
     to: "/users",
     label: "Kelola Pengguna",
     icon: Users,
     roles: [ROLES.ADMIN],
   },
-  {
+  kelolaTim: {
     to: "/teams",
     label: "Kelola Tim",
     icon: UserCog,
     roles: [ROLES.ADMIN],
   },
+};
+
+const sectionsGeneral = [
+  { label: null, links: ["dashboard"] },
+  {
+    label: "Data Pegawai",
+    links: ["tugasMingguan", "tugasTambahan", "laporanHarian"],
+  },
+  {
+    label: "Monitoring",
+    links: ["monitoring", "keterlambatan"],
+  },
+  { label: "Master", links: ["masterKegiatan", "kelolaPengguna", "kelolaTim"] },
+  { label: "Lainnya", links: ["panduan"] },
+];
+
+const sectionsPimpinan = [
+  { label: null, links: ["monitoring", "keterlambatan"] },
+  { label: "Data Pegawai", links: ["tugasMingguan", "tugasTambahan"] },
+  { label: "Lainnya", links: ["panduan"] },
 ];
 
 export default function Sidebar({ setSidebarOpen }) {
   const { user } = useAuth();
-
-  const isLinkVisible = (link) =>
-    !link.roles || link.roles.includes(user?.role);
-  const visibleMainLinks = mainLinks.filter(isLinkVisible);
-  const visibleManageLinks = manageLinks.filter(isLinkVisible);
-  const isPimpinan = user?.role === ROLES.PIMPINAN;
-  const isKetuaOrAnggota =
-    user?.role === ROLES.KETUA || user?.role === ROLES.ANGGOTA;
-
-  const getLink = (path) => visibleMainLinks.find((l) => l.to === path);
-  const monitoringLink = getLink("/monitoring");
-  const terlambatLink = getLink("/laporan-terlambat");
-  const mingguanLink = getLink("/tugas-mingguan");
-  const tambahanLink = getLink("/tugas-tambahan");
-  const panduanLink = getLink("/panduan");
+  const isLinkVisible = (link) => !link.roles || link.roles.includes(user?.role);
+  const sections =
+    user?.role === ROLES.PIMPINAN ? sectionsPimpinan : sectionsGeneral;
 
   const renderLink = (link) => {
     const Icon = link.icon;
@@ -133,47 +138,25 @@ export default function Sidebar({ setSidebarOpen }) {
       </div>
 
       <nav className="space-y-2">
-        {isPimpinan ? (
-          <>
-            {monitoringLink && renderLink(monitoringLink)}
-            {terlambatLink && renderLink(terlambatLink)}
-            {panduanLink && renderLink(panduanLink)}
-            <hr className="my-4 border-gray-200 dark:border-gray-700" />
-            <div className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Data Pegawai
+        {sections.map((section, index) => {
+          const sectionLinks = section.links
+            .map((key) => links[key])
+            .filter(isLinkVisible);
+          if (sectionLinks.length === 0) return null;
+          return (
+            <div key={section.label || index} className="space-y-2">
+              {index > 0 && (
+                <hr className="my-4 border-gray-200 dark:border-gray-700" />
+              )}
+              {section.label && (
+                <div className="px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  {section.label}
+                </div>
+              )}
+              {sectionLinks.map(renderLink)}
             </div>
-            {mingguanLink && renderLink(mingguanLink)}
-            {tambahanLink && renderLink(tambahanLink)}
-          </>
-        ) : isKetuaOrAnggota ? (
-          <>
-            {visibleMainLinks
-              .filter(
-                (link) =>
-                  !["/monitoring", "/laporan-terlambat"].includes(link.to)
-              )
-              .map(renderLink)}
-            {monitoringLink && renderLink(monitoringLink)}
-            <hr className="my-4 border-gray-200 dark:border-gray-700" />
-            {terlambatLink && renderLink(terlambatLink)}
-          </>
-        ) : (
-          visibleMainLinks.flatMap((link) =>
-            isKetuaOrAnggota && link.to === "/monitoring"
-              ? [
-                  renderLink(link),
-                  <hr
-                    key="monitoring-separator"
-                    className="my-4 border-gray-200 dark:border-gray-700"
-                  />,
-                ]
-              : [renderLink(link)]
-          )
-        )}
-        {visibleManageLinks.length > 0 && (
-          <hr className="my-4 border-gray-200 dark:border-gray-700" />
-        )}
-        {visibleManageLinks.map(renderLink)}
+          );
+        })}
       </nav>
       <button
         className="mt-auto flex items-center justify-center
@@ -194,3 +177,4 @@ export default function Sidebar({ setSidebarOpen }) {
     </aside>
   );
 }
+
