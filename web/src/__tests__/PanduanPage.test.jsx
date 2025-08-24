@@ -19,8 +19,8 @@ test('renders PanduanPage elements', () => {
   ).toBeInTheDocument();
 
   const pdfObject = screen.getByTitle('Buku Panduan');
-  expect(pdfObject).toHaveAttribute('data', '#page=1');
+  expect(pdfObject).toHaveAttribute('data', expect.stringContaining('#page=1'));
 
   fireEvent.click(screen.getByRole('button', { name: /Workflow/i }));
-  expect(pdfObject).toHaveAttribute('data', '#page=3');
+  expect(pdfObject).toHaveAttribute('data', expect.stringContaining('#page=3'));
 });

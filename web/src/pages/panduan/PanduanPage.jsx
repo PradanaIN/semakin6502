@@ -3,8 +3,6 @@ import { BookOpen } from "lucide-react";
 import ReactPlayer from "react-player";
 import bukuPanduan from "../../assets/buku_panduan_semakin.pdf";
 
-const VIDEO_URL = "";
-
 const SECTIONS = [
   { title: "Deskripsi Penggunaan", page: 1 },
   { title: "Workflow", page: 3 },
@@ -12,7 +10,6 @@ const SECTIONS = [
 ];
 
 export default function PanduanPage() {
-  const [playerError, setPlayerError] = useState(false);
   const [page, setPage] = useState(SECTIONS[0].page);
 
   return (
@@ -58,35 +55,6 @@ export default function PanduanPage() {
           </a>
         </p>
       </object>
-
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-          Video Panduan
-        </h3>
-        {!playerError ? (
-          <div className="relative pt-[56.25%]">
-            <ReactPlayer
-              url={VIDEO_URL}
-              width="100%"
-              height="100%"
-              className="absolute top-0 left-0"
-              onError={() => setPlayerError(true)}
-            />
-          </div>
-        ) : (
-          <p className="text-gray-600 dark:text-gray-400">
-            Video tidak dapat ditampilkan.{" "}
-            <a
-              href={VIDEO_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline"
-            >
-              Buka di YouTube
-            </a>
-          </p>
-        )}
-      </div>
     </div>
   );
 }
