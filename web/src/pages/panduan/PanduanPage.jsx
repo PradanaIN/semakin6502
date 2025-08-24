@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { BookOpen } from "lucide-react";
-import ReactPlayer from "react-player";
 import bukuPanduan from "../../assets/buku_panduan_semakin.pdf";
 
 const SECTIONS = [
@@ -26,35 +25,39 @@ export default function PanduanPage() {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {SECTIONS.map((section) => (
-          <button
-            key={section.title}
-            onClick={() => setPage(section.page)}
-            className={`px-3 py-1 text-sm rounded ${
-              page === section.page
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-            }`}
-          >
-            {section.title}
-          </button>
-        ))}
-      </div>
+      <div className="flex gap-4">
+        <nav className="flex flex-col gap-2 w-48">
+          {SECTIONS.map((section) => (
+            <button
+              key={section.title}
+              onClick={() => setPage(section.page)}
+              className={`px-3 py-1 text-sm rounded ${
+                page === section.page
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              }`}
+            >
+              {section.title}
+            </button>
+          ))}
+        </nav>
 
-      <object
-        data={`${bukuPanduan}#page=${page}`}
-        type="application/pdf"
-        className="w-full h-[80vh]"
-        title="Buku Panduan"
-      >
-        <p className="text-gray-600 dark:text-gray-400">
-          PDF tidak dapat dimuat.{" "}
-          <a href={bukuPanduan} download className="text-blue-600 underline">
-            Unduh Buku Panduan
-          </a>
-        </p>
-      </object>
+        <div className="flex-1 h-[80vh]">
+          <object
+            data={`${bukuPanduan}#page=${page}`}
+            type="application/pdf"
+            className="w-full h-full"
+            title="Buku Panduan"
+          >
+            <p className="text-gray-600 dark:text-gray-400">
+              PDF tidak dapat dimuat.{" "}
+              <a href={bukuPanduan} download className="text-blue-600 underline">
+                Unduh Buku Panduan
+              </a>
+            </p>
+          </object>
+        </div>
+      </div>
     </div>
   );
 }
