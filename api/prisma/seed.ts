@@ -480,6 +480,7 @@ async function main() {
     new Date("2025-08-17T00:00:00Z"),
   ];
   sampleDates.forEach((d) => console.log("Seeded:", d.toISOString()));
+  /*
   const tambahanRows: any[] = [];
   for (const m of members) {
     if (m.user.role === "admin") continue;
@@ -537,7 +538,9 @@ async function main() {
       skipDuplicates: true,
     });
   }
+  */
 
+  /*
   const penugasanRows: any[] = [];
 
   for (const m of members) {
@@ -578,8 +581,10 @@ async function main() {
       skipDuplicates: true,
     });
   }
+  */
 
   // seed laporan harian based on penugasan
+  /*
   const penugasans = await prisma.penugasan.findMany({
     where: { tahun: 2025, bulan: { in: ["6", "7", "8"] } },
   });
@@ -643,6 +648,7 @@ async function main() {
       });
     }
   }
+  */
 
   // Assign some members late laporan_harian before BASE_DATE to simulate
   // late reports using existing penugasan. Members are randomly selected to be late by 1, 3 or 7 days.
