@@ -13,18 +13,40 @@ import { UpdateMasterKegiatanDto } from "./dto/update-master-kegiatan.dto";
 export class MasterKegiatanService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(params: {
-    page?: number;
-    limit?: number;
-    teamId?: string;
-    search?: string;
-  }) {
+  async findAll(
+    params: {
+      page?: number;
+      limit?: number;
+      teamId?: string;
+      search?: string;
+    },
+    userId: string,
+    role: string,
+  ) {
     const page = params.page && params.page > 0 ? params.page : 1;
     const limit = params.limit && params.limit > 0 ? params.limit : 10;
     const skip = (page - 1) * limit;
     const where: any = {};
-    if (params.teamId) where.teamId = params.teamId;
+
     if (params.search) where.namaKegiatan = { contains: params.search };
+
+    if (role !== ROLES.ADMIN) {
+      const leaderTeams = await this.prisma.member.findMany({
+        where: { userId, isLeader: true },
+        select: { teamId: true },
+      });
+      const leaderTeamIds = leaderTeams.map((t) => t.teamId);
+      if (params.teamId) {
+        if (!leaderTeamIds.includes(params.teamId)) {
+          throw new ForbiddenException("bukan ketua tim kegiatan ini");
+        }
+        where.teamId = params.teamId;
+      } else {
+        where.teamId = { in: leaderTeamIds };
+      }
+    } else if (params.teamId) {
+      where.teamId = params.teamId;
+    }
 
     const [data, total] = await this.prisma.$transaction([
       this.prisma.masterKegiatan.findMany({
