@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { BookOpen } from "lucide-react";
 import ReactPlayer from "react-player";
-import bukuPanduan from "@/assets/buku_panduan_semakin.pdf";
+import bukuPanduan from "../../assets/buku_panduan_semakin.pdf";
 
-const VIDEO_URL = "https://www.youtube.com/watch?v=ysz5S6PUM-U";
+const VIDEO_URL = "";
 
 const SECTIONS = [
   { title: "Deskripsi Penggunaan", page: 1 },
@@ -20,8 +20,12 @@ export default function PanduanPage() {
       <div className="flex items-center gap-3">
         <BookOpen className="w-6 h-6 text-blue-600" />
         <div>
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white">Panduan Penggunaan</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Pelajari alur kerja dan menu aplikasi.</p>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white">
+            Panduan Penggunaan
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Pelajari alur kerja dan menu aplikasi.
+          </p>
         </div>
       </div>
 
@@ -56,7 +60,9 @@ export default function PanduanPage() {
       </object>
 
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Video Panduan</h3>
+        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+          Video Panduan
+        </h3>
         {!playerError ? (
           <div className="relative pt-[56.25%]">
             <ReactPlayer
