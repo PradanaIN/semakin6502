@@ -32,8 +32,8 @@ export default function PanduanPage() {
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <nav className="flex flex-col gap-2 w-48">
+      <div className="flex flex-col md:flex-row gap-4">
+        <nav className="flex flex-col gap-2 w-full md:w-48">
           {SECTIONS.map((section) => (
             <button
               key={section.title}
@@ -49,12 +49,12 @@ export default function PanduanPage() {
           ))}
         </nav>
 
-        <div className="flex-1 h-[80vh]">
+        <div className="flex-1">
           <object
             key={page}
             data={`${bukuPanduan}#page=${page}`}
             type="application/pdf"
-            className="w-full h-full"
+            className="w-full md:h-[80vh]"
             title="Buku Panduan"
           >
             <p className="text-gray-600 dark:text-gray-400">
