@@ -387,63 +387,52 @@ export default function TugasTambahanDetailPage() {
         )}
       </div>
       {!editing ? (
-        <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-          <div>
+        <div className="space-y-4">
+          <div
+            data-testid="detail-grid"
+            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow"
+          >
             <div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Tim
-              </div>
-              <div className="font-medium">
-                {item.kegiatan.team?.namaTim || "-"}
-              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Kegiatan</div>
+              <div className="font-medium">{item.nama}</div>
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              Nama Kegiatan
-            </div>
-            <div className="font-medium">{item.nama}</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              Tanggal
-            </div>
-            <div className="font-medium">{formatDate(item.tanggal)}</div>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
             <div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Minggu
+              <div className="text-sm text-gray-500 dark:text-gray-400">Tim</div>
+              <div className="font-medium">{item.kegiatan.team?.namaTim || "-"}</div>
+            </div>
+            {item.user?.nama && (
+              <div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">Pegawai</div>
+                <div className="font-medium">{item.user.nama}</div>
               </div>
+            )}
+            <div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Minggu</div>
               <div className="font-medium">{minggu}</div>
             </div>
             <div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Bulan
-              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Bulan</div>
               <div className="font-medium">{bulan}</div>
             </div>
             <div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Tahun
-              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Tahun</div>
               <div className="font-medium">{tahun}</div>
             </div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              Deskripsi
+            <div className="sm:col-span-2 lg:col-span-3">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Deskripsi Penugasan
+              </div>
+              <div className="font-medium">{item.deskripsi || "-"}</div>
             </div>
-            <div className="font-medium">{item.deskripsi || "-"}</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              Status
-            </div>
-            <div className="font-medium">
-              <StatusBadge status={item.status} />
+            <div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Status</div>
+              <div className="font-medium">
+                <StatusBadge status={item.status} />
+              </div>
             </div>
           </div>
           {item.tanggalSelesai && (
-            <div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
               <div className="text-sm text-gray-500 dark:text-gray-400">
                 Tanggal Selesai
               </div>
@@ -455,15 +444,13 @@ export default function TugasTambahanDetailPage() {
             </div>
           )}
           {item.buktiLink && (
-            <div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Bukti
-              </div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+              <div className="text-sm text-gray-500 dark:text-gray-400">Bukti</div>
               <a
                 href={item.buktiLink}
                 target="_blank"
                 rel="noreferrer"
-                className="text-blue-600 underline dark:text-blue-400"
+                className="font-medium text-blue-600 underline dark:text-blue-400"
               >
                 Link
               </a>

@@ -37,7 +37,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-test('displays week, month, and year information', async () => {
+test('renders fields in correct order with grid layout', async () => {
   axios.get.mockImplementation((url) => {
     if (url === '/tugas-tambahan/1') {
       return Promise.resolve({
@@ -47,7 +47,10 @@ test('displays week, month, and year information', async () => {
           tanggal: '2024-01-01',
           status: 'BELUM',
           nama: 'Test',
+          deskripsi: 'Desc',
           kegiatan: { team: { namaTim: 'Tim A' } },
+          tanggalSelesai: '2024-01-05',
+          buktiLink: 'http://example.com',
         },
       });
     }
@@ -59,10 +62,17 @@ test('displays week, month, and year information', async () => {
 
   render(<TugasTambahanDetailPage />);
 
-  expect(await screen.findByText('Minggu')).toBeInTheDocument();
+  const grid = await screen.findByTestId('detail-grid');
+  expect(grid).toHaveClass('grid', 'sm:grid-cols-2', 'lg:grid-cols-3');
+  expect(grid.textContent).toMatch(
+    /Kegiatan.*Tim.*Minggu.*Bulan.*Tahun.*Deskripsi Penugasan.*Status/s
+  );
+  expect(grid.textContent).not.toMatch(/Tanggal Selesai|Bukti/);
   expect(screen.getByText('1')).toBeInTheDocument();
   expect(screen.getByText('Januari')).toBeInTheDocument();
   expect(screen.getByText('2024')).toBeInTheDocument();
+  expect(screen.getByText(/Tanggal Selesai/)).toBeInTheDocument();
+  expect(screen.getAllByText(/Bukti/).length).toBeGreaterThan(0);
 });
 
 test('shows period text in edit mode based on selected date', async () => {
