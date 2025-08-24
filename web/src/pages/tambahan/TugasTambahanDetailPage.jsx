@@ -73,6 +73,12 @@ export default function TugasTambahanDetailPage() {
     };
   }, [item?.tanggal]);
 
+  const periodeText = useMemo(() => {
+    if (!form.tanggal) return "";
+    const d = new Date(form.tanggal);
+    return `Minggu ke-${getWeekOfMonth(d)} Bulan ${months[d.getMonth()]} Tahun ${d.getFullYear()}`;
+  }, [form.tanggal]);
+
   const fetchKegiatanForTeam = useCallback(async (teamId) => {
     if (!teamId) {
       setKegiatan([]);
@@ -536,6 +542,18 @@ export default function TugasTambahanDetailPage() {
               onFocus={() => tanggalRef.current?.showPicker?.()}
               className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
               required
+            />
+          </div>
+          <div>
+            <label htmlFor="periode" className="block text-sm mb-1">
+              Periode
+            </label>
+            <Input
+              id="periode"
+              type="text"
+              value={periodeText}
+              readOnly
+              className="bg-gray-100 dark:bg-gray-700"
             />
           </div>
           <div>
