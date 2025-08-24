@@ -188,7 +188,8 @@ export default function TugasTambahanDetailPage() {
         return;
       }
       if (
-        laporanForm.status === STATUS.SELESAI_DIKERJAKAN &&
+        (laporanForm.status === STATUS.SEDANG_DIKERJAKAN ||
+          laporanForm.status === STATUS.SELESAI_DIKERJAKAN) &&
         !(
           typeof laporanForm.buktiLink === "string" ? laporanForm.buktiLink : ""
         ).trim()
@@ -690,7 +691,8 @@ export default function TugasTambahanDetailPage() {
                   </option>
                 </select>
               </div>
-              {laporanForm.status === STATUS.SELESAI_DIKERJAKAN && (
+              {(laporanForm.status === STATUS.SEDANG_DIKERJAKAN ||
+                laporanForm.status === STATUS.SELESAI_DIKERJAKAN) && (
                 <div className="col-span-1 md:col-span-2">
                   <Label htmlFor="buktiLink">
                     Link Bukti <span className="text-red-500">*</span>
