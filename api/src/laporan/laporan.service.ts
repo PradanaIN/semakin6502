@@ -4,6 +4,7 @@ import {
   NotFoundException,
   Inject,
   Logger,
+  BadRequestException,
 } from "@nestjs/common";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import type { Cache } from "cache-manager";
@@ -170,6 +171,16 @@ export class LaporanService {
     if (role === ROLES.PIMPINAN) {
       throw new ForbiddenException("pimpinan tidak diizinkan");
     }
+    if (
+      [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN].includes(
+        data.status
+      ) &&
+      !data.buktiLink
+    ) {
+      throw new BadRequestException(
+        "buktiLink diperlukan ketika status sedang atau selesai"
+      );
+    }
     const pen = await this.prisma.penugasan.findUnique({
       where: { id: data.penugasanId },
       include: { kegiatan: true },
@@ -296,6 +307,17 @@ export class LaporanService {
       } else {
         throw new ForbiddenException("bukan laporan anda");
       }
+    }
+    const finalBukti = data.buktiLink ?? existing.buktiLink;
+    if (
+      [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN].includes(
+        data.status
+      ) &&
+      !finalBukti
+    ) {
+      throw new BadRequestException(
+        "buktiLink diperlukan ketika status sedang atau selesai"
+      );
     }
     const laporan = await this.prisma.laporanHarian.update({
       where: { id },

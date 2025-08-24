@@ -24,9 +24,19 @@ describe('MonitoringService aggregated', () => {
       { id: '3', nama: 'C' },
     ]);
     prisma.laporanHarian.findMany.mockResolvedValue([
-      { pegawaiId: '2', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'B' } },
+      {
+        pegawaiId: '2',
+        status: STATUS.SELESAI_DIKERJAKAN,
+        buktiLink: 'link',
+        pegawai: { nama: 'B' },
+      },
       { pegawaiId: '1', status: STATUS.BELUM, pegawai: { nama: 'A' } },
-      { pegawaiId: '1', status: STATUS.SELESAI_DIKERJAKAN, pegawai: { nama: 'A' } },
+      {
+        pegawaiId: '1',
+        status: STATUS.SELESAI_DIKERJAKAN,
+        buktiLink: 'link',
+        pegawai: { nama: 'A' },
+      },
     ]);
     const res = await service.harianAll('2024-05-01');
     expect(res).toEqual([
@@ -55,9 +65,9 @@ describe('MonitoringService aggregated', () => {
       { id: '2', nama: 'B' },
     ]);
     prisma.laporanHarian.findMany.mockResolvedValue([
-      { pegawaiId: '2', status: STATUS.SELESAI_DIKERJAKAN },
+      { pegawaiId: '2', status: STATUS.SELESAI_DIKERJAKAN, buktiLink: 'link' },
       { pegawaiId: '1', status: STATUS.BELUM },
-      { pegawaiId: '1', status: STATUS.SELESAI_DIKERJAKAN },
+      { pegawaiId: '1', status: STATUS.SELESAI_DIKERJAKAN, buktiLink: 'link' },
     ]);
     const res = await service.mingguanAll('2024-05-01');
     expect(res).toEqual([
@@ -85,7 +95,11 @@ describe('MonitoringService aggregated', () => {
       { status: STATUS.BELUM },
     ]);
     prisma.laporanHarian.findMany.mockResolvedValue([
-      { tanggal: new Date('2024-04-29'), status: STATUS.SELESAI_DIKERJAKAN },
+      {
+        tanggal: new Date('2024-04-29'),
+        status: STATUS.SELESAI_DIKERJAKAN,
+        buktiLink: 'link',
+      },
       { tanggal: new Date('2024-05-01'), status: STATUS.BELUM },
     ]);
 
@@ -174,6 +188,7 @@ describe('MonitoringService aggregated', () => {
         pegawaiId: '1',
         tanggal: new Date('2024-05-02'),
         status: STATUS.SELESAI_DIKERJAKAN,
+        buktiLink: 'link',
       },
       {
         pegawaiId: '1',
@@ -184,6 +199,7 @@ describe('MonitoringService aggregated', () => {
         pegawaiId: '2',
         tanggal: new Date('2024-05-15'),
         status: STATUS.SELESAI_DIKERJAKAN,
+        buktiLink: 'link',
       },
     ]);
     const res = await service.mingguanBulan('2024-05-10');

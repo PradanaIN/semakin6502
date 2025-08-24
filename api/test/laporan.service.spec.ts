@@ -105,6 +105,7 @@ describe('LaporanService submit', () => {
     prisma.laporanHarian.create.mockResolvedValue({ id: id11 });
     prisma.laporanHarian.findFirst.mockResolvedValueOnce({
       status: STATUS.SELESAI_DIKERJAKAN,
+      buktiLink: "link",
     });
     prisma.penugasan.update.mockResolvedValue({});
 
