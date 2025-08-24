@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import PanduanPage from '../pages/panduan/PanduanPage';
 
+jest.mock('react-player', () => () => null);
+
 test('renders PanduanPage elements', () => {
   render(
     <MemoryRouter>
@@ -15,5 +17,5 @@ test('renders PanduanPage elements', () => {
   expect(
     screen.getByText(/Pelajari alur kerja dan menu aplikasi./i)
   ).toBeInTheDocument();
-  expect(screen.getByTitle(/Panduan/i)).toBeInTheDocument();
+  expect(screen.getByTitle('Buku Panduan')).toBeInTheDocument();
 });
