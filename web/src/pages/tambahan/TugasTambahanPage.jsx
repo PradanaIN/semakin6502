@@ -282,15 +282,14 @@ export default function TugasTambahanPage() {
         Header: "Aksi",
         accessor: "id",
         Cell: ({ row }) => (
-          <div className="space-x-2">
-            <Button
-              onClick={() => openDetail(row.original.id)}
-              icon
-              aria-label="Detail"
-            >
-              <Eye size={16} />
-            </Button>
-          </div>
+          <Button
+            onClick={() => openDetail(row.original.id)}
+            variant="icon"
+            icon
+            aria-label="Detail"
+          >
+            <Eye size={16} />
+          </Button>
         ),
         disableFilters: true,
       },
