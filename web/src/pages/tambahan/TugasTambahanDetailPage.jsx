@@ -24,6 +24,8 @@ import formatDate from "../../utils/formatDate";
 import Spinner from "../../components/Spinner";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
+import { getWeekOfMonth } from "../../utils/dateUtils";
+import months from "../../utils/months";
 
 export default function TugasTambahanDetailPage() {
   const { id } = useParams();
@@ -60,6 +62,16 @@ export default function TugasTambahanDetailPage() {
   });
   const tanggalRef = useRef(null);
   const laporanTanggalRef = useRef(null);
+
+  const { minggu, bulan, tahun } = useMemo(() => {
+    if (!item?.tanggal) return { minggu: "", bulan: "", tahun: "" };
+    const d = new Date(item.tanggal);
+    return {
+      minggu: getWeekOfMonth(d),
+      bulan: months[d.getMonth()],
+      tahun: d.getFullYear(),
+    };
+  }, [item?.tanggal]);
 
   const fetchKegiatanForTeam = useCallback(async (teamId) => {
     if (!teamId) {
@@ -388,6 +400,26 @@ export default function TugasTambahanDetailPage() {
               Tanggal
             </div>
             <div className="font-medium">{formatDate(item.tanggal)}</div>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Minggu
+              </div>
+              <div className="font-medium">{minggu}</div>
+            </div>
+            <div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Bulan
+              </div>
+              <div className="font-medium">{bulan}</div>
+            </div>
+            <div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Tahun
+              </div>
+              <div className="font-medium">{tahun}</div>
+            </div>
           </div>
           <div>
             <div className="text-sm text-gray-500 dark:text-gray-400">

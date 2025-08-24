@@ -26,12 +26,7 @@ import ExportModal from "../../components/ExportModal";
 import exportFileName from "../../utils/exportFileName";
 import confirmAlert from "../../utils/confirmAlert";
 import formatDate from "../../utils/formatDate";
-
-function getWeekOfMonth(date) {
-  const first = new Date(date.getFullYear(), date.getMonth(), 1);
-  const offset = (first.getDay() + 6) % 7;
-  return Math.floor((date.getDate() + offset - 1) / 7) + 1;
-}
+import { getWeekOfMonth } from "../../utils/dateUtils";
 
 export default function LaporanHarianPage() {
   const { user } = useAuth();

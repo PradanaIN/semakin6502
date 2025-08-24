@@ -37,6 +37,34 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+test('displays week, month, and year information', async () => {
+  axios.get.mockImplementation((url) => {
+    if (url === '/tugas-tambahan/1') {
+      return Promise.resolve({
+        data: {
+          kegiatanId: 1,
+          userId: 1,
+          tanggal: '2024-01-01',
+          status: 'BELUM',
+          nama: 'Test',
+          kegiatan: { team: { namaTim: 'Tim A' } },
+        },
+      });
+    }
+    if (url.startsWith('/master-kegiatan')) {
+      return Promise.resolve({ data: [] });
+    }
+    return Promise.resolve({ data: [] });
+  });
+
+  render(<TugasTambahanDetailPage />);
+
+  expect(await screen.findByText('Minggu')).toBeInTheDocument();
+  expect(screen.getByText('1')).toBeInTheDocument();
+  expect(screen.getByText('Januari')).toBeInTheDocument();
+  expect(screen.getByText('2024')).toBeInTheDocument();
+});
+
   test('navigates to list with success state after deletion', async () => {
     axios.get.mockImplementation((url) => {
       if (url === '/tugas-tambahan/1') {
