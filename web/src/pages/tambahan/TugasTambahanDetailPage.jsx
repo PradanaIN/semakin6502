@@ -88,6 +88,10 @@ export default function TugasTambahanDetailPage() {
       const res = await axios.get(`/master-kegiatan?team=${teamId}`);
       setKegiatan(res.data.data || res.data);
     } catch (err) {
+      if (err.response?.status === 403) {
+        setKegiatan([]);
+        return;
+      }
       handleAxiosError(err, "Gagal mengambil kegiatan");
       setKegiatan([]);
     }
@@ -99,7 +103,11 @@ export default function TugasTambahanDetailPage() {
       setItem(dRes.data);
 
       const teamId = dRes.data.kegiatan?.teamId || "";
-      await fetchKegiatanForTeam(teamId);
+      if ([ROLES.ADMIN, ROLES.KETUA].includes(user?.role)) {
+        await fetchKegiatanForTeam(teamId);
+      } else {
+        setKegiatan(dRes.data.kegiatan ? [dRes.data.kegiatan] : []);
+      }
 
       setForm({
         teamId: teamId ? String(teamId) : "",
@@ -111,7 +119,7 @@ export default function TugasTambahanDetailPage() {
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil data");
     }
-  }, [id, fetchKegiatanForTeam]);
+  }, [id, fetchKegiatanForTeam, user?.role]);
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -137,7 +145,9 @@ export default function TugasTambahanDetailPage() {
   const handleTeamChange = async (o) => {
     const teamId = o ? o.value : "";
     setForm({ ...form, teamId, kegiatanId: "" });
-    await fetchKegiatanForTeam(teamId);
+    if ([ROLES.ADMIN, ROLES.KETUA].includes(user?.role)) {
+      await fetchKegiatanForTeam(teamId);
+    }
   };
 
   const save = async () => {
