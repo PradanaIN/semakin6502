@@ -342,7 +342,7 @@ function Sidebar({ page, setPage, onKeyDown, currentIndex, buttonRefs }) {
               className={[
                 "group flex items-center justify-between rounded-xl border text-left transition-all px-3 py-2",
                 isActive
-                  ? "border-blue-600/30 bg-blue-50/80 dark:bg-blue-500/10"
+                  ? "border-blue-600/30 bg-gradient-to-r from-blue-500/10 via-sky-500/10 to-blue-500/10 dark:bg-blue-500/10"
                   : "border-transparent hover:border-gray-200 dark:hover:border-gray-700 hover:bg-gray-50/70 dark:hover:bg-gray-800/60",
               ].join(" ")}
             >
