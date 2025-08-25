@@ -75,7 +75,7 @@ test('renders fields in correct order with grid layout', async () => {
   expect(screen.getAllByText(/Bukti/).length).toBeGreaterThan(0);
 });
 
-test('shows period text in edit mode based on selected date', async () => {
+test('does not show period or status inputs in edit mode', async () => {
   axios.get.mockImplementation((url) => {
     if (url === '/tugas-tambahan/1') {
       return Promise.resolve({
@@ -85,7 +85,13 @@ test('shows period text in edit mode based on selected date', async () => {
           tanggal: '2024-01-01',
           status: 'BELUM',
           nama: 'Test',
-          kegiatan: { team: { namaTim: 'Tim A' } },
+          kegiatan: {
+            id: 1,
+            namaKegiatan: 'Keg A',
+            teamId: 1,
+            team: { namaTim: 'Tim A' },
+          },
+          deskripsi: 'Desc',
         },
       });
     }
@@ -100,9 +106,11 @@ test('shows period text in edit mode based on selected date', async () => {
   const editButton = await screen.findByRole('button', { name: /edit/i });
   fireEvent.click(editButton);
 
-  expect(
-    await screen.findByLabelText(/periode/i)
-  ).toHaveValue('Minggu ke-1 Bulan Januari Tahun 2024');
+  await waitFor(() => {
+    expect(screen.queryByLabelText(/periode/i)).not.toBeInTheDocument();
+  });
+  expect(screen.queryByLabelText(/tanggal/i)).not.toBeInTheDocument();
+  expect(screen.queryByLabelText(/^status/i)).not.toBeInTheDocument();
 });
 
   test('navigates to list with success state after deletion', async () => {

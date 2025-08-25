@@ -11,18 +11,6 @@ export class UpdateTambahanDto {
 
   @ApiProperty({ required: false })
   @Transform(({ value }) => (value === "" ? undefined : value))
-  @IsOptional()
-  @IsDateString()
-  tanggal?: string;
-
-  @ApiProperty({ required: false })
-  @Transform(({ value }) => (value === "" ? undefined : value))
-  @IsOptional()
-  @IsString()
-  status?: Status;
-
-  @ApiProperty({ required: false })
-  @Transform(({ value }) => (value === "" ? undefined : value))
   @ValidateIf(
     (o) =>
     (
