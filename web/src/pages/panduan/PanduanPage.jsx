@@ -128,11 +128,11 @@ export default function PanduanPage() {
     <div className="mx-auto max-w-6xl p-4 sm:p-6">
       {/* Card */}
       <div className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 backdrop-blur shadow-xl">
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-sky-500/10 to-emerald-500/10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-sky-500/10 to-blue-500/10" />
         {/* Header */}
         <div className="relative flex items-center justify-between gap-3 p-4 sm:p-6">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-indigo-600 text-white shadow">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white shadow">
               <BookOpen className="h-5 w-5" />
             </div>
             <div>
@@ -157,7 +157,7 @@ export default function PanduanPage() {
             <a
               href={bukuPanduan}
               download
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white hover:bg-indigo-700"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white hover:bg-blue-700"
               title="Unduh Panduan"
             >
               <Download className="h-4 w-4" />
@@ -246,7 +246,7 @@ export default function PanduanPage() {
                   onClick={() => setFit("width")}
                   className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-sm ${
                     fit === "width"
-                      ? "border-indigo-600 text-indigo-600"
+                      ? "border-blue-600 text-blue-600"
                       : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
                   title="Sesuaikan lebar"
@@ -257,7 +257,7 @@ export default function PanduanPage() {
                   onClick={() => setFit("page")}
                   className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-sm ${
                     fit === "page"
-                      ? "border-indigo-600 text-indigo-600"
+                      ? "border-blue-600 text-blue-600"
                       : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
                   title="Sesuaikan halaman"
@@ -309,7 +309,7 @@ export default function PanduanPage() {
                 >
                   <div className="p-6 text-gray-700 dark:text-gray-300">
                     PDF tidak dapat dimuat.{" "}
-                    <a href={bukuPanduan} className="text-indigo-600 underline">
+                    <a href={bukuPanduan} className="text-blue-600 underline">
                       Buka di tab baru
                     </a>
                     .
@@ -343,13 +343,13 @@ function Sidebar({ page, setPage, onKeyDown, currentIndex, buttonRefs }) {
               className={[
                 "group flex items-center justify-between rounded-xl border text-left transition-all px-3 py-2",
                 isActive
-                  ? "border-indigo-600/30 bg-indigo-50/80 dark:bg-indigo-500/10"
+                  ? "border-blue-600/30 bg-blue-50/80 dark:bg-blue-500/10"
                   : "border-transparent hover:border-gray-200 dark:hover:border-gray-700 hover:bg-gray-50/70 dark:hover:bg-gray-800/60",
               ].join(" ")}
             >
               <span className="flex items-center gap-2">
                 {isActive ? (
-                  <CheckCircle2 className="h-4 w-4 text-indigo-600" />
+                  <CheckCircle2 className="h-4 w-4 text-blue-600" />
                 ) : (
                   <span className="h-2 w-2 rounded-full bg-gray-300 group-hover:bg-gray-400" />
                 )}
