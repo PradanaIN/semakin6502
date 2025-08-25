@@ -14,6 +14,11 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import bukuPanduan from "../../assets/buku_panduan_semakin.pdf";
+import { Document, Page, pdfjs } from "react-pdf";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const SECTIONS = [
   { title: "Pendahuluan", page: 2 },
@@ -45,6 +50,22 @@ export default function PanduanPage() {
   const [fit, setFit] = useState("width"); // "width" | "page"
   const [zoomPercent, setZoomPercent] = useState(100); // hanya dipakai jika fit === "custom"
   const buttonRefs = useRef([]);
+  const viewerRef = useRef(null);
+  const [viewerSize, setViewerSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const updateSize = () => {
+      if (viewerRef.current) {
+        setViewerSize({
+          width: viewerRef.current.clientWidth,
+          height: viewerRef.current.clientHeight,
+        });
+      }
+    };
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
 
   const currentSectionIndex = useMemo(() => {
     const idx = SECTIONS.findIndex((s) => s.page === page);
@@ -145,7 +166,7 @@ export default function PanduanPage() {
           </div>
           <div className="flex items-center gap-2">
             <a
-              href={`${bukuPanduan}#page=${page}`}
+              href={pdfUrl}
               target="_blank"
               rel="noreferrer"
               className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -299,21 +320,31 @@ export default function PanduanPage() {
             {/* PDF (viewer native) */}
             <div className="px-4 sm:px-6 pb-6">
               <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
-                <object
-                  key={`${page}-${fit}-${zoomPercent}`} // paksa reload ketika parameter berubah
-                  data={pdfUrl}
-                  type="application/pdf"
-                  className="h-[70vh] w-full lg:h-[80vh]"
-                  title="Buku Panduan"
+                <div
+                  ref={viewerRef}
+                  className="h-[70vh] w-full lg:h-[80vh] overflow-auto flex justify-center"
                 >
-                  <div className="p-6 text-gray-700 dark:text-gray-300">
-                    PDF tidak dapat dimuat.{" "}
-                    <a href={bukuPanduan} className="text-blue-600 underline">
-                      Buka di tab baru
-                    </a>
-                    .
-                  </div>
-                </object>
+                  <Document
+                    file={bukuPanduan}
+                    loading={
+                      <div className="p-6 text-gray-700 dark:text-gray-300">
+                        Memuat...
+                      </div>
+                    }
+                    error={
+                      <div className="p-6 text-gray-700 dark:text-gray-300">
+                        PDF tidak dapat dimuat.
+                      </div>
+                    }
+                  >
+                    <Page
+                      pageNumber={page}
+                      width={fit === "width" ? viewerSize.width : undefined}
+                      height={fit === "page" ? viewerSize.height : undefined}
+                      scale={fit === "custom" ? zoomPercent / 100 : 1}
+                    />
+                  </Document>
+                </div>
               </div>
             </div>
           </main>

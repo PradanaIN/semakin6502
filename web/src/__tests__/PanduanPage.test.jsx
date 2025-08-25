@@ -3,6 +3,13 @@ import { MemoryRouter } from 'react-router-dom';
 import PanduanPage from '../pages/panduan/PanduanPage';
 
 jest.mock('react-player', () => () => null);
+jest.mock('react-pdf', () => ({
+  Document: ({ children }) => <div>{children}</div>,
+  Page: ({ pageNumber }) => (
+    <div data-testid="pdf-page" data-page-number={pageNumber} />
+  ),
+  pdfjs: { GlobalWorkerOptions: {}, version: '1.0.0' },
+}));
 
 test('renders PanduanPage elements', () => {
   render(
@@ -15,16 +22,16 @@ test('renders PanduanPage elements', () => {
     screen.getByRole('heading', { name: /Panduan Penggunaan/i })
   ).toBeInTheDocument();
   expect(
-    screen.getByText(/Pelajari alur kerja dan menu aplikasi./i)
+    screen.getByText(/Navigasi per bagian/i)
   ).toBeInTheDocument();
 
-  const pdfObject = screen.getByTitle('Buku Panduan');
+  const pdfPage = screen.getByTestId('pdf-page');
 
   // first section "Pendahuluan" should open the PDF on page 2
   fireEvent.click(screen.getByRole('button', { name: /Pendahuluan/i }));
-  expect(pdfObject).toHaveAttribute('data', expect.stringContaining('#page=2'));
+  expect(pdfPage).toHaveAttribute('data-page-number', '2');
 
-  // navigating to the Dashboard tab should update the page anchor
+  // navigating to the Dashboard tab should update the page number
   fireEvent.click(screen.getByRole('button', { name: /Dashboard/i }));
-  expect(pdfObject).toHaveAttribute('data', expect.stringContaining('#page=5'));
+  expect(pdfPage).toHaveAttribute('data-page-number', '5');
 });
