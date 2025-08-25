@@ -30,7 +30,7 @@ jest.mock('../utils/alerts', () => ({
 }));
 
 jest.mock('../pages/auth/useAuth', () => ({
-  useAuth: () => ({ user: { id: 1, role: 'ADMIN' } }),
+  useAuth: () => ({ user: { id: 1, role: 'ADMIN', nama: 'Admin User' } }),
 }));
 
 afterEach(() => {
@@ -65,9 +65,10 @@ test('renders fields in correct order with grid layout', async () => {
   const grid = await screen.findByTestId('detail-grid');
   expect(grid).toHaveClass('grid', 'sm:grid-cols-2', 'lg:grid-cols-3');
   expect(grid.textContent).toMatch(
-    /Kegiatan.*Tim.*Minggu.*Bulan.*Tahun.*Deskripsi Penugasan.*Status/s
+    /Kegiatan.*Tim.*Pegawai.*Minggu.*Bulan.*Tahun.*Deskripsi Penugasan.*Status/s
   );
   expect(grid.textContent).not.toMatch(/Tanggal Selesai|Bukti/);
+  expect(screen.getByText('Admin User')).toBeInTheDocument();
   expect(screen.getByText('1')).toBeInTheDocument();
   expect(screen.getByText('Januari')).toBeInTheDocument();
   expect(screen.getByText('2024')).toBeInTheDocument();
@@ -85,12 +86,12 @@ test('shows period text in edit mode based on selected date', async () => {
           tanggal: '2024-01-01',
           status: 'BELUM',
           nama: 'Test',
-          kegiatan: { team: { namaTim: 'Tim A' } },
+          kegiatan: { id: 1, teamId: 1, team: { namaTim: 'Tim A' } },
         },
       });
     }
     if (url.startsWith('/master-kegiatan')) {
-      return Promise.resolve({ data: [] });
+      return Promise.resolve({ data: [{ id: 1, namaKegiatan: 'Kegiatan A' }] });
     }
     return Promise.resolve({ data: [] });
   });
