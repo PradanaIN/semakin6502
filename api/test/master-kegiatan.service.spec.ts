@@ -48,7 +48,7 @@ describe('MasterKegiatanService findAll', () => {
     expect(prisma.member.findMany).not.toHaveBeenCalled();
   });
 
-  it('non-admin gets only own team activities', async () => {
+  it('ketua gets only own team activities', async () => {
     prisma.member.findMany.mockResolvedValue([{ teamId: '2' }]);
     prisma.masterKegiatan.findMany.mockResolvedValue([
       { id: '1', teamId: '2', namaKegiatan: 'Test' },
@@ -70,11 +70,42 @@ describe('MasterKegiatanService findAll', () => {
     expect(result.data[0]).toHaveProperty('teamId', '2');
   });
 
-  it('non-admin requesting other team throws ForbiddenException', async () => {
+  it('ketua requesting other team throws ForbiddenException', async () => {
     prisma.member.findMany.mockResolvedValue([{ teamId: '2' }]);
 
     await expect(
       service.findAll({ teamId: '3' }, 'user1', ROLES.KETUA),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    expect(prisma.masterKegiatan.findMany).not.toHaveBeenCalled();
+  });
+
+  it('anggota gets only own team activities', async () => {
+    prisma.member.findMany.mockResolvedValue([{ teamId: '2' }]);
+    prisma.masterKegiatan.findMany.mockResolvedValue([
+      { id: '1', teamId: '2', namaKegiatan: 'Test' },
+    ]);
+    prisma.masterKegiatan.count.mockResolvedValue(1);
+
+    const result = await service.findAll(
+      { page: 1, limit: 10 },
+      'user1',
+      ROLES.ANGGOTA,
+    );
+
+    expect(prisma.masterKegiatan.findMany).toHaveBeenCalledWith({
+      where: { teamId: { in: ['2'] } },
+      include: { team: true },
+      skip: 0,
+      take: 10,
+    });
+    expect(result.data[0]).toHaveProperty('teamId', '2');
+  });
+
+  it('anggota requesting other team throws ForbiddenException', async () => {
+    prisma.member.findMany.mockResolvedValue([{ teamId: '2' }]);
+
+    await expect(
+      service.findAll({ teamId: '3' }, 'user1', ROLES.ANGGOTA),
     ).rejects.toBeInstanceOf(ForbiddenException);
     expect(prisma.masterKegiatan.findMany).not.toHaveBeenCalled();
   });
