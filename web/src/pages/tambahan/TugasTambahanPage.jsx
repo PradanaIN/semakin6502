@@ -15,15 +15,16 @@ import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import Modal from "../../components/ui/Modal";
 import StatusBadge from "../../components/ui/StatusBadge";
 import Textarea from "../../components/ui/Textarea";
+import Input from "../../components/ui/Input";
 import { STATUS } from "../../utils/status";
 import SearchInput from "../../components/SearchInput";
 import Pagination from "../../components/Pagination";
 import SelectDataShow from "../../components/ui/SelectDataShow";
 import TableSkeleton from "../../components/ui/TableSkeleton";
-import { useRef } from "react";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 import formatDate from "../../utils/formatDate";
+import months from "../../utils/months";
 
 function sortTambahan(list, teamId) {
   return [...list].sort((a, b) => {
@@ -39,6 +40,28 @@ function sortTambahan(list, teamId) {
   });
 }
 
+const getCurrentWeek = () => {
+  const today = new Date();
+  const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const firstMonday = new Date(firstOfMonth);
+  firstMonday.setDate(
+    firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
+  );
+  const diff = Math.floor((today - firstMonday) / (1000 * 60 * 60 * 24));
+  return Math.floor(diff / 7) + 1;
+};
+
+function getDateFromPeriod(minggu, bulan, tahun) {
+  const firstOfMonth = new Date(tahun, bulan - 1, 1);
+  const firstMonday = new Date(firstOfMonth);
+  firstMonday.setDate(
+    firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
+  );
+  const result = new Date(firstMonday);
+  result.setDate(result.getDate() + (minggu - 1) * 7);
+  return result.toISOString().slice(0, 10);
+}
+
 export default function TugasTambahanPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,7 +71,9 @@ export default function TugasTambahanPage() {
   const [form, setForm] = useState({
     teamId: "",
     kegiatanId: "",
-    tanggal: new Date().toISOString().slice(0, 10),
+    minggu: getCurrentWeek(),
+    bulan: new Date().getMonth() + 1,
+    tahun: new Date().getFullYear(),
     deskripsi: "",
     status: STATUS.BELUM,
     capaianKegiatan: "",
@@ -60,7 +85,6 @@ export default function TugasTambahanPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   const location = useLocation();
-  const tanggalRef = useRef(null);
   const { user } = useAuth();
   const canManage = user?.role !== ROLES.PIMPINAN;
   const [filterTeam, setFilterTeam] = useState("");
@@ -152,7 +176,9 @@ export default function TugasTambahanPage() {
     setForm({
       teamId: "",
       kegiatanId: "",
-      tanggal: new Date().toISOString().slice(0, 10),
+      minggu: getCurrentWeek(),
+      bulan: new Date().getMonth() + 1,
+      tahun: new Date().getFullYear(),
       status: STATUS.BELUM,
       deskripsi: "",
       capaianKegiatan: "",
@@ -170,7 +196,9 @@ export default function TugasTambahanPage() {
     if (
       !form.teamId ||
       !form.kegiatanId ||
-      !form.tanggal ||
+      !form.minggu ||
+      !form.bulan ||
+      !form.tahun ||
       form.deskripsi.trim() === ""
     ) {
       showWarning("Lengkapi data", "Semua kolom wajib diisi");
@@ -178,7 +206,15 @@ export default function TugasTambahanPage() {
     }
     try {
       const payload = { ...form };
+      payload.tanggal = getDateFromPeriod(
+        form.minggu,
+        form.bulan,
+        form.tahun
+      );
       delete payload.teamId;
+      delete payload.minggu;
+      delete payload.bulan;
+      delete payload.tahun;
       Object.keys(payload).forEach((k) => {
         if (payload[k] === "" && k !== "capaianKegiatan") delete payload[k];
       });
@@ -462,23 +498,55 @@ export default function TugasTambahanPage() {
               </select>
             </div>
 
-            {/* Tanggal */}
-            <div>
-              <Label htmlFor="tanggal">
-                Tanggal Kegiatan <span className="text-red-500">*</span>
-              </Label>
-              <input
-                ref={tanggalRef}
-                id="tanggal"
-                type="date"
-                value={form.tanggal}
-                onChange={(e) =>
-                  setForm({ ...form, tanggal: e.target.value })
-                }
-                onFocus={() => tanggalRef.current?.showPicker?.()}
-                required
-                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
-              />
+            {/* Minggu, Bulan, Tahun */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div>
+                <Label htmlFor="minggu">
+                  Minggu <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="minggu"
+                  type="number"
+                  min="1"
+                  max="6"
+                  value={form.minggu}
+                  onChange={(e) =>
+                    setForm({ ...form, minggu: parseInt(e.target.value, 10) })
+                  }
+                />
+              </div>
+              <div>
+                <Label htmlFor="bulan">
+                  Bulan <span className="text-red-500">*</span>
+                </Label>
+                <select
+                  id="bulan"
+                  value={form.bulan}
+                  onChange={(e) =>
+                    setForm({ ...form, bulan: parseInt(e.target.value, 10) })
+                  }
+                  className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
+                >
+                  {months.map((m, i) => (
+                    <option key={i + 1} value={i + 1}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <Label htmlFor="tahun">
+                  Tahun <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="tahun"
+                  type="number"
+                  value={form.tahun}
+                  onChange={(e) =>
+                    setForm({ ...form, tahun: parseInt(e.target.value, 10) })
+                  }
+                />
+              </div>
             </div>
 
             {/* Deskripsi */}
