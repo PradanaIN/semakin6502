@@ -13,6 +13,7 @@ import {
   Hash,
   CheckCircle2,
 } from "lucide-react";
+import Button from "../../components/ui/Button";
 import bukuPanduan from "../../assets/buku_panduan_semakin.pdf";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -151,17 +152,57 @@ export default function PanduanPage() {
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg">
         {/* Header */}
         <div className="relative flex items-center justify-between gap-3 p-4 sm:p-6">
-          <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white shadow">
-              <BookOpen className="h-5 w-5" />
+            <div className="flex items-center gap-3">
+              <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white shadow">
+                <BookOpen className="h-5 w-5" />
+              </div>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  Panduan Penggunaan
+                </h1>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                  Navigasi per bagian. Gunakan ←/→ atau J/K untuk berpindah cepat.
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                Panduan Penggunaan
-              </h1>
-              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                Navigasi per bagian. Gunakan ←/→ atau J/K untuk berpindah cepat.
-              </p>
+            <div className="flex items-center gap-2">
+              <Button
+                icon
+                aria-label="Buka di tab baru"
+                onClick={() =>
+                  window.open(
+                    `${bukuPanduan}#page=${page}`,
+                    "_blank",
+                    "noopener,noreferrer"
+                  )
+                }
+                className="h-9 w-9 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+              <Button
+                icon
+                aria-label="Unduh Panduan"
+                onClick={() => {
+                  const link = document.createElement("a");
+                  link.href = bukuPanduan;
+                  link.setAttribute("download", "");
+                  document.body.appendChild(link);
+                  link.click();
+                  link.remove();
+                }}
+                className="h-9 w-9 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+              <Button
+                icon
+                className="lg:hidden h-9 w-9 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                onClick={() => setSidebarOpen((s) => !s)}
+                aria-label="Buka daftar isi"
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -244,43 +285,49 @@ export default function PanduanPage() {
                 <span>Halaman {page}</span>
               </div>
               <div className="flex items-center gap-2">
-                <button
+                <Button
                   onClick={goPrevSection}
                   disabled={!canPrev}
-                  className="inline-flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
+                  variant="secondary"
+                  className="gap-1 text-sm px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-50"
+                  aria-label="Ke bagian sebelumnya"
                 >
                   <ChevronLeft className="h-4 w-4" /> Sebelumnya
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={goNextSection}
                   disabled={!canNext}
-                  className="inline-flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
+                  variant="secondary"
+                  className="gap-1 text-sm px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-50"
+                  aria-label="Ke bagian selanjutnya"
                 >
                   Selanjutnya <ChevronRight className="h-4 w-4" />
-                </button>
+                </Button>
 
                 <span className="mx-2 h-5 w-px bg-gray-200 dark:bg-gray-700" />
 
                 {/* Zoom mode */}
                 <button
                   onClick={() => setFit("width")}
-                  className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-sm ${
+                  className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition ${
                     fit === "width"
                       ? "border-blue-600 text-blue-600"
                       : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
                   title="Sesuaikan lebar"
+                  aria-label="Sesuaikan lebar"
                 >
                   <Minimize2 className="h-4 w-4" /> Lebar
                 </button>
                 <button
                   onClick={() => setFit("page")}
-                  className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-sm ${
+                  className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition ${
                     fit === "page"
                       ? "border-blue-600 text-blue-600"
                       : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
                   title="Sesuaikan halaman"
+                  aria-label="Sesuaikan halaman"
                 >
                   <Maximize2 className="h-4 w-4" /> Halaman
                 </button>
@@ -292,8 +339,9 @@ export default function PanduanPage() {
                     setFit("custom");
                     setZoomPercent((z) => Math.max(50, z - 10));
                   }}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition"
                   title="Perkecil"
+                  aria-label="Perkecil"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
@@ -309,8 +357,9 @@ export default function PanduanPage() {
                     setFit("custom");
                     setZoomPercent((z) => Math.min(300, z + 10));
                   }}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition"
                   title="Perbesar"
+                  aria-label="Perbesar"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
@@ -360,44 +409,47 @@ function Sidebar({ page, setPage, onKeyDown, currentIndex, buttonRefs }) {
       <nav
         aria-label="Navigasi Panduan"
         onKeyDown={onKeyDown}
-        className="flex max-h-[70vh] flex-col gap-1 overflow-y-auto p-4 pr-2"
+        className="flex max-h-[70vh] flex-col overflow-y-auto p-4 pr-2 custom-scrollbar"
       >
-        {SECTIONS.map((section, index) => {
-          const isActive = page === section.page;
-          return (
-            <button
-              key={section.title}
-              onClick={() => setPage(section.page)}
-              aria-current={isActive ? "true" : undefined}
-              ref={(el) => (buttonRefs.current[index] = el)}
-              className={[
-                "group flex items-center justify-between rounded-xl border text-left transition-all px-3 py-2",
-                isActive
-                  ? "border-blue-600/30 bg-gradient-to-r from-blue-500/10 via-sky-500/10 to-blue-500/10 dark:bg-blue-500/10"
-                  : "border-transparent hover:border-gray-200 dark:hover:border-gray-700 hover:bg-gray-50/70 dark:hover:bg-gray-800/60",
-              ].join(" ")}
-            >
-              <span className="flex items-center gap-2">
-                {isActive ? (
-                  <CheckCircle2 className="h-4 w-4 text-blue-600" />
-                ) : (
-                  <span className="h-2 w-2 rounded-full bg-gray-300 group-hover:bg-gray-400" />
-                )}
-                <span
+        <ul className="flex flex-col gap-1 list-none">
+          {SECTIONS.map((section, index) => {
+            const isActive = page === section.page;
+            return (
+              <li key={section.title}>
+                <button
+                  onClick={() => setPage(section.page)}
+                  aria-current={isActive ? "true" : undefined}
+                  ref={(el) => (buttonRefs.current[index] = el)}
                   className={[
-                    "text-sm",
+                    "group flex w-full items-center justify-between rounded-xl border text-left transition-all px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
                     isActive
-                      ? "font-semibold text-gray-900 dark:text-white"
-                      : "text-gray-700 dark:text-gray-200",
+                      ? "border-blue-600/30 bg-gradient-to-r from-blue-500/10 via-sky-500/10 to-blue-500/10 dark:bg-blue-500/10"
+                      : "border-transparent hover:border-gray-200 dark:hover:border-gray-700 hover:bg-gray-50/70 dark:hover:bg-gray-800/60",
                   ].join(" ")}
                 >
-                  {section.title}
-                </span>
-              </span>
-              <span className="text-xs text-gray-500">h. {section.page}</span>
-            </button>
-          );
-        })}
+                  <span className="flex items-center gap-2">
+                    {isActive ? (
+                      <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                    ) : (
+                      <span className="h-2 w-2 rounded-full bg-gray-300 group-hover:bg-gray-400" />
+                    )}
+                    <span
+                      className={[
+                        "text-sm",
+                        isActive
+                          ? "font-semibold text-gray-900 dark:text-white"
+                          : "text-gray-700 dark:text-gray-200",
+                      ].join(" ")}
+                    >
+                      {section.title}
+                    </span>
+                  </span>
+                  <span className="text-xs text-gray-500">h. {section.page}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       </nav>
 
       {/* footer tips ringkas */}
