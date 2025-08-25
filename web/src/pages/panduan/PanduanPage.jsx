@@ -13,6 +13,7 @@ import {
   Hash,
   CheckCircle2,
 } from "lucide-react";
+import Button from "../../components/ui/Button";
 import bukuPanduan from "../../assets/buku_panduan_semakin.pdf";
 
 const SECTIONS = [
@@ -130,46 +131,59 @@ export default function PanduanPage() {
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg">
         {/* Header */}
         <div className="relative flex items-center justify-between gap-3 p-4 sm:p-6">
-          <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white shadow">
-              <BookOpen className="h-5 w-5" />
+            <div className="flex items-center gap-3">
+              <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white shadow">
+                <BookOpen className="h-5 w-5" />
+              </div>
+              <div>
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  Panduan Penggunaan
+                </h1>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                  Navigasi per bagian. Gunakan ←/→ atau J/K untuk berpindah cepat.
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                Panduan Penggunaan
-              </h1>
-              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                Navigasi per bagian. Gunakan ←/→ atau J/K untuk berpindah cepat.
-              </p>
+            <div className="flex items-center gap-2">
+              <Button
+                icon
+                aria-label="Buka di tab baru"
+                onClick={() =>
+                  window.open(
+                    `${bukuPanduan}#page=${page}`,
+                    "_blank",
+                    "noopener,noreferrer"
+                  )
+                }
+                className="h-9 w-9 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+              <Button
+                icon
+                aria-label="Unduh Panduan"
+                onClick={() => {
+                  const link = document.createElement("a");
+                  link.href = bukuPanduan;
+                  link.setAttribute("download", "");
+                  document.body.appendChild(link);
+                  link.click();
+                  link.remove();
+                }}
+                className="h-9 w-9 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+              <Button
+                icon
+                className="lg:hidden h-9 w-9 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                onClick={() => setSidebarOpen((s) => !s)}
+                aria-label="Buka daftar isi"
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <a
-              href={`${bukuPanduan}#page=${page}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-              title="Buka di tab baru"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </a>
-            <a
-              href={bukuPanduan}
-              download
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-              title="Unduh Panduan"
-            >
-              <Download className="h-4 w-4" />
-            </a>
-            <button
-              className="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-              onClick={() => setSidebarOpen((s) => !s)}
-              aria-label="Buka daftar isi"
-            >
-              <Menu className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
 
         <div className="border-t border-gray-200 dark:border-gray-800" />
 
@@ -223,43 +237,49 @@ export default function PanduanPage() {
                 <span>Halaman {page}</span>
               </div>
               <div className="flex items-center gap-2">
-                <button
+                <Button
                   onClick={goPrevSection}
                   disabled={!canPrev}
-                  className="inline-flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
+                  variant="secondary"
+                  className="gap-1 text-sm px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-50"
+                  aria-label="Ke bagian sebelumnya"
                 >
                   <ChevronLeft className="h-4 w-4" /> Sebelumnya
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={goNextSection}
                   disabled={!canNext}
-                  className="inline-flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
+                  variant="secondary"
+                  className="gap-1 text-sm px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-50"
+                  aria-label="Ke bagian selanjutnya"
                 >
                   Selanjutnya <ChevronRight className="h-4 w-4" />
-                </button>
+                </Button>
 
                 <span className="mx-2 h-5 w-px bg-gray-200 dark:bg-gray-700" />
 
                 {/* Zoom mode */}
                 <button
                   onClick={() => setFit("width")}
-                  className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-sm ${
+                  className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition ${
                     fit === "width"
                       ? "border-blue-600 text-blue-600"
                       : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
                   title="Sesuaikan lebar"
+                  aria-label="Sesuaikan lebar"
                 >
                   <Minimize2 className="h-4 w-4" /> Lebar
                 </button>
                 <button
                   onClick={() => setFit("page")}
-                  className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-sm ${
+                  className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition ${
                     fit === "page"
                       ? "border-blue-600 text-blue-600"
                       : "border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
                   title="Sesuaikan halaman"
+                  aria-label="Sesuaikan halaman"
                 >
                   <Maximize2 className="h-4 w-4" /> Halaman
                 </button>
@@ -271,8 +291,9 @@ export default function PanduanPage() {
                     setFit("custom");
                     setZoomPercent((z) => Math.max(50, z - 10));
                   }}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition"
                   title="Perkecil"
+                  aria-label="Perkecil"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
@@ -288,8 +309,9 @@ export default function PanduanPage() {
                     setFit("custom");
                     setZoomPercent((z) => Math.min(300, z + 10));
                   }}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition"
                   title="Perbesar"
+                  aria-label="Perbesar"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
