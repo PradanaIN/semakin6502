@@ -37,7 +37,7 @@ export class MasterKegiatanController {
   }
 
   @Get()
-  @Roles(ROLES.ADMIN, ROLES.KETUA)
+  @Roles(ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA)
   findAll(@Req() req: Request) {
     const { page, limit, team, search } = req.query;
     const u = req.user as AuthRequestUser;

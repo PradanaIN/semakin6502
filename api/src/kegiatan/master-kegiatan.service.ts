@@ -30,22 +30,30 @@ export class MasterKegiatanService {
 
     if (params.search) where.namaKegiatan = { contains: params.search };
 
-    if (role !== ROLES.ADMIN) {
-      const leaderTeams = await this.prisma.member.findMany({
-        where: { userId, isLeader: true },
+    if (role === ROLES.ADMIN) {
+      if (params.teamId) {
+        where.teamId = params.teamId;
+      }
+    } else {
+      const memberWhere =
+        role === ROLES.KETUA ? { userId, isLeader: true } : { userId };
+      const memberTeams = await this.prisma.member.findMany({
+        where: memberWhere,
         select: { teamId: true },
       });
-      const leaderTeamIds = leaderTeams.map((t) => t.teamId);
+      const teamIds = memberTeams.map((t) => t.teamId);
       if (params.teamId) {
-        if (!leaderTeamIds.includes(params.teamId)) {
-          throw new ForbiddenException("bukan ketua tim kegiatan ini");
+        if (!teamIds.includes(params.teamId)) {
+          throw new ForbiddenException(
+            role === ROLES.KETUA
+              ? "bukan ketua tim kegiatan ini"
+              : "bukan anggota tim kegiatan ini",
+          );
         }
         where.teamId = params.teamId;
       } else {
-        where.teamId = { in: leaderTeamIds };
+        where.teamId = { in: teamIds };
       }
-    } else if (params.teamId) {
-      where.teamId = params.teamId;
     }
 
     const [data, total] = await this.prisma.$transaction([

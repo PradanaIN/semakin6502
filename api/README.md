@@ -99,6 +99,7 @@ Rate limit global diterapkan dengan `@nestjs/throttler`. Defaultnya 100 request 
 | POST   | `/auth/login`                | Login pengguna (`identifier`, `password`)        |
 | GET    | `/users`                     | Daftar semua pengguna                            |
 | GET    | `/teams`                     | Daftar tim                                       |
+| GET    | `/master-kegiatan`           | Daftar master kegiatan (admin, ketua, anggota)   |
 | POST   | `/master-kegiatan`           | Menambah master kegiatan                         |
 | POST   | `/penugasan`                 | Memberi penugasan ke anggota                     |
 | POST   | `/laporan-harian`            | Mengirim laporan harian                          |
