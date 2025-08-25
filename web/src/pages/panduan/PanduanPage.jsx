@@ -351,44 +351,47 @@ function Sidebar({ page, setPage, onKeyDown, currentIndex, buttonRefs }) {
       <nav
         aria-label="Navigasi Panduan"
         onKeyDown={onKeyDown}
-        className="flex max-h-[70vh] flex-col gap-1 overflow-y-auto p-4 pr-2"
+        className="flex max-h-[70vh] flex-col overflow-y-auto p-4 pr-2 custom-scrollbar"
       >
-        {SECTIONS.map((section, index) => {
-          const isActive = page === section.page;
-          return (
-            <button
-              key={section.title}
-              onClick={() => setPage(section.page)}
-              aria-current={isActive ? "true" : undefined}
-              ref={(el) => (buttonRefs.current[index] = el)}
-              className={[
-                "group flex items-center justify-between rounded-xl border text-left transition-all px-3 py-2",
-                isActive
-                  ? "border-blue-600/30 bg-gradient-to-r from-blue-500/10 via-sky-500/10 to-blue-500/10 dark:bg-blue-500/10"
-                  : "border-transparent hover:border-gray-200 dark:hover:border-gray-700 hover:bg-gray-50/70 dark:hover:bg-gray-800/60",
-              ].join(" ")}
-            >
-              <span className="flex items-center gap-2">
-                {isActive ? (
-                  <CheckCircle2 className="h-4 w-4 text-blue-600" />
-                ) : (
-                  <span className="h-2 w-2 rounded-full bg-gray-300 group-hover:bg-gray-400" />
-                )}
-                <span
+        <ul className="flex flex-col gap-1 list-none">
+          {SECTIONS.map((section, index) => {
+            const isActive = page === section.page;
+            return (
+              <li key={section.title}>
+                <button
+                  onClick={() => setPage(section.page)}
+                  aria-current={isActive ? "true" : undefined}
+                  ref={(el) => (buttonRefs.current[index] = el)}
                   className={[
-                    "text-sm",
+                    "group flex w-full items-center justify-between rounded-xl border text-left transition-all px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
                     isActive
-                      ? "font-semibold text-gray-900 dark:text-white"
-                      : "text-gray-700 dark:text-gray-200",
+                      ? "border-blue-600/30 bg-gradient-to-r from-blue-500/10 via-sky-500/10 to-blue-500/10 dark:bg-blue-500/10"
+                      : "border-transparent hover:border-gray-200 dark:hover:border-gray-700 hover:bg-gray-50/70 dark:hover:bg-gray-800/60",
                   ].join(" ")}
                 >
-                  {section.title}
-                </span>
-              </span>
-              <span className="text-xs text-gray-500">h. {section.page}</span>
-            </button>
-          );
-        })}
+                  <span className="flex items-center gap-2">
+                    {isActive ? (
+                      <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                    ) : (
+                      <span className="h-2 w-2 rounded-full bg-gray-300 group-hover:bg-gray-400" />
+                    )}
+                    <span
+                      className={[
+                        "text-sm",
+                        isActive
+                          ? "font-semibold text-gray-900 dark:text-white"
+                          : "text-gray-700 dark:text-gray-200",
+                      ].join(" ")}
+                    >
+                      {section.title}
+                    </span>
+                  </span>
+                  <span className="text-xs text-gray-500">h. {section.page}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
       </nav>
 
       {/* footer tips ringkas */}
