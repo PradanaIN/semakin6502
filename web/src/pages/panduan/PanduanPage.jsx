@@ -131,59 +131,56 @@ export default function PanduanPage() {
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg">
         {/* Header */}
         <div className="relative flex items-center justify-between gap-3 p-4 sm:p-6">
-            <div className="flex items-center gap-3">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white shadow">
-                <BookOpen className="h-5 w-5" />
-              </div>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                  Panduan Penggunaan
-                </h1>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                  Navigasi per bagian. Gunakan ←/→ atau J/K untuk berpindah cepat.
-                </p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white shadow">
+              <BookOpen className="h-5 w-5" />
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                icon
-                aria-label="Buka di tab baru"
-                onClick={() =>
-                  window.open(
-                    `${bukuPanduan}#page=${page}`,
-                    "_blank",
-                    "noopener,noreferrer"
-                  )
-                }
-                className="h-9 w-9 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-              >
-                <ExternalLink className="h-4 w-4" />
-              </Button>
-              <Button
-                icon
-                aria-label="Unduh Panduan"
-                onClick={() => {
-                  const link = document.createElement("a");
-                  link.href = bukuPanduan;
-                  link.setAttribute("download", "");
-                  document.body.appendChild(link);
-                  link.click();
-                  link.remove();
-                }}
-                className="h-9 w-9 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-              >
-                <Download className="h-4 w-4" />
-              </Button>
-              <Button
-                icon
-                className="lg:hidden h-9 w-9 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-                onClick={() => setSidebarOpen((s) => !s)}
-                aria-label="Buka daftar isi"
-              >
-                <Menu className="h-4 w-4" />
-              </Button>
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                Panduan Penggunaan
+              </h1>
             </div>
           </div>
+          <div className="flex items-center gap-2">
+            <Button
+              icon
+              aria-label="Buka di tab baru"
+              onClick={() =>
+                window.open(
+                  `${bukuPanduan}#page=${page}`,
+                  "_blank",
+                  "noopener,noreferrer"
+                )
+              }
+              className="h-9 w-9 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </Button>
+            <Button
+              icon
+              aria-label="Unduh Panduan"
+              onClick={() => {
+                const link = document.createElement("a");
+                link.href = bukuPanduan;
+                link.setAttribute("download", "");
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+              }}
+              className="h-9 w-9 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+            <Button
+              icon
+              className="lg:hidden h-9 w-9 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+              onClick={() => setSidebarOpen((s) => !s)}
+              aria-label="Buka daftar isi"
+            >
+              <Menu className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
 
         <div className="border-t border-gray-200 dark:border-gray-800" />
 
@@ -386,28 +383,15 @@ function Sidebar({ page, setPage, onKeyDown, currentIndex, buttonRefs }) {
                       {section.title}
                     </span>
                   </span>
-                  <span className="text-xs text-gray-500">h. {section.page}</span>
+                  <span className="text-xs text-gray-500">
+                    h. {section.page}
+                  </span>
                 </button>
               </li>
             );
           })}
         </ul>
       </nav>
-
-      {/* footer tips ringkas */}
-      <div className="mt-auto border-t border-gray-200 dark:border-gray-800 p-4 text-xs text-gray-500">
-        <p className="mb-1">Tips cepat:</p>
-        <ul className="list-disc pl-4 space-y-0.5">
-          <li>
-            <kbd className="rounded bg-gray-100 px-1">←/→</kbd> atau{" "}
-            <kbd className="rounded bg-gray-100 px-1">J/K</kbd> untuk ganti
-            bagian
-          </li>
-          <li>
-            <kbd className="rounded bg-gray-100 px-1">+/−</kbd> untuk zoom
-          </li>
-        </ul>
-      </div>
     </div>
   );
 }
