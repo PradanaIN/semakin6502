@@ -398,12 +398,10 @@ export default function TugasTambahanDetailPage() {
               <div className="text-sm text-gray-500 dark:text-gray-400">Tim</div>
               <div className="font-medium">{item.kegiatan.team?.namaTim || "-"}</div>
             </div>
-            {item.user?.nama && (
-              <div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">Pegawai</div>
-                <div className="font-medium">{item.user.nama}</div>
-              </div>
-            )}
+            <div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">Pegawai</div>
+              <div className="font-medium">{item.user?.nama || user.nama}</div>
+            </div>
             <div>
               <div className="text-sm text-gray-500 dark:text-gray-400">Minggu</div>
               <div className="font-medium">{minggu}</div>

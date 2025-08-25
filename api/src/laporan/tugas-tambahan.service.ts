@@ -145,7 +145,7 @@ export class TambahanService {
     }
     return this.prisma.kegiatanTambahan.findFirst({
       where,
-      include: { kegiatan: { include: { team: true } } },
+      include: { kegiatan: { include: { team: true } }, user: true },
     });
   }
 
