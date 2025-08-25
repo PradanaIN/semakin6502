@@ -127,8 +127,7 @@ export default function PanduanPage() {
   return (
     <div className="mx-auto max-w-6xl p-4 sm:p-6">
       {/* Card */}
-      <div className="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/70 backdrop-blur shadow-xl">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-sky-500/10 to-blue-500/10" />
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg">
         {/* Header */}
         <div className="relative flex items-center justify-between gap-3 p-4 sm:p-6">
           <div className="flex items-center gap-3">
