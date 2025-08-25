@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import axios from 'axios';
 
 jest.mock('axios');
@@ -34,6 +34,21 @@ jest.mock('../components/ui/DataTable', () => ({
 }));
 
 import TugasTambahanPage from '../pages/tambahan/TugasTambahanPage';
+
+const computeDate = (minggu, bulan, tahun) => {
+  const firstOfMonth = new Date(tahun, bulan - 1, 1);
+  const firstMonday = new Date(firstOfMonth);
+  firstMonday.setDate(
+    firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
+  );
+  const result = new Date(firstMonday);
+  result.setDate(result.getDate() + (minggu - 1) * 7);
+  return result.toISOString().slice(0, 10);
+};
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 test('shows success toast when navigated with success state', async () => {
   mockUseLocation.mockReturnValue({
@@ -87,4 +102,58 @@ test('renders detail button with icon variant', async () => {
   const detailBtn = getByRole('button', { name: /detail/i });
   expect(detailBtn).toBeInTheDocument();
   expect(detailBtn).toHaveClass('text-blue-600');
+});
+
+test('submits correct payload using period fields', async () => {
+  mockUseLocation.mockReturnValue({ pathname: '/tugas-tambahan', state: null });
+  axios.get.mockImplementation((url) => {
+    if (url === '/tugas-tambahan/all') return Promise.resolve({ data: [] });
+    if (url === '/master-kegiatan?limit=1000') return Promise.resolve({ data: [] });
+    if (url === '/teams/all')
+      return Promise.resolve({ data: [{ id: 1, namaTim: 'Tim A' }] });
+    if (url === '/master-kegiatan?team=1')
+      return Promise.resolve({ data: { data: [{ id: 1, namaKegiatan: 'Keg A' }] } });
+    return Promise.resolve({ data: [] });
+  });
+  axios.post.mockResolvedValue({});
+
+  render(<TugasTambahanPage />);
+  await waitFor(() => expect(axios.get).toHaveBeenCalled());
+
+  fireEvent.click(screen.getByRole('button', { name: /tugas tambahan/i }));
+
+  await screen.findByLabelText(/Tim/);
+  fireEvent.change(screen.getByLabelText(/Tim/), { target: { value: '1' } });
+  await waitFor(() =>
+    expect(axios.get).toHaveBeenCalledWith('/master-kegiatan?team=1')
+  );
+  fireEvent.change(screen.getByLabelText(/^Kegiatan/), {
+    target: { value: '1' },
+  });
+  fireEvent.change(screen.getByLabelText(/Minggu/), {
+    target: { value: '2' },
+  });
+  fireEvent.change(screen.getByLabelText(/Bulan/), {
+    target: { value: '5' },
+  });
+  fireEvent.change(screen.getByLabelText(/Tahun/), {
+    target: { value: '2024' },
+  });
+  fireEvent.change(screen.getByLabelText(/Deskripsi Kegiatan/), {
+    target: { value: 'desc' },
+  });
+
+  fireEvent.click(screen.getByRole('button', { name: /simpan/i }));
+
+  const expectedDate = computeDate(2, 5, 2024);
+
+  expect(axios.post).toHaveBeenCalledWith(
+    '/tugas-tambahan',
+    expect.objectContaining({
+      kegiatanId: '1',
+      deskripsi: 'desc',
+      status: 'BELUM',
+      tanggal: expectedDate,
+    })
+  );
 });
