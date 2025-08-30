@@ -18,13 +18,13 @@ import Textarea from "../../components/ui/Textarea";
 import Input from "../../components/ui/Input";
 import { STATUS } from "../../utils/status";
 import SearchInput from "../../components/SearchInput";
-import Pagination from "../../components/Pagination";
-import SelectDataShow from "../../components/ui/SelectDataShow";
 import TableSkeleton from "../../components/ui/TableSkeleton";
+import EmptyState from "../../components/ui/EmptyState";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
-import formatDate from "../../utils/formatDate";
+// import formatDate from "../../utils/formatDate";
 import months from "../../utils/months";
+import { getWeekOfMonth } from "../../utils/dateUtils";
 
 function sortTambahan(list, teamId) {
   return [...list].sort((a, b) => {
@@ -40,31 +40,27 @@ function sortTambahan(list, teamId) {
   });
 }
 
-const getCurrentWeek = () => {
-  const today = new Date();
-  const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  const firstMonday = new Date(firstOfMonth);
-  firstMonday.setDate(
-    firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
-  );
-  const diff = Math.floor((today - firstMonday) / (1000 * 60 * 60 * 24));
-  return Math.floor(diff / 7) + 1;
-};
+const getCurrentWeek = () => getWeekOfMonth(new Date());
 
 function getDateFromPeriod(minggu, bulan, tahun) {
-  const firstOfMonth = new Date(tahun, bulan - 1, 1);
-  const firstMonday = new Date(firstOfMonth);
-  firstMonday.setDate(
-    firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
-  );
-  const result = new Date(firstMonday);
-  result.setDate(result.getDate() + (minggu - 1) * 7);
-  return result.toISOString().slice(0, 10);
+  // First day within the requested week in the month
+  const monthIndex = bulan - 1;
+  const first = new Date(tahun, monthIndex, 1);
+  const offset = (first.getDay() + 6) % 7; // Monday=0
+  const daysInMonth = new Date(tahun, monthIndex + 1, 0).getDate();
+  const startDay = (minggu - 1) * 7 - offset + 1;
+  const day = Math.min(daysInMonth, Math.max(1, startDay));
+  const yyyy = tahun;
+  const mm = String(bulan).padStart(2, "0");
+  const dd = String(day).padStart(2, "0");
+  // Return local date string to avoid timezone shift
+  return `${yyyy}-${mm}-${dd}`;
 }
 
 export default function TugasTambahanPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [teams, setTeams] = useState([]);
   const [kegiatan, setKegiatan] = useState([]);
@@ -81,8 +77,7 @@ export default function TugasTambahanPage() {
   const [search, setSearch] = useState("");
   const [filterBulan, setFilterBulan] = useState("");
   const [filterTahun, setFilterTahun] = useState(new Date().getFullYear());
-  const [pageSize, setPageSize] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
+  // Pagination handled by DataTable internal controls
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -103,7 +98,15 @@ export default function TugasTambahanPage() {
       return;
     }
     try {
-      const res = await axios.get(`/master-kegiatan?team=${teamId}`);
+      // Allow anggota/ketua to browse kegiatan across teams specifically for tugas tambahan
+      let res;
+      if (user?.role === ROLES.ADMIN) {
+        res = await axios.get(`/master-kegiatan?team=${teamId}`);
+      } else {
+        res = await axios.get(`/master-kegiatan?team=${teamId}`, {
+          headers: { "X-For-Tambahan": "1" },
+        });
+      }
       setKegiatan(res.data.data || res.data);
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil kegiatan");
@@ -154,20 +157,11 @@ export default function TugasTambahanPage() {
     }
     const year = parseInt(filterTahun, 10);
     const monthIdx = parseInt(filterBulan, 10) - 1;
-    const firstOfMonth = new Date(year, monthIdx, 1);
-    const monthEnd = new Date(year, monthIdx + 1, 0);
-    const firstMonday = new Date(firstOfMonth);
-    firstMonday.setDate(
-      firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
-    );
-    const opts = [];
-    for (
-      let d = new Date(firstMonday);
-      d <= monthEnd;
-      d.setDate(d.getDate() + 7)
-    ) {
-      opts.push(opts.length + 1);
-    }
+    const first = new Date(year, monthIdx, 1);
+    const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
+    const offset = (first.getDay() + 6) % 7; // Monday=0
+    const weeks = Math.ceil((daysInMonth + offset) / 7);
+    const opts = Array.from({ length: weeks }, (_, i) => i + 1);
     setWeekOptions(opts);
     if (filterMinggu && filterMinggu > opts.length) setFilterMinggu("");
   }, [filterBulan, filterTahun, filterMinggu]);
@@ -205,12 +199,9 @@ export default function TugasTambahanPage() {
       return;
     }
     try {
+      setSaving(true);
       const payload = { ...form };
-      payload.tanggal = getDateFromPeriod(
-        form.minggu,
-        form.bulan,
-        form.tahun
-      );
+      payload.tanggal = getDateFromPeriod(form.minggu, form.bulan, form.tahun);
       delete payload.teamId;
       delete payload.minggu;
       delete payload.bulan;
@@ -224,6 +215,8 @@ export default function TugasTambahanPage() {
       showSuccess("Berhasil", "Data disimpan");
     } catch (err) {
       handleAxiosError(err, "Gagal menyimpan");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -246,22 +239,10 @@ export default function TugasTambahanPage() {
       const matchTahun = filterTahun
         ? tahun === parseInt(filterTahun, 10)
         : true;
-      const matchTeam = filterTeam
-        ? String(item.teamId) === filterTeam
-        : true;
+      const matchTeam = filterTeam ? String(item.teamId) === filterTeam : true;
       let matchMinggu = true;
       if (filterMinggu && filterBulan && filterTahun) {
-        const year = parseInt(filterTahun, 10);
-        const monthIdx = parseInt(filterBulan, 10) - 1;
-        const firstOfMonth = new Date(year, monthIdx, 1);
-        const firstMonday = new Date(firstOfMonth);
-        firstMonday.setDate(
-          firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
-        );
-        const diffDays = Math.floor(
-          (date - firstMonday) / (7 * 24 * 60 * 60 * 1000)
-        );
-        const weekNum = diffDays + 1;
+        const weekNum = getWeekOfMonth(date);
         matchMinggu = weekNum === parseInt(filterMinggu, 10);
       }
       return (
@@ -270,44 +251,23 @@ export default function TugasTambahanPage() {
     });
   }, [items, search, filterBulan, filterTahun, filterTeam, filterMinggu]);
 
-  const paginatedItems = filteredItems.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-  const totalPages = Math.ceil(filteredItems.length / pageSize) || 1;
+  // No manual pagination; pass full filteredItems to DataTable
 
   const columns = useMemo(
     () => [
       {
         Header: "No",
-        accessor: (_row, i) => (currentPage - 1) * pageSize + i + 1,
+        accessor: (_row, i) => i + 1,
         disableFilters: true,
       },
       { Header: "Kegiatan", accessor: "nama", disableFilters: true },
-      {
-        Header: "Tim",
-        accessor: (row) => row.kegiatan.team?.namaTim || "-",
-        disableFilters: true,
-      },
-      ...([ROLES.ADMIN, ROLES.PIMPINAN].includes(user?.role)
-        ? [
-            {
-              Header: "Nama",
-              accessor: (row) => row.user?.nama || "-",
-              disableFilters: true,
-            },
-          ]
-        : []),
-      {
-        Header: "Tanggal",
-        accessor: (row) => formatDate(row.tanggal),
-        disableFilters: true,
-      },
-      {
-        Header: "Deskripsi",
-        accessor: (row) => row.deskripsi || "-",
-        disableFilters: true,
-      },
+      { Header: "Deskripsi", accessor: (row) => row.deskripsi || "-", disableFilters: true },
+      { Header: "Tim", accessor: (row) => row.kegiatan.team?.namaTim || "-", disableFilters: true },
+      { Header: "Minggu", accessor: (row) => getWeekOfMonth(new Date(row.tanggal)), disableFilters: true },
+      { Header: "Bulan", accessor: (row) => {
+          const d = new Date(row.tanggal);
+          return `${months[d.getMonth()]} ${d.getFullYear()}`;
+        }, disableFilters: true },
       {
         Header: "Status",
         accessor: "status",
@@ -330,7 +290,7 @@ export default function TugasTambahanPage() {
         disableFilters: true,
       },
     ],
-    [currentPage, pageSize, openDetail, user?.role]
+    [user?.role]
   );
 
   return (
@@ -350,7 +310,6 @@ export default function TugasTambahanPage() {
               value={filterTeam}
               onChange={(e) => {
                 setFilterTeam(e.target.value);
-                setCurrentPage(1);
               }}
               className="cursor-pointer border border-gray-300 dark:border-gray-600 rounded-xl px-2 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 dark:hover:border-blue-400 shadow-sm transition duration-150 ease-in-out"
             >
@@ -395,34 +354,25 @@ export default function TugasTambahanPage() {
         </div>
       </div>
 
-      <div className="overflow-x-auto md:overflow-x-visible">
+      <div className="overflow-x-auto md:overflow-x-visible min-h-[120px]">
         {loading ? (
           <TableSkeleton cols={columns.length} />
+        ) : filteredItems.length === 0 ? (
+          <EmptyState
+            message="Belum ada tugas tambahan untuk periode ini"
+            {...(canManage
+              ? { actionLabel: "Tambah Tugas Tambahan", onAction: openCreate }
+              : {})}
+          />
         ) : (
           <DataTable
             columns={columns}
-            data={paginatedItems}
+            data={filteredItems}
             showGlobalFilter={false}
-            showPagination={false}
+            showPagination={true}
             selectable={false}
           />
         )}
-      </div>
-
-      <div className="flex items-center justify-between mt-4">
-        <SelectDataShow
-          pageSize={pageSize}
-          setPageSize={setPageSize}
-          setCurrentPage={setCurrentPage}
-          options={[5, 10, 25, 50]}
-          className="w-32"
-        />
-
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
       </div>
 
       {canManage && showForm && (
@@ -457,6 +407,7 @@ export default function TugasTambahanPage() {
                   fetchKegiatanForTeam(tId);
                 }}
                 required
+                disabled={saving}
                 className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
               >
                 <option value="">Pilih Tim</option>
@@ -481,14 +432,12 @@ export default function TugasTambahanPage() {
                 onChange={(e) =>
                   setForm({ ...form, kegiatanId: e.target.value })
                 }
-                disabled={!form.teamId}
+                disabled={!form.teamId || saving}
                 required
                 className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
               >
                 <option value="">
-                  {form.teamId
-                    ? "Pilih Kegiatan"
-                    : "Pilih Tim terlebih dahulu"}
+                  {form.teamId ? "Pilih Kegiatan" : "Pilih Tim terlebih dahulu"}
                 </option>
                 {kegiatan.map((k) => (
                   <option key={k.id} value={k.id}>
@@ -496,6 +445,23 @@ export default function TugasTambahanPage() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Deskripsi */}
+            <div>
+              <Label htmlFor="deskripsi">
+                Deskripsi Kegiatan <span className="text-red-500">*</span>
+              </Label>
+              <Textarea
+                id="deskripsi"
+                value={form.deskripsi}
+                onChange={(e) =>
+                  setForm({ ...form, deskripsi: e.target.value })
+                }
+                placeholder="Deskripsi kegiatan..."
+                disabled={saving}
+                required
+              />
             </div>
 
             {/* Minggu, Bulan, Tahun */}
@@ -513,6 +479,7 @@ export default function TugasTambahanPage() {
                   onChange={(e) =>
                     setForm({ ...form, minggu: parseInt(e.target.value, 10) })
                   }
+                  disabled={saving}
                 />
               </div>
               <div>
@@ -525,6 +492,7 @@ export default function TugasTambahanPage() {
                   onChange={(e) =>
                     setForm({ ...form, bulan: parseInt(e.target.value, 10) })
                   }
+                  disabled={saving}
                   className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-200"
                 >
                   {months.map((m, i) => (
@@ -545,31 +513,18 @@ export default function TugasTambahanPage() {
                   onChange={(e) =>
                     setForm({ ...form, tahun: parseInt(e.target.value, 10) })
                   }
+                  disabled={saving}
                 />
               </div>
             </div>
 
-            {/* Deskripsi */}
-            <div>
-              <Label htmlFor="deskripsi">
-                Deskripsi Kegiatan <span className="text-red-500">*</span>
-              </Label>
-              <Textarea
-                id="deskripsi"
-                value={form.deskripsi}
-                onChange={(e) =>
-                  setForm({ ...form, deskripsi: e.target.value })
-                }
-                placeholder="Deskripsi kegiatan..."
-                required
-              />
-            </div>
-
             <div className="flex justify-end gap-3 pt-4">
-              <Button variant="secondary" onClick={handleCancel}>
+              <Button variant="secondary" onClick={handleCancel} disabled={saving}>
                 Batal
               </Button>
-              <Button onClick={save}>Simpan</Button>
+              <Button onClick={save} loading={saving}>
+                Simpan
+              </Button>
             </div>
           </div>
         </Modal>

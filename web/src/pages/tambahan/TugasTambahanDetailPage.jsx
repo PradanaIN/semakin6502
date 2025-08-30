@@ -27,12 +27,28 @@ import { ROLES } from "../../utils/roles";
 import { getWeekOfMonth } from "../../utils/dateUtils";
 import months from "../../utils/months";
 
+function getDateFromPeriod(minggu, bulan, tahun) {
+  // First day within the requested week in the month
+  const monthIndex = bulan - 1;
+  const first = new Date(tahun, monthIndex, 1);
+  const offset = (first.getDay() + 6) % 7; // Monday=0
+  const daysInMonth = new Date(tahun, monthIndex + 1, 0).getDate();
+  const startDay = (minggu - 1) * 7 - offset + 1;
+  const day = Math.min(daysInMonth, Math.max(1, startDay));
+  const yyyy = tahun;
+  const mm = String(bulan).padStart(2, "0");
+  const dd = String(day).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 export default function TugasTambahanDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [item, setItem] = useState(null);
-  const canManage = user?.id === item?.userId;
+  const canManage =
+    [ROLES.ADMIN, ROLES.KETUA].includes(user?.role) ||
+    user?.id === item?.userId;
   const canManageLaporan =
     [ROLES.ADMIN, ROLES.KETUA].includes(user?.role) ||
     String(user?.id) === String(item?.userId);
@@ -57,6 +73,9 @@ export default function TugasTambahanDetailPage() {
     teamId: "",
     kegiatanId: "",
     deskripsi: "",
+    minggu: 1,
+    bulan: new Date().getMonth() + 1,
+    tahun: new Date().getFullYear(),
   });
   const laporanTanggalRef = useRef(null);
 
@@ -70,23 +89,34 @@ export default function TugasTambahanDetailPage() {
     };
   }, [item?.tanggal]);
 
-  const fetchKegiatanForTeam = useCallback(async (teamId) => {
-    if (!teamId) {
-      setKegiatan([]);
-      return;
-    }
-    try {
-      const res = await axios.get(`/master-kegiatan?team=${teamId}`);
-      setKegiatan(res.data.data || res.data);
-    } catch (err) {
-      if (err.response?.status === 403) {
+  const fetchKegiatanForTeam = useCallback(
+    async (teamId) => {
+      if (!teamId) {
         setKegiatan([]);
         return;
       }
-      handleAxiosError(err, "Gagal mengambil kegiatan");
-      setKegiatan([]);
-    }
-  }, []);
+      try {
+        // Allow non-admin browsing across teams for tugas tambahan context
+        let res;
+        if (user?.role === ROLES.ADMIN) {
+          res = await axios.get(`/master-kegiatan?team=${teamId}`);
+        } else {
+          res = await axios.get(`/master-kegiatan?team=${teamId}`, {
+            headers: { "X-For-Tambahan": "1" },
+          });
+        }
+        setKegiatan(res.data.data || res.data);
+      } catch (err) {
+        if (err.response?.status === 403) {
+          setKegiatan([]);
+          return;
+        }
+        handleAxiosError(err, "Gagal mengambil kegiatan");
+        setKegiatan([]);
+      }
+    },
+    [user?.role]
+  );
 
   const fetchDetail = useCallback(async () => {
     try {
@@ -94,21 +124,21 @@ export default function TugasTambahanDetailPage() {
       setItem(dRes.data);
 
       const teamId = dRes.data.kegiatan?.teamId || "";
-      if ([ROLES.ADMIN, ROLES.KETUA].includes(user?.role)) {
-        await fetchKegiatanForTeam(teamId);
-      } else {
-        setKegiatan(dRes.data.kegiatan ? [dRes.data.kegiatan] : []);
-      }
+      await fetchKegiatanForTeam(teamId);
 
+      const d = dRes.data.tanggal ? new Date(dRes.data.tanggal) : new Date();
       setForm({
         teamId: teamId ? String(teamId) : "",
         kegiatanId: String(dRes.data.kegiatanId),
         deskripsi: dRes.data.deskripsi || "",
+        minggu: dRes.data.tanggal ? getWeekOfMonth(d) : 1,
+        bulan: d.getMonth() + 1,
+        tahun: d.getFullYear(),
       });
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil data");
     }
-  }, [id, fetchKegiatanForTeam, user?.role]);
+  }, [id, fetchKegiatanForTeam]);
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -144,7 +174,10 @@ export default function TugasTambahanDetailPage() {
       if (
         form.teamId === "" ||
         form.kegiatanId === "" ||
-        form.deskripsi.trim() === ""
+        form.deskripsi.trim() === "" ||
+        !form.minggu ||
+        !form.bulan ||
+        !form.tahun
       ) {
         showWarning("Lengkapi data", "Semua field wajib diisi");
         return;
@@ -152,6 +185,7 @@ export default function TugasTambahanDetailPage() {
       const payload = {
         kegiatanId: form.kegiatanId,
         deskripsi: form.deskripsi,
+        tanggal: getDateFromPeriod(form.minggu, form.bulan, form.tahun),
       };
       await axios.put(`/tugas-tambahan/${id}`, payload);
       showSuccess("Berhasil", "Kegiatan diperbarui");
@@ -266,9 +300,13 @@ export default function TugasTambahanDetailPage() {
         accessor: (_row, i) => i + 1,
         disableFilters: true,
       },
-      { Header: "Deskripsi", accessor: "deskripsi", disableFilters: true },
       {
-        Header: "Capaian",
+        Header: "Deskripsi Kegiatan",
+        accessor: "deskripsi",
+        disableFilters: true,
+      },
+      {
+        Header: "Capaian Kegiatan",
         accessor: "capaianKegiatan",
         disableFilters: true,
       },
@@ -388,40 +426,152 @@ export default function TugasTambahanDetailPage() {
         <div className="space-y-4">
           <div
             data-testid="detail-grid"
-            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-lg shadow"
           >
+            {/* Kegiatan */}
             <div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">Kegiatan</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 inline-flex items-center gap-1">
+                {/* icon: clipboard-list */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-gray-400"
+                >
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                  <path d="M16 4h1a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h1"></path>
+                  <line x1="9" y1="12" x2="15" y2="12"></line>
+                  <line x1="9" y1="16" x2="15" y2="16"></line>
+                </svg>
+                Kegiatan
+              </div>
               <div className="font-medium">{item.nama}</div>
             </div>
-            <div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">Tim</div>
-              <div className="font-medium">{item.kegiatan.team?.namaTim || "-"}</div>
-            </div>
-            <div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">Pegawai</div>
-              <div className="font-medium">{item.user?.nama || user.nama}</div>
-            </div>
-            <div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">Minggu</div>
-              <div className="font-medium">{minggu}</div>
-            </div>
-            <div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">Bulan</div>
-              <div className="font-medium">{bulan}</div>
-            </div>
-            <div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">Tahun</div>
-              <div className="font-medium">{tahun}</div>
-            </div>
+            {/* Deskripsi Penugasan */}
             <div className="sm:col-span-2 lg:col-span-3">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="text-xs text-gray-500 dark:text-gray-400 inline-flex items-center gap-1">
+                {/* icon: file-text */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-gray-400"
+                >
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
                 Deskripsi Penugasan
               </div>
               <div className="font-medium">{item.deskripsi || "-"}</div>
             </div>
+
+            {/* Tim */}
             <div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">Status</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 inline-flex items-center gap-1">
+                {/* icon: users */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-gray-400"
+                >
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Tim
+              </div>
+              <div className="font-medium">
+                {item.kegiatan.team?.namaTim || "-"}
+              </div>
+            </div>
+            {/* Pegawai */}
+            <div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 inline-flex items-center gap-1">
+                {/* icon: user */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-gray-400"
+                >
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Pegawai
+              </div>
+              <div className="font-medium">{item.user?.nama || user.nama}</div>
+            </div>
+
+            {/* Waktu (compact) */}
+            <div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 inline-flex items-center gap-1">
+                {/* icon: calendar */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-gray-400"
+                >
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                Waktu
+              </div>
+              <div className="font-medium">{`Minggu ${minggu} • ${bulan} ${tahun}`}</div>
+            </div>
+
+            {/* Status */}
+            <div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 inline-flex items-center gap-1">
+                {/* icon: circle */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="12"
+                  height="12"
+                  fill="currentColor"
+                  className="text-gray-400"
+                >
+                  <circle cx="12" cy="12" r="5" />
+                </svg>
+                Status
+              </div>
               <div className="font-medium">
                 <StatusBadge status={item.status} />
               </div>
@@ -441,7 +591,9 @@ export default function TugasTambahanDetailPage() {
           )}
           {item.buktiLink && (
             <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-              <div className="text-sm text-gray-500 dark:text-gray-400">Bukti</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Bukti
+              </div>
               <a
                 href={item.buktiLink}
                 target="_blank"
@@ -524,6 +676,64 @@ export default function TugasTambahanDetailPage() {
               className="form-input"
               required
             />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div>
+              <Label htmlFor="minggu">
+                Minggu <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="minggu"
+                type="number"
+                min="1"
+                max="6"
+                value={form.minggu}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    minggu: parseInt(e.target.value || "0", 10),
+                  })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="bulan">
+                Bulan <span className="text-red-500">*</span>
+              </Label>
+              <select
+                id="bulan"
+                value={form.bulan}
+                onChange={(e) =>
+                  setForm({ ...form, bulan: parseInt(e.target.value, 10) })
+                }
+                className="w-full rounded-md border px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                required
+              >
+                {months.map((m, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="tahun">
+                Tahun <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="tahun"
+                type="number"
+                value={form.tahun}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    tahun: parseInt(e.target.value || "0", 10),
+                  })
+                }
+                required
+              />
+            </div>
           </div>
           <div className="flex justify-end space-x-2 pt-2">
             <Button

@@ -31,11 +31,11 @@ const MonitoringTabs = ({
       case "mingguan":
         return <WeeklyOverview data={weeklyList[clampedWeekIndex]} />;
       case "bulanan":
-        return <MonthlyOverview data={monthlyData} />;
+        return <MonthlyOverview data={monthlyData} year={year} />;
       default:
         return null;
     }
-  }, [tab, dailyData, weeklyList, clampedWeekIndex, monthlyData]);
+  }, [tab, dailyData, weeklyList, clampedWeekIndex, monthlyData, year]);
 
   const handleTabClick = useCallback((t) => setTab(t), []);
 
@@ -91,7 +91,7 @@ const MonitoringTabs = ({
                       key={y}
                       value={y}
                       className={({ active }) =>
-                        `cursor-pointer select-none py-2 pl-10 pr-4 ${
+                        `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
                           active
                             ? "bg-blue-100 dark:bg-gray-600 text-blue-900 dark:text-white"
                             : "text-gray-900 dark:text-gray-100"
@@ -142,11 +142,11 @@ const MonitoringTabs = ({
                       rounded-md bg-white dark:bg-gray-700 py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5"
                   >
                     {months.map((month, i) => (
-                      <Listbox.Option
+                    <Listbox.Option
                         key={i}
                         value={i}
                         className={({ active }) =>
-                          `cursor-pointer select-none py-2 pl-10 pr-4 ${
+                          `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
                             active
                               ? "bg-blue-100 dark:bg-gray-600 text-blue-900 dark:text-white"
                               : "text-gray-900 dark:text-gray-100"
@@ -204,11 +204,11 @@ const MonitoringTabs = ({
                         rounded-md bg-white dark:bg-gray-700 py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5"
                   >
                     {weeklyList.map((w, i) => (
-                      <Listbox.Option
+                    <Listbox.Option
                         key={i}
                         value={i}
                         className={({ active }) =>
-                          `cursor-pointer select-none py-2 pl-10 pr-4 ${
+                          `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
                             active
                               ? "bg-blue-100 dark:bg-gray-600 text-blue-900 dark:text-white"
                               : "text-gray-900 dark:text-gray-100"

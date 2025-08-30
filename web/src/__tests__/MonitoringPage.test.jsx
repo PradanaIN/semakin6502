@@ -24,7 +24,7 @@ test('displays last update note', async () => {
     await screen.findByText(
       (_, el) =>
         el.textContent ===
-        'Data terakhir diperbarui: 1 Juni 2024 pukul 08.00.00 WITA'
+        'Data diambil pada Sabtu, 1 Juni 2024 pukul 08:00:00 WITA'
     )
   ).toBeInTheDocument();
 });

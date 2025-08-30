@@ -34,7 +34,7 @@ export default function ExportModal({ onClose, onConfirm }) {
     }
     setWeekOptions(opts);
     if (minggu && minggu > opts.length) setMinggu("");
-  }, [bulan]);
+  }, [bulan, minggu]);
 
   const handleCancel = async () => {
     const result = await confirmCancel("Batalkan proses export?");

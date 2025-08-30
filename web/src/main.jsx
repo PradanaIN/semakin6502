@@ -5,6 +5,7 @@ import "./assets/styles/index.css";
 import "sweetalert2/dist/sweetalert2.min.css";
 import "./assets/styles/sweetalert-fix.css";
 import "react-toastify/dist/ReactToastify.css";
+import "./assets/styles/toast.css";
 import { AuthProvider } from "./pages/auth/useAuth.jsx";
 import { ThemeProvider } from "./theme/useTheme.jsx";
 import { BrowserRouter } from "react-router-dom";

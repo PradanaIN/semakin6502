@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BookOpen, Menu, ExternalLink, CheckCircle2 } from "lucide-react";
 import Button from "../../components/ui/Button";
 import bukuPanduan from "../../assets/buku_panduan_semakin.pdf";
@@ -27,15 +27,10 @@ export default function PanduanPage() {
   const [page, setPage] = useState(
     Number.isFinite(initialPageFromUrl) && initialPageFromUrl > 0
       ? initialPageFromUrl
-      : SECTIONS[0].page
+      : 1
   );
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const buttonRefs = useRef([]);
-
-  const currentSectionIndex = useMemo(() => {
-    const idx = SECTIONS.findIndex((s) => s.page === page);
-    return idx >= 0 ? idx : 0;
-  }, [page]);
 
   // sinkronkan ?page= pada URL agar bisa dibagikan
   useEffect(() => {
@@ -45,61 +40,16 @@ export default function PanduanPage() {
     window.history.replaceState({}, "", url.toString());
   }, [page]);
 
-  
-
   // navigasi fokus melalui keyboard di daftar isi tidak lagi didukung
 
   // URL PDF
   const pdfUrl = `${bukuPanduan}#page=${page}&view=FitH&zoom=page-width`;
 
   return (
-    <div className="mx-auto max-w-6xl p-4 sm:p-6">
-      {/* Card */}
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg">
-        {/* Header */}
-        <div className="relative flex items-center justify-between gap-3 p-4 sm:p-6">
-            <div className="flex items-center gap-3">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-600 text-white shadow">
-                <BookOpen className="h-5 w-5" />
-              </div>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                  Panduan Penggunaan
-                </h1>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                  Navigasi per bagian melalui daftar isi.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                icon
-                aria-label="Buka di tab baru"
-                onClick={() =>
-                  window.open(
-                    `${bukuPanduan}#page=${page}`,
-                    "_blank",
-                    "noopener,noreferrer"
-                  )
-                }
-                className="h-9 w-9 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-              >
-                <ExternalLink className="h-4 w-4" />
-              </Button>
-              <Button
-                icon
-                className="lg:hidden h-9 w-9 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-                onClick={() => setSidebarOpen((s) => !s)}
-                aria-label="Buka daftar isi"
-              >
-                <Menu className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-        <div className="border-t border-gray-200 dark:border-gray-800" />
-
-        {/* Layout utama */}
+    <div className="mx-auto max-w-6xl p-3 sm:p-4">
+      {/* Card container */}
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden">
+        {/* Layout utama: sidebar + viewer */}
         <div className="relative grid grid-cols-1 lg:grid-cols-[300px,1fr]">
           {/* Sidebar desktop */}
           <aside className="hidden lg:block border-r border-gray-200 dark:border-gray-800">
@@ -136,15 +86,34 @@ export default function PanduanPage() {
 
           {/* Viewer */}
           <main className="relative min-h-[70vh] lg:min-h-[80vh]">
-            {/* Toolbar */}
-            <div className="flex flex-wrap items-center gap-3 p-4 sm:p-6">
-              <span className="font-medium text-sm text-gray-600 dark:text-gray-300">
-                {SECTIONS[currentSectionIndex]?.title}
-              </span>
+            {/* Action bar (ringkas) */}
+            <div className="flex items-center justify-end gap-2 p-3 sm:p-4">
+              <Button
+                icon
+                aria-label="Buka PDF di tab baru"
+                onClick={() =>
+                  window.open(
+                    `${bukuPanduan}#page=${page}`,
+                    "_blank",
+                    "noopener,noreferrer"
+                  )
+                }
+                className="h-9 w-9 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+              <Button
+                icon
+                className="lg:hidden h-9 w-9 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                onClick={() => setSidebarOpen((s) => !s)}
+                aria-label="Buka daftar isi"
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
             </div>
 
             {/* PDF (viewer native) */}
-            <div className="px-4 sm:px-6 pb-6">
+            <div className="px-3 sm:px-4 pb-4">
               <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
                 <object
                   key={page} // paksa reload ketika parameter berubah
@@ -154,7 +123,7 @@ export default function PanduanPage() {
                   title="Buku Panduan"
                 >
                   <div className="p-6 text-gray-700 dark:text-gray-300">
-                    PDF tidak dapat dimuat.{" "}
+                    PDF tidak dapat dimuat.{' '}
                     <a href={bukuPanduan} className="text-blue-600 underline">
                       Buka di tab baru
                     </a>
@@ -173,9 +142,24 @@ export default function PanduanPage() {
 function Sidebar({ page, setPage, buttonRefs }) {
   return (
     <div className="flex h-full flex-col">
+      {/* Header kecil di sidebar untuk judul + deskripsi */}
+      <div className="flex items-center gap-3 p-4 pb-2">
+        <div className="grid h-9 w-9 place-items-center rounded-lg bg-blue-600 text-white shadow">
+          <BookOpen className="h-4 w-4" />
+        </div>
+        <div>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+            Panduan Penggunaan
+          </h2>
+          <p className="text-xs text-gray-600 dark:text-gray-400">
+            Navigasi per bagian melalui daftar isi.
+          </p>
+        </div>
+      </div>
+      <div className="border-t border-gray-200 dark:border-gray-800" />
       <nav
         aria-label="Navigasi Panduan"
-        className="flex max-h-[70vh] flex-col overflow-y-auto p-4 pr-2 custom-scrollbar"
+        className="flex max-h-[calc(80vh-0px)] flex-col overflow-y-auto p-4 pr-2 custom-scrollbar"
       >
         <ul className="flex flex-col gap-1 list-none">
           {SECTIONS.map((section, index) => {

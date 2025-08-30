@@ -39,7 +39,7 @@ export class MasterKegiatanController {
   @Get()
   @Roles(ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA)
   findAll(@Req() req: Request) {
-    const { page, limit, team, search } = req.query;
+    const { page, limit, team, search, tambahan } = req.query;
     const u = req.user as AuthRequestUser;
     return this.masterService.findAll(
       {
@@ -47,6 +47,10 @@ export class MasterKegiatanController {
         limit: limit ? parseInt(limit as string, 10) : undefined,
         teamId: team as string | undefined,
         search: search as string | undefined,
+        // Allow cross-team fetch when explicitly requested for tugas tambahan
+        forTambahan:
+          (typeof tambahan === 'string' && tambahan.toLowerCase() === 'true') ||
+          req.headers['x-for-tambahan'] === '1',
       },
       u.userId,
       u.role,

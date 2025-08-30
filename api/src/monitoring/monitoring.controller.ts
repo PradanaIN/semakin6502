@@ -28,7 +28,10 @@ export class MonitoringController {
   @Get('last-update')
   async lastUpdate() {
     const date = await this.monitoringService.lastUpdate();
-    return { lastUpdate: date ? date.toISOString() : null };
+    return {
+      lastUpdate: date ? date.toISOString() : null,
+      fetchedAt: new Date().toISOString(),
+    };
   }
 
   @Get("harian")
@@ -52,13 +55,18 @@ export class MonitoringController {
         const member = await this.prisma.member.findFirst({
           where: { teamId: tId, userId: uid },
         });
-        if (!member) throw new ForbiddenException("bukan anggota tim ini");
-        if (!member.isLeader) {
-          if (uId && uId !== uid)
-            throw new ForbiddenException("bukan ketua tim");
-          if (!uId) uId = uid;
+        if (member) {
+          if (!member.isLeader) {
+            if (uId && uId !== uid)
+              throw new ForbiddenException("bukan ketua tim");
+            if (!uId) uId = uid;
+          }
+        } else {
+          // Bukan anggota tim: izinkan lihat agregat tim tanpa memaksa userId
+          uId = undefined;
         }
       } else {
+        // Tanpa filter tim: default ke data diri sendiri
         uId = uid;
       }
     }
@@ -109,11 +117,14 @@ export class MonitoringController {
         const member = await this.prisma.member.findFirst({
           where: { teamId: tId, userId: uid },
         });
-        if (!member) throw new ForbiddenException("bukan anggota tim ini");
-        if (!member.isLeader) {
-          if (uId && uId !== uid)
-            throw new ForbiddenException("bukan ketua tim");
-          if (!uId) uId = uid;
+        if (member) {
+          if (!member.isLeader) {
+            if (uId && uId !== uid)
+              throw new ForbiddenException("bukan ketua tim");
+            if (!uId) uId = uid;
+          }
+        } else {
+          uId = undefined;
         }
       } else {
         uId = uid;
@@ -155,11 +166,14 @@ export class MonitoringController {
         const member = await this.prisma.member.findFirst({
           where: { teamId: tId, userId: uid },
         });
-        if (!member) throw new ForbiddenException("bukan anggota tim ini");
-        if (!member.isLeader) {
-          if (uId && uId !== uid)
-            throw new ForbiddenException("bukan ketua tim");
-          if (!uId) uId = uid;
+        if (member) {
+          if (!member.isLeader) {
+            if (uId && uId !== uid)
+              throw new ForbiddenException("bukan ketua tim");
+            if (!uId) uId = uid;
+          }
+        } else {
+          uId = undefined;
         }
       } else {
         uId = uid;
@@ -201,11 +215,14 @@ export class MonitoringController {
         const member = await this.prisma.member.findFirst({
           where: { teamId: tId, userId: uid },
         });
-        if (!member) throw new ForbiddenException("bukan anggota tim ini");
-        if (!member.isLeader) {
-          if (uId && uId !== uid)
-            throw new ForbiddenException("bukan ketua tim");
-          if (!uId) uId = uid;
+        if (member) {
+          if (!member.isLeader) {
+            if (uId && uId !== uid)
+              throw new ForbiddenException("bukan ketua tim");
+            if (!uId) uId = uid;
+          }
+        } else {
+          uId = undefined;
         }
       } else {
         uId = uid;
@@ -243,5 +260,10 @@ export class MonitoringController {
     @Query("teamId") teamId?: string,
   ) {
     return this.monitoringService.laporanTerlambat(teamId);
+  }
+
+  @Get("holidays")
+  async holidays() {
+    return this.monitoringService.getHolidays();
   }
 }

@@ -11,7 +11,11 @@ const DailyOverview = ({ data = [] }) => {
     (day) => !isNaN(new Date(day.tanggal))
   );
 
-  const today = new Date().toISOString().slice(0, 10);
+  // Use local YYYY-MM-DD to avoid timezone shift
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(
+    now.getDate()
+  ).padStart(2, "0")}`;
   const currentYear = new Date(today).getFullYear();
 
   const formatDate = (iso) => {
@@ -38,7 +42,8 @@ const DailyOverview = ({ data = [] }) => {
     if (isWeekend(day.tanggal) || isHoliday(day.tanggal)) {
       return `${base} bg-blue-100 border-blue-400 dark:bg-blue-800 dark:border-blue-300`;
     }
-    if (day.tanggal < today) {
+    // Mark today without activity as warning as well
+    if (day.tanggal <= today) {
       return `${base} bg-yellow-100 border-yellow-400 dark:bg-yellow-800 dark:border-yellow-500`;
     }
     return `${base} bg-gray-50 border-gray-300 dark:bg-gray-700 dark:border-gray-600`;

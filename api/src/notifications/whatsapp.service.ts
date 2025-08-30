@@ -20,12 +20,16 @@ export class WhatsappService {
   private readonly logger = new Logger(WhatsappService.name);
   private readonly token?: string;
   private readonly apiUrl?: string;
+  private readonly useBearer: boolean;
 
   constructor(private readonly config: ConfigService) {
-    this.token =
-      this.config.get<string>("FONNTE_TOKEN") ||
-      this.config.get<string>("WHATSAPP_TOKEN");
+    const fonnte = this.config.get<string>("FONNTE_TOKEN");
+    const generic = this.config.get<string>("WHATSAPP_TOKEN");
+    this.token = fonnte || generic || undefined;
     this.apiUrl = this.config.get<string>("WHATSAPP_API_URL");
+    // If using generic token (non-Fonnte), default to Bearer scheme unless already present
+    const hasBearerPrefix = (this.token || "").toLowerCase().startsWith("bearer ");
+    this.useBearer = !!generic && !hasBearerPrefix;
   }
 
   async send(
@@ -49,7 +53,9 @@ export class WhatsappService {
     }
 
     const headers: Record<string, string> = {
-      Authorization: this.token,
+      Authorization: this.useBearer
+        ? `Bearer ${String(this.token).replace(/^bearer\s+/i, "")}`
+        : String(this.token),
     };
 
     const formHeaders = (form as any).getHeaders?.();
@@ -57,7 +63,12 @@ export class WhatsappService {
       headers["Content-Type"] = formHeaders["content-type"];
     }
 
-    const maskedToken = this.token.replace(/.(?=.{4})/g, "*");
+    const maskedToken = String(this.token).replace(/.(?=.{4})/g, "*");
+    let urlForLog = this.apiUrl;
+    try {
+      const u = new URL(this.apiUrl);
+      urlForLog = `${u.origin}${u.pathname}`;
+    } catch {}
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       try {
@@ -65,8 +76,15 @@ export class WhatsappService {
           target: payload.target,
           options: {
             method: "POST",
-            headers: { ...headers, Authorization: `Bearer ${maskedToken}` },
+            // Log masked token and explicit scheme used
+            headers: {
+              ...headers,
+              Authorization: this.useBearer
+                ? `Bearer ${maskedToken}`
+                : maskedToken,
+            },
           },
+          url: urlForLog,
         });
 
         const res = await fetch(this.apiUrl, {
@@ -137,9 +155,14 @@ export class WhatsappService {
         this.logger.debug("WhatsApp API response", data);
         return data;
       } catch (err) {
+        const anyErr: any = err;
         this.logger.error("WhatsApp message send failed", {
-          status: (err as any)?.status,
+          status: anyErr?.status,
           message: (err as Error).message,
+          code: anyErr?.code || anyErr?.cause?.code,
+          errno: anyErr?.errno || anyErr?.cause?.errno,
+          address: anyErr?.cause?.address,
+          url: urlForLog,
           payload,
         });
         if (attempt + 1 >= maxAttempts) {

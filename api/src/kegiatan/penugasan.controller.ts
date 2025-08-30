@@ -45,6 +45,7 @@ export class PenugasanController {
     @Query("tahun") tahun?: string,
     @Query("minggu") minggu?: string,
     @Query("creator") creator?: string,
+    @Query("withMeta") withMeta?: string,
   ) {
     const u = req.user as AuthRequestUser;
     const filter: any = {};
@@ -52,6 +53,15 @@ export class PenugasanController {
     if (tahun) filter.tahun = parseInt(tahun, 10);
     if (minggu) filter.minggu = parseInt(minggu, 10);
     const creatorId = creator;
+    const wantsMeta = withMeta === "true" || withMeta === "1";
+    if (wantsMeta) {
+      return this.penugasanService.listWithMeta(
+        u.role,
+        u.userId,
+        filter,
+        creatorId
+      );
+    }
     return this.penugasanService.findAll(u.role, u.userId, filter, creatorId);
   }
 

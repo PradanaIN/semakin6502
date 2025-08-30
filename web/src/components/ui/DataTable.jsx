@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-table";
 import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import Table from "./Table";
+import styles from "./Table.module.css";
 import Pagination from "../Pagination";
 import SelectDataShow from "./SelectDataShow";
 import SearchInput from "../SearchInput";
@@ -61,6 +62,7 @@ export default function DataTable({
   onRowSelectionChange,
   showPagination = true,
   selectable = true,
+  truncate = true,
 }) {
   const tableColumns = React.useMemo(() => {
     const base = columns.map((col) => ({
@@ -76,7 +78,12 @@ export default function DataTable({
         : undefined,
       enableColumnFilter: !col.disableFilters,
       filterFn: col.filter,
-      meta: { Filter: col.Filter, cellClassName: col.cellClassName },
+      meta: {
+        Filter: col.Filter,
+        cellClassName: col.cellClassName,
+        noTruncate: col.noTruncate,
+        truncateMaxWidth: col.truncateMaxWidth,
+      },
     }));
 
     const selectColumn = {
@@ -172,9 +179,9 @@ export default function DataTable({
               <td
                 colSpan={table.getAllColumns().length}
                 className="py-4 text-center"
-                aria-label="Data tidak ditemukan"
+                aria-label="Tidak ada data"
               >
-                Data tidak ditemukan
+                Tidak ada data
               </td>
             </tr>
           ) : (
@@ -192,10 +199,30 @@ export default function DataTable({
                   const common = {
                     className: `${extra} border-t border-b border-gray-300 dark:border-gray-700`,
                   };
-                  const content = flexRender(
+                  const rawContent = flexRender(
                     cell.column.columnDef.cell ?? cell.getValue(),
                     cell.getContext()
                   );
+                  const content =
+                    truncate && cell.column.columnDef.meta?.noTruncate !== true ? (
+                      <span
+                        className={styles.truncateCell}
+                        style={
+                          cell.column.columnDef.meta?.truncateMaxWidth
+                            ? { maxWidth: cell.column.columnDef.meta.truncateMaxWidth }
+                            : undefined
+                        }
+                        title={
+                          typeof rawContent === "string" || typeof rawContent === "number"
+                            ? String(rawContent)
+                            : undefined
+                        }
+                      >
+                        {rawContent}
+                      </span>
+                    ) : (
+                      rawContent
+                    );
                   return index === 0 ? (
                     <th key={cell.id} scope="row" {...common}>
                       {content}

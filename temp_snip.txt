@@ -1,0 +1,53 @@
+      deskripsi: "",
+      capaianKegiatan: "",
+    });
+    setKegiatan([]);
+    setShowForm(true);
+  };
+
+  const handleCancel = async () => {
+    const r = await confirmCancel("Batalkan penambahan?");
+    if (r.isConfirmed) setShowForm(false);
+  };
+
+  const save = async () => {
+    if (
+      !form.teamId ||
+      !form.kegiatanId ||
+      !form.minggu ||
+      !form.bulan ||
+      !form.tahun ||
+      form.deskripsi.trim() === ""
+    ) {
+      showWarning("Lengkapi data", "Semua kolom wajib diisi");
+      return;
+    }
+    try {
+      const payload = { ...form };
+      payload.tanggal = getDateFromPeriod(form.minggu, form.bulan, form.tahun);
+      delete payload.teamId;
+      delete payload.minggu;
+      delete payload.bulan;
+      delete payload.tahun;
+      Object.keys(payload).forEach((k) => {
+        if (payload[k] === "" && k !== "capaianKegiatan") delete payload[k];
+      });
+      await axios.post("/tugas-tambahan", payload);
+      setShowForm(false);
+      fetchData();
+      showSuccess("Berhasil", "Data disimpan");
+    } catch (err) {
+      handleAxiosError(err, "Gagal menyimpan");
+    }
+  };
+
+  const openDetail = (id) => {
+    navigate(`/tugas-tambahan/${id}`);
+  };
+
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => {
+      const text = `${item.nama} ${
+        item.kegiatan?.team?.namaTim || ""
+      }`.toLowerCase();
+      const matchesSearch = text.includes(search.toLowerCase());

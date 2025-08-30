@@ -124,7 +124,6 @@ export default function Layout() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const displayedNotifications = notifications.slice(0, 5);
   const getPageTitle = useCallback(() => {
     const slug = location.pathname.split("/")[1] || "dashboard";
     return slug
@@ -191,47 +190,65 @@ export default function Layout() {
               >
                 <FaBell className="text-xl cursor-pointer" />
                 {notifCount > 0 && (
-                  <span className="absolute -top-1 -right-2 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                    {notifCount}
-                  </span>
+                  <>
+                    {/* Ping animation */}
+                    <span className="absolute -top-1 -right-2 inline-flex h-5 w-5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-60" />
+                    </span>
+                    {/* Badge */}
+                    <span className="absolute -top-1 -right-2 bg-red-600 text-white text-[10px] min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full shadow-sm">
+                      {notifCount > 99 ? '99+' : notifCount}
+                    </span>
+                  </>
                 )}
               </button>
               {showNotifMenu && (
-                <div className="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50 py-2">
+                <div className="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto custom-scrollbar bg-white/95 dark:bg-gray-800/95 backdrop-blur border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50 py-2">
                   <div className="px-4 py-2 font-semibold border-b dark:border-gray-600 flex justify-between items-center">
                     <span>Notifikasi</span>
-                    <button
-                      onClick={markAllAsRead}
-                      className="text-xs text-blue-600 hover:underline dark:text-blue-400"
-                    >
-                      Tandai sudah dibaca
-                    </button>
+                    {notifications.length > 0 && (
+                      <button
+                        onClick={markAllAsRead}
+                        className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+                      >
+                        Tandai sudah dibaca
+                      </button>
+                    )}
                   </div>
-                  {displayedNotifications.map((notif) => (
-                    <button
-                      key={notif.id}
-                      type="button"
-                      onClick={() => markAsRead(notif.id, notif.link)}
-                      aria-label={`Buka notifikasi ${notif.text}`}
-                      className={`w-full text-left px-4 py-2 text-sm flex items-start gap-2 hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                        notif.isRead
-                          ? "text-gray-400"
-                          : "text-gray-800 dark:text-gray-100"
-                      }`}
-                    >
-                      <FaCheckCircle
-                        className={`mt-1 ${
-                          notif.isRead ? "text-green-400" : "text-gray-400"
+
+                  {notifications.length === 0 ? (
+                    <div className="px-4 py-6 text-sm text-gray-500 dark:text-gray-400 text-center">
+                      Tidak ada notifikasi
+                    </div>
+                  ) : (
+                    notifications.map((notif) => (
+                      <button
+                        key={notif.id}
+                        type="button"
+                        onClick={() => markAsRead(notif.id, notif.link)}
+                        aria-label={`Buka notifikasi ${notif.text}`}
+                        className={`w-full text-left px-4 py-2 text-sm flex items-start gap-3 transition-colors ${
+                          notif.isRead
+                            ? "text-gray-500 dark:text-gray-400 hover:bg-gray-100/60 dark:hover:bg-gray-700/60"
+                            : "bg-blue-50/60 dark:bg-gray-700/60 hover:bg-blue-100/60 dark:hover:bg-gray-700/80"
                         }`}
-                      />
-                      <div className="flex flex-col">
-                        <span>{notif.text}</span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {dayjs(notif.createdAt).fromNow()}
-                        </span>
-                      </div>
-                    </button>
-                  ))}
+                      >
+                        {/* Unread dot */}
+                        <span className={`mt-1 inline-block h-2 w-2 rounded-full ${notif.isRead ? 'bg-gray-300' : 'bg-blue-500'}`} />
+                        <div className="flex-1 min-w-0">
+                          <div className={`truncate ${notif.isRead ? '' : 'font-medium'}`}>{notif.text}</div>
+                          <div className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                            {dayjs(notif.createdAt).fromNow()}
+                          </div>
+                        </div>
+                        <FaCheckCircle
+                          className={`mt-0.5 flex-shrink-0 ${
+                            notif.isRead ? "text-green-400" : "text-gray-300"
+                          }`}
+                        />
+                      </button>
+                    ))
+                  )}
                 </div>
               )}
             </div>
@@ -319,7 +336,19 @@ export default function Layout() {
         <main className="p-4 overflow-y-auto flex-1 bg-gray-100 dark:bg-gray-900">
           <Outlet />
         </main>
-        <ToastContainer position="top-right" autoClose={3000} theme={theme} />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          theme={theme}
+          newestOnTop
+          hideProgressBar={false}
+          closeOnClick
+          pauseOnHover
+          draggable
+          toastClassName="custom-toast"
+          bodyClassName="custom-toast-body"
+          progressClassName="custom-toast-progress"
+        />
       </div>
     </div>
     </>

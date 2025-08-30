@@ -85,6 +85,16 @@
   word-wrap: break-word;
 }
 
+/* Single-line truncation to prevent layout breakage */
+.truncateCell {
+  display: inline-block;
+  max-width: 20rem; /* ~320px, adjust as needed */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: top;
+}
+
 /* Responsive table (if needed later)
 @media (max-width: 768px) {
   .table {

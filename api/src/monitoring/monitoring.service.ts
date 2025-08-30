@@ -5,6 +5,7 @@ import { PrismaService } from "../prisma.service";
 import MONTHS from "../common/months";
 import { STATUS } from "../common/status.constants";
 import { ROLES } from "../common/roles.constants";
+import { getHolidaySet, isHolidayLocal } from "../config/holidays";
 
 // Tanggal pada service monitoring diasumsikan diproses dalam timezone UTC.
 
@@ -759,7 +760,34 @@ export class MonitoringService {
     });
 
     const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
+    // Gunakan midnight lokal agar konsisten dengan hari kerja lokal (Senin–Jumat)
+    today.setHours(0, 0, 0, 0);
+
+    // Hitung selisih hari kerja (Senin-Jumat) antara dua tanggal (UTC midnight).
+    const businessDaysDiff = (from: Date, to: Date) => {
+      // Tidak menghitung tanggal awal; hanya hari setelahnya sampai "to" (inklusif) yang dihitung,
+      // sehingga Jumat -> Senin = 1 hari kerja.
+      if (to <= from) return 0;
+      const holidaySet = getHolidaySet();
+      const MS = 86400000;
+      const days = Math.floor((to.getTime() - from.getTime()) / MS);
+      const fullWeeks = Math.floor(days / 7);
+      let workdays = fullWeeks * 5;
+      let rem = days % 7;
+      // Mulai dari hari setelah "from"
+      let dow = (from.getDay() + 1) % 7; // 0=Sunday..6=Saturday (lokal)
+      for (let i = 0; i < rem; i++) {
+        if (dow !== 0 && dow !== 6) workdays += 1; // Mon..Fri
+        dow = (dow + 1) % 7;
+      }
+      // Kurangi hari libur/cuti bersama yang jatuh pada hari kerja di rentang (from, to]
+      for (let i = 1; i <= days; i++) {
+        const cur = new Date(from.getTime() + i * MS);
+        const isWeekend = cur.getDay() === 0 || cur.getDay() === 6;
+        if (!isWeekend && isHolidayLocal(cur, holidaySet)) workdays -= 1;
+      }
+      return workdays;
+    };
 
     const result = { day1: [], day3: [], day7: [] } as Record<
       "day1" | "day3" | "day7",
@@ -773,7 +801,8 @@ export class MonitoringService {
       if (last) {
         const d = new Date(last);
         d.setHours(0, 0, 0, 0);
-        diff = Math.floor((today.getTime() - d.getTime()) / 86400000);
+        // Gunakan hari kerja (Senin-Jumat) untuk penentuan bucket keterlambatan
+        diff = businessDaysDiff(d, today);
         lastDate = d.toISOString();
       }
 
@@ -786,6 +815,11 @@ export class MonitoringService {
 
     await this.cache?.set(key, result, CACHE_TTL);
     return result;
+  }
+
+  getHolidays() {
+    // Kembalikan daftar string YYYY-MM-DD untuk dipakai di frontend
+    return Array.from(getHolidaySet().values());
   }
 }
 

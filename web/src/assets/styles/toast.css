@@ -1,0 +1,47 @@
+/* Custom styling for React Toastify, aligned with theme variables */
+.Toastify__toast-container {
+  padding: 8px;
+}
+
+.Toastify__toast {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-radius: var(--radius);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+  border-left: 4px solid transparent;
+}
+
+.Toastify__toast--success {
+  border-left-color: #22c55e; /* green-500 */
+}
+.Toastify__toast--error {
+  border-left-color: #ef4444; /* red-500 */
+}
+.Toastify__toast--warning {
+  border-left-color: #f59e0b; /* amber-500 */
+}
+.Toastify__toast--info {
+  border-left-color: #3b82f6; /* blue-500 */
+}
+
+.Toastify__close-button {
+  color: hsl(var(--muted-foreground));
+  opacity: 0.8;
+}
+.Toastify__close-button:hover {
+  opacity: 1;
+}
+
+.custom-toast-body {
+  font-size: 0.9rem;
+}
+
+.custom-toast-progress {
+  background: linear-gradient(90deg, #60a5fa, #22c55e);
+}
+
+/* Optional extra spacing and alignment when used via toastClassName */
+.custom-toast {
+  padding: 10px 14px;
+  align-items: flex-start;
+}

@@ -54,8 +54,8 @@ export class LaporanService {
       orderBy: { tanggal: "desc" },
       include: {
         pegawai: true,
-        penugasan: { include: { kegiatan: true } },
-        tambahan: { include: { kegiatan: true } },
+        penugasan: { include: { kegiatan: { include: { team: true } } } },
+        tambahan: { include: { kegiatan: { include: { team: true } } } },
       },
       ...pagination,
     });
@@ -430,24 +430,32 @@ export class LaporanService {
       );
     }
 
-    const mappedTambahan = tambahan.map((t: any) => ({
-      id: t.id,
-      tanggal: t.tanggal,
-      status: t.status,
-      deskripsi: t.deskripsi,
-      capaianKegiatan: t.capaianKegiatan,
-      buktiLink: t.buktiLink,
-      catatan: null,
-      type: "tambahan",
-      penugasan: {
-        kegiatan: {
-          namaKegiatan: t.nama,
-          deskripsi: t.kegiatan?.deskripsi,
-          team: t.kegiatan?.team,
-        },
-        tim: t.kegiatan?.team,
-      },
-    }));
+    const mappedTambahan = await Promise.all(
+      tambahan.map(async (t: any) => {
+        const latest = await this.prisma.laporanHarian.findFirst({
+          where: { tambahanId: t.id },
+          orderBy: { tanggal: "desc" },
+        });
+        return {
+          id: t.id,
+          tanggal: latest?.tanggal ?? t.tanggal,
+          status: t.status,
+          deskripsi: latest?.deskripsi ?? t.deskripsi,
+          capaianKegiatan: latest?.capaianKegiatan ?? t.capaianKegiatan,
+          buktiLink: latest?.buktiLink ?? t.buktiLink,
+          catatan: latest?.catatan ?? null,
+          type: "tambahan",
+          penugasan: {
+            kegiatan: {
+              namaKegiatan: t.nama,
+              deskripsi: t.kegiatan?.deskripsi,
+              team: t.kegiatan?.team,
+            },
+            tim: t.kegiatan?.team,
+          },
+        };
+      })
+    );
 
     return [...mapped, ...mappedTambahan].sort(
       (a, b) => b.tanggal.getTime() - a.tanggal.getTime()

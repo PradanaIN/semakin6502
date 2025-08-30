@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Pencil, Trash2, ExternalLink, Minus, Download } from "lucide-react";
+import { Pencil, Trash2, ExternalLink, Minus } from "lucide-react";
+import { FaFileExcel } from "react-icons/fa";
 import Spinner from "../../components/Spinner";
 import {
   showSuccess,
@@ -21,6 +22,7 @@ import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
 import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import TableSkeleton from "../../components/ui/TableSkeleton";
+import EmptyState from "../../components/ui/EmptyState";
 import { useAuth } from "../auth/useAuth";
 import { ROLES } from "../../utils/roles";
 import ExportModal from "../../components/ExportModal";
@@ -33,6 +35,7 @@ export default function LaporanHarianPage() {
   const { user } = useAuth();
   const [laporan, setLaporan] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [query, setQuery] = useState("");
   const [bulan, setBulan] = useState("");
   const [minggu, setMinggu] = useState("");
@@ -99,6 +102,7 @@ export default function LaporanHarianPage() {
 
   const saveForm = async () => {
     try {
+      setSaving(true);
       if (
         (form.status === STATUS.SEDANG_DIKERJAKAN ||
           form.status === STATUS.SELESAI_DIKERJAKAN) &&
@@ -115,6 +119,8 @@ export default function LaporanHarianPage() {
       showSuccess("Berhasil", "Laporan diperbarui");
     } catch (err) {
       handleAxiosError(err, "Gagal menyimpan");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -215,19 +221,28 @@ export default function LaporanHarianPage() {
     {
       Header: "Jenis",
       accessor: (row) =>
-        row.type === "tambahan" ? "Tugas Tambahan" : "Tugas Mingguan",
+        row.type === "tambahan" || row.tambahan
+          ? "Tugas Tambahan"
+          : "Tugas Mingguan",
       disableFilters: true,
     },
     {
       Header: "Kegiatan",
       accessor: (row) =>
-        row.penugasan?.kegiatan?.namaKegiatan || row.nama || "-",
+        row.penugasan?.kegiatan?.namaKegiatan ||
+        row.tambahan?.nama ||
+        row.nama ||
+        "-",
       disableFilters: true,
     },
     {
       Header: "Tim",
       accessor: (row) =>
-        row.penugasan?.tim?.namaTim || row.kegiatan?.team?.namaTim || "-",
+        row.penugasan?.kegiatan?.team?.namaTim ||
+        row.penugasan?.tim?.namaTim ||
+        row.tambahan?.kegiatan?.team?.namaTim ||
+        row.kegiatan?.team?.namaTim ||
+        "-",
       disableFilters: true,
     },
     {
@@ -239,14 +254,16 @@ export default function LaporanHarianPage() {
       Header: "Deskripsi Kegiatan",
       accessor: (row) =>
         truncateText(
-          row.penugasan?.kegiatan?.deskripsi || row.deskripsi || "-"
+          row.penugasan?.kegiatan?.deskripsi ||
+            row.tambahan?.kegiatan?.deskripsi ||
+            row.deskripsi ||
+            "-"
         ),
       disableFilters: true,
     },
     {
       Header: "Capaian Kegiatan",
-      accessor: (row) =>
-        truncateText(row.penugasan?.kegiatan?.capaian || row.capaian || "-"),
+      accessor: (row) => truncateText(row.capaianKegiatan || "-"),
       disableFilters: true,
     },
     {
@@ -320,20 +337,22 @@ export default function LaporanHarianPage() {
             ))}
           </select>
 
-          {/* Export Button */}
+          {/* Export Excel Button */}
           <Button
             onClick={openExportModal}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white transition duration-150 ease-in-out"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-green-600 hover:bg-green-700 text-white transition duration-150 ease-in-out"
           >
-            <Download size={16} />
-            <span className="hidden sm:inline">Export</span>
+            <FaFileExcel size={16} />
+            <span className="hidden sm:inline">.xlsx</span>
           </Button>
         </div>
       </div>
 
-      <div className="overflow-x-auto md:overflow-x-visible">
+      <div className="overflow-x-auto md:overflow-x-visible min-h-[120px]">
         {loading ? (
           <TableSkeleton cols={columns.length} />
+        ) : paginated.length === 0 ? (
+          <EmptyState message="Belum ada laporan untuk periode ini" />
         ) : (
           <DataTable
             columns={columns}
@@ -343,20 +362,22 @@ export default function LaporanHarianPage() {
             selectable={false}
           />
         )}
-        <div className="flex items-center justify-between mt-2">
-          <SelectDataShow
-            pageSize={pageSize}
-            setPageSize={setPageSize}
-            setCurrentPage={setCurrentPage}
-            options={[5, 10, 25, 50]}
-            className="w-32"
-          />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
+        {filtered.length > 0 && (
+          <div className="flex items-center justify-between mt-2">
+            <SelectDataShow
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              setCurrentPage={setCurrentPage}
+              options={[5, 10, 25, 50]}
+              className="w-32"
+            />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
       </div>
 
       {showForm && (
@@ -377,6 +398,7 @@ export default function LaporanHarianPage() {
                 type="date"
                 value={form.tanggal}
                 onChange={(e) => setForm({ ...form, tanggal: e.target.value })}
+                disabled={saving}
               />
             </div>
             <div>
@@ -390,6 +412,7 @@ export default function LaporanHarianPage() {
                   setForm({ ...form, deskripsi: e.target.value })
                 }
                 className="form-input"
+                disabled={saving}
               />
             </div>
             <div>
@@ -401,6 +424,7 @@ export default function LaporanHarianPage() {
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
                 className="form-input"
+                disabled={saving}
               >
                 <option value={STATUS.BELUM}>
                   {formatStatus(STATUS.BELUM)}
@@ -425,6 +449,7 @@ export default function LaporanHarianPage() {
                     setForm({ ...form, buktiLink: e.target.value })
                   }
                   required
+                  disabled={saving}
                 />
               </div>
             )}
@@ -435,6 +460,7 @@ export default function LaporanHarianPage() {
                 value={form.catatan}
                 onChange={(e) => setForm({ ...form, catatan: e.target.value })}
                 className="form-input"
+                disabled={saving}
               />
             </div>
           </div>
@@ -445,10 +471,13 @@ export default function LaporanHarianPage() {
                 const r = await confirmCancel("Batalkan perubahan?");
                 if (r.isConfirmed) setShowForm(false);
               }}
+              disabled={saving}
             >
               Batal
             </Button>
-            <Button onClick={saveForm}>Simpan</Button>
+            <Button onClick={saveForm} loading={saving}>
+              Simpan
+            </Button>
           </div>
         </Modal>
       )}

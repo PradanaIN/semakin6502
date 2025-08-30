@@ -22,6 +22,7 @@ import Label from "../../components/ui/Label";
 import MonthYearPicker from "../../components/ui/MonthYearPicker";
 import { ROLES } from "../../utils/roles";
 import months from "../../utils/months";
+import { getWeekOfMonth } from "../../utils/dateUtils";
 import SearchInput from "../../components/SearchInput";
 import SelectDataShow from "../../components/ui/SelectDataShow";
 import TableSkeleton from "../../components/ui/TableSkeleton";
@@ -48,16 +49,7 @@ function sortPenugasan(list, teamId) {
   });
 }
 
-const getCurrentWeek = () => {
-  const today = new Date();
-  const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-  const firstMonday = new Date(firstOfMonth);
-  firstMonday.setDate(
-    firstOfMonth.getDate() - ((firstOfMonth.getDay() + 6) % 7)
-  );
-  const diff = Math.floor((today - firstMonday) / (1000 * 60 * 60 * 24));
-  return Math.floor(diff / 7) + 1;
-};
+const getCurrentWeek = () => getWeekOfMonth(new Date());
 
 export default function PenugasanPage() {
   const { user } = useAuth();
@@ -98,6 +90,7 @@ export default function PenugasanPage() {
   // Default tab is "Tugas Saya" to show the current user's tasks first
   const [viewTab, setViewTab] = useState("mine");
   const [formTouched, setFormTouched] = useState(false); // for validation
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (user?.role === ROLES.PIMPINAN) {
@@ -112,13 +105,7 @@ export default function PenugasanPage() {
     }
   }, [location, navigate]);
 
-  const showPegawaiColumn = useMemo(
-    () =>
-      viewTab === "all" ||
-      viewTab === "dariSaya" ||
-      [ROLES.ADMIN, ROLES.PIMPINAN].includes(user?.role),
-    [user, viewTab]
-  );
+  // NOTE: column visibility handled directly in columns definition below
 
   const kegiatanOptions = useMemo(
     () => kegiatan.map((k) => ({ value: k.id, label: k.namaKegiatan })),
@@ -253,6 +240,7 @@ export default function PenugasanPage() {
       return;
     }
     try {
+      setSaving(true);
       await axios.post("/penugasan/bulk", form);
       closeForm();
       resetForm();
@@ -260,6 +248,8 @@ export default function PenugasanPage() {
       showSuccess("Berhasil", "Penugasan ditambah");
     } catch (err) {
       handleAxiosError(err, "Gagal menyimpan penugasan");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -275,12 +265,11 @@ export default function PenugasanPage() {
         : true;
       if (viewTab === "mine") return matchesSearch && p.pegawaiId === user?.id;
       if (viewTab === "dariSaya")
+        // Hanya penugasan yang dibuat oleh user (sudah dibatasi di params)
+        // dan tidak menampilkan tugas dirinya sendiri
         return matchesSearch && matchTeam && p.pegawaiId !== user?.id;
-      return (
-        matchesSearch &&
-        matchTeam &&
-        (user?.role === ROLES.PIMPINAN || p.pegawaiId !== user?.id)
-      );
+      // viewTab === "all" -> tampilkan semua penugasan kecuali milik user yang login
+      return matchesSearch && matchTeam && p.pegawaiId !== user?.id;
     });
   }, [penugasan, search, viewTab, user?.id, filterTeam]);
   const paginated = useMemo(
@@ -290,37 +279,64 @@ export default function PenugasanPage() {
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
   const columns = useMemo(() => {
-    const cols = [
+    const base = [
       {
         Header: "No",
         accessor: (_row, i) => (currentPage - 1) * pageSize + i + 1,
+        disableFilters: true,
       },
       {
         Header: "Kegiatan",
         accessor: (row) => row.kegiatan?.namaKegiatan || "-",
+        disableFilters: true,
       },
-      { Header: "Tim", accessor: (row) => row.kegiatan?.team?.namaTim || "-" },
+      {
+        Header: "Deskripsi",
+        accessor: (row) => row.deskripsi || "-",
+        disableFilters: true,
+      },
     ];
-    if (showPegawaiColumn) {
-      cols.push({
+
+    // Kolom khusus per tab
+    if (viewTab === "all") {
+      base.push(
+        {
+          Header: "Tim",
+          accessor: (row) => row.kegiatan?.team?.namaTim || "-",
+          disableFilters: true,
+        },
+        {
+          Header: "Pegawai",
+          accessor: (row) => row.pegawai?.nama || "-",
+          disableFilters: true,
+        }
+      );
+    } else {
+      base.push({
         Header: "Pegawai",
         accessor: (row) => row.pegawai?.nama || "-",
+        disableFilters: true,
       });
     }
-    cols.push(
-      { Header: "Minggu", accessor: "minggu" },
+
+    base.push(
+      { Header: "Minggu", accessor: "minggu", disableFilters: true },
       {
         Header: "Bulan",
-        accessor: (row) => `${months[row.bulan - 1]} ${row.tahun}`,
+        // Format contoh: "Agustus 2025"
+        accessor: (row) => `${months[(parseInt(row.bulan, 10) || 1) - 1]} ${row.tahun}`,
+        disableFilters: true,
       },
       {
         Header: "Status",
         accessor: "status",
         Cell: ({ row }) => <StatusBadge status={row.original.status} />,
+        disableFilters: true,
       }
     );
+
     if (viewTab !== "all") {
-      cols.push({
+      base.push({
         Header: "Aksi",
         accessor: "id",
         Cell: ({ row }) => (
@@ -333,10 +349,12 @@ export default function PenugasanPage() {
             <Eye size={16} />
           </Button>
         ),
+        disableFilters: true,
       });
     }
-    return cols;
-  }, [currentPage, pageSize, navigate, showPegawaiColumn, viewTab, user?.id]);
+
+    return base;
+  }, [currentPage, pageSize, navigate, viewTab]);
 
   // --- UI
 
@@ -351,7 +369,9 @@ export default function PenugasanPage() {
         >
           {[
             { id: "mine", label: "Tugas Saya" },
-            ...(canManage ? [{ id: "dariSaya", label: "Dari Saya" }] : []),
+            ...(user?.role === ROLES.KETUA
+              ? [{ id: "dariSaya", label: "Dari Saya" }]
+              : []),
             { id: "all", label: "Semua" },
           ].map((t) => (
             <button
@@ -462,8 +482,9 @@ export default function PenugasanPage() {
         ) : paginated.length === 0 ? (
           <EmptyState
             message="Belum ada penugasan untuk minggu ini"
-            actionLabel="Tambah Penugasan"
-            onAction={openForm}
+            {...(canManage
+              ? { actionLabel: "Tambah Penugasan", onAction: openForm }
+              : {})}
           />
         ) : (
           <DataTable
@@ -477,20 +498,22 @@ export default function PenugasanPage() {
       </div>
 
       {/* PAGINATION */}
-      <div className="flex items-center justify-between mt-4 gap-2 flex-wrap">
-        <SelectDataShow
-          pageSize={pageSize}
-          setPageSize={setPageSize}
-          setCurrentPage={setCurrentPage}
-          options={[5, 10, 25, 50]}
-          className="flex-1"
-        />
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
-      </div>
+      {filtered.length > 0 && (
+        <div className="flex items-center justify-between mt-4 gap-2 flex-wrap">
+          <SelectDataShow
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            setCurrentPage={setCurrentPage}
+            options={[5, 10, 25, 50]}
+            className="flex-1"
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
 
       {/* MODAL FORM */}
       <AnimatePresence>
@@ -549,6 +572,7 @@ export default function PenugasanPage() {
                     }
                     placeholder="Pilih kegiatan..."
                     isSearchable
+                    isDisabled={saving}
                     noOptionsMessage={() => "Tidak ditemukan."}
                   />
                   {formTouched && !form.kegiatanId && (
@@ -581,6 +605,7 @@ export default function PenugasanPage() {
                     }
                     placeholder="Pilih pegawai..."
                     isSearchable
+                    isDisabled={saving}
                     noOptionsMessage={() => "Tidak ditemukan."}
                   />
                   <Button
@@ -601,6 +626,7 @@ export default function PenugasanPage() {
                         pegawaiIds: pegawaiOptions.map((o) => o.value),
                       }))
                     }
+                    disabled={saving}
                   >
                     <CheckSquare className="w-4 h-4" />
                     Pilih Semua
@@ -625,6 +651,7 @@ export default function PenugasanPage() {
                       }))
                     }
                     className="form-input resize-y w-full min-h-[48px] border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                    disabled={saving}
                   />
                 </div>
                 {/* Minggu, Bulan, Tahun */}
@@ -646,6 +673,7 @@ export default function PenugasanPage() {
                         }))
                       }
                       className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                      disabled={saving}
                     />
                   </div>
                   <div>
@@ -662,6 +690,7 @@ export default function PenugasanPage() {
                         }))
                       }
                       className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700"
+                      disabled={saving}
                     >
                       {months.map((m, i) => (
                         <option key={i + 1} value={i + 1}>
@@ -685,6 +714,7 @@ export default function PenugasanPage() {
                         }))
                       }
                       className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 dark:text-white"
+                      disabled={saving}
                     />
                   </div>
                 </div>
@@ -698,10 +728,11 @@ export default function PenugasanPage() {
                       );
                       if (r.isConfirmed) closeForm();
                     }}
+                    disabled={saving}
                   >
                     Batal
                   </Button>
-                  <Button type="submit" variant="primary">
+                  <Button type="submit" variant="primary" loading={saving}>
                     Simpan
                   </Button>
                 </div>

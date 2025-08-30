@@ -19,9 +19,6 @@ const PenugasanPage = React.lazy(() =>
 const PenugasanDetailPage = React.lazy(() =>
   import("../pages/penugasan/PenugasanDetailPage")
 );
-const WeeklyTasksPage = React.lazy(() =>
-  import("../pages/penugasan/WeeklyTasksPage")
-);
 const LaporanHarianPage = React.lazy(() =>
   import("../pages/laporan/LaporanHarianPage")
 );

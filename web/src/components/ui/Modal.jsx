@@ -56,7 +56,7 @@ export default function Modal({
       document.removeEventListener("keydown", handleKey);
       document.body.style.overflow = originalOverflow;
     };
-  }, []);
+  }, [initialFocusRef]);
 
   function handleClose() {
     setClosing(true);

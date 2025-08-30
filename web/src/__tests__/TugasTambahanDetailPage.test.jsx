@@ -65,13 +65,14 @@ test('renders fields in correct order with grid layout', async () => {
   const grid = await screen.findByTestId('detail-grid');
   expect(grid).toHaveClass('grid', 'sm:grid-cols-2', 'lg:grid-cols-3');
   expect(grid.textContent).toMatch(
-    /Kegiatan.*Tim.*Pegawai.*Minggu.*Bulan.*Tahun.*Deskripsi Penugasan.*Status/s
+    /Kegiatan.*Deskripsi Penugasan.*Tim.*Pegawai.*Waktu.*Status/s
   );
+  // Ensure compact waktu content is present
+  expect(grid.textContent).toMatch(/Minggu\s*1.*Januari\s*2024/);
   expect(grid.textContent).not.toMatch(/Tanggal Selesai|Bukti/);
   expect(screen.getByText('Admin User')).toBeInTheDocument();
-  expect(screen.getByText('1')).toBeInTheDocument();
-  expect(screen.getByText('Januari')).toBeInTheDocument();
-  expect(screen.getByText('2024')).toBeInTheDocument();
+  expect(grid.textContent).toMatch(/Minggu\s*1/);
+  expect(grid.textContent).toMatch(/Januari\s*2024/);
   expect(screen.getByText(/Tanggal Selesai/)).toBeInTheDocument();
   expect(screen.getAllByText(/Bukti/).length).toBeGreaterThan(0);
 });

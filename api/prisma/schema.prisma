@@ -46,7 +46,7 @@ model MasterKegiatan {
   id               String             @id
   teamId           String
   namaKegiatan     String
-  deskripsi        String?
+  deskripsi        String?        @db.Text
   team             Team               @relation(fields: [teamId], references: [id])
   penugasan        Penugasan[]
   KegiatanTambahan KegiatanTambahan[]
@@ -60,7 +60,7 @@ model Penugasan {
   minggu     Int
   bulan      String
   tahun      Int
-  deskripsi  String?
+  deskripsi  String?         @db.Text
   status     String          @default("Belum")
   kegiatan   MasterKegiatan  @relation(fields: [kegiatanId], references: [id])
   pegawai    User            @relation(name: "PenugasanUser", fields: [pegawaiId], references: [id])
@@ -74,10 +74,10 @@ model LaporanHarian {
   tambahanId  String?
   tanggal     DateTime
   status      String
-  capaianKegiatan String @default("")
-  deskripsi   String?
+  capaianKegiatan String @db.Text
+  deskripsi   String?   @db.Text
   buktiLink   String?
-  catatan     String?
+  catatan     String?   @db.Text
   pegawaiId   String
   penugasan   Penugasan?        @relation(fields: [penugasanId], references: [id])
   tambahan    KegiatanTambahan? @relation(fields: [tambahanId], references: [id])
@@ -89,9 +89,9 @@ model KegiatanTambahan {
   nama                String
   tanggal             DateTime
   status              String
-  capaianKegiatan     String @default("")
+  capaianKegiatan     String @db.Text
   buktiLink           String?
-  deskripsi           String?
+  deskripsi           String?  @db.Text
   tanggalSelesai      DateTime?
   tanggalSelesaiAkhir DateTime?
   userId              String
@@ -111,7 +111,7 @@ model Role {
 model Notification {
   id        String   @id
   userId    String
-  text      String
+  text      String   @db.Text
   link      String?
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())

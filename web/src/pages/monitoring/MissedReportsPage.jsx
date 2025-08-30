@@ -1,36 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import getHolidays from "../../utils/holidays";
 import axios from "axios";
-import { AlertCircle, Download } from "lucide-react";
+import { AlertCircle } from "lucide-react";
+import { FaFileExcel, FaFilePdf } from "react-icons/fa";
 import Spinner from "../../components/Spinner";
+import Button from "../../components/ui/Button";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import formatDate from "../../utils/formatDate";
+import formatWita from "../../utils/formatWita";
 import exportFileName from "../../utils/exportFileName";
 
-const formatWita = (iso) => {
-  const date = new Date(iso);
-  const formattedDate = date.toLocaleDateString("id-ID", {
-    timeZone: "Asia/Makassar",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-  const formattedTime = date.toLocaleTimeString("id-ID", {
-    timeZone: "Asia/Makassar",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
-  return `${formattedDate} pukul ${formattedTime} WITA`;
-};
 
 const MissedReportsPage = () => {
   const [data, setData] = useState({ day1: [], day3: [], day7: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [lastUpdate, setLastUpdate] = useState("");
+  const [exportingExcel, setExportingExcel] = useState(false);
+  const [exportingPdf, setExportingPdf] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,7 +29,26 @@ const MissedReportsPage = () => {
           axios.get("/monitoring/last-update"),
         ]);
         setData(reportRes.data);
-        setLastUpdate(updateRes.data.lastUpdate);
+        // Gabungkan libur untuk tahun sebelumnya, berjalan, dan berikutnya agar aman lintas tahun
+        const now = new Date();
+        const y = now.getFullYear();
+        const all = [
+          ...getHolidays(y - 1),
+          ...getHolidays(y),
+          ...getHolidays(y + 1),
+        ];
+        setHolidays(all);
+        // Use server-provided fetchedAt for true load time; fallbacks retained
+        if (updateRes?.data?.fetchedAt) {
+          setLastUpdate(updateRes.data.fetchedAt);
+        } else if (updateRes?.headers?.date || reportRes?.headers?.date) {
+          const h = updateRes?.headers?.date || reportRes?.headers?.date;
+          setLastUpdate(new Date(h).toISOString());
+        } else if (updateRes?.data?.lastUpdate) {
+          setLastUpdate(updateRes.data.lastUpdate);
+        } else {
+          setLastUpdate(new Date().toISOString());
+        }
         setError(false);
       } catch {
         setError(true);
@@ -61,15 +69,44 @@ const MissedReportsPage = () => {
       day: "numeric",
     });
 
+  // Hitung selisih hari kerja (Senin-Jumat) antara tanggal terakhir dan hari ini
+  const [holidays, setHolidays] = useState([]);
+  const holidaySet = useMemo(() => new Set(holidays), [holidays]);
+
   const daysSince = (iso) => {
-    const today = new Date();
-    const date = new Date(iso);
-    today.setHours(0, 0, 0, 0);
-    date.setHours(0, 0, 0, 0);
-    return Math.floor((today - date) / 86400000);
+    if (!iso) return 0;
+    const to = new Date();
+    const from = new Date(iso);
+    to.setHours(0, 0, 0, 0);
+    from.setHours(0, 0, 0, 0);
+    if (to <= from) return 0;
+    const MS = 86400000;
+    const days = Math.floor((to - from) / MS);
+    const fullWeeks = Math.floor(days / 7);
+    let workdays = fullWeeks * 5;
+    let rem = days % 7;
+    // Mulai hitung dari hari setelah tanggal terakhir
+    let dow = (from.getDay() + 1) % 7; // 0=Sunday..6=Saturday (lokal)
+    for (let i = 0; i < rem; i++) {
+      if (dow !== 0 && dow !== 6) workdays += 1;
+      dow = (dow + 1) % 7;
+    }
+    // Kurangi libur/cuti bersama di hari kerja pada rentang (from, to]
+    for (let i = 1; i <= days; i++) {
+      const cur = new Date(from.getTime() + i * MS);
+      const isWeekend = cur.getDay() === 0 || cur.getDay() === 6;
+      if (!isWeekend) {
+        const y = cur.getFullYear();
+        const m = String(cur.getMonth() + 1).padStart(2, "0");
+        const d = String(cur.getDate()).padStart(2, "0");
+        if (holidaySet.has(`${y}-${m}-${d}`)) workdays -= 1;
+      }
+    }
+    return workdays;
   };
 
   const exportToPDF = () => {
+    setExportingPdf(true);
     const doc = new jsPDF({
       orientation: "portrait",
       unit: "pt",
@@ -91,7 +128,7 @@ const MissedReportsPage = () => {
       // Judul tengah
       doc.setFontSize(16);
       doc.setFont("helvetica", "bold");
-      doc.text("Status Pelaporan Harian Pegawai", pageWidth / 2, 95, {
+      doc.text("Status Laporan Harian Pegawai", pageWidth / 2, 95, {
         align: "center",
       });
 
@@ -105,25 +142,29 @@ const MissedReportsPage = () => {
       // Data sections
       let y = 130;
 
+      // Palet warna lembut untuk PDF (fill ringan + teks gelap)
       const sections = [
         {
           title: "Belum Melapor 1+ Hari",
           data: data.day1,
-          color: [255, 193, 7],
+          fill: [253, 230, 138], // amber-200
+          accent: [180, 83, 9], // amber-700
         },
         {
           title: "Belum Melapor 3+ Hari",
           data: data.day3,
-          color: [255, 152, 0],
+          fill: [254, 215, 170], // orange-200
+          accent: [194, 65, 12], // orange-700
         },
         {
           title: "Belum Melapor 7+ Hari",
           data: data.day7,
-          color: [244, 67, 54],
+          fill: [254, 202, 202], // red-200
+          accent: [185, 28, 28], // red-700
         },
       ];
 
-      sections.forEach(({ title, data, color }) => {
+      sections.forEach(({ title, data, fill, accent }) => {
         // Subjudul
         autoTable(doc, {
           startY: y,
@@ -131,7 +172,7 @@ const MissedReportsPage = () => {
           theme: "plain",
           headStyles: {
             fontStyle: "bold",
-            textColor: color,
+            textColor: accent,
             fontSize: 12,
           },
           styles: {
@@ -140,7 +181,8 @@ const MissedReportsPage = () => {
           },
         });
 
-        const rows = data.map((u) => [
+        const rows = data.map((u, i) => [
+          i + 1,
           u.nama,
           u.lastDate ? `${daysSince(u.lastDate)} hari` : "-",
           u.lastDate ? formatDate(u.lastDate) : "Belum Pernah",
@@ -148,7 +190,7 @@ const MissedReportsPage = () => {
 
         autoTable(doc, {
           startY: doc.lastAutoTable.finalY + 4,
-          head: [["Nama", "Belum Melapor", "Terakhir Melapor"]],
+          head: [["No", "Nama", "Belum Melapor", "Terakhir Melapor"]],
           body: rows,
           theme: "striped",
           styles: {
@@ -156,9 +198,12 @@ const MissedReportsPage = () => {
             cellPadding: { top: 4, bottom: 4, left: 6, right: 6 },
           },
           headStyles: {
-            fillColor: color,
-            textColor: [255, 255, 255],
+            fillColor: fill,
+            textColor: [31, 41, 55], // gray-800 untuk keterbacaan
             fontStyle: "bold",
+          },
+          columnStyles: {
+            0: { halign: "center", cellWidth: 28 },
           },
           alternateRowStyles: {
             fillColor: [245, 245, 245],
@@ -168,12 +213,29 @@ const MissedReportsPage = () => {
         y = doc.lastAutoTable.finalY + 16;
       });
 
+      // Footer nomor halaman + sumber
+      const pages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= pages; i++) {
+        doc.setPage(i);
+        const w = doc.internal.pageSize.getWidth();
+        const h = doc.internal.pageSize.getHeight();
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+        doc.text("Sumber: SEMAKIN 6502", 40, h - 16, { align: "left" });
+        doc.text(`Halaman ${i} dari ${pages}` , w / 2, h - 16, { align: "center" });
+      }
+
       const name = `${exportFileName("LaporanTerlambat")}.pdf`;
       doc.save(name);
+      setExportingPdf(false);
+    };
+    logo.onerror = () => {
+      setExportingPdf(false);
     };
   };
 
   const exportToExcel = () => {
+    setExportingExcel(true);
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet([]);
 
@@ -190,7 +252,7 @@ const MissedReportsPage = () => {
     XLSX.utils.sheet_add_aoa(ws, [
       ["BADAN PUSAT STATISTIK"],
       ["KABUPATEN BULUNGAN"],
-      ["Status Pelaporan Harian Pegawai"],
+      ["Status Laporan Harian Pegawai"],
       [`Dicetak pada: ${todayStr}`],
       [],
     ]);
@@ -199,11 +261,12 @@ const MissedReportsPage = () => {
       XLSX.utils.sheet_add_aoa(ws, [[title]], { origin: -1 });
       XLSX.utils.sheet_add_aoa(
         ws,
-        [["Nama", "Belum Melapor", "Terakhir Melapor"]],
+        [["No", "Nama", "Belum Melapor", "Terakhir Melapor"]],
         { origin: -1 }
       );
 
-      const rows = users.map((u) => [
+      const rows = users.map((u, i) => [
+        i + 1,
         u.nama,
         u.lastDate ? `${daysSince(u.lastDate)} hari` : "-",
         u.lastDate ? formatDate(u.lastDate) : "Belum Pernah",
@@ -218,12 +281,13 @@ const MissedReportsPage = () => {
     addSection("Belum Melapor 3+ Hari", data.day3);
     addSection("Belum Melapor 7+ Hari", data.day7);
 
-    // Lebar kolom
-    ws["!cols"] = [{ wch: 30 }, { wch: 18 }, { wch: 20 }];
+    // Lebar kolom (No, Nama, Belum Melapor, Terakhir Melapor)
+    ws["!cols"] = [{ wch: 6 }, { wch: 30 }, { wch: 18 }, { wch: 20 }];
 
     XLSX.utils.book_append_sheet(wb, ws, "Status_Pelaporan");
     const name = `${exportFileName("LaporanTerlambat")}.xlsx`;
     XLSX.writeFile(wb, name);
+    setExportingExcel(false);
   };
 
   const Card = ({ title, count, color, children }) => (
@@ -235,7 +299,7 @@ const MissedReportsPage = () => {
         <h2 className="text-base font-semibold text-gray-700 dark:text-white">
           {title}
         </h2>
-        <span className="text-xl font-bold" style={{ color }}>
+        <span className="text-xl font-semibold" style={{ color }}>
           {count} Pegawai
         </span>
       </div>
@@ -251,9 +315,17 @@ const MissedReportsPage = () => {
     </div>
   );
 
+  const badgeClassesFor = (days) => {
+    if (days >= 7)
+      return "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-200";
+    if (days >= 3)
+      return "bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-200";
+    return "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-200";
+  };
+
   const renderList = (users) => (
     <table className="min-w-full text-sm text-left text-gray-800 dark:text-gray-200">
-      <thead className="bg-gray-100 dark:bg-gray-700 text-xs font-semibold uppercase">
+      <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-gray-700 text-xs font-semibold uppercase">
         <tr>
           <th className="px-4 py-2">Nama</th>
           <th className="px-4 py-2 text-right">Terakhir Melapor</th>
@@ -266,16 +338,25 @@ const MissedReportsPage = () => {
             className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
           >
             <td
-              className="px-4 py-2 font-medium max-w-[220px] truncate"
+              className="px-4 py-2 font-medium max-w-[240px] md:max-w-[280px] truncate"
               title={u.nama}
             >
               {u.nama}
             </td>
             <td className="px-4 py-2 text-right">
               {u.lastDate ? (
-                <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-100 rounded-full">
-                  {formatDate(u.lastDate)} • {daysSince(u.lastDate)} hari lalu
-                </span>
+                (() => {
+                  const d = daysSince(u.lastDate);
+                  return (
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${badgeClassesFor(
+                        d
+                      )}`}
+                    >
+                      {formatDate(u.lastDate)} • {d} hari lalu
+                    </span>
+                  );
+                })()
               ) : (
                 <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-full">
                   Belum pernah melapor
@@ -289,34 +370,40 @@ const MissedReportsPage = () => {
   );
 
   return (
-    <div className="p-6 space-y-8 max-w-7xl mx-auto">
+    <div className="max-w-screen-xl mx-auto px-4 md:px-6 py-6 space-y-8">
       {/* Header */}
       <div className="flex flex-wrap items-center gap-3 justify-between">
         <div className="flex items-center gap-2">
           <AlertCircle className="w-6 h-6 text-red-500" />
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-            Status Pelaporan Harian Pegawai
+            Status Laporan Harian Pegawai
           </h1>
         </div>
         <div className="flex gap-2">
-          <button
+          <Button
             onClick={exportToExcel}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm transition"
+            loading={exportingExcel}
+            className="px-4 py-2"
           >
-            <Download className="w-4 h-4" /> Excel
-          </button>
-          <button
+            <span className="inline-flex items-center gap-2">
+              <FaFileExcel className="w-4 h-4" /> .xlsx
+            </span>
+          </Button>
+          <Button
             onClick={exportToPDF}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition"
+            loading={exportingPdf}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700"
           >
-            <Download className="w-4 h-4" /> PDF
-          </button>
+            <span className="inline-flex items-center gap-2">
+              <FaFilePdf className="w-4 h-4" /> .pdf
+            </span>
+          </Button>
         </div>
       </div>
 
       {lastUpdate && (
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          Data terakhir diperbarui: <strong>{formatWita(lastUpdate)}</strong>
+          Data terakhir dimuat: <strong>{formatWita(lastUpdate)}</strong>
         </p>
       )}
 
@@ -333,25 +420,25 @@ const MissedReportsPage = () => {
           <Spinner className="w-6 h-6 text-gray-500" />
         </div>
       ) : (
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card
-            title="Belum Melapor 1 Hari +"
+            title="Belum Melapor 1+ Hari"
             count={data.day1.length}
-            color="#facc15"
+            color="#f59e0b"
           >
             {renderList(data.day1)}
           </Card>
           <Card
-            title="Belum Melapor 3 Hari +"
+            title="Belum Melapor 3+ Hari"
             count={data.day3.length}
-            color="#f97316"
+            color="#ea580c"
           >
             {renderList(data.day3)}
           </Card>
           <Card
-            title="Belum Melapor 7 Hari +"
+            title="Belum Melapor 7+ Hari"
             count={data.day7.length}
-            color="#dc2626"
+            color="#ef4444"
           >
             {renderList(data.day7)}
           </Card>

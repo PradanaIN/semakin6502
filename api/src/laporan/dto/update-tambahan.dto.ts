@@ -10,6 +10,17 @@ export class UpdateTambahanDto {
   kegiatanId?: string;
 
   @ApiProperty({ required: false })
+  @IsOptional()
+  @Transform(({ value }) => (value === "" ? undefined : value))
+  @IsDateString()
+  tanggal?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  status?: Status;
+
+  @ApiProperty({ required: false })
   @Transform(({ value }) => (value === "" ? undefined : value))
   @ValidateIf(
     (o) =>

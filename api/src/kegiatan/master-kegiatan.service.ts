@@ -19,6 +19,7 @@ export class MasterKegiatanService {
       limit?: number;
       teamId?: string;
       search?: string;
+      forTambahan?: boolean;
     },
     userId: string,
     role: string,
@@ -43,14 +44,19 @@ export class MasterKegiatanService {
       });
       const teamIds = memberTeams.map((t) => t.teamId);
       if (params.teamId) {
-        if (!teamIds.includes(params.teamId)) {
-          throw new ForbiddenException(
-            role === ROLES.KETUA
-              ? "bukan ketua tim kegiatan ini"
-              : "bukan anggota tim kegiatan ini",
-          );
+        if (params.forTambahan) {
+          // In tugas tambahan context, allow cross-team lookup
+          where.teamId = params.teamId;
+        } else {
+          if (!teamIds.includes(params.teamId)) {
+            throw new ForbiddenException(
+              role === ROLES.KETUA
+                ? "bukan ketua tim kegiatan ini"
+                : "bukan anggota tim kegiatan ini",
+            );
+          }
+          where.teamId = params.teamId;
         }
-        where.teamId = params.teamId;
       } else {
         where.teamId = { in: teamIds };
       }

@@ -21,7 +21,6 @@ export default function NotFound() {
           Ke Dashboard
         </Button>
       </Link>
-      <span className="text-xl">Halaman tidak ditemukan</span>
     </div>
   );
 }

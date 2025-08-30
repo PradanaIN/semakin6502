@@ -9,7 +9,7 @@ export const DailyMatrixRow = ({ user, boxClass, currentUser }) => {
 
   return (
     <tr
-      className={`text-center transition-colors duration-200 border-b border-gray-200 dark:border-gray-700 ${
+      className={`text-center transition-colors duration-200 border-b border-gray-200 dark:border-gray-700 odd:bg-gray-50/60 dark:odd:bg-gray-800/40 ${
         isCurrentUser
           ? "bg-yellow-50 dark:bg-yellow-900 border-l-4 border-yellow-400"
           : "hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -25,7 +25,7 @@ export const DailyMatrixRow = ({ user, boxClass, currentUser }) => {
         <td
           key={day.tanggal}
           title={day.count ? `${day.count} laporan` : ""}
-          className={`px-4 py-2 border border-gray-300 dark:border-gray-600 text-center ${boxClass(
+          className={`px-4 py-2 border border-gray-300 dark:border-gray-600 text-center align-middle ${boxClass(
             day
           )} truncate`}
         >
@@ -77,9 +77,11 @@ const DailyMatrix = ({ data = [], monthIndex, year }) => {
             {Array.from({ length: dayCount }, (_, i) => (
               <th
                 key={i}
-                className="px-4 py-2 border-r border-gray-300 dark:border-gray-700 text-center font-medium"
+                className="p-0 w-10 border-r border-gray-300 dark:border-gray-700 text-center align-middle"
               >
-                {i + 1}
+                <div className="flex items-center justify-center px-2 py-2">
+                  <span className="tabular-nums text-sm font-medium">{i + 1}</span>
+                </div>
               </th>
             ))}
           </tr>

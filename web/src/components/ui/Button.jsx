@@ -1,8 +1,12 @@
+import Spinner from "../Spinner";
+
 export default function Button({
   children,
   variant = "primary",
   icon = false,
   className = "",
+  loading = false,
+  disabled,
   ...props
 }) {
   const baseClasses =
@@ -21,13 +25,25 @@ export default function Button({
     icon: "text-blue-600 hover:underline dark:text-blue-400",
   };
 
+  const isDisabled = disabled || loading;
+
   return (
     <button
       type={props.type || "button"}
-      className={`${base} ${variants[variant] ?? ""} ${className}`}
+      className={`${base} ${variants[variant] ?? ""} ${className} ${
+        isDisabled ? "opacity-70 cursor-not-allowed" : ""
+      }`}
+      disabled={isDisabled}
       {...props}
     >
-      {children}
+      {loading ? (
+        <span className="inline-flex items-center gap-2">
+          <Spinner className="h-4 w-4" />
+          <span>{children}</span>
+        </span>
+      ) : (
+        children
+      )}
     </button>
   );
 }

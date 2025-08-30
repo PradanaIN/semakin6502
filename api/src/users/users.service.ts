@@ -74,7 +74,8 @@ export class UsersService {
     if (data.password) {
       data.password = await hashPassword(data.password);
     }
-    if (data.email) {
+    // Jangan paksa username menjadi bagian dari email; hormati input eksplisit
+    if (data.email && !data.username) {
       data.username = data.email.split("@")[0];
     }
     const user = await this.prisma.user.update({

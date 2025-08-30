@@ -45,6 +45,27 @@ export class PenugasanService {
       this.config.get<boolean>("PHONE_VALIDATION_ENABLED") ?? true;
   }
 
+  // Build common Prisma where/include from provided filters
+  private buildFindAllOptions(
+    filter: { bulan?: string; tahun?: number; minggu?: number },
+    creatorId?: string
+  ) {
+    const opts: any = {
+      include: {
+        kegiatan: { include: { team: true } },
+        pegawai: true,
+      },
+      where: {},
+    };
+
+    if (filter?.bulan) opts.where.bulan = filter.bulan;
+    if (filter?.tahun) opts.where.tahun = filter.tahun;
+    if (filter?.minggu) opts.where.minggu = filter.minggu;
+    if (creatorId) opts.where.creatorId = creatorId;
+
+    return opts;
+  }
+
   private async invalidateCache(
     keys: string | string[] = PENUGASAN_CACHE_KEYS
   ) {
@@ -76,20 +97,38 @@ export class PenugasanService {
     filter: { bulan?: string; tahun?: number; minggu?: number },
     creatorId?: string
   ) {
-    const opts: any = {
-      include: {
-        kegiatan: { include: { team: true } },
-        pegawai: true,
-      },
-      where: {},
-    };
-
-    if (filter.bulan) opts.where.bulan = filter.bulan;
-    if (filter.tahun) opts.where.tahun = filter.tahun;
-    if (filter.minggu) opts.where.minggu = filter.minggu;
-    if (creatorId) opts.where.creatorId = creatorId;
-
+    const opts = this.buildFindAllOptions(filter, creatorId);
     return this.prisma.penugasan.findMany(opts);
+  }
+
+  // New: return data with meta timestamps
+  async listWithMeta(
+    role: string,
+    userId: string,
+    filter: { bulan?: string; tahun?: number; minggu?: number },
+    creatorId?: string
+  ) {
+    const opts = this.buildFindAllOptions(filter, creatorId);
+    const data = await this.prisma.penugasan.findMany(opts);
+
+    // Safely derive lastChangedAt from returned rows (supports models without updatedAt)
+    let last: Date | null = null;
+    for (const row of data as any[]) {
+      const candidate: Date | null = row?.updatedAt
+        ? new Date(row.updatedAt)
+        : row?.createdAt
+        ? new Date(row.createdAt)
+        : null;
+      if (candidate && (!last || candidate > last)) last = candidate;
+    }
+
+    return {
+      data,
+      meta: {
+        fetchedAt: new Date().toISOString(),
+        lastChangedAt: last ? last.toISOString() : null,
+      },
+    };
   }
 
   async assign(data: AssignPenugasanDto, userId: string, role: string) {
@@ -130,7 +169,7 @@ export class PenugasanService {
       where: { id: data.pegawaiId },
       select: { phone: true, nama: true },
     });
-    const notifText = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
+    const notifText = `Penugasan ${master.team.namaTim}: ${master.namaKegiatan}`;
     await this.notifications.create(data.pegawaiId, notifText, relLink);
     if (!pegawai?.phone) {
       this.logger.warn(
@@ -206,7 +245,7 @@ export class PenugasanService {
       created.map(async (p: { pegawaiId: string; id: string }) => {
         const relLink = `/tugas-mingguan/${p.id}`;
         const waLink = `${baseUrl}${relLink}`;
-        const notifText = `Penugasan baru dari ${master.team.namaTim}: ${master.namaKegiatan}`;
+        const notifText = `Penugasan ${master.team.namaTim}: ${master.namaKegiatan}`;
         await this.notifications.create(p.pegawaiId, notifText, relLink);
         const pegawai = await this.prisma.user.findUnique({
           where: { id: p.pegawaiId },
