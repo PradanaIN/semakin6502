@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
 }
 
 datasource db {
@@ -8,19 +9,19 @@ datasource db {
 }
 
 model User {
-  id        String             @id
-  nama      String
-  username  String             @unique
-  email     String             @unique
-  password  String
-  phone     String?
-  role      String
-  members   Member[]
-  penugasan Penugasan[]        @relation("PenugasanUser")
-  createdPenugasan Penugasan[] @relation("PenugasanCreator")
-  laporan   LaporanHarian[]
-  tambahan  KegiatanTambahan[]
-  notifications Notification[]
+  id               String             @id
+  nama             String
+  username         String             @unique
+  email            String             @unique
+  password         String
+  phone            String?
+  role             String
+  members          Member[]
+  penugasan        Penugasan[]        @relation("PenugasanUser")
+  createdPenugasan Penugasan[]        @relation("PenugasanCreator")
+  laporan          LaporanHarian[]
+  tambahan         KegiatanTambahan[]
+  notifications    Notification[]
 }
 
 model Team {
@@ -46,7 +47,7 @@ model MasterKegiatan {
   id               String             @id
   teamId           String
   namaKegiatan     String
-  deskripsi        String?        @db.Text
+  deskripsi        String?            @db.Text
   team             Team               @relation(fields: [teamId], references: [id])
   penugasan        Penugasan[]
   KegiatanTambahan KegiatanTambahan[]
@@ -69,37 +70,37 @@ model Penugasan {
 }
 
 model LaporanHarian {
-  id          String    @id
-  penugasanId String?
-  tambahanId  String?
-  tanggal     DateTime
-  status      String
-  capaianKegiatan String @db.Text
-  deskripsi   String?   @db.Text
-  buktiLink   String?
-  catatan     String?   @db.Text
-  pegawaiId   String
-  penugasan   Penugasan?        @relation(fields: [penugasanId], references: [id])
-  tambahan    KegiatanTambahan? @relation(fields: [tambahanId], references: [id])
-  pegawai     User             @relation(fields: [pegawaiId], references: [id])
+  id              String            @id
+  penugasanId     String?
+  tambahanId      String?
+  tanggal         DateTime
+  status          String
+  capaianKegiatan String            @db.Text
+  deskripsi       String?           @db.Text
+  buktiLink       String?
+  catatan         String?           @db.Text
+  pegawaiId       String
+  penugasan       Penugasan?        @relation(fields: [penugasanId], references: [id])
+  tambahan        KegiatanTambahan? @relation(fields: [tambahanId], references: [id])
+  pegawai         User              @relation(fields: [pegawaiId], references: [id])
 }
 
 model KegiatanTambahan {
-  id                  String         @id
+  id                  String          @id
   nama                String
   tanggal             DateTime
   status              String
-  capaianKegiatan     String @db.Text
+  capaianKegiatan     String          @db.Text
   buktiLink           String?
-  deskripsi           String?  @db.Text
+  deskripsi           String?         @db.Text
   tanggalSelesai      DateTime?
   tanggalSelesaiAkhir DateTime?
   userId              String
   kegiatanId          String
   teamId              String
-  user                User           @relation(fields: [userId], references: [id])
-  kegiatan            MasterKegiatan @relation(fields: [kegiatanId], references: [id])
-  team                Team           @relation(fields: [teamId], references: [id])
+  user                User            @relation(fields: [userId], references: [id])
+  kegiatan            MasterKegiatan  @relation(fields: [kegiatanId], references: [id])
+  team                Team            @relation(fields: [teamId], references: [id])
   laporan             LaporanHarian[]
 }
 
