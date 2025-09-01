@@ -111,9 +111,17 @@ export async function exportMonthlyCurrentPDF({ year, month, teamId }) {
     });
   });
   const seen = new Set();
-  const baseline = members
-    .filter((u) => u && u.id && !seen.has(u.id) && !EXCLUDED_NAMES.includes(u.nama))
-    .map((u) => (seen.add(u.id), { userId: String(u.id), nama: u.nama, tim: userTeamById.get(String(u.id)) || userTeamByName.get(norm(u.nama)) || "-" }));
+  const baseline = members.reduce((arr, u) => {
+    const id = u?.id;
+    if (!id || seen.has(id) || EXCLUDED_NAMES.includes(u.nama)) return arr;
+    seen.add(id);
+    arr.push({
+      userId: String(id),
+      nama: u.nama,
+      tim: userTeamById.get(String(id)) || userTeamByName.get(norm(u.nama)) || "-",
+    });
+    return arr;
+  }, []);
   const byId = new Map(taskArr.map((x) => [String(x.userId), x]));
   const byName = new Map(taskArr.map((x) => [norm(x.nama), x]));
 
@@ -216,9 +224,13 @@ export async function exportMonthlyYearPDF({ year, teamId }) {
     mem.forEach((m) => m?.user && members.push(m.user));
   });
   const seen = new Set();
-  const baseline = members
-    .filter((u) => u && u.id && !seen.has(u.id) && !EXCLUDED_NAMES.includes(u.nama))
-    .map((u) => (seen.add(u.id), { userId: String(u.id), nama: u.nama }));
+  const baseline = members.reduce((arr, u) => {
+    const id = u?.id;
+    if (!id || seen.has(id) || EXCLUDED_NAMES.includes(u.nama)) return arr;
+    seen.add(id);
+    arr.push({ userId: String(id), nama: u.nama });
+    return arr;
+  }, []);
 
   const byId = new Map(arr.map((x) => [String(x.userId), x]));
   const byName = new Map(arr.map((x) => [(x?.nama || "").toLowerCase().replace(/\s+/g, " ").trim(), x]));
