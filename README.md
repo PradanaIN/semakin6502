@@ -2,15 +2,11 @@
 
 SEMAKIN 6502 (Sistem Monitoring Kinerja) adalah aplikasi internal untuk mencatat aktivitas harian pegawai, memberi tugas mingguan maupun tambahan, serta menampilkan rekap kinerja bagi pimpinan.
 
-## Setup
+## Instalasi
 
-Salin berkas contoh variabel lingkungan lalu isi sesuai kebutuhan:
-
-```bash
-cp .env.example .env
-```
-
-Setelah itu, aplikasi dapat dikonfigurasi dan dijalankan sesuai kebutuhan.
+1. Salin berkas contoh `.env` (misalnya dari `api/.env.example`) ke direktori root sebagai `.env` dan sesuaikan variabel seperti kredensial database serta `PORT` (bawaan 3000).
+2. Jalankan `docker-compose up` untuk membangun dan menjalankan seluruh layanan.
+3. Setelah kontainer berjalan, API dapat diakses di `http://localhost:3000` dan antarmuka web di `http://localhost:5173`.
 
 ## Peran & Hak Akses
 
