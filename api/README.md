@@ -39,6 +39,13 @@ api/
    ```
 2. **Konfigurasi variabel lingkungan** (`.env`)
 
+   Salin berkas contoh lalu sesuaikan nilainya:
+
+   ```bash
+   cp .env.example .env
+   # isi variabel sesuai kebutuhan
+   ```
+
    | Nama               | Keterangan                                                                     |
    |--------------------|---------------------------------------------------------------------------------|
    | `DATABASE_URL`     | URL koneksi MySQL, misal `mysql://user:pass@localhost:3306/semakin_6502`        |
