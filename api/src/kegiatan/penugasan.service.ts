@@ -164,7 +164,6 @@ export class PenugasanService {
 
     const baseUrl = this.config.get<string>("WEB_URL");
     const relLink = `/tugas-mingguan/${penugasan.id}`;
-    const waLink = `${baseUrl}${relLink}`;
     const pegawai = await this.prisma.user.findUnique({
       where: { id: data.pegawaiId },
       select: { phone: true, nama: true },
@@ -184,7 +183,12 @@ export class PenugasanService {
       this.logger.warn(
         `Invalid phone number for ${pegawai.nama}: ${pegawai.phone}, skipping WhatsApp message`
       );
+    } else if (!baseUrl) {
+      this.logger.warn(
+        `WEB_URL is not configured, skipping WhatsApp message for ${pegawai.nama}`
+      );
     } else {
+      const waLink = new URL(relLink, baseUrl).toString();
       const waText = `Halo ${pegawai.nama},\n\nAnda mendapat penugasan:\n• Tim: ${master.team.namaTim}\n• Kegiatan: ${master.namaKegiatan}\n• Deskripsi: ${data.deskripsi}\n• Link: ${waLink}\n\nSelamat bekerja!\n`;
       this.logger.log(`Sending WhatsApp to ${pegawai.nama} (${pegawai.phone})`);
       try {
@@ -244,7 +248,6 @@ export class PenugasanService {
     await Promise.all(
       created.map(async (p: { pegawaiId: string; id: string }) => {
         const relLink = `/tugas-mingguan/${p.id}`;
-        const waLink = `${baseUrl}${relLink}`;
         const notifText = `Penugasan ${master.team.namaTim}: ${master.namaKegiatan}`;
         await this.notifications.create(p.pegawaiId, notifText, relLink);
         const pegawai = await this.prisma.user.findUnique({
@@ -264,7 +267,12 @@ export class PenugasanService {
           this.logger.warn(
             `Invalid phone number for ${pegawai.nama}: ${pegawai.phone}, skipping WhatsApp message`
           );
+        } else if (!baseUrl) {
+          this.logger.warn(
+            `WEB_URL is not configured, skipping WhatsApp message for ${pegawai.nama}`
+          );
         } else {
+          const waLink = new URL(relLink, baseUrl).toString();
           const waText =
             `Halo, ${pegawai.nama}!\n\n` +
             `Anda mendapat penugasan:\n\n` +
