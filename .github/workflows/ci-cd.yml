@@ -6,6 +6,9 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: read
+      packages: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,15 +26,16 @@ jobs:
       - name: Test Web
         run: npm test -w web
       - name: Build API image
-        run: docker build -t ${{ secrets.REGISTRY_USERNAME }}/semakin6502-backend:${{ github.sha }} api
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/semakin6502-backend:${{ github.sha }} api
       - name: Build Web image
-        run: docker build -t ${{ secrets.REGISTRY_USERNAME }}/semakin6502-frontend:${{ github.sha }} web
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/semakin6502-frontend:${{ github.sha }} web
       - name: Login to registry
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push API image
-        run: docker push ${{ secrets.REGISTRY_USERNAME }}/semakin6502-backend:${{ github.sha }}
+        run: docker push ghcr.io/${{ github.repository_owner }}/semakin6502-backend:${{ github.sha }}
       - name: Push Web image
-        run: docker push ${{ secrets.REGISTRY_USERNAME }}/semakin6502-frontend:${{ github.sha }}
+        run: docker push ghcr.io/${{ github.repository_owner }}/semakin6502-frontend:${{ github.sha }}
