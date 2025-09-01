@@ -2,6 +2,16 @@
 
 SEMAKIN 6502 (Sistem Monitoring Kinerja) adalah aplikasi internal untuk mencatat aktivitas harian pegawai, memberi tugas mingguan maupun tambahan, serta menampilkan rekap kinerja bagi pimpinan.
 
+## Setup
+
+Salin berkas contoh variabel lingkungan lalu isi sesuai kebutuhan:
+
+```bash
+cp .env.example .env
+```
+
+Setelah itu, aplikasi dapat dikonfigurasi dan dijalankan sesuai kebutuhan.
+
 ## Peran & Hak Akses
 
 | Peran        | Deskripsi Singkat                            |
