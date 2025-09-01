@@ -13,6 +13,12 @@ SEMAKIN 6502 (Sistem Monitoring Kinerja) adalah aplikasi internal untuk mencata
 
 Sistem hanya mengenali keempat peran di atas.
 
+## Konfigurasi Lingkungan
+
+Beberapa pengaturan aplikasi dibaca dari berkas `.env`. Tambahkan entri berikut:
+
+- `WEB_URL` – URL dasar frontend yang digunakan backend untuk membentuk tautan pada notifikasi.
+
 ## Alur Penggunaan Umum
 
 1. **Admin** membuat tim dan akun pegawai.
