@@ -91,6 +91,7 @@ export default function PenugasanPage() {
   const [viewTab, setViewTab] = useState("mine");
   const [formTouched, setFormTouched] = useState(false); // for validation
   const [saving, setSaving] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     if (user?.role === ROLES.PIMPINAN) {
@@ -227,12 +228,14 @@ export default function PenugasanPage() {
       handleAxiosError(err, "Gagal mengambil data penugasan");
     } finally {
       setLoading(false);
+      setInitialized(true);
     }
   }, [user, filterBulan, filterTahun, filterMinggu, canManage, viewTab]);
 
   useEffect(() => {
+    if (!user) return;
     fetchData();
-  }, [fetchData, user]);
+  }, [user, filterBulan, filterTahun, filterMinggu, viewTab, canManage]);
 
   // --- Form Submit
   const save = async () => {
@@ -482,33 +485,37 @@ export default function PenugasanPage() {
 
       {/* TABLE */}
       <div className="overflow-x-auto md:overflow-x-visible min-h-[120px]">
-        {loading ? (
-          <TableSkeleton cols={columns.length} />
-        ) : error ? (
-          <div className="py-10 flex flex-col items-center text-red-600 dark:text-red-400">
-            <span className="mb-3 text-xl">⚠️</span>
-            <span>{error}</span>
-            <Button variant="secondary" className="mt-4" onClick={fetchData}>
-              Coba Lagi
-            </Button>
-          </div>
-        ) : paginated.length === 0 ? (
-          <EmptyState
-            message="Belum ada penugasan untuk minggu ini"
-            {...(canManage
-              ? { actionLabel: "Tambah Penugasan", onAction: openForm }
-              : {})}
-          />
-        ) : (
-          <DataTable
-            columns={columns}
-            data={paginated}
-            showGlobalFilter={false}
-            showPagination={false}
-            selectable={false}
-          />
-        )}
-      </div>
+          {loading ? (
+            <TableSkeleton cols={columns.length} />
+          ) : error ? (
+            <div className="py-10 flex flex-col items-center text-red-600 dark:text-red-400">
+              <span className="mb-3 text-xl">⚠️</span>
+              <span>{error}</span>
+              <Button variant="secondary" className="mt-4" onClick={fetchData}>
+                Coba Lagi
+              </Button>
+            </div>
+          ) : paginated.length === 0 ? (
+            initialized && !loading ? (
+              <EmptyState
+                message="Belum ada penugasan untuk minggu ini"
+                {...(canManage
+                  ? { actionLabel: "Tambah Penugasan", onAction: openForm }
+                  : {})}
+              />
+            ) : (
+              <TableSkeleton cols={columns.length} />
+            )
+          ) : (
+            <DataTable
+              columns={columns}
+              data={paginated}
+              showGlobalFilter={false}
+              showPagination={false}
+              selectable={false}
+            />
+          )}
+        </div>
 
       {/* PAGINATION */}
       {filtered.length > 0 && (
