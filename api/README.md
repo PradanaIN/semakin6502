@@ -52,11 +52,13 @@ api/
    | `JWT_SECRET`       | *Required.* Rahasia untuk penandatanganan JWT                                   |
    | `PORT`             | Port HTTP (opsional, default `3000`)                                           |
     | `CORS_ORIGIN`      | Daftar origin yang diizinkan, pisahkan dengan koma                             |
-    | `WEB_URL`          | Base URL frontend untuk menyusun tautan di notifikasi                          |
+    | `WEB_URL`          | (Opsional) Base URL frontend untuk menyusun tautan di notifikasi. Jika tidak diisi, tautan WhatsApp dilewati |
     | `THROTTLE_TTL`     | Masa berlaku rate limiting dalam detik (opsional, default `900`)               |
     | `THROTTLE_LIMIT`   | Jumlah request per TTL (opsional, default `100`)                               |
-    | `FONNTE_TOKEN`/`WHATSAPP_TOKEN` | Token API WhatsApp, salah satu wajib diisi                         |
+    | `FONNTE_TOKEN`     | Token API Fonnte (opsional, salah satu dari ini atau `WHATSAPP_TOKEN` wajib diisi) |
+    | `WHATSAPP_TOKEN`   | Token API WhatsApp generik (opsional, salah satu dari ini atau `FONNTE_TOKEN` wajib diisi) |
     | `WHATSAPP_API_URL` | URL endpoint API WhatsApp                                                      |
+    | `PHONE_VALIDATION_ENABLED` | `true` untuk validasi nomor telepon (opsional, default `true`)         |
     | `COOKIE_DOMAIN`    | Domain cookie (opsional)                                                       |
     | `COOKIE_SAMESITE`  | Nilai SameSite cookie (opsional)                                               |
 
