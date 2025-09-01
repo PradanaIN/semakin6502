@@ -176,6 +176,7 @@ export default function PenugasanPage() {
   }, [filterBulan, filterTahun, filterMinggu]);
 
   const fetchData = useCallback(async () => {
+    if (!user) return;
     try {
       setLoading(true);
       setError("");
@@ -230,7 +231,7 @@ export default function PenugasanPage() {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, [fetchData, user]);
 
   // --- Form Submit
   const save = async () => {
@@ -263,13 +264,24 @@ export default function PenugasanPage() {
       const matchTeam = filterTeam
         ? String(p.kegiatan?.teamId) === filterTeam
         : true;
-      if (viewTab === "mine") return matchesSearch && p.pegawaiId === user?.id;
+      if (viewTab === "mine")
+        return (
+          matchesSearch && String(p.pegawaiId) === String(user?.id)
+        );
       if (viewTab === "dariSaya")
         // Hanya penugasan yang dibuat oleh user (sudah dibatasi di params)
         // dan tidak menampilkan tugas dirinya sendiri
-        return matchesSearch && matchTeam && p.pegawaiId !== user?.id;
+        return (
+          matchesSearch &&
+          matchTeam &&
+          String(p.pegawaiId) !== String(user?.id)
+        );
       // viewTab === "all" -> tampilkan semua penugasan kecuali milik user yang login
-      return matchesSearch && matchTeam && p.pegawaiId !== user?.id;
+      return (
+        matchesSearch &&
+        matchTeam &&
+        String(p.pegawaiId) !== String(user?.id)
+      );
     });
   }, [penugasan, search, viewTab, user?.id, filterTeam]);
   const paginated = useMemo(
