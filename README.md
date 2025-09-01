@@ -8,6 +8,14 @@ SEMAKIN 6502 (Sistem Monitoring Kinerja) adalah aplikasi internal untuk mencata
 2. Jalankan `docker-compose up` untuk membangun dan menjalankan seluruh layanan.
 3. Setelah kontainer berjalan, API dapat diakses di `http://localhost:3000` dan antarmuka web di `http://localhost:5173`.
 
+## Deployment
+
+1. Pastikan server sudah login ke registry yang menyimpan image, misalnya: `docker login ghcr.io`.
+2. Jalankan `./deploy.sh` untuk menarik image terbaru dan me-restart kontainer.
+3. Untuk otomatisasi, Anda dapat memakai salah satu dari berikut:
+   - **Watchtower** untuk memantau dan memperbarui image secara berkala.
+   - **GitHub Actions**: workflow `deploy.yml` di repo ini akan mengeksekusi `deploy.sh` melalui SSH ketika image baru dipublikasikan.
+
 ## Peran & Hak Akses
 
 | Peran        | Deskripsi Singkat                            |
