@@ -29,7 +29,7 @@ model Team {
   namaTim          String
   members          Member[]
   masterKegiatan   MasterKegiatan[]
-  KegiatanTambahan KegiatanTambahan[]
+  kegiatanTambahan KegiatanTambahan[]
 }
 
 model Member {
@@ -50,7 +50,7 @@ model MasterKegiatan {
   deskripsi        String?            @db.Text
   team             Team               @relation(fields: [teamId], references: [id])
   penugasan        Penugasan[]
-  KegiatanTambahan KegiatanTambahan[]
+  kegiatanTambahan KegiatanTambahan[]
 }
 
 model Penugasan {
