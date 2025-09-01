@@ -30,7 +30,7 @@ services:
       WHATSAPP_API_URL: ${WHATSAPP_API_URL}
       WEB_URL: ${WEB_URL}
     ports:
-      - "${BACKEND_PORT:-3000}:3000"
+      - "${BACKEND_PORT:-3002}:3000"
     depends_on:
       - mysql
 
