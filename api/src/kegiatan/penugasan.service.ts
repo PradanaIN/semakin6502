@@ -162,7 +162,7 @@ export class PenugasanService {
       },
     });
 
-    const baseUrl = this.config.get<string>("WEB_URL");
+    const baseUrl = this.config.get<string>("WEB_URL"); // optional base URL
     const relLink = `/tugas-mingguan/${penugasan.id}`;
     const pegawai = await this.prisma.user.findUnique({
       where: { id: data.pegawaiId },
@@ -243,7 +243,7 @@ export class PenugasanService {
       rows.map((r) => this.prisma.penugasan.create({ data: r }))
     );
 
-    const baseUrl = this.config.get<string>("WEB_URL");
+    const baseUrl = this.config.get<string>("WEB_URL"); // optional base URL
 
     await Promise.all(
       created.map(async (p: { pegawaiId: string; id: string }) => {
