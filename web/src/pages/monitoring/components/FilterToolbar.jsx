@@ -1,6 +1,8 @@
 import { Listbox } from "@headlessui/react";
 import { ChevronUpDownIcon, CheckIcon } from "@heroicons/react/20/solid";
 import months from "../../../utils/months";
+import { useAuth } from "../../auth/useAuth";
+import { ROLES } from "../../../utils/roles";
 
 export default function FilterToolbar({
   tab,
@@ -16,6 +18,7 @@ export default function FilterToolbar({
   setTeamId,
   teams = [],
 }) {
+  const { user } = useAuth();
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
 
@@ -158,74 +161,76 @@ export default function FilterToolbar({
       )}
 
       {/* Filter Tim */}
-      <div className="w-40">
-        <Listbox value={teamId} onChange={setTeamId}>
-          <div className="relative">
-            <Listbox.Button className={baseButtonClass} aria-label="Pilih Tim">
-              <span className="block truncate">
-                {(() => {
-                  if (!teamId) return "Semua Tim";
-                  const t = teams.find((x) => x.id === teamId);
-                  return t ? t.namaTim : "Semua Tim";
-                })()}
-              </span>
-              <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-              </span>
-            </Listbox.Button>
-            <Listbox.Options className={baseOptionsClass}>
-              <Listbox.Option
-                key="all"
-                value=""
-                className={({ active }) =>
-                  `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
-                    active
-                      ? "bg-blue-100 dark:bg-gray-600 text-blue-900 dark:text-white"
-                      : "text-gray-900 dark:text-gray-100"
-                  }`
-                }
-              >
-                {({ selected }) => (
-                  <>
-                    <span className={`block truncate ${selected ? "font-medium" : "font-normal"}`}>Semua Tim</span>
-                    {selected && (
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 dark:text-blue-400">
-                        <CheckIcon className="h-4 w-4" aria-hidden="true" />
-                      </span>
-                    )}
-                  </>
-                )}
-              </Listbox.Option>
-              {teams
-                .filter((t) => t.namaTim !== "Pimpinan")
-                .map((t) => (
-                  <Listbox.Option
-                    key={t.id}
-                    value={t.id}
-                    className={({ active }) =>
-                      `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
-                        active
-                          ? "bg-blue-100 dark:bg-gray-600 text-blue-900 dark:text-white"
-                          : "text-gray-900 dark:text-gray-100"
-                      }`
-                    }
-                  >
-                    {({ selected }) => (
-                      <>
-                        <span className={`block truncate ${selected ? "font-medium" : "font-normal"}`}>{t.namaTim}</span>
-                        {selected && (
-                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 dark:text-blue-400">
-                            <CheckIcon className="h-4 w-4" aria-hidden="true" />
-                          </span>
-                        )}
-                      </>
-                    )}
-                  </Listbox.Option>
-                ))}
-            </Listbox.Options>
-          </div>
-        </Listbox>
-      </div>
+      {user?.role !== ROLES.KETUA && (
+        <div className="w-40">
+          <Listbox value={teamId} onChange={setTeamId}>
+            <div className="relative">
+              <Listbox.Button className={baseButtonClass} aria-label="Pilih Tim">
+                <span className="block truncate">
+                  {(() => {
+                    if (!teamId) return "Semua Tim";
+                    const t = teams.find((x) => x.id === teamId);
+                    return t ? t.namaTim : "Semua Tim";
+                  })()}
+                </span>
+                <span className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                </span>
+              </Listbox.Button>
+              <Listbox.Options className={baseOptionsClass}>
+                <Listbox.Option
+                  key="all"
+                  value=""
+                  className={({ active }) =>
+                    `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
+                      active
+                        ? "bg-blue-100 dark:bg-gray-600 text-blue-900 dark:text-white"
+                        : "text-gray-900 dark:text-gray-100"
+                    }`
+                  }
+                >
+                  {({ selected }) => (
+                    <>
+                      <span className={`block truncate ${selected ? "font-medium" : "font-normal"}`}>Semua Tim</span>
+                      {selected && (
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 dark:text-blue-400">
+                          <CheckIcon className="h-4 w-4" aria-hidden="true" />
+                        </span>
+                      )}
+                    </>
+                  )}
+                </Listbox.Option>
+                {teams
+                  .filter((t) => t.namaTim !== "Pimpinan")
+                  .map((t) => (
+                    <Listbox.Option
+                      key={t.id}
+                      value={t.id}
+                      className={({ active }) =>
+                        `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
+                          active
+                            ? "bg-blue-100 dark:bg-gray-600 text-blue-900 dark:text-white"
+                            : "text-gray-900 dark:text-gray-100"
+                        }`
+                      }
+                    >
+                      {({ selected }) => (
+                        <>
+                          <span className={`block truncate ${selected ? "font-medium" : "font-normal"}`}>{t.namaTim}</span>
+                          {selected && (
+                            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 dark:text-blue-400">
+                              <CheckIcon className="h-4 w-4" aria-hidden="true" />
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </Listbox.Option>
+                  ))}
+              </Listbox.Options>
+            </div>
+          </Listbox>
+        </div>
+      )}
     </div>
   );
 }
