@@ -43,6 +43,9 @@ web/
    |---------------|------------------------------|----------------------------------|
    | `VITE_API_URL`| `http://localhost:3000`      | URL base API backend             |
 
+   Catatan: Jika backend berjalan pada port selain 3000 (mis. 3002),
+   sesuaikan `VITE_API_URL` menjadi `http://localhost:3002`.
+
 3. **Menjalankan server development**
    ```bash
    npm run dev
