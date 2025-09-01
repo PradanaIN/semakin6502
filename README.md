@@ -124,6 +124,7 @@ Beberapa pengaturan aplikasi dibaca dari berkas `.env`. Tambahkan entri berikut:
 - **Akses**:
   - Anggota/ketua/admin: menambah & memperbarui tugas tambahan sendiri.
   - Admin & pimpinan: melihat semua melalui `GET /tugas-tambahan/all`.
+  - Ketua: melihat tugas tambahan timnya melalui `GET /tugas-tambahan/all?teamId=<idTim>`.
 - **Alur**: Pengguna menambahkan tugas tambahan → mengisi laporan harian khusus jika ada perkembangan.
 - **Contoh**: Anggota mencatat tugas mendadak “Membantu acara”.
 - **Batasan**:
