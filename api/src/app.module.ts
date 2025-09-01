@@ -29,7 +29,7 @@ import { HealthController } from "./health.controller";
           COOKIE_SAMESITE: Joi.string().valid("lax", "strict", "none"),
           NODE_ENV: Joi.string(),
           CORS_ORIGIN: Joi.string(),
-          WEB_URL: Joi.string().uri().optional(),
+          WEB_URL: Joi.string().uri().allow("").optional(),
           FONNTE_TOKEN: Joi.string(),
           WHATSAPP_TOKEN: Joi.string(),
           WHATSAPP_API_URL: Joi.string().uri().required(),
