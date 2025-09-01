@@ -288,8 +288,7 @@ const Dashboard = () => {
         // Compute personal-only normalized weeks for summary boxes
         const getOwnerId = (it) =>
           it?.userId ?? it?.pegawaiId ?? it?.user?.id ?? it?.pegawai?.id ?? it?.id ?? null;
-        const normalizedSelfWeeks = weeklySelfValues.map((wRes, i) => {
-          const w = wRes.status === "fulfilled" ? wRes.value : null;
+        const normalizedSelfWeeks = weekStarts.map((ws, i) => {
           const t =
             tugasSelfValues[i] && tugasSelfValues[i].status === "fulfilled"
               ? tugasSelfValues[i].value
@@ -314,56 +313,37 @@ const Dashboard = () => {
           ).length;
           const tambahanBelum = Math.max(tambahanTotal - tambahanSelesai, 0);
 
-          if (!w) {
-            const penTotal = Number(t?.total ?? t?.totalTugas ?? 0) || 0;
-            const penSelesai = Number(t?.selesai ?? t?.done ?? 0) || 0;
-            const totalSelesai = penSelesai + tambahanSelesai;
-            const totalTugas = penTotal + tambahanTotal;
-            const totalProgress = totalTugas
-              ? Math.round((totalSelesai / totalTugas) * 100)
-              : 0;
-            return {
-              minggu: i + 1,
-              tanggal: "-",
-              detail: [],
-              totalSelesai,
-              totalTugas,
-              totalProgress,
-              penugasan: t,
-              tambahan: {
-                total: tambahanTotal,
-                selesai: tambahanSelesai,
-                belum: tambahanBelum,
-              },
-            };
+          // Synthesize weekly detail list from dailyData for display (binary ada laporan)
+          const displayStart = new Date(weekStart < monthStart ? monthStart : weekStart);
+          const displayEnd = new Date(weekEnd > monthEnd ? monthEnd : weekEnd);
+          const tanggal = `${formatISO(displayStart)} - ${formatISO(displayEnd)}`;
+          const detail = [];
+          for (let d = new Date(displayStart); d <= displayEnd; d.setDate(d.getDate() + 1)) {
+            const tgl = formatISO(new Date(d));
+            const daily = (dailyForWeekLocal || []).find((x) => x.tanggal === tgl);
+            const hari = d.toLocaleDateString("id-ID", { weekday: "long" });
+            const adaKegiatan = !!daily?.adaKegiatan;
+            detail.push({
+              tanggal: tgl,
+              hari,
+              total: adaKegiatan ? 1 : 0,
+              selesai: 0,
+              persen: adaKegiatan ? 100 : 0,
+              adaKegiatan,
+            });
           }
 
-          const [sIso, eIso] = w.tanggal.split(" - ");
-          const startDate = new Date(sIso);
-          const endDate = new Date(eIso);
-          const displayStart = startDate < monthStart ? monthStart : startDate;
-          const displayEnd = endDate > monthEnd ? monthEnd : endDate;
-          const tanggalRange = `${formatISO(displayStart)} - ${formatISO(displayEnd)}`;
-
-          const detail = w.detail.filter((d) => {
-            const tgl = new Date(d.tanggal);
-            return tgl >= monthStart && tgl <= monthEnd;
-          });
-
-          const penTotal2 = Number(t?.total ?? t?.totalTugas ?? 0) || 0;
-          const penSelesai2 = Number(t?.selesai ?? t?.done ?? 0) || 0;
-          const baseSelesai2 = penTotal2 || penSelesai2 ? penSelesai2 : detail.reduce((sum, d) => sum + (d.selesai || 0), 0);
-          const baseTotal2 = penTotal2 || penSelesai2 ? penTotal2 : detail.reduce((sum, d) => sum + (d.total || 0), 0);
-          const totalSelesai = baseSelesai2 + tambahanSelesai;
-          const totalTugas = baseTotal2 + tambahanTotal;
+          const penTotal = Number(t?.total ?? t?.totalTugas ?? 0) || 0;
+          const penSelesai = Number(t?.selesai ?? t?.done ?? 0) || 0;
+          const totalSelesai = penSelesai + tambahanSelesai;
+          const totalTugas = penTotal + tambahanTotal;
           const totalProgress = totalTugas
             ? Math.round((totalSelesai / totalTugas) * 100)
             : 0;
 
           return {
-            ...w,
             minggu: i + 1,
-            tanggal: tanggalRange,
+            tanggal,
             detail,
             totalSelesai,
             totalTugas,
@@ -510,7 +490,7 @@ const Dashboard = () => {
       )}
 
       <StatsSummary
-        weeklyData={weeklySelfList[weekIndex] || weeklyList[weekIndex]}
+        weeklyData={weeklySelfList[weekIndex]}
         reportedToday={isCurrentView && hasReportedToday}
         countOverride={isCurrentView ? laporanCountToday : null}
         activeDate={isCurrentView ? formatISO(new Date()) : null}
