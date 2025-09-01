@@ -84,12 +84,8 @@ export default function TabContent({
           user?.role === ROLES.KETUA
             ? "/tugas-tambahan/all"
             : "/tugas-tambahan";
-        // Untuk monitoring, defaultnya tampilkan semua pegawai kecuali Admin/Pimpinan.
-        // Hanya batasi ke user sendiri jika ANGGOTA; jika KETUA, jangan otomatis filter ke team.
-        const roleFilters = {};
-        if (user?.role === ROLES.ANGGOTA) roleFilters.userId = user.id;
         const res = await axios.get(endpoint, {
-          params: { teamId: teamId || undefined, ...roleFilters },
+          params: { teamId: teamId || undefined },
         });
         const arr = Array.isArray(res.data)
           ? res.data
@@ -106,7 +102,7 @@ export default function TabContent({
     };
     // Load tambahan for any tab to enable summaries where needed
     fetchTambahan();
-  }, [activeTab, monthIndex, teamId, year, user?.role, user?.id]);
+  }, [activeTab, monthIndex, teamId, year, user?.role]);
 
   useEffect(() => {
     const fetchDaily = async () => {
@@ -136,15 +132,12 @@ export default function TabContent({
         const minggu = `${start.getFullYear()}-${String(
           start.getMonth() + 1
         ).padStart(2, "0")}-${String(start.getDate()).padStart(2, "0")}`;
-        // Default: tampilkan semua pegawai. Batasi hanya jika ANGGOTA (diri sendiri) atau user memilih filter teamId.
-        const roleFilters = {};
-        if (user?.role === ROLES.ANGGOTA) roleFilters.userId = user.id;
         const [res, penRes, penAllRes] = await Promise.all([
           axios.get("/monitoring/mingguan/all", {
-            params: { minggu, teamId: teamId || undefined, ...roleFilters },
+            params: { minggu, teamId: teamId || undefined },
           }),
           axios.get("/monitoring/penugasan/minggu", {
-            params: { minggu, teamId: teamId || undefined, ...roleFilters },
+            params: { minggu, teamId: teamId || undefined },
           }),
           axios.get("/penugasan/minggu/all", {
             params: { minggu },
@@ -331,8 +324,6 @@ export default function TabContent({
     tambahanItems,
     EXCLUDED_NAMES,
     excludeUsers,
-    user?.role,
-    user?.id,
   ]);
 
   // Sinkronkan kolom minggu terpilih di Matrix dengan capaian dari Ringkasan Minggu Ini

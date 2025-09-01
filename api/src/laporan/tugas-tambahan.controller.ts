@@ -9,7 +9,6 @@ import {
   Query,
   Put,
   Delete,
-  BadRequestException,
   ForbiddenException,
 } from "@nestjs/common";
 import { Request } from "express";
@@ -55,17 +54,13 @@ export class TambahanController {
     @Req() req: Request,
   ) {
     const { role, userId: requesterId } = req.user as AuthRequestUser;
-    if (role === ROLES.KETUA) {
-      if (!teamId) {
-        throw new BadRequestException('teamId is required');
-      }
+    if (role === ROLES.KETUA && teamId) {
       const leader = await this.prisma.member.findFirst({
         where: { teamId, userId: requesterId, isLeader: true },
       });
       if (!leader) {
         throw new ForbiddenException('bukan ketua tim');
       }
-      return this.tambahanService.getAll({ teamId });
     }
     return this.tambahanService.getAll({ teamId, userId });
   }
