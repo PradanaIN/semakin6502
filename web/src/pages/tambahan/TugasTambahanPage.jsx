@@ -115,6 +115,7 @@ export default function TugasTambahanPage() {
   };
 
   const fetchData = async () => {
+    if (!user) return;
     try {
       setLoading(true);
       const params = {};
@@ -146,8 +147,8 @@ export default function TugasTambahanPage() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, [filterTeam, user?.role]);
+    if (user) fetchData();
+  }, [filterTeam, user]);
 
   useEffect(() => {
     if (!filterBulan || !filterTahun) {

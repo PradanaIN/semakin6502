@@ -145,9 +145,10 @@ export default function PenugasanPage() {
         // ignore error
       }
     };
+    if (!user) return;
     if (!filterMinggu) initWeek();
     // eslint-disable-next-line
-  }, [filterBulan, filterTahun]);
+  }, [filterBulan, filterTahun, user]);
 
   useEffect(() => {
     if (!filterBulan || !filterTahun) {
