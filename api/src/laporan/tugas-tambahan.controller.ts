@@ -9,6 +9,8 @@ import {
   Query,
   Put,
   Delete,
+  BadRequestException,
+  ForbiddenException,
 } from "@nestjs/common";
 import { Request } from "express";
 import { TambahanService } from "./tugas-tambahan.service";
@@ -21,12 +23,16 @@ import { UpdateTambahanDto } from "./dto/update-tambahan.dto";
 import { SubmitTambahanLaporanDto } from "./dto/submit-tambahan-laporan.dto";
 import { AuthRequestUser } from "../common/auth-request-user.interface";
 import { ApiTags } from "@nestjs/swagger";
+import { PrismaService } from "../prisma.service";
 
 @ApiTags("tugas-tambahan")
 @Controller("tugas-tambahan")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class TambahanController {
-  constructor(private readonly tambahanService: TambahanService) {}
+  constructor(
+    private readonly tambahanService: TambahanService,
+    private prisma: PrismaService,
+  ) {}
 
   @Post()
   @Roles(ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA)
@@ -42,11 +48,25 @@ export class TambahanController {
   }
 
   @Get('all')
-  @Roles(ROLES.ADMIN, ROLES.PIMPINAN)
-  getAll(
-    @Query('teamId') teamId?: string,
-    @Query('userId') userId?: string,
+  @Roles(ROLES.ADMIN, ROLES.PIMPINAN, ROLES.KETUA)
+  async getAll(
+    @Query('teamId') teamId: string | undefined,
+    @Query('userId') userId: string | undefined,
+    @Req() req: Request,
   ) {
+    const { role, userId: requesterId } = req.user as AuthRequestUser;
+    if (role === ROLES.KETUA) {
+      if (!teamId) {
+        throw new BadRequestException('teamId is required');
+      }
+      const leader = await this.prisma.member.findFirst({
+        where: { teamId, userId: requesterId, isLeader: true },
+      });
+      if (!leader) {
+        throw new ForbiddenException('bukan ketua tim');
+      }
+      return this.tambahanService.getAll({ teamId });
+    }
     return this.tambahanService.getAll({ teamId, userId });
   }
 
