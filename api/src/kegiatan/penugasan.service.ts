@@ -393,6 +393,7 @@ export class PenugasanService {
         "Hapus laporan harian penugasan ini terlebih dahulu"
       );
     await this.prisma.penugasan.delete({ where: { id } });
+    await this.notifications.deleteByLink(`/tugas-mingguan/${id}`);
     await this.invalidateCache(PENUGASAN_CACHE_KEYS);
     return { success: true };
   }
