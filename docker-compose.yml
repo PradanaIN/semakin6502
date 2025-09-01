@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   mysql:
     image: mysql:8
@@ -16,11 +15,7 @@ services:
     build: ./api
     image: semakin6502-backend
     environment:
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USER: ${DB_USER}
-      DB_PASS: ${DB_PASS}
-      DB_NAME: ${DB_NAME}
+      DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
       PORT: ${PORT}
       CORS_ORIGIN: ${CORS_ORIGIN}
@@ -28,7 +23,7 @@ services:
       THROTTLE_LIMIT: ${THROTTLE_LIMIT}
       FONNTE_TOKEN: ${FONNTE_TOKEN}
       WHATSAPP_API_URL: ${WHATSAPP_API_URL}
-      WEB_URL: ${WEB_URL}
+${WEB_URL:+      WEB_URL: ${WEB_URL} # optional}
     ports:
       - "${BACKEND_PORT:-3002}:3000"
     depends_on:

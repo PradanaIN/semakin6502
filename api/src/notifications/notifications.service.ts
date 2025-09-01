@@ -32,4 +32,10 @@ export class NotificationsService {
       data: { isRead: true },
     });
   }
+
+  deleteByLink(link: string) {
+    return this.prisma.notification.deleteMany({
+      where: { link },
+    });
+  }
 }

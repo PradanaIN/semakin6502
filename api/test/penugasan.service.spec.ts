@@ -10,7 +10,7 @@ const prisma = {
   user: { findUnique: jest.fn() },
 } as any;
 
-const notifications = { create: jest.fn() } as any;
+const notifications = { create: jest.fn(), deleteByLink: jest.fn() } as any;
 const whatsappService = { sendMessage: jest.fn() } as any;
 const config = {
   get: jest.fn((key: string) =>
@@ -47,6 +47,22 @@ describe("PenugasanService remove", () => {
       "Hapus laporan harian penugasan ini terlebih dahulu"
     );
     expect(prisma.penugasan.delete).not.toHaveBeenCalled();
+  });
+
+  it("deletes related notification when penugasan removed", async () => {
+    prisma.penugasan.findUnique.mockResolvedValue({
+      id: "1",
+      kegiatan: { teamId: "2" },
+    });
+    prisma.laporanHarian.count.mockResolvedValue(0);
+    prisma.penugasan.delete.mockResolvedValue({});
+    notifications.deleteByLink.mockResolvedValue({});
+
+    const res = await service.remove("1", "adminUser", "admin");
+
+    expect(prisma.penugasan.delete).toHaveBeenCalledWith({ where: { id: "1" } });
+    expect(notifications.deleteByLink).toHaveBeenCalledWith("/tugas-mingguan/1");
+    expect(res).toEqual({ success: true });
   });
 });
 

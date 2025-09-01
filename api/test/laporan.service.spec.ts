@@ -101,7 +101,6 @@ describe('LaporanService submit', () => {
       pegawaiId: id1,
       kegiatan: { teamId: id1 },
     });
-    prisma.member.findMany.mockResolvedValue([]);
     prisma.laporanHarian.create.mockResolvedValue({ id: id11 });
     prisma.laporanHarian.findFirst.mockResolvedValueOnce({
       status: STATUS.SELESAI_DIKERJAKAN,
@@ -115,6 +114,8 @@ describe('LaporanService submit', () => {
       where: { id: id1 },
       data: { status: STATUS.SELESAI_DIKERJAKAN },
     });
+    expect(prisma.member.findMany).not.toHaveBeenCalled();
+    expect(notifications.create).not.toHaveBeenCalled();
   });
 
   it('returns laporan when optional fields missing', async () => {

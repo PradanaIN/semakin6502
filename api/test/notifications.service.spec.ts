@@ -6,6 +6,7 @@ jest.mock('ulid', () => ({ ulid: () => '1' }));
 const prisma = {
   notification: {
     create: jest.fn(),
+    deleteMany: jest.fn(),
   },
 } as any;
 
@@ -25,6 +26,19 @@ describe('NotificationsService create', () => {
       data: { id: '1', userId: 'u1', text: 'text', link: '/link' },
     });
     expect(res).toEqual({ id: '1' });
+  });
+});
+
+describe('NotificationsService deleteByLink', () => {
+  it('deletes notifications by link', async () => {
+    prisma.notification.deleteMany.mockResolvedValue({ count: 1 });
+
+    const res = await notifications.deleteByLink('/foo');
+
+    expect(prisma.notification.deleteMany).toHaveBeenCalledWith({
+      where: { link: '/foo' },
+    });
+    expect(res).toEqual({ count: 1 });
   });
 });
 

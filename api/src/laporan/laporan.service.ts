@@ -100,23 +100,6 @@ export class LaporanService {
             where: { id: penugasanId },
             data: { status: STATUS.SELESAI_DIKERJAKAN },
           });
-
-          const leaders = await this.prisma.member.findMany({
-            where: { teamId: pen.kegiatan.teamId, isLeader: true },
-            select: { userId: true },
-          });
-          const text = `${
-            pen.pegawai?.nama ?? "Seorang pegawai"
-          } telah menyelesaikan penugasan ${pen.kegiatan.namaKegiatan}`;
-          await Promise.all(
-            leaders.map((l: { userId: string }) =>
-              this.notifications.create(
-                l.userId,
-                text,
-                `/tugas-mingguan/${pen.id}`
-              )
-            )
-          );
         }
         return;
       }
