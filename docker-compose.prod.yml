@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  mysql:
+    image: mysql:8
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  backend:
+    image: ${REGISTRY_USERNAME}/semakin6502-backend:latest
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: ${PORT}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      THROTTLE_TTL: ${THROTTLE_TTL}
+      THROTTLE_LIMIT: ${THROTTLE_LIMIT}
+      FONNTE_TOKEN: ${FONNTE_TOKEN}
+      WHATSAPP_API_URL: ${WHATSAPP_API_URL}
+      WEB_URL: ${WEB_URL}
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    depends_on:
+      - mysql
+
+  frontend:
+    image: ${REGISTRY_USERNAME}/semakin6502-frontend:latest
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql-data:
