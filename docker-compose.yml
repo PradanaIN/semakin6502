@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 services:
   mysql:
     image: mysql:8
@@ -28,7 +28,7 @@ services:
       THROTTLE_LIMIT: ${THROTTLE_LIMIT}
       FONNTE_TOKEN: ${FONNTE_TOKEN}
       WHATSAPP_API_URL: ${WHATSAPP_API_URL}
-      WEB_URL: https://example.com
+      WEB_URL: https://semakin.databenuanta.id
     ports:
       - "3000:3000"
     depends_on:

@@ -244,7 +244,7 @@ const baseUsers = [
   },
 ];
 
-const rawUsers = baseUsers.map(u => ({ ...u, phone: userPhones[u.nama] }));
+const rawUsers = baseUsers.map((u) => ({ ...u, phone: userPhones[u.nama] }));
 
 const roleMap: Record<string, string> = {
   Pimpinan: "pimpinan",
@@ -446,7 +446,9 @@ async function main() {
 
   type WeekRange = { start: number; end: number };
   function getWeekRanges(year: number, monthIndex: number): WeekRange[] {
-    const daysInMonth = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
+    const daysInMonth = new Date(
+      Date.UTC(year, monthIndex + 1, 0)
+    ).getUTCDate();
     const firstDay = new Date(Date.UTC(year, monthIndex, 1)).getUTCDay();
     const firstWeekEnd = firstDay === 0 ? 7 : 7 - firstDay + 1;
     const weeks: WeekRange[] = [{ start: 1, end: firstWeekEnd }];
@@ -700,7 +702,7 @@ async function main() {
           tanggal: tanggal.toISOString(),
           status: STATUS.SELESAI_DIKERJAKAN,
           capaianKegiatan: `Capaian ${penugasan.id}`,
-          buktiLink: "https://example.com/bukti",
+          buktiLink: "https://semakin.databenuanta.id",
         },
       });
     }

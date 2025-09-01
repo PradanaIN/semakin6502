@@ -1,15 +1,15 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import TugasTambahanDetailPage from '../pages/tambahan/TugasTambahanDetailPage';
-import axios from 'axios';
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import TugasTambahanDetailPage from "../pages/tambahan/TugasTambahanDetailPage";
+import axios from "axios";
 
-jest.mock('axios');
+jest.mock("axios");
 
 const mockNavigate = jest.fn();
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockNavigate,
-  useParams: () => ({ id: '1' }),
+  useParams: () => ({ id: "1" }),
 }));
 
 const mockShowSuccess = jest.fn();
@@ -17,10 +17,10 @@ const mockConfirmDelete = jest.fn();
 const mockShowError = jest.fn();
 const mockHandleAxiosError = jest.fn((error, defaultMessage) => {
   const message = error?.response?.data?.message || defaultMessage;
-  mockShowError('Error', message);
+  mockShowError("Error", message);
 });
 
-jest.mock('../utils/alerts', () => ({
+jest.mock("../utils/alerts", () => ({
   showSuccess: (...args) => mockShowSuccess(...args),
   confirmDelete: (...args) => mockConfirmDelete(...args),
   confirmCancel: jest.fn(),
@@ -29,32 +29,32 @@ jest.mock('../utils/alerts', () => ({
   showWarning: jest.fn(),
 }));
 
-jest.mock('../pages/auth/useAuth', () => ({
-  useAuth: () => ({ user: { id: 1, role: 'ADMIN', nama: 'Admin User' } }),
+jest.mock("../pages/auth/useAuth", () => ({
+  useAuth: () => ({ user: { id: 1, role: "ADMIN", nama: "Admin User" } }),
 }));
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
-test('renders fields in correct order with grid layout', async () => {
+test("renders fields in correct order with grid layout", async () => {
   axios.get.mockImplementation((url) => {
-    if (url === '/tugas-tambahan/1') {
+    if (url === "/tugas-tambahan/1") {
       return Promise.resolve({
         data: {
           kegiatanId: 1,
           userId: 1,
-          tanggal: '2024-01-01',
-          status: 'BELUM',
-          nama: 'Test',
-          deskripsi: 'Desc',
-          kegiatan: { team: { namaTim: 'Tim A' } },
-          tanggalSelesai: '2024-01-05',
-          buktiLink: 'http://example.com',
+          tanggal: "2024-01-01",
+          status: "BELUM",
+          nama: "Test",
+          deskripsi: "Desc",
+          kegiatan: { team: { namaTim: "Tim A" } },
+          tanggalSelesai: "2024-01-05",
+          buktiLink: "https://semakin.databenuanta.id",
         },
       });
     }
-    if (url.startsWith('/master-kegiatan')) {
+    if (url.startsWith("/master-kegiatan")) {
       return Promise.resolve({ data: [] });
     }
     return Promise.resolve({ data: [] });
@@ -62,50 +62,50 @@ test('renders fields in correct order with grid layout', async () => {
 
   render(<TugasTambahanDetailPage />);
 
-  const grid = await screen.findByTestId('detail-grid');
-  expect(grid).toHaveClass('grid', 'sm:grid-cols-2', 'lg:grid-cols-3');
+  const grid = await screen.findByTestId("detail-grid");
+  expect(grid).toHaveClass("grid", "sm:grid-cols-2", "lg:grid-cols-3");
   expect(grid.textContent).toMatch(
     /Kegiatan.*Deskripsi Penugasan.*Tim.*Pegawai.*Waktu.*Status/s
   );
   // Ensure compact waktu content is present
   expect(grid.textContent).toMatch(/Minggu\s*1.*Januari\s*2024/);
   expect(grid.textContent).not.toMatch(/Tanggal Selesai|Bukti/);
-  expect(screen.getByText('Admin User')).toBeInTheDocument();
+  expect(screen.getByText("Admin User")).toBeInTheDocument();
   expect(grid.textContent).toMatch(/Minggu\s*1/);
   expect(grid.textContent).toMatch(/Januari\s*2024/);
   expect(screen.getByText(/Tanggal Selesai/)).toBeInTheDocument();
   expect(screen.getAllByText(/Bukti/).length).toBeGreaterThan(0);
 });
 
-test('does not show period or status inputs in edit mode', async () => {
+test("does not show period or status inputs in edit mode", async () => {
   axios.get.mockImplementation((url) => {
-    if (url === '/tugas-tambahan/1') {
+    if (url === "/tugas-tambahan/1") {
       return Promise.resolve({
         data: {
           kegiatanId: 1,
           userId: 1,
-          tanggal: '2024-01-01',
-          status: 'BELUM',
-          nama: 'Test',
+          tanggal: "2024-01-01",
+          status: "BELUM",
+          nama: "Test",
           kegiatan: {
             id: 1,
-            namaKegiatan: 'Keg A',
+            namaKegiatan: "Keg A",
             teamId: 1,
-            team: { namaTim: 'Tim A' },
+            team: { namaTim: "Tim A" },
           },
-          deskripsi: 'Desc',
+          deskripsi: "Desc",
         },
       });
     }
-    if (url.startsWith('/master-kegiatan')) {
-      return Promise.resolve({ data: [{ id: 1, namaKegiatan: 'Kegiatan A' }] });
+    if (url.startsWith("/master-kegiatan")) {
+      return Promise.resolve({ data: [{ id: 1, namaKegiatan: "Kegiatan A" }] });
     }
     return Promise.resolve({ data: [] });
   });
 
   render(<TugasTambahanDetailPage />);
 
-  const editButton = await screen.findByRole('button', { name: /edit/i });
+  const editButton = await screen.findByRole("button", { name: /edit/i });
   fireEvent.click(editButton);
 
   await waitFor(() => {
@@ -115,58 +115,58 @@ test('does not show period or status inputs in edit mode', async () => {
   expect(screen.queryByLabelText(/^status/i)).not.toBeInTheDocument();
 });
 
-  test('navigates to list with success state after deletion', async () => {
-    axios.get.mockImplementation((url) => {
-      if (url === '/tugas-tambahan/1') {
-        return Promise.resolve({
-          data: {
-            kegiatanId: 1,
-            userId: 1,
-            tanggal: '2024-01-01',
-            status: 'BELUM',
-            nama: 'Test',
-            kegiatan: { team: { namaTim: 'Tim A' } },
-          },
-        });
-      }
-      if (url.startsWith('/master-kegiatan')) {
-        return Promise.resolve({ data: [] });
-      }
-      return Promise.resolve({ data: [] });
-    });
-    axios.delete.mockResolvedValue({});
-    mockConfirmDelete.mockResolvedValue({ isConfirmed: true });
-
-    render(<TugasTambahanDetailPage />);
-    const deleteButton = await screen.findByRole('button', { name: /hapus/i });
-
-    fireEvent.click(deleteButton);
-
-    await waitFor(() =>
-      expect(mockNavigate).toHaveBeenCalledWith('/tugas-tambahan', {
-        state: { success: 'Kegiatan dihapus' },
-      })
-    );
-    expect(mockShowSuccess).not.toHaveBeenCalled();
-  });
-
-test('shows backend error message when deletion fails', async () => {
-  const backendMessage = 'Backend error';
-
+test("navigates to list with success state after deletion", async () => {
   axios.get.mockImplementation((url) => {
-    if (url === '/tugas-tambahan/1') {
+    if (url === "/tugas-tambahan/1") {
       return Promise.resolve({
         data: {
           kegiatanId: 1,
           userId: 1,
-          tanggal: '2024-01-01',
-          status: 'BELUM',
-          nama: 'Test',
-          kegiatan: { team: { namaTim: 'Tim A' } },
+          tanggal: "2024-01-01",
+          status: "BELUM",
+          nama: "Test",
+          kegiatan: { team: { namaTim: "Tim A" } },
         },
       });
     }
-    if (url.startsWith('/master-kegiatan')) {
+    if (url.startsWith("/master-kegiatan")) {
+      return Promise.resolve({ data: [] });
+    }
+    return Promise.resolve({ data: [] });
+  });
+  axios.delete.mockResolvedValue({});
+  mockConfirmDelete.mockResolvedValue({ isConfirmed: true });
+
+  render(<TugasTambahanDetailPage />);
+  const deleteButton = await screen.findByRole("button", { name: /hapus/i });
+
+  fireEvent.click(deleteButton);
+
+  await waitFor(() =>
+    expect(mockNavigate).toHaveBeenCalledWith("/tugas-tambahan", {
+      state: { success: "Kegiatan dihapus" },
+    })
+  );
+  expect(mockShowSuccess).not.toHaveBeenCalled();
+});
+
+test("shows backend error message when deletion fails", async () => {
+  const backendMessage = "Backend error";
+
+  axios.get.mockImplementation((url) => {
+    if (url === "/tugas-tambahan/1") {
+      return Promise.resolve({
+        data: {
+          kegiatanId: 1,
+          userId: 1,
+          tanggal: "2024-01-01",
+          status: "BELUM",
+          nama: "Test",
+          kegiatan: { team: { namaTim: "Tim A" } },
+        },
+      });
+    }
+    if (url.startsWith("/master-kegiatan")) {
       return Promise.resolve({ data: [] });
     }
     return Promise.resolve({ data: [] });
@@ -177,21 +177,20 @@ test('shows backend error message when deletion fails', async () => {
   mockConfirmDelete.mockResolvedValue({ isConfirmed: true });
 
   render(<TugasTambahanDetailPage />);
-  const deleteButton = await screen.findByRole('button', { name: /hapus/i });
+  const deleteButton = await screen.findByRole("button", { name: /hapus/i });
 
   fireEvent.click(deleteButton);
 
   await waitFor(() =>
     expect(mockShowError).toHaveBeenCalledWith(
-      'Gagal',
-      'Harap hapus laporan harian terlebih dahulu!'
+      "Gagal",
+      "Harap hapus laporan harian terlebih dahulu!"
     )
   );
-  expect(axios.delete).toHaveBeenCalledWith('/tugas-tambahan/1', {
+  expect(axios.delete).toHaveBeenCalledWith("/tugas-tambahan/1", {
     suppressToast: true,
   });
   expect(mockHandleAxiosError).not.toHaveBeenCalled();
   expect(mockNavigate).not.toHaveBeenCalled();
   expect(mockShowSuccess).not.toHaveBeenCalled();
 });
-
