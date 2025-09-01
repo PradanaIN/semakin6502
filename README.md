@@ -31,7 +31,7 @@ Sistem hanya mengenali keempat peran di atas.
 
 Beberapa pengaturan aplikasi dibaca dari berkas `.env`. Tambahkan entri berikut:
 
-- `WEB_URL` – URL dasar frontend yang digunakan backend untuk membentuk tautan pada notifikasi.
+- `WEB_URL` (opsional) – URL dasar frontend untuk membentuk tautan pada notifikasi. Jika kosong, tautan WhatsApp dilewati.
 
 ## Alur Penggunaan Umum
 
