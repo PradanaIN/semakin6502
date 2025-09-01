@@ -9,7 +9,6 @@ import { FaFilePdf } from "react-icons/fa";
 import { exportMonthlyCurrentPDF, exportMonthlyYearPDF } from "./export/pdfTable";
 import Legend from "../../components/ui/Legend";
 import { useAuth } from "../auth/useAuth";
-import { ROLES } from "../../utils/roles";
 import axios from "axios";
 import { handleAxiosError } from "../../utils/alerts";
 import formatWita from "../../utils/formatWita";
@@ -44,9 +43,7 @@ export default function MonitoringPage() {
   const [weekIndex, setWeekIndex] = useState(0);
   const [weekStarts, setWeekStarts] = useState([]);
   const [year, setYear] = useState(new Date().getFullYear());
-  const [teamId, setTeamId] = useState(
-    user?.role === ROLES.KETUA ? user.teamId : ""
-  );
+  const [teamId, setTeamId] = useState("");
   const [teams, setTeams] = useState([]);
   const [lastUpdate, setLastUpdate] = useState("");
   const [monthlyMode, setMonthlyMode] = useState("current"); // 'current' | 'year'
@@ -73,12 +70,6 @@ export default function MonitoringPage() {
     };
     fetchTeams();
   }, [user?.role]);
-
-  useEffect(() => {
-    if (user?.role === ROLES.KETUA) {
-      setTeamId(user.teamId);
-    }
-  }, [user]);
 
   // Ambil waktu update terakhir
   useEffect(() => {
