@@ -1,6 +1,8 @@
 import { WhatsappService } from "../src/notifications/whatsapp.service";
 import { ConfigService } from "@nestjs/config";
 
+const BASE_URL = process.env.BASE_URL || "https://semakin.databenuanta.id";
+
 describe("WhatsappService retries", () => {
   let service: WhatsappService;
   let fetchMock: jest.Mock;
@@ -12,7 +14,7 @@ describe("WhatsappService retries", () => {
           return "token";
         }
         if (key === "WHATSAPP_API_URL") {
-          return "https://semakin.databenuanta.id";
+          return BASE_URL;
         }
         return undefined;
       },

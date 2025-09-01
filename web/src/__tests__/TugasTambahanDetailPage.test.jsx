@@ -4,6 +4,8 @@ import axios from "axios";
 
 jest.mock("axios");
 
+const BASE_URL = process.env.BASE_URL || "https://semakin.databenuanta.id";
+
 const mockNavigate = jest.fn();
 
 jest.mock("react-router-dom", () => ({
@@ -50,7 +52,7 @@ test("renders fields in correct order with grid layout", async () => {
           deskripsi: "Desc",
           kegiatan: { team: { namaTim: "Tim A" } },
           tanggalSelesai: "2024-01-05",
-          buktiLink: "https://semakin.databenuanta.id",
+          buktiLink: BASE_URL,
         },
       });
     }

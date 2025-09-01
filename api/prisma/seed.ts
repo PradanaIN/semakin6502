@@ -10,6 +10,8 @@ const userPhones: Record<string, string> = userPhonesData;
 
 const prisma = new PrismaClient();
 
+const BASE_URL = process.env.BASE_URL || "https://semakin.databenuanta.id";
+
 const BASE_DATE = new Date("2025-08-17T00:00:00Z");
 BASE_DATE.setUTCHours(0, 0, 0, 0);
 
@@ -506,9 +508,7 @@ async function main() {
         tanggal: date.toISOString(),
         status,
         buktiLink:
-          status === STATUS.BELUM
-            ? undefined
-            : "https://example.com/bukti",
+          status === STATUS.BELUM ? undefined : `${BASE_URL}/bukti`,
         userId: m.userId,
         kegiatanId: k.id,
         teamId: m.teamId,
@@ -532,7 +532,7 @@ async function main() {
       status: t.status,
       capaianKegiatan: t.capaianKegiatan,
       buktiLink:
-        t.status === STATUS.BELUM ? undefined : "https://example.com/bukti",
+        t.status === STATUS.BELUM ? undefined : `${BASE_URL}/bukti`,
     }));
 
     await prisma.laporanHarian.createMany({
@@ -628,7 +628,7 @@ async function main() {
                 tanggal: date.toISOString(),
                 status: STATUS.SELESAI_DIKERJAKAN,
                 capaianKegiatan: `Capaian ${p.id}`,
-                buktiLink: "https://example.com/bukti",
+                buktiLink: `${BASE_URL}/bukti`,
               });
               selesaiIds.add(p.id);
             }
@@ -702,7 +702,7 @@ async function main() {
           tanggal: tanggal.toISOString(),
           status: STATUS.SELESAI_DIKERJAKAN,
           capaianKegiatan: `Capaian ${penugasan.id}`,
-          buktiLink: "https://semakin.databenuanta.id",
+          buktiLink: BASE_URL,
         },
       });
     }
