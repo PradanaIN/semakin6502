@@ -1,8 +1,8 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import { hashPassword } from "../src/common/hash";
-import { STATUS } from "../src/common/status.constants";
-import { getHolidays } from "../src/utils/holidays";
+import { hashPassword } from "../src/common/hash.js";
+import { STATUS } from "../src/common/status.constants.js";
+import { getHolidays } from "../src/utils/holidays.js";
 import { ulid } from "ulid";
 import userPhonesData from "./user-phones.json";
 
