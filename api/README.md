@@ -48,7 +48,7 @@ api/
 
    | Nama               | Keterangan                                                                     |
    |--------------------|---------------------------------------------------------------------------------|
-   | `DATABASE_URL`     | URL koneksi MySQL, misal `mysql://user:pass@localhost:3306/semakin_6502`        |
+   | `DATABASE_URL`     | URL koneksi MySQL, misal `mysql://user:pass@mysql:3306/semakin_6502`        |
    | `JWT_SECRET`       | *Required.* Rahasia untuk penandatanganan JWT                                   |
    | `PORT`             | Port HTTP (opsional, default `3000`)                                           |
     | `CORS_ORIGIN`      | Daftar origin yang diizinkan, pisahkan dengan koma                             |
