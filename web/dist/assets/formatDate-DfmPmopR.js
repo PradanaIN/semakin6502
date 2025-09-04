@@ -1,0 +1,1 @@
+import{m as r}from"./months-C0Ia_Adi.js";function m(e=""){if(!e)return"";const t=new Date(e);return Number.isNaN(t.getTime())?e.slice(0,10).replace(/-/g," "):`${String(t.getDate()).padStart(2,"0")} ${r[t.getMonth()]} ${t.getFullYear()}`}export{m as f};

@@ -3,10 +3,10 @@ node_modules/
 *.log
 logs/
 .DS_Store
-dist/
+# dist/
 
 # Environment files
-.env
+# .env
 
 .vscode/
 

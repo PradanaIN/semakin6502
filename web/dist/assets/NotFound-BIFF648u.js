@@ -1,0 +1,6 @@
+import{c as a,j as e,d as t}from"./index-tHDgc07s.js";import{B as r}from"./Button-DTOqL5YY.js";/**
+ * @license lucide-react v0.525.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const n=[["path",{d:"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3",key:"wmoenq"}],["path",{d:"M12 9v4",key:"juzpu7"}],["path",{d:"M12 17h.01",key:"p32p05"}]],s=a("triangle-alert",n);function l(){return e.jsxs("div",{className:"min-h-[70vh] flex flex-col items-center justify-center px-6 text-center space-y-6",children:[e.jsxs("div",{className:"flex flex-col items-center space-y-4 animate-fadeIn",children:[e.jsx("div",{className:"bg-gradient-to-r from-blue-500 via-green-400 to-orange-400 p-4 rounded-full shadow-lg",children:e.jsx(s,{className:"text-white w-10 h-10"})}),e.jsx("h1",{className:"text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-green-500 to-orange-500",children:"404 - Not Found"}),e.jsx("p",{className:"text-gray-600 dark:text-gray-400 max-w-md",children:"Maaf, halaman yang Anda cari tidak ditemukan."})]}),e.jsx(t,{to:"/dashboard",children:e.jsx(r,{className:"mt-4 hover:scale-105 transition-transform duration-300 focus:ring-2 focus:ring-offset-2 focus:ring-blue-400",children:"Ke Dashboard"})})]})}export{l as default};
