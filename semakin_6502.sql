@@ -1,0 +1,521 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:3306
+-- Generation Time: Sep 04, 2025 at 02:40 PM
+-- Server version: 8.0.30
+-- PHP Version: 8.1.10
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `semakin_6502`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `kegiatantambahan`
+--
+
+CREATE TABLE `kegiatantambahan` (
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tanggal` datetime(3) NOT NULL,
+  `status` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `capaianKegiatan` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `buktiLink` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `deskripsi` text COLLATE utf8mb4_unicode_ci,
+  `tanggalSelesai` datetime(3) DEFAULT NULL,
+  `tanggalSelesaiAkhir` datetime(3) DEFAULT NULL,
+  `userId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kegiatanId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `teamId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `laporanharian`
+--
+
+CREATE TABLE `laporanharian` (
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `penugasanId` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tanggal` datetime(3) NOT NULL,
+  `status` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `capaianKegiatan` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `deskripsi` text COLLATE utf8mb4_unicode_ci,
+  `buktiLink` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `catatan` text COLLATE utf8mb4_unicode_ci,
+  `pegawaiId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tambahanId` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `masterkegiatan`
+--
+
+CREATE TABLE `masterkegiatan` (
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `teamId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `namaKegiatan` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `deskripsi` text COLLATE utf8mb4_unicode_ci
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `masterkegiatan`
+--
+
+INSERT INTO `masterkegiatan` (`id`, `teamId`, `namaKegiatan`, `deskripsi`) VALUES
+('01K4AJP4KVDQZVCTTTXQ2K1XDZ', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'SAKIP', NULL),
+('01K4AJP4KYAEEWKMDB6W5V8KMA', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'SPI', NULL),
+('01K4AJP4M05HW1Y8BBVV5TG6QQ', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'Keuangan', NULL),
+('01K4AJP4M2J4TFEEVFYZ8AQTEB', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'Kepegawaian', NULL),
+('01K4AJP4M3NS1826VCXZVE2ZCA', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'Kehumasan', NULL),
+('01K4AJP4M51P82T7DM6Z6EH2WP', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'Kearsipan', NULL),
+('01K4AJP4M7MP3HQJP2ZHHXDASP', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'BMN', NULL),
+('01K4AJP4MAM4QA6G8N82YAYDC4', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'Pengadaan barang dan jasa', NULL),
+('01K4AJP4MC2AJPKDA3HKQA62SY', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'Rapat/Sosialisasi', NULL),
+('01K4AJP4MDECFBNQ9PFGQBSM5H', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'TB', NULL),
+('01K4AJP4MF5JY072PMQD3CYGAW', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'Apel/Upacara', NULL),
+('01K4AJP4MGZSTDAZ4JS6GSMSXQ', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'Anggaran', NULL),
+('01K4AJP4MJB3TMB2SW5X3M6MZD', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'Rapat', NULL),
+('01K4AJP4MKRF0WDWCZGCBRQN1S', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'ZI', NULL),
+('01K4AJP4MPP7ZKMKTJ9GVKF1SV', '01K4AJP4KPS3E1CG5XWTC5KQTK', 'Monev', NULL),
+('01K4AJP4MQ9WHFE36DPZJR9X5Q', '01K4AJP4KPF0JA360ZFN9891DN', 'Susenas Maret', NULL),
+('01K4AJP4MTFN7JPQ931QZB25KP', '01K4AJP4KPF0JA360ZFN9891DN', 'Susenas Sep', NULL),
+('01K4AJP4MWWR56804TEPHPV3FF', '01K4AJP4KPF0JA360ZFN9891DN', 'Seruti Tw I', NULL),
+('01K4AJP4MYG15FWNZ7PJ63GDNE', '01K4AJP4KPF0JA360ZFN9891DN', 'Seruti Tw II', NULL),
+('01K4AJP4MZME3J5CJ9EDZR74G1', '01K4AJP4KPF0JA360ZFN9891DN', 'Seruti Tw III', NULL),
+('01K4AJP4N19AP06BNBY1T39SQJ', '01K4AJP4KPF0JA360ZFN9891DN', 'Seruti Tw IV', NULL),
+('01K4AJP4N2CC1PMDDKW1SW65K1', '01K4AJP4KPF0JA360ZFN9891DN', 'Podes', NULL),
+('01K4AJP4N4XQ4965GQT6P9Y1BW', '01K4AJP4KPF0JA360ZFN9891DN', 'Polkam', NULL),
+('01K4AJP4N6SNG8ANQJ0847ZXCE', '01K4AJP4KPF0JA360ZFN9891DN', 'Sakernas Feb', NULL),
+('01K4AJP4N89T6DD2X900V423BC', '01K4AJP4KPF0JA360ZFN9891DN', 'Sakernas Agustus', NULL),
+('01K4AJP4NB9CH53Z7XDNZ2CAR2', '01K4AJP4KPF0JA360ZFN9891DN', 'Supas', NULL),
+('01K4AJP4ND8A237TPJAG4HYP05', '01K4AJP4KPF0JA360ZFN9891DN', 'Desa Cantik', NULL),
+('01K4AJP4NFJSD70QX1F4KEH9KK', '01K4AJP4KPWT1W8XZZ8V8710YM', 'SHK', NULL),
+('01K4AJP4NGSYYT82C9FYB6CH3J', '01K4AJP4KPWT1W8XZZ8V8710YM', 'SHP', NULL),
+('01K4AJP4NJC00QF3PGD8P2NC9M', '01K4AJP4KPWT1W8XZZ8V8710YM', 'SHPED', NULL),
+('01K4AJP4NK6WRDPJ6J0QK704QV', '01K4AJP4KPWT1W8XZZ8V8710YM', 'SHPB', NULL),
+('01K4AJP4NN7VG2N9PE3CGBKWEP', '01K4AJP4KPWT1W8XZZ8V8710YM', 'SHMP', NULL),
+('01K4AJP4NPJYAP7AKMQJPW3JN3', '01K4AJP4KPWT1W8XZZ8V8710YM', 'VHTS', NULL),
+('01K4AJP4NRADQJQPMGPA9E6G20', '01K4AJP4KPWT1W8XZZ8V8710YM', 'VHTL', NULL),
+('01K4AJP4NTYHTY72VZNQQFQ85Q', '01K4AJP4KPWT1W8XZZ8V8710YM', 'SIMOPPEL', NULL),
+('01K4AJP4NWV1QQCDN3MK8N531J', '01K4AJP4KPWT1W8XZZ8V8710YM', 'LLAU', NULL),
+('01K4AJP4NYMBFJT4YVVS5BAEVW', '01K4AJP4KPWT1W8XZZ8V8710YM', 'SHKK', NULL),
+('01K4AJP4P05YXA19SJ8MTTPFAK', '01K4AJP4KPWT1W8XZZ8V8710YM', 'SVPEB', NULL),
+('01K4AJP4P3YE98KH0JVB3PSTNS', '01K4AJP4KPWT1W8XZZ8V8710YM', 'VPBD', NULL),
+('01K4AJP4P5YTJ2MA53BSAVCDPB', '01K4AJP4KPWT1W8XZZ8V8710YM', 'VPEK', NULL),
+('01K4AJP4P7E9JGY40MP712APXW', '01K4AJP4KPWT1W8XZZ8V8710YM', 'PJ II/5', NULL),
+('01K4AJP4P8SJS7NTGG0MAX4ZYG', '01K4AJP4KPWT1W8XZZ8V8710YM', 'SKP', NULL),
+('01K4AJP4PAZ7EGDKZPN2CPH8X3', '01K4AJP4KPWT1W8XZZ8V8710YM', 'SVK', NULL),
+('01K4AJP4PD29Z7S34D8P6S11GY', '01K4AJP4KPWT1W8XZZ8V8710YM', 'SLK-KSP', NULL),
+('01K4AJP4PFX34DR4KVQXWHK3JY', '01K4AJP4KPWT1W8XZZ8V8710YM', 'VREST', NULL),
+('01K4AJP4PHR9T6ZQVP2MQQ88F7', '01K4AJP4KPWT1W8XZZ8V8710YM', 'SLK-BUMD', NULL),
+('01K4AJP4PKHVH64ZA8RFYZPYW2', '01K4AJP4KPWT1W8XZZ8V8710YM', 'K3', NULL),
+('01K4AJP4PMCCDCBE7VEH012RPS', '01K4AJP4KPWT1W8XZZ8V8710YM', 'ECOMMERCE', NULL),
+('01K4AJP4PPC0ZBGB3EZCJEARQY', '01K4AJP4KPWT1W8XZZ8V8710YM', 'UPD PARIWISATA', NULL),
+('01K4AJP4PQMQS2HFD25KYP4WY0', '01K4AJP4KPWT1W8XZZ8V8710YM', 'SBR', NULL),
+('01K4AJP4PSFGA963626N7T7MKM', '01K4AJP4KPWT1W8XZZ8V8710YM', 'SE2026', NULL),
+('01K4AJP4PVPNJ45S9QYQKXY0NC', '01K4AJP4KPWT1W8XZZ8V8710YM', 'POLDIS', NULL),
+('01K4AJP4PXV3MGBF9Z63V0MX3J', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'SKTH', NULL),
+('01K4AJP4PYVE208XXA2Z9PA9RA', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'KOMSTRAT', NULL),
+('01K4AJP4Q0XA57H6YKSP1S13TC', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'UPDATING DIREKTORI PERUSAHAAN AWAL', NULL),
+('01K4AJP4Q2AJY178TYHCEF0542', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'SIMENTAL', NULL),
+('01K4AJP4Q478NA1GGTGX2W5XS0', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'VN HORTI', NULL),
+('01K4AJP4Q64GXJCM0BDT6W38CW', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'CAPTIVE POWER', NULL),
+('01K4AJP4Q7EM50QK9XTZHJD64Z', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'IBS', NULL),
+('01K4AJP4Q9GXRDZ4Z8TF1MH9GF', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'AIR BERSIH TAHUNAN', NULL),
+('01K4AJP4QAMVETH9PYN3S1XG6B', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'PENGGALIAN URT', NULL),
+('01K4AJP4QC8TF30ERC1Z5TWCBX', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'IMK TAHUNAN', NULL),
+('01K4AJP4QEPYWKF6RSC9DQ6AKM', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'RAPAT & KOORDINASI', NULL),
+('01K4AJP4QGVGQVEZVJEC959VPC', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'SKTR', NULL),
+('01K4AJP4QJ95D359TJ79BY4S6K', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'KSA', NULL),
+('01K4AJP4QMJ0C3WQ3JBHJ27ZZ8', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'UBINAN', NULL),
+('01K4AJP4QNQJFC46HS89V4D352', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'STPIM', NULL),
+('01K4AJP4QQMSBBTAD4EPG60GX1', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'SIUTAN-PBPH', NULL),
+('01K4AJP4QRRAPZGBEY6NX146M5', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'SIM-TP', NULL),
+('01K4AJP4QSJ1KXAJ6SXBDEV5SE', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'SPH', NULL),
+('01K4AJP4QVS8Q5773AQYWRRQHQ', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'UDPE', NULL),
+('01K4AJP4QX2V73GD1EKKNEPA8G', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'MIGAS', NULL),
+('01K4AJP4QZCT9289H8EBMQD45N', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'NON MIGAS', NULL),
+('01K4AJP4R1G3A5V6PDQA1J0M78', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'IMK TRIWULANAN', NULL),
+('01K4AJP4R3FGPJH9HK7M0X1X3P', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'PENGGALIAN BERBADAN HUKUM TRIWULANAN', NULL),
+('01K4AJP4R550A4C5R4X0AD85SN', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'BRIEFING IMK TAHUNAN', NULL),
+('01K4AJP4R7D91MMMB06YZ8X9QP', '01K4AJP4KPFXKKW1HH63QAG6FN', 'Neraca Produksi', NULL),
+('01K4AJP4R8E55Y4R6BW7P61NGV', '01K4AJP4KPFXKKW1HH63QAG6FN', 'Neraca Pengeluaran', NULL),
+('01K4AJP4R9PA6BKECF9WEWA3V2', '01K4AJP4KPFXKKW1HH63QAG6FN', 'Analisis Lintas Sektor', NULL),
+('01K4AJP4RBGWA53E8Z9K7KS3J7', '01K4AJP4KPFXKKW1HH63QAG6FN', 'Penjaminan Kualitas QG', NULL),
+('01K4AJP4RC8C3EJKBATQ2HVKTE', '01K4AJP4KPTQR3KFHWGM3QRER3', 'Wilkerstat SE2026', NULL),
+('01K4AJP4RE4J7DR1Y6XCK47H5B', '01K4AJP4KPTQR3KFHWGM3QRER3', 'Pembinaan Statistik Sektoral', NULL),
+('01K4AJP4RGX1E5P9KTQ53YM3AP', '01K4AJP4KPTQR3KFHWGM3QRER3', 'Metadata dan Romantik', NULL),
+('01K4AJP4RJ27ZNAW5F1BJ1ZQFQ', '01K4AJP4KPTQR3KFHWGM3QRER3', 'KCDA', NULL),
+('01K4AJP4RMKR5ZVJ170DKDN40A', '01K4AJP4KPTQR3KFHWGM3QRER3', 'SPBE', NULL),
+('01K4AJP4RN5Q7SDQ5Q9NZ4V8TY', '01K4AJP4KPTQR3KFHWGM3QRER3', 'PEKPPP', NULL),
+('01K4AJP4RQBV64ZVBFB8MSJN7R', '01K4AJP4KPTQR3KFHWGM3QRER3', 'PST', NULL),
+('01K4AJP4RR5PN0A9XCZ9FHHX99', '01K4AJP4KPTQR3KFHWGM3QRER3', 'Pengolahan', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `member`
+--
+
+CREATE TABLE `member` (
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `userId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `teamId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `isLeader` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `member`
+--
+
+INSERT INTO `member` (`id`, `userId`, `teamId`, `isLeader`) VALUES
+('01K4AJP4TF2SXRJN58K9X239B2', '01K4AJP4RT7N2FMFJYK7WSJ81S', '01K4AJP4KPZ46E5P0680Z016NW', 1),
+('01K4AJP4W7W0H040VMPRTCW769', '01K4AJP4TGPAC2Y22HVX79M4ND', '01K4AJP4KPF0JA360ZFN9891DN', 0),
+('01K4AJP4XXJK74PGQZ7AV9H0Q7', '01K4AJP4W7AZEH62J1S5FQDBJS', '01K4AJP4KPFXKKW1HH63QAG6FN', 0),
+('01K4AJP4ZJPDS6K40M7K2JHWS3', '01K4AJP4XXH2S7HBS8MWHM8YK0', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 1),
+('01K4AJP5183KRV1ESBCGAGW0W8', '01K4AJP4ZJKZ5J204CGH7A4K8M', '01K4AJP4KPF0JA360ZFN9891DN', 1),
+('01K4AJP52Y9VGTEE7R5H3YVSPN', '01K4AJP518VKKVG97G2RWHJAF7', '01K4AJP4KPS3E1CG5XWTC5KQTK', 0),
+('01K4AJP54K80YM7XFGAVQCAHQM', '01K4AJP52Y2GBYEZKD32G6CQZ6', '01K4AJP4KPWT1W8XZZ8V8710YM', 1),
+('01K4AJP56BCQ61CGENTNCA359D', '01K4AJP54KHQ3FFFGD0TBBE4W4', '01K4AJP4KPS3E1CG5XWTC5KQTK', 0),
+('01K4AJP582NFPBRV4SXWQ5AZEX', '01K4AJP56C0BVMJENXZE0XJFK2', '01K4AJP4KPS3E1CG5XWTC5KQTK', 0),
+('01K4AJP5A1AZWGJE83HRF2PFHY', '01K4AJP582P8RMHC3EZE1GJ77W', '01K4AJP4KPS3E1CG5XWTC5KQTK', 0),
+('01K4AJP5BSBA9FRGTGPKPBZ4CX', '01K4AJP5A1DJW5N3J2R76H6JK7', '01K4AJP4KPS3E1CG5XWTC5KQTK', 1),
+('01K4AJP5DPDFW47J37NPW8V2QJ', '01K4AJP5BSGQJE8WTNPYEDW3ZF', '01K4AJP4KPFXKKW1HH63QAG6FN', 1),
+('01K4AJP5FF0219JKWD7RE7RGRT', '01K4AJP5DP02DHH4V5MQXJSP85', '01K4AJP4KPWT1W8XZZ8V8710YM', 0),
+('01K4AJP5H7ZF13QD3AE11X8PBA', '01K4AJP5FF62QGHE4R9JCB5VTJ', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 0),
+('01K4AJP5JYRK0RRQ0163W79AGW', '01K4AJP5H7E6CA9E9Z8ARAHP4N', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 0),
+('01K4AJP5MKSJZDAHD74BWC2KFT', '01K4AJP5JY6QTS3EPKCWPEXYKF', '01K4AJP4KPTQR3KFHWGM3QRER3', 1),
+('01K4AJP5P947G4DFJZ435Z1SDB', '01K4AJP5MKTAH7VEEXZ71F0H14', '01K4AJP4KPF0JA360ZFN9891DN', 0),
+('01K4AJP5R1D1188EQH9A3VQYJW', '01K4AJP5P9S8WAFASQ6N5XH02P', '01K4AJP4KPTQR3KFHWGM3QRER3', 0),
+('01K4AJP5ST2DR6KJ3Z8Z2H3FBK', '01K4AJP5R2DJ65S3KNCB1D63WV', '01K4AJP4KPFXKKW1HH63QAG6FN', 0),
+('01K4AJP5VF2SZG37MF1HQRMMF7', '01K4AJP5ST3XXE058T4G4STKRQ', '01K4AJP4KPWT1W8XZZ8V8710YM', 0),
+('01K4AJP5YPFEJ5760FY2KKPMHX', '01K4AJP5VFW3ZQFG0X51PQMTPF', '01K4AJP4KPF0JA360ZFN9891DN', 0),
+('01K4AJP60JH87NS621JYZMA5PE', '01K4AJP5YQN3ZF86EQFZSACTVD', '01K4AJP4KPFXKKW1HH63QAG6FN', 0),
+('01K4AJP62CC3CD849NH9A8SXR1', '01K4AJP60JAD331V3Q4FRHWXYX', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 0),
+('01K4AJP642DSC2N0Z5TM51K42T', '01K4AJP62CGF3F82YSSVHVRVYA', '01K4AJP4KPBJ4Y0G1VGCRXHWJM', 0),
+('01K4AJP65QHE27A804MN5SB8BP', '01K4AJP6428SWPAJ868DRM3HZF', '01K4AJP4KPWT1W8XZZ8V8710YM', 0),
+('01K4AJP67EAYMZ76R81GJDGAEK', '01K4AJP65QY3PSMKZ8FCBCWBKF', '01K4AJP4KPS3E1CG5XWTC5KQTK', 0),
+('01K4AJP693FBD6B7KKSRM0TP95', '01K4AJP67E99S7M80ES49BVP6Y', '01K4AJP4KPS3E1CG5XWTC5KQTK', 0),
+('01K4AJP6AWP78A2KTN2CAQ9J67', '01K4AJP6935SC34BYBEC28QY3Z', '01K4AJP4KPTQR3KFHWGM3QRER3', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notification`
+--
+
+CREATE TABLE `notification` (
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `userId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `link` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `isRead` tinyint(1) NOT NULL DEFAULT '0',
+  `createdAt` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `penugasan`
+--
+
+CREATE TABLE `penugasan` (
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kegiatanId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `pegawaiId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `creatorId` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `minggu` int NOT NULL,
+  `bulan` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tahun` int NOT NULL,
+  `deskripsi` text COLLATE utf8mb4_unicode_ci,
+  `status` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Belum'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `role`
+--
+
+CREATE TABLE `role` (
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `role`
+--
+
+INSERT INTO `role` (`id`, `name`) VALUES
+('01K4AJP4GT2230C33Z7571VSG0', 'admin'),
+('01K4AJP4GTSMGWZWWYY3YZ62E7', 'anggota'),
+('01K4AJP4GT987HGMRQSEVJT3QX', 'ketua'),
+('01K4AJP4GT73F5Z7Y9W3P9HZW9', 'pimpinan');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `team`
+--
+
+CREATE TABLE `team` (
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `namaTim` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `team`
+--
+
+INSERT INTO `team` (`id`, `namaTim`) VALUES
+('01K4AJP4KPBJ4Y0G1VGCRXHWJM', 'Produksi'),
+('01K4AJP4KPF0JA360ZFN9891DN', 'Sosial'),
+('01K4AJP4KPFXKKW1HH63QAG6FN', 'Neraca'),
+('01K4AJP4KPS3E1CG5XWTC5KQTK', 'Umum'),
+('01K4AJP4KPTQR3KFHWGM3QRER3', 'IPDS'),
+('01K4AJP4KPWT1W8XZZ8V8710YM', 'Distribusi'),
+('01K4AJP4KPZ46E5P0680Z016NW', 'Pimpinan');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user`
+--
+
+CREATE TABLE `user` (
+  `id` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `username` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`id`, `nama`, `username`, `email`, `password`, `role`, `phone`) VALUES
+('01K4AJP4HX307RPYRWNHSBEV34', 'Admin Utama', 'admin', 'admin@bps.go.id', '$2b$10$N8AUHU7mCUPNdoRdLiekueMkXiRBBtkyNRgmaKtnixrSg20cwwkBO', 'admin', NULL),
+('01K4AJP4RT7N2FMFJYK7WSJ81S', 'Yuda Agus Irianto', 'yuda', 'yuda@bps.go.id', '$2b$10$C2yucmsix5x5JhVgYobdEeYZ6J0x9IuLqlbc1T63GK/cv4d20CJ5e', 'pimpinan', '6281253949680'),
+('01K4AJP4TGPAC2Y22HVX79M4ND', 'Warsidi', 'warsidi2', 'warsidi2@bps.go.id', '$2b$10$5CrPdPw1cBAxaQz3dUs.3.4JmLUHSiOyE17CPUvaOxaqmr/02r7mq', 'anggota', '6281253216991'),
+('01K4AJP4W7AZEH62J1S5FQDBJS', 'Muhamadsyah', 'muhamadsyah', 'muhamadsyah@bps.go.id', '$2b$10$OICrRvcECLxBjHL4mNeDbepTrR5XBe5tATgzACT74pcT4J9UWs36y', 'anggota', '6285294404060'),
+('01K4AJP4XXH2S7HBS8MWHM8YK0', 'Dwi Prasetyono', 'dwipras', 'dwipras@bps.go.id', '$2b$10$dckH49irNOkXKIsDrJmm/uzRg54k/k9LyUv2hxZE4zQw9Mmw2c3MG', 'ketua', '6282331466449'),
+('01K4AJP4ZJKZ5J204CGH7A4K8M', 'Tiara Kusuma Widianingrum', 'tiara.kusuma', 'tiara.kusuma@bps.go.id', '$2b$10$s7xwApOqD.AVaxt5oP8wh.qEDaHxQBMhSf.wrFRErGLh4GjA5luBq', 'ketua', '6281351887561'),
+('01K4AJP518VKKVG97G2RWHJAF7', 'Idhamsyah', 'idhamsyah', 'idhamsyah@bps.go.id', '$2b$10$70R6WyU548t7oplQORyAzeW3Q0C7jpj5usHdwLtwRTvRTlHVIJY8q', 'anggota', '6281347516619'),
+('01K4AJP52Y2GBYEZKD32G6CQZ6', 'Mohammad Agusti Rahman', 'agusti.rahman', 'agusti.rahman@bps.go.id', '$2b$10$G2DbUULRZD3OzWPSB0A/tOQaFmPfwM3W23xOuG8GWIN7UwUF5TivW', 'ketua', '6282171808270'),
+('01K4AJP54KHQ3FFFGD0TBBE4W4', 'Okta Wahyu Nugraha', 'okta.nugraha', 'okta.nugraha@bps.go.id', '$2b$10$D1QjD2nG5LszTbDLpKv78uX2N9zv7Aoqil5dSITYvcvUO080ahP5S', 'anggota', '6282251088276'),
+('01K4AJP56C0BVMJENXZE0XJFK2', 'Rosetina Fini Alsera', 'finialsera', 'finialsera@bps.go.id', '$2b$10$F1ngabPAmS3nFc3OFu68o.tyONfk7.hT0wUJYDCLH41UFFxavWvLG', 'anggota', '6281296036385'),
+('01K4AJP582P8RMHC3EZE1GJ77W', 'Shafa', 'sha.fa', 'sha.fa@bps.go.id', '$2b$10$WOwpwtahM8xZ.37pr2rPxueHCDel3HH/cRda2zRYALiwl4jbkWQ6y', 'anggota', '6287863150050'),
+('01K4AJP5A1DJW5N3J2R76H6JK7', 'Ari Susilowati', 'arisusilo', 'arisusilo@bps.go.id', '$2b$10$RZw4DPfDhsnydflpO2ujRO1Lk4G2gSe.kwQdk7y/cm49bd6ITxD1G', 'ketua', '6281250605890'),
+('01K4AJP5BSGQJE8WTNPYEDW3ZF', 'Rifki Maulana', 'rifki.maulana', 'rifki.maulana@bps.go.id', '$2b$10$Zub2osLTwxWx1AVfMGXevex.y1tOqNAwwVqT7x6pBoOXMbGFLKlY6', 'ketua', '6285229767078'),
+('01K4AJP5DP02DHH4V5MQXJSP85', 'Sega Purwa Wika', 'sega.wika', 'sega.wika@bps.go.id', '$2b$10$eVzRNN7ADsA2WaAmh2S27u8qH/YrHgWC4Gety.qDlkSpggnnJi3d.', 'anggota', '6282149633011'),
+('01K4AJP5FF62QGHE4R9JCB5VTJ', 'Alphin Pratama Husada', 'alphin.pratama', 'alphin.pratama@bps.go.id', '$2b$10$gR9UvwGDMtyFvcmTghlrHOEGEF8tU7VClAFPtHL7hZbZy43DxEZyG', 'anggota', '6282261828467'),
+('01K4AJP5H7E6CA9E9Z8ARAHP4N', 'Bambang Luhat', 'bambang_luhat', 'bambang_luhat@bps.go.id', '$2b$10$mGexq7nw/3JNk3tt6rhurumaAU2YO9nn7pG3fYQx4pAK9k60MlCh.', 'anggota', '6282358880344'),
+('01K4AJP5JY6QTS3EPKCWPEXYKF', 'Fachri Izzudin Lazuardi', 'fachri.lazuardi', 'fachri.lazuardi@bps.go.id', '$2b$10$Tbo77WIw7XTa7ZV6fa4UXe8/0SlIqQQbm4N.6DvNHeYQsz5tEePta', 'ketua', '6285155228104'),
+('01K4AJP5MKTAH7VEEXZ71F0H14', 'Andi Nurdiansyah', 'andi.nurdiansyah', 'andi.nurdiansyah@bps.go.id', '$2b$10$4sxa9tOuO6vY/rOQhKKht.bbVCVjTXmsqiVFpljoPQyJHXnUMtZEW', 'anggota', '6287834620297'),
+('01K4AJP5P9S8WAFASQ6N5XH02P', 'Afnita Rahma Auliya Putri', 'afnita.rahma', 'afnita.rahma@bps.go.id', '$2b$10$zsqouw5KV/TRy4sE8JkHZe2fhTO3xxX3tOngryB0frk4InUdIYtbS', 'anggota', '6285882292588'),
+('01K4AJP5R2DJ65S3KNCB1D63WV', 'Anissa Nurullya Fernanda', 'anissa.nurullya', 'anissa.nurullya@bps.go.id', '$2b$10$wwEfpaQYUuqCOqG7hSiIGOi.I0D0HzFq7YUwnifqyB7zSdnoWDWPu', 'anggota', '6282140772590'),
+('01K4AJP5ST3XXE058T4G4STKRQ', 'Febri Fatika Sari', 'febri.fatika', 'febri.fatika@bps.go.id', '$2b$10$2r965/pN8dApxduXJ.rBF.7hAp.yviuBPgoJiUbUY0u3Z1au0hFbS', 'anggota', '6285726025343'),
+('01K4AJP5VFW3ZQFG0X51PQMTPF', 'Marini Safa Aziza', 'marinisafa', 'marinisafa@bps.go.id', '$2b$10$PP9353ZmDGHZgtLCfMlcA.T9nMtiwPkDF4hud3oxu6DW7UudovkCe', 'anggota', '6281519961747'),
+('01K4AJP5YQN3ZF86EQFZSACTVD', 'Najwa Fairus Samaya', 'najwa.fairus', 'najwa.fairus@bps.go.id', '$2b$10$qCsz6UyyG3ZB2nTNftEzOugdJileOAEV33pwUH0gSBC.hLJo.eBCG', 'anggota', '62895415969010'),
+('01K4AJP60JAD331V3Q4FRHWXYX', 'Fiqah Rochmah Ningtyas Duana Putri', 'fiqah.putri', 'fiqah.putri@bps.go.id', '$2b$10$OaVec3OdP/vjuywxgHsfUeWt84Hokbp3tn76nW797T.1C7oztohRi', 'anggota', '6287764807421'),
+('01K4AJP62CGF3F82YSSVHVRVYA', 'Lia Aulia Hayati', 'liaauliahayati', 'liaauliahayati@bps.go.id', '$2b$10$sW5tpgDi7JvdimQlci8XUOm/EtoxGPFmB7LVtRVB.pvOB0yjsfyh2', 'anggota', '6281256530709'),
+('01K4AJP6428SWPAJ868DRM3HZF', 'Mardiana', 'mar.diana', 'mar.diana@bps.go.id', '$2b$10$FWDAhNDFWu8rnqbNHKOzq.lmm339/1JjljEuP5JnUa3U8upe9nkZm', 'anggota', '6282354058587'),
+('01K4AJP65QY3PSMKZ8FCBCWBKF', 'Elly Astutik', 'elly.astutik', 'elly.astutik@bps.go.id', '$2b$10$SO4l9fuNo1Zn7KQBadxfReZc.e4iZsg5jd2hpDXSa0XrIawLUZrFO', 'anggota', '6285334120190'),
+('01K4AJP67E99S7M80ES49BVP6Y', 'Ayu Pinta Gabina Siregar', 'ayu.pinta', 'ayu.pinta@bps.go.id', '$2b$10$sjxN8MbJ1dW9XueAiy6bdeZv7WpU54Qgp4HCDuiTT17RMRbxAM6Eu', 'anggota', '6281396487889'),
+('01K4AJP6935SC34BYBEC28QY3Z', 'Novanni Indi Pradana', 'novanniindipradana', 'novanniindipradana@bps.go.id', '$2b$10$fqL3uVvekkgeU0bS2hrKT.hpWY5qexdUUyjvDm2wc3EnCHMANflEK', 'anggota', '6283836260392');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `_prisma_migrations`
+--
+
+CREATE TABLE `_prisma_migrations` (
+  `id` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `checksum` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `finished_at` datetime(3) DEFAULT NULL,
+  `migration_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `logs` text COLLATE utf8mb4_unicode_ci,
+  `rolled_back_at` datetime(3) DEFAULT NULL,
+  `started_at` datetime(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `applied_steps_count` int UNSIGNED NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `_prisma_migrations`
+--
+
+INSERT INTO `_prisma_migrations` (`id`, `checksum`, `finished_at`, `migration_name`, `logs`, `rolled_back_at`, `started_at`, `applied_steps_count`) VALUES
+('152e4045-e501-475b-80b1-f4c166496bb5', '45a80e1907d83ddd84461b0a78194abb0880022168d2818598565d9b851a6540', '2025-09-04 14:39:24.007', '20250720000000_update_kegiatan_tambahan', NULL, NULL, '2025-09-04 14:39:23.994', 1),
+('31647b06-9c29-44d2-93f2-a26c77f486d0', 'aeb287d4d5f45ab4436229a04a5c1989efc0bbb640bd7c12717998dc4caafab6', '2025-09-04 14:39:25.214', '20250829081200_widen_all_deskripsi_to_text', NULL, NULL, '2025-09-04 14:39:25.063', 1),
+('3540fe86-2d36-4993-8246-a592dcd5ddcd', 'acc71020dea52dc4bd0a5e6d4d805f35e497f9c6cc897e3457b80ac46b214519', '2025-09-04 14:39:23.832', '20250710040826_init', NULL, NULL, '2025-09-04 14:39:23.371', 1),
+('35551689-ec4e-48ee-9a84-b50b9115391e', 'fe7e8de8b7ec196bb1a65a1bbfa0aaba2d6bb61124aab72d72232eb17efd73a4', '2025-09-04 14:39:24.114', '20250727000000_add_member_unique', NULL, NULL, '2025-09-04 14:39:24.101', 1),
+('4a9ca377-e3f7-4f92-872b-2178018dfb41', '76d25ea62275d290b570b16845a587b4507e1c0ce789eaa5d343ff1345a2627c', '2025-09-04 14:39:23.986', '20250713000000_add_deskripsi_status_penugasan', NULL, NULL, '2025-09-04 14:39:23.968', 1),
+('50bcc9f3-323c-4372-a574-cab782f81faf', 'ba7856d5cc0ed2485369b9d9847b847c20d8eabdde114846395cbf8031807e1c', '2025-09-04 14:39:23.962', '20250712135100_add_username', NULL, NULL, '2025-09-04 14:39:23.901', 1),
+('516e48c7-4f61-4fcc-82da-62955171505f', 'c68418aff96fa52c2a8e26114d54ca02f84c78b23442abada72777812c71b4eb', '2025-09-04 14:39:24.822', '20250804000000_add_phone_to_user', NULL, NULL, '2025-09-04 14:39:24.790', 1),
+('5641c61d-dd16-43ec-b7b4-82c40eeacacb', 'ea5c35a1569df4b82939c3d3e607d952cdc1bb21db7f0585b260fb31c384a3e7', '2025-09-04 14:39:24.783', '20250803000000_make_penugasanid_optional', NULL, NULL, '2025-09-04 14:39:24.742', 1),
+('57199649-40d9-4285-a362-8271a8334983', '98c4b71bc02e956ecf15e65460e966a138480bd1e622129fb9113009e65e2bad', '2025-09-04 14:39:24.990', '20250829022910_widen_capaian_kegiatan', NULL, NULL, '2025-09-04 14:39:24.899', 1),
+('5a987d79-46e6-40dc-a720-be2483102e68', '76c99d4f9ebc69e770446c120bd0c3227fdfb6b12dfdcdec8d72b24333d67e1b', '2025-09-04 14:39:24.733', '20250802000000_add_tambahan_id_laporan_harian', NULL, NULL, '2025-09-04 14:39:24.634', 1),
+('5c149553-72be-47fb-bdea-9495dc3543bb', '94d987ef29cab62c576c7427dd321351a817f7681ecd43474faabe0acf8250d6', '2025-09-04 14:39:24.891', '20250829001757_widen_deskripsi_text', NULL, NULL, '2025-09-04 14:39:24.830', 1),
+('61685b0c-b2e2-43e4-b5bf-15c1cc70f475', 'c453c493e70085196d07642d6124c960d58517d79fe7c4ab41235d414c2083d6', '2025-09-04 14:39:25.303', '20250829081800_widen_text_fields_notification_catatan', NULL, NULL, '2025-09-04 14:39:25.223', 1),
+('651bb045-d7db-4cf6-bb4d-1ac63b2c87f1', '05e6143dce9d6cfb7e54d67c654837306d0abd20ad3752370e9ac0a51f24770c', '2025-09-04 14:39:23.859', '20250711184614_add_role', NULL, NULL, '2025-09-04 14:39:23.840', 1),
+('82677876-5c94-4d43-8f98-7aeae3efb081', 'a1daaad68268b78f16574a9af4c83b1bbf368a15a5d6bff7193fc0cbbdd919d5', '2025-09-04 14:39:24.217', '20250728000000_rename_snake_columns', NULL, NULL, '2025-09-04 14:39:24.123', 1),
+('b50fb318-d3c3-4c48-8b58-1a324137394b', 'c00b2901a2282d303452d18f6ac82e4775124d15ffacf3879bd5af4998a838f5', '2025-09-04 14:39:24.326', '20250730000000_add_creator_field', NULL, NULL, '2025-09-04 14:39:24.225', 1),
+('bc0ee815-0b73-4a9f-9b9f-554d8a739831', '5e1d265890db7a4a5d03391101ce91d5c04326b0038f7834e105cac7b3550bd7', '2025-09-04 14:39:23.892', '20250712093500_add_deskripsi_master_kegiatan', NULL, NULL, '2025-09-04 14:39:23.868', 1),
+('de0e076c-5bf3-4886-8c32-3ece7cdd61c0', '8d86353412efa15aeb59ae6959b8ad3423301884cdb33def5513ca193b545abd', '2025-09-04 14:39:24.072', '20250721000000_add_relations_kegiatan_tambahan', NULL, NULL, '2025-09-04 14:39:24.014', 1),
+('e163d01e-bbd2-415b-89a6-b6d1673220b4', '81103e8d95fbaa80f98a1580cf386d63e215e0c1864700b93a3c65b80cdc7012', '2025-09-04 14:39:24.351', '20250731000000_add_capaian_kegiatan', NULL, NULL, '2025-09-04 14:39:24.333', 1),
+('e26feb95-9a14-4bd9-ba52-db706bb7a5d6', 'e29cfa61bc69ae6fdff5331c601640c22ac95283345ece5d11d6b42724297b78', '2025-09-04 14:39:24.624', '20250801000000_use_ulid', NULL, NULL, '2025-09-04 14:39:24.361', 1),
+('ee988115-6ad1-4576-85a0-5491b1a8a687', '428a63fb1c4bfb242da027e0f23dfc0ecb53091eca5aaceafbc0e5c39276d98c', '2025-09-04 14:39:25.056', '20250829080700_change_penugasan_deskripsi_to_text', NULL, NULL, '2025-09-04 14:39:24.997', 1),
+('fd3b38e5-5dcf-4674-a92e-4ddee972e2b0', '3f3f4a30c88a741f9b5a0314611428d6300117f0189e2a2126ef1b66f57e2d42', '2025-09-04 14:39:24.092', '20250726000000_add_deskripsi_laporan_harian', NULL, NULL, '2025-09-04 14:39:24.080', 1);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `kegiatantambahan`
+--
+ALTER TABLE `kegiatantambahan`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `KegiatanTambahan_userId_fkey` (`userId`),
+  ADD KEY `KegiatanTambahan_kegiatanId_fkey` (`kegiatanId`),
+  ADD KEY `KegiatanTambahan_teamId_fkey` (`teamId`);
+
+--
+-- Indexes for table `laporanharian`
+--
+ALTER TABLE `laporanharian`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `LaporanHarian_pegawaiId_fkey` (`pegawaiId`),
+  ADD KEY `LaporanHarian_tambahanId_fkey` (`tambahanId`),
+  ADD KEY `LaporanHarian_penugasanId_fkey` (`penugasanId`);
+
+--
+-- Indexes for table `masterkegiatan`
+--
+ALTER TABLE `masterkegiatan`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `MasterKegiatan_teamId_fkey` (`teamId`);
+
+--
+-- Indexes for table `member`
+--
+ALTER TABLE `member`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `Member_userId_teamId_key` (`userId`,`teamId`),
+  ADD KEY `Member_teamId_fkey` (`teamId`);
+
+--
+-- Indexes for table `notification`
+--
+ALTER TABLE `notification`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Notification_userId_fkey` (`userId`);
+
+--
+-- Indexes for table `penugasan`
+--
+ALTER TABLE `penugasan`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `Penugasan_kegiatanId_fkey` (`kegiatanId`),
+  ADD KEY `Penugasan_pegawaiId_fkey` (`pegawaiId`),
+  ADD KEY `Penugasan_creatorId_fkey` (`creatorId`);
+
+--
+-- Indexes for table `role`
+--
+ALTER TABLE `role`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `Role_name_key` (`name`);
+
+--
+-- Indexes for table `team`
+--
+ALTER TABLE `team`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `User_username_key` (`username`),
+  ADD UNIQUE KEY `User_email_key` (`email`);
+
+--
+-- Indexes for table `_prisma_migrations`
+--
+ALTER TABLE `_prisma_migrations`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `kegiatantambahan`
+--
+ALTER TABLE `kegiatantambahan`
+  ADD CONSTRAINT `KegiatanTambahan_kegiatanId_fkey` FOREIGN KEY (`kegiatanId`) REFERENCES `masterkegiatan` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `KegiatanTambahan_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `team` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `KegiatanTambahan_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Constraints for table `laporanharian`
+--
+ALTER TABLE `laporanharian`
+  ADD CONSTRAINT `LaporanHarian_pegawaiId_fkey` FOREIGN KEY (`pegawaiId`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `LaporanHarian_penugasanId_fkey` FOREIGN KEY (`penugasanId`) REFERENCES `penugasan` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `LaporanHarian_tambahanId_fkey` FOREIGN KEY (`tambahanId`) REFERENCES `kegiatantambahan` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Constraints for table `masterkegiatan`
+--
+ALTER TABLE `masterkegiatan`
+  ADD CONSTRAINT `MasterKegiatan_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `team` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Constraints for table `member`
+--
+ALTER TABLE `member`
+  ADD CONSTRAINT `Member_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `team` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `Member_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Constraints for table `notification`
+--
+ALTER TABLE `notification`
+  ADD CONSTRAINT `Notification_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+--
+-- Constraints for table `penugasan`
+--
+ALTER TABLE `penugasan`
+  ADD CONSTRAINT `Penugasan_creatorId_fkey` FOREIGN KEY (`creatorId`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `Penugasan_kegiatanId_fkey` FOREIGN KEY (`kegiatanId`) REFERENCES `masterkegiatan` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `Penugasan_pegawaiId_fkey` FOREIGN KEY (`pegawaiId`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
