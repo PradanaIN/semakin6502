@@ -2,9 +2,9 @@
   "name": "semakin-6502",
   "version": "1.0.0",
   "description": "Backend SEMAKIN 6502 - NestJS + Prisma",
-  "main": "dist/main.js",
+  "main": "dist/src/main.js",
   "scripts": {
-    "start": "node dist/main",
+    "start": "node dist/src/main.js",
     "start:dev": "nest start --watch",
     "build": "nest build -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
