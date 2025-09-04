@@ -10,10 +10,10 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint . --ext .ts",
     "test": "jest --coverage",
-    "seed": "prisma db seed"
+    "seed": "npm run build && prisma db seed"
   },
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "node dist/prisma/seed.js"
   },
   "dependencies": {
     "@nestjs/cache-manager": "^3.0.1",
