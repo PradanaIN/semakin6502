@@ -4,9 +4,9 @@ SEMAKIN 6502 (Sistem Monitoring Kinerja) adalah aplikasi internal untuk mencata
 
 ## Instalasi
 
-1. Salin berkas contoh `.env` (misalnya dari `api/.env.example`) ke direktori root sebagai `.env` dan sesuaikan variabel seperti `DATABASE_URL` untuk koneksi database serta `PORT` dan `BACKEND_PORT` (bawaan 3000).
+1. Salin berkas contoh `.env` (misalnya dari `api/.env.example`) ke direktori root sebagai `.env` dan sesuaikan variabel seperti `DATABASE_URL` untuk koneksi database serta `PORT` (port dalam kontainer, bawaan 3000) dan `BACKEND_PORT` (port host yang memetakan port 3000, bawaan 3002).
 2. Jalankan `docker-compose up` untuk membangun dan menjalankan seluruh layanan.
-3. Setelah kontainer berjalan, API dapat diakses di `http://localhost:${BACKEND_PORT}` (default `http://localhost:3000`) dan antarmuka web di `http://localhost:5173`.
+3. Setelah kontainer berjalan, API dapat diakses di `http://localhost:${BACKEND_PORT}` (default `http://localhost:3002`) dan antarmuka web di `http://localhost:5173`.
 
 ## Deployment
 
