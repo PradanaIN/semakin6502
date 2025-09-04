@@ -10,7 +10,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint . --ext .ts",
     "test": "jest --coverage",
-    "seed": "npm run build && prisma db seed"
+    "seed": "prisma db seed"
   },
   "prisma": {
     "seed": "node dist/prisma/seed.js"
