@@ -33,22 +33,22 @@ web/
    npm install
    ```
 2. **Konfigurasi variabel lingkungan**
-   ```bash
-   cp .env.example .env
-   # sesuaikan alamat backend
-   ```
+   File `.env` default mengarah ke backend container (`http://localhost:3002`).
+   Untuk menjalankan frontend di luar Docker dengan backend lokal (`http://localhost:3000`), gunakan `.env.development`.
+   Sebaliknya, konfigurasi `.env.docker` disediakan untuk lingkungan Docker.
+
    Variabel yang digunakan:
 
    | Nama          | Contoh nilai                 | Deskripsi                        |
    |---------------|------------------------------|----------------------------------|
    | `VITE_API_URL`| `http://localhost:3000`      | URL base API backend             |
 
-   Catatan: Jika backend berjalan pada port selain 3000 (mis. 3002),
-   sesuaikan `VITE_API_URL` menjadi `http://localhost:3002`.
+   Catatan: Sesuaikan `VITE_API_URL` bila backend berjalan pada port lain.
 
 3. **Menjalankan server development**
    ```bash
-   npm run dev
+   npm run dev                   # menggunakan .env.development
+   npm run dev -- --mode docker  # menggunakan .env.docker
    ```
    Aplikasi akan tersedia pada `http://localhost:5173`.
 
