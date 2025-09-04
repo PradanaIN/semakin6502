@@ -8,6 +8,28 @@ SEMAKIN 6502 (Sistem Monitoring Kinerja) adalah aplikasi internal untuk mencata
 2. Jalankan `docker-compose up` untuk membangun dan menjalankan seluruh layanan.
 3. Setelah kontainer berjalan, API dapat diakses di `http://localhost:${BACKEND_PORT}` (default `http://localhost:3000`) dan antarmuka web di `http://localhost:5173`.
 
+## Menggunakan dump SQL untuk seeding
+
+Berkas `semakin_6502.sql` berisi struktur dan data awal aplikasi. Berkas ini bisa dimanfaatkan ketika proses seeding standar bermasalah.
+
+### Impor manual
+1. Jalankan layanan MySQL:
+   ```bash
+   docker compose up -d mysql
+   ```
+2. Impor dump ke database:
+   ```bash
+   docker exec -i mysql \
+     mysql -u root -p"$MYSQL_ROOT_PASSWORD" semakin_6502 \
+     < semakin_6502.sql
+   ```
+
+### Memuat otomatis saat container pertama kali dibuat
+1. Salin atau pindahkan `semakin_6502.sql` ke `docker/mysql/`.
+2. `docker-compose.yml` telah mengaitkan berkas tersebut ke folder `/docker-entrypoint-initdb.d/`, sehingga MySQL akan mengimpor data secara otomatis ketika volume `mysql-data` masih kosong.
+
+File dump tetap tersedia di folder root untuk referensi.
+
 ## Deployment
 
 1. Pastikan server sudah login ke registry yang menyimpan image, misalnya: `docker login ghcr.io`.
