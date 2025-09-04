@@ -6,7 +6,6 @@ logs/
 dist/
 
 # Environment files
-.env
 
 .vscode/
 
