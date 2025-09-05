@@ -57,6 +57,8 @@ services:
     image: semakin6502-frontend
     ports:
       - "5173:80"
+    environment:
+      - BACKEND_PORT=${BACKEND_PORT:-3002}
     depends_on:
       - backend
 
