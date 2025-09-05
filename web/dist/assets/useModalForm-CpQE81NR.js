@@ -1,0 +1,1 @@
+import{r}from"./index-D7Gl0_T6.js";function S(t){const[u,o]=r.useState(!1),[c,s]=r.useState(null),[a,e]=r.useState(t);return{showForm:u,form:a,setForm:e,editing:c,openCreate:()=>{s(null),e({...t}),o(!0)},openEdit:(n,l=m=>m)=>{s(n),e(l(n)),o(!0)},closeForm:()=>{o(!1),s(null)},resetForm:()=>{e({...t})}}}export{S as u};
