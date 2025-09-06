@@ -33,11 +33,21 @@ export function AuthProvider({ children }) {
   const verifyToken = useCallback(async () => {
     try {
       const res = await axios.get("/auth/me");
-      const userData = camelizeKeys(res.data.user);
-      setUser(userData);
-      const storage =
-        localStorage.getItem("user") !== null ? localStorage : sessionStorage;
-      storage.setItem("user", JSON.stringify(userData));
+      const rawUser = res.data.user;
+      const isValidUser =
+        rawUser && typeof rawUser === "object" && !Array.isArray(rawUser);
+
+      if (isValidUser) {
+        const userData = camelizeKeys(rawUser);
+        setUser(userData);
+        const storage =
+          localStorage.getItem("user") !== null ? localStorage : sessionStorage;
+        storage.setItem("user", JSON.stringify(userData));
+      } else {
+        localStorage.removeItem("user");
+        sessionStorage.removeItem("user");
+        setUser(null);
+      }
     } catch {
       localStorage.removeItem("user");
       sessionStorage.removeItem("user");
