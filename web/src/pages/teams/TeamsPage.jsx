@@ -35,10 +35,19 @@ export default function TeamsPage() {
     try {
       setLoading(true);
       let res = await axios.get("/teams");
-      if (Array.isArray(res.data) && res.data.length === 0) {
+      let data = res.data;
+      if (!Array.isArray(data)) {
+        showWarning("Data tidak valid", "Format data tim tidak valid");
+        data = [];
+      } else if (data.length === 0) {
         res = await axios.get("/teams/member");
+        data = res.data;
+        if (!Array.isArray(data)) {
+          showWarning("Data tidak valid", "Format data tim tidak valid");
+          data = [];
+        }
       }
-      setTeams(res.data);
+      setTeams(data);
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil tim");
     } finally {
