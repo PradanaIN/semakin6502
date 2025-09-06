@@ -7,7 +7,7 @@ import { useTheme } from "../../theme/useTheme.jsx";
 import Swal from "sweetalert2";
 import confirmAlert from "../../utils/confirmAlert";
 import axios from "axios";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import {
   FaBell,
   FaMoon,
@@ -43,14 +43,15 @@ export default function Layout() {
     if (!user || user.role === ROLES.PIMPINAN) return;
     try {
       const res = await axios.get("/notifications");
-      const data = Array.isArray(res.data) ? res.data : [];
       if (!Array.isArray(res.data)) {
-        console.warn("Unexpected notifications response", res.data);
+        throw new Error("Unexpected notifications response");
       }
+      const data = res.data;
       setNotifications(data);
       setNotifCount(data.filter((n) => !n.isRead).length);
     } catch (err) {
       console.error("Failed to fetch notifications", err);
+      toast.error("Gagal memuat notifikasi");
     }
     }, [user]);
 
