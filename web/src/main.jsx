@@ -15,7 +15,7 @@ import camelizeKeys from "./utils/camelizeKeys.js";
 import { HelmetProvider } from "react-helmet-async";
 
 axios.defaults.baseURL =
-  import.meta.env.VITE_API_URL || window.location.origin;
+  import.meta.env.VITE_API_URL ?? `${window.location.origin}`;
 axios.defaults.withCredentials = true;
 
 axios.interceptors.response.use((response) => {
