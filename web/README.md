@@ -33,17 +33,17 @@ web/
    npm install
    ```
 2. **Konfigurasi variabel lingkungan**
-   File `.env` default mengarah ke backend container (`http://localhost:3002`).
+   File `.env` default mengarah ke endpoint API produksi (`https://semakin.databenuanta.id`).
    Untuk menjalankan frontend di luar Docker dengan backend lokal (`http://localhost:3000`), gunakan `.env.development`.
    Sebaliknya, konfigurasi `.env.docker` disediakan untuk lingkungan Docker.
 
    Variabel yang digunakan:
 
-   | Nama          | Contoh nilai                 | Deskripsi                        |
-   |---------------|------------------------------|----------------------------------|
-   | `VITE_API_URL`| `http://localhost:3000`      | URL base API backend             |
+   | Nama          | Contoh nilai                    | Deskripsi                         |
+   |---------------|---------------------------------|-----------------------------------|
+   | `VITE_API_URL`| `https://api.example.com`       | URL base API backend              |
 
-   Catatan: Sesuaikan `VITE_API_URL` bila backend berjalan pada port lain.
+   Catatan: Untuk development lokal sesuaikan `VITE_API_URL` bila backend berjalan pada port lain, sementara di produksi pastikan menggunakan URL HTTPS.
 
 3. **Menjalankan server development**
    ```bash
