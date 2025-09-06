@@ -12,11 +12,22 @@ import camelizeKeys from "../../utils/camelizeKeys.js";
 
 const AuthContext = createContext();
 
+export function safeParseUser(userString) {
+  if (!userString) return null;
+  try {
+    return camelizeKeys(JSON.parse(userString));
+  } catch {
+    localStorage.removeItem("user");
+    sessionStorage.removeItem("user");
+    return null;
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     const u =
       localStorage.getItem("user") || sessionStorage.getItem("user");
-    return u ? camelizeKeys(JSON.parse(u)) : null;
+    return safeParseUser(u);
   });
 
   const verifyToken = useCallback(async () => {
