@@ -49,11 +49,12 @@ export default function UsersPage() {
     try {
       setLoading(true);
       const res = await axios.get("/users");
-      const data = Array.isArray(res.data) ? res.data : [];
-      if (!Array.isArray(res.data)) {
+      if (Array.isArray(res.data)) {
+        setUsers(res.data);
+      } else {
         console.warn("Unexpected users response", res.data);
+        setUsers([]);
       }
-      setUsers(data);
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil pengguna");
     } finally {
