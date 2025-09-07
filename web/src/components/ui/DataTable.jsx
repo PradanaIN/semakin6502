@@ -55,7 +55,7 @@ export function SelectColumnFilter({ column, options }) {
 
 export default function DataTable({
   columns,
-  data,
+  data = [],
   initialPageSize = 10,
   showGlobalFilter = true,
   initialSorting = [],
