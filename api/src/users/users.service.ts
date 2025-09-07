@@ -24,27 +24,55 @@ export class UsersService {
   }
 
   async create(data: CreateUserDto) {
-    if (data.password) {
-      data.password = await hashPassword(data.password);
+    const { teamId, ...rest } = data;
+    if (rest.password) {
+      rest.password = await hashPassword(rest.password);
     }
-    if (!data.username && data.email) {
-      data.username = data.email.split("@")[0];
+    if (!rest.username && rest.email) {
+      rest.username = rest.email.split("@")[0];
     }
-    return this.prisma.user.create({
-      data: { id: ulid(), ...data, phone: data.phone },
+    return this.prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: { id: ulid(), ...rest, phone: rest.phone },
+      });
+      if (teamId) {
+        await tx.member.create({
+          data: { id: ulid(), userId: user.id, teamId, isLeader: false },
+        });
+      }
+      return user;
     });
   }
 
   async update(id: string, data: UpdateUserDto) {
-    if (data.password) {
-      data.password = await hashPassword(data.password);
+    const { teamId, ...rest } = data;
+    if (rest.password) {
+      rest.password = await hashPassword(rest.password);
     }
-    if (data.email) {
-      data.username = data.email.split("@")[0];
+    if (rest.email) {
+      rest.username = rest.email.split("@")[0];
     }
-    return this.prisma.user.update({
-      where: { id },
-      data: { ...data, phone: data.phone },
+    return this.prisma.$transaction(async (tx) => {
+      const user = await tx.user.update({
+        where: { id },
+        data: { ...rest, phone: rest.phone },
+      });
+      const existing = await tx.member.findFirst({ where: { userId: id } });
+      if (teamId) {
+        if (existing) {
+          await tx.member.update({
+            where: { id: existing.id },
+            data: { teamId },
+          });
+        } else {
+          await tx.member.create({
+            data: { id: ulid(), userId: id, teamId, isLeader: false },
+          });
+        }
+      } else if (existing) {
+        await tx.member.delete({ where: { id: existing.id } });
+      }
+      return user;
     });
   }
 

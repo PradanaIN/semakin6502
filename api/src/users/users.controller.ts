@@ -55,13 +55,13 @@ export class UsersController {
   @Post()
   @Roles(ROLES.ADMIN)
   create(@Body() body: CreateUserDto) {
-    return this.usersService.create(body);
+    return this.usersService.create({ ...body });
   }
 
   @Put(":id")
   @Roles(ROLES.ADMIN)
   update(@Param("id") id: string, @Body() body: UpdateUserDto) {
-    return this.usersService.update(id, body);
+    return this.usersService.update(id, { ...body });
   }
 
   @Delete(":id")

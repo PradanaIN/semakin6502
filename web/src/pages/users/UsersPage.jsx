@@ -25,6 +25,7 @@ export default function UsersPage() {
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const {
     showForm,
@@ -34,7 +35,7 @@ export default function UsersPage() {
     openCreate: openCreateForm,
     openEdit: openEditForm,
     closeForm,
-  } = useModalForm({ nama: "", email: "", phone: "", password: "", role: "" });
+  } = useModalForm({ nama: "", email: "", phone: "", password: "", role: "", teamId: "" });
   const [query, setQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [pageSize, setPageSize] = useState(10);
@@ -43,6 +44,7 @@ export default function UsersPage() {
   useEffect(() => {
     fetchUsers();
     fetchRoles();
+    fetchTeams();
   }, []);
 
   const fetchUsers = async () => {
@@ -75,9 +77,23 @@ export default function UsersPage() {
       handleAxiosError(err, "Gagal mengambil role");
     }
   };
+
+  const fetchTeams = async () => {
+    try {
+      const res = await axios.get("/teams");
+      if (Array.isArray(res.data)) {
+        setTeams(res.data);
+      } else {
+        console.warn("Unexpected teams response", res.data);
+        setTeams([]);
+      }
+    } catch (err) {
+      handleAxiosError(err, "Gagal mengambil tim");
+    }
+  };
   const openEdit = useCallback(
     (u) => {
-      openEditForm(u, (v) => ({ nama: v.nama, email: v.email, phone: v.phone || "", password: "", role: v.role }));
+      openEditForm(u, (v) => ({ nama: v.nama, email: v.email, phone: v.phone || "", password: "", role: v.role, teamId: v.members?.[0]?.teamId || "" }));
     },
     [openEditForm]
   );
@@ -297,6 +313,22 @@ export default function UsersPage() {
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
               />
+            </div>
+            <div>
+              <Label htmlFor="teamId">Tim</Label>
+              <select
+                id="teamId"
+                value={form.teamId}
+                onChange={(e) => setForm({ ...form, teamId: e.target.value })}
+                className="w-full border rounded px-3 py-2 bg-white text-gray-900 dark:bg-gray-700 dark:text-gray-100"
+              >
+                <option value="">Pilih tim</option>
+                {teams.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.namaTim}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <Label htmlFor="password">
