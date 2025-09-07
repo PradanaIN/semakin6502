@@ -194,7 +194,7 @@ export default function PenugasanPage() {
         return res;
       });
       let usersReq = canManage
-        ? axios.get("/users")
+        ? axios.get("/users", { params: { pageSize: 1000 } })
         : Promise.resolve({ data: [user] });
       const [pRes, tRes, uRes] = await Promise.all([
         penugasanReq,

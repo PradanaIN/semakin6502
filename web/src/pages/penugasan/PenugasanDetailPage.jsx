@@ -99,7 +99,7 @@ export default function PenugasanDetailPage() {
       .get(`/laporan-harian/penugasan/${id}`)
       .then((r) => setLaporan(r.data));
     if (canManage) {
-      axios.get("/users").then((r) => {
+      axios.get("/users", { params: { pageSize: 1000 } }).then((r) => {
         const sorted = [...r.data].sort((a, b) => a.nama.localeCompare(b.nama));
         setUsers(sorted);
       });
