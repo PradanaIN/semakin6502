@@ -17,18 +17,21 @@ import { HelmetProvider } from "react-helmet-async";
 let apiUrl =
   import.meta.env.VITE_API_URL ?? `${window.location.origin}`;
 
-// Ensure the API URL always resolves to HTTPS
-if (!/^https?:\/\//i.test(apiUrl)) {
-  apiUrl = `https://${apiUrl.replace(/^\/\//, "")}`;
-} else if (apiUrl.startsWith("http://")) {
-  apiUrl = apiUrl.replace(/^http:\/\//i, "https://");
+const url = new URL(apiUrl, window.location.origin);
+const isLocal =
+  url.hostname === "localhost" || url.hostname === "127.0.0.1";
+
+if (import.meta.env.PROD && !isLocal && url.protocol !== "https:") {
+  url.protocol = "https:";
 }
+
+apiUrl = url.href.replace(/\/$/, "");
 
 axios.defaults.baseURL = apiUrl;
 axios.defaults.withCredentials = true;
 
 // Warn developers when the backend is not reachable over HTTPS
-if (import.meta.env.PROD) {
+if (import.meta.env.PROD && !isLocal) {
   fetch(apiUrl, { method: "HEAD", mode: "no-cors" }).catch(() => {
     console.warn(
       `Unable to reach backend over HTTPS at ${apiUrl}. ` +
