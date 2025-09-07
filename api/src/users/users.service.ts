@@ -19,13 +19,31 @@ export class UsersService {
     role: true,
   };
 
-  findAll() {
-    return this.prisma.user.findMany({
-      select: {
-        ...this.userSelect,
-        members: { include: { team: true } },
+  async findAll(page = 1, pageSize = 10) {
+    const p = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+    const ps = Number.isFinite(pageSize) && pageSize > 0 ? Math.floor(pageSize) : 10;
+
+    const [total, data] = await this.prisma.$transaction([
+      this.prisma.user.count(),
+      this.prisma.user.findMany({
+        skip: (p - 1) * ps,
+        take: ps,
+        select: {
+          ...this.userSelect,
+          members: { include: { team: true } },
+        },
+      }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        page: p,
+        pageSize: ps,
+        total,
+        totalPages: Math.max(1, Math.ceil(total / ps)),
       },
-    });
+    };
   }
 
   async findOne(id: string) {
