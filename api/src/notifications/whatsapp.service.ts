@@ -71,6 +71,8 @@ export class WhatsappService {
     } catch {}
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10_000);
       try {
         this.logger.debug("Sending WhatsApp message", {
           target: payload.target,
@@ -91,6 +93,7 @@ export class WhatsappService {
           method: "POST",
           headers,
           body: form,
+          signal: controller.signal,
         });
 
         if (!res.ok) {
@@ -155,19 +158,28 @@ export class WhatsappService {
         this.logger.debug("WhatsApp API response", data);
         return data;
       } catch (err) {
-        const anyErr: any = err;
-        this.logger.error("WhatsApp message send failed", {
-          status: anyErr?.status,
-          message: (err as Error).message,
-          code: anyErr?.code || anyErr?.cause?.code,
-          errno: anyErr?.errno || anyErr?.cause?.errno,
-          address: anyErr?.cause?.address,
-          url: urlForLog,
-          payload,
-        });
+        if ((err as any)?.name === "AbortError") {
+          this.logger.error("WhatsApp request timed out after 10s", {
+            url: urlForLog,
+            payload,
+          });
+        } else {
+          const anyErr: any = err;
+          this.logger.error("WhatsApp message send failed", {
+            status: anyErr?.status,
+            message: (err as Error).message,
+            code: anyErr?.code || anyErr?.cause?.code,
+            errno: anyErr?.errno || anyErr?.cause?.errno,
+            address: anyErr?.cause?.address,
+            url: urlForLog,
+            payload,
+          });
+        }
         if (attempt + 1 >= maxAttempts) {
           throw err;
         }
+      } finally {
+        clearTimeout(timeout);
       }
     }
   }

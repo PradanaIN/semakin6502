@@ -9,20 +9,48 @@ import { UpdateUserDto } from "./update-user.dto";
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
-  findAll(page = 1, pageSize = 10) {
-    const p = page > 0 ? page : 1;
-    const ps = pageSize > 0 ? pageSize : 10;
-    return this.prisma.user.findMany({
-      skip: (p - 1) * ps,
-      take: ps,
-      include: {
-        members: { include: { team: true } },
+
+  private readonly userSelect: Prisma.UserSelect = {
+    id: true,
+    nama: true,
+    username: true,
+    email: true,
+    phone: true,
+    role: true,
+  };
+
+  async findAll(page = 1, pageSize = 10) {
+    const p = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+    const ps = Number.isFinite(pageSize) && pageSize > 0 ? Math.floor(pageSize) : 10;
+
+    const [total, data] = await this.prisma.$transaction([
+      this.prisma.user.count(),
+      this.prisma.user.findMany({
+        skip: (p - 1) * ps,
+        take: ps,
+        select: {
+          ...this.userSelect,
+          members: { include: { team: true } },
+        },
+      }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        page: p,
+        pageSize: ps,
+        total,
+        totalPages: Math.max(1, Math.ceil(total / ps)),
       },
-    });
+    };
   }
 
   async findOne(id: string) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: this.userSelect,
+    });
     if (!user) throw new NotFoundException("not found");
     return user;
   }
@@ -131,6 +159,9 @@ export class UsersService {
   }
 
   remove(id: string) {
-    return this.prisma.user.delete({ where: { id } });
+    return this.prisma.user.delete({
+      where: { id },
+      select: this.userSelect,
+    });
   }
 }
