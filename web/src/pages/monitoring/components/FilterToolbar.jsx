@@ -196,7 +196,7 @@ export default function FilterToolbar({
                   </>
                 )}
               </Listbox.Option>
-              {teams
+              {(Array.isArray(teams) ? teams : [])
                 .filter((t) => t.namaTim !== "Pimpinan")
                 .map((t) => (
                   <Listbox.Option
