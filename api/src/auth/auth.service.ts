@@ -12,24 +12,38 @@ export class AuthService {
       where: {
         OR: [{ email: identifier }, { username: identifier }],
       },
-      include: { members: { include: { team: true } } },
+      select: {
+        id: true,
+        nama: true,
+        username: true,
+        email: true,
+        phone: true,
+        role: true,
+        password: true,
+        members: {
+          select: { teamId: true, team: { select: { namaTim: true } } },
+        },
+      },
     });
-    if (!user) throw new UnauthorizedException("User tidak ditemukan");
+    if (!user) throw new UnauthorizedException("Invalid credentials");
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) throw new UnauthorizedException("Password salah");
+    if (!isMatch) throw new UnauthorizedException("Invalid credentials");
 
     const payload = { sub: user.id, role: user.role };
     const member = user.members?.[0];
-    const sanitized = {
-      ...user,
-      teamId: member?.teamId,
-      teamName: member?.team?.namaTim,
-    } as any;
-    delete (sanitized as any).password;
     return {
       access_token: this.jwtService.sign(payload),
-      user: sanitized,
+      user: {
+        id: user.id,
+        nama: user.nama,
+        username: user.username,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        teamId: member?.teamId,
+        teamName: member?.team?.namaTim,
+      },
     };
   }
 
