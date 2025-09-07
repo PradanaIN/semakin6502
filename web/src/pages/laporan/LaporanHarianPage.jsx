@@ -92,7 +92,14 @@ export default function LaporanHarianPage() {
         params.tambahan = true;
       }
       const res = await axios.get(url, { params });
-      setLaporan(res.data);
+      const data = res.data;
+      if (Array.isArray(data)) {
+        setLaporan(data);
+      } else {
+        console.warn("Unexpected payload shape:", data);
+        showWarning("Peringatan", "Format data laporan tidak valid");
+        setLaporan([]);
+      }
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil laporan");
     } finally {
