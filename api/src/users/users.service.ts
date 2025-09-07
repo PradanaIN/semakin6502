@@ -9,16 +9,30 @@ import { UpdateUserDto } from "./update-user.dto";
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
+
+  private readonly userSelect: Prisma.UserSelect = {
+    id: true,
+    nama: true,
+    username: true,
+    email: true,
+    phone: true,
+    role: true,
+  };
+
   findAll() {
     return this.prisma.user.findMany({
-      include: {
+      select: {
+        ...this.userSelect,
         members: { include: { team: true } },
       },
     });
   }
 
   async findOne(id: string) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      select: this.userSelect,
+    });
     if (!user) throw new NotFoundException("not found");
     return user;
   }
@@ -127,6 +141,9 @@ export class UsersService {
   }
 
   remove(id: string) {
-    return this.prisma.user.delete({ where: { id } });
+    return this.prisma.user.delete({
+      where: { id },
+      select: this.userSelect,
+    });
   }
 }
