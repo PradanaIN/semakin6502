@@ -97,12 +97,6 @@ let LaporanService = LaporanService_1 = class LaporanService {
                         where: { id: penugasanId },
                         data: { status: status_constants_1.STATUS.SELESAI_DIKERJAKAN },
                     });
-                    const leaders = await this.prisma.member.findMany({
-                        where: { teamId: pen.kegiatan.teamId, isLeader: true },
-                        select: { userId: true },
-                    });
-                    const text = `${pen.pegawai?.nama ?? "Seorang pegawai"} telah menyelesaikan penugasan ${pen.kegiatan.namaKegiatan}`;
-                    await Promise.all(leaders.map((l) => this.notifications.create(l.userId, text, `/tugas-mingguan/${pen.id}`)));
                 }
                 return;
             }

@@ -139,7 +139,7 @@ let PenugasanService = PenugasanService_1 = class PenugasanService {
                 status: data.status || status_constants_1.STATUS.BELUM,
             },
         });
-        const baseUrl = this.config.get("WEB_URL");
+        const baseUrl = this.config.get("WEB_URL"); // optional base URL
         const relLink = `/tugas-mingguan/${penugasan.id}`;
         const pegawai = await this.prisma.user.findUnique({
             where: { id: data.pegawaiId },
@@ -201,7 +201,7 @@ let PenugasanService = PenugasanService_1 = class PenugasanService {
             status: data.status || status_constants_1.STATUS.BELUM,
         }));
         const created = await this.prisma.$transaction(rows.map((r) => this.prisma.penugasan.create({ data: r })));
-        const baseUrl = this.config.get("WEB_URL");
+        const baseUrl = this.config.get("WEB_URL"); // optional base URL
         await Promise.all(created.map(async (p) => {
             const relLink = `/tugas-mingguan/${p.id}`;
             const notifText = `Penugasan ${master.team.namaTim}: ${master.namaKegiatan}`;
@@ -322,6 +322,7 @@ let PenugasanService = PenugasanService_1 = class PenugasanService {
         if (count > 0)
             throw new common_1.BadRequestException("Hapus laporan harian penugasan ini terlebih dahulu");
         await this.prisma.penugasan.delete({ where: { id } });
+        await this.notifications.deleteByLink(`/tugas-mingguan/${id}`);
         await this.invalidateCache(PENUGASAN_CACHE_KEYS);
         return { success: true };
     }

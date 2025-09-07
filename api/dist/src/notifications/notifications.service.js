@@ -40,6 +40,11 @@ let NotificationsService = class NotificationsService {
             data: { isRead: true },
         });
     }
+    deleteByLink(link) {
+        return this.prisma.notification.deleteMany({
+            where: { link },
+        });
+    }
 };
 exports.NotificationsService = NotificationsService;
 exports.NotificationsService = NotificationsService = __decorate([

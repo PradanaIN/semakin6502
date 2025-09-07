@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 const client_1 = require("@prisma/client");
-const hash_1 = require("../src/common/hash");
-const status_constants_1 = require("../src/common/status.constants");
+const hash_js_1 = require("../src/common/hash.js");
+const status_constants_js_1 = require("../src/common/status.constants.js");
 const ulid_1 = require("ulid");
 const user_phones_json_1 = __importDefault(require("./user-phones.json"));
 const userPhones = user_phones_json_1.default;
@@ -267,7 +267,7 @@ async function main() {
             nama: "Admin Utama",
             email: "admin@bps.go.id",
             username: "admin",
-            password: await (0, hash_1.hashPassword)("password"),
+            password: await (0, hash_js_1.hashPassword)("password"),
             role: "admin",
         },
     });
@@ -408,7 +408,7 @@ async function main() {
                 nama: u.nama,
                 email: u.email,
                 username: u.username,
-                password: await (0, hash_1.hashPassword)(u.password),
+                password: await (0, hash_js_1.hashPassword)(u.password),
                 role,
                 phone: u.phone,
             },
@@ -673,7 +673,7 @@ async function main() {
                     penugasanId: penugasan.id,
                     pegawaiId: m.userId,
                     tanggal: tanggal.toISOString(),
-                    status: status_constants_1.STATUS.SELESAI_DIKERJAKAN,
+                    status: status_constants_js_1.STATUS.SELESAI_DIKERJAKAN,
                     capaianKegiatan: `Capaian ${penugasan.id}`,
                     buktiLink: BASE_URL,
                 },

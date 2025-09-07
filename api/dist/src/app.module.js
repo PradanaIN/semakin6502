@@ -44,7 +44,7 @@ exports.AppModule = AppModule = __decorate([
                     COOKIE_SAMESITE: joi_1.default.string().valid("lax", "strict", "none"),
                     NODE_ENV: joi_1.default.string(),
                     CORS_ORIGIN: joi_1.default.string(),
-                    WEB_URL: joi_1.default.string().uri().required(),
+                    WEB_URL: joi_1.default.string().uri().allow("").optional(),
                     FONNTE_TOKEN: joi_1.default.string(),
                     WHATSAPP_TOKEN: joi_1.default.string(),
                     WHATSAPP_API_URL: joi_1.default.string().uri().required(),
