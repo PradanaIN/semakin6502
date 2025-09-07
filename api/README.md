@@ -57,7 +57,7 @@ api/
     | `THROTTLE_LIMIT`   | Jumlah request per TTL (opsional, default `100`)                               |
     | `FONNTE_TOKEN`     | Token API Fonnte (opsional, salah satu dari ini atau `WHATSAPP_TOKEN` wajib diisi) |
     | `WHATSAPP_TOKEN`   | Token API WhatsApp generik (opsional, salah satu dari ini atau `FONNTE_TOKEN` wajib diisi) |
-    | `WHATSAPP_API_URL` | URL endpoint API WhatsApp                                                      |
+    | `WHATSAPP_API_URL` | URL endpoint API WhatsApp. Untuk Fonnte, arahkan ke endpoint kirim pesan seperti `https://fonnte.com/api/send` dan pastikan menyertakan path `/send`. Lihat [Dokumentasi Fonnte](https://fonnte.com/docs). |
     | `PHONE_VALIDATION_ENABLED` | `true` untuk validasi nomor telepon (opsional, default `true`)         |
     | `COOKIE_DOMAIN`    | Domain cookie (opsional)                                                       |
     | `COOKIE_SAMESITE`  | Nilai SameSite cookie (opsional)                                               |
