@@ -16,12 +16,26 @@ import { HelmetProvider } from "react-helmet-async";
 
 let apiUrl =
   import.meta.env.VITE_API_URL ?? `${window.location.origin}`;
-if (import.meta.env.PROD && apiUrl.startsWith("http://")) {
-  apiUrl = apiUrl.replace(/^http:\/\//, "https://");
+
+// Ensure the API URL always resolves to HTTPS
+if (!/^https?:\/\//i.test(apiUrl)) {
+  apiUrl = `https://${apiUrl.replace(/^\/\//, "")}`;
+} else if (apiUrl.startsWith("http://")) {
+  apiUrl = apiUrl.replace(/^http:\/\//i, "https://");
 }
 
 axios.defaults.baseURL = apiUrl;
 axios.defaults.withCredentials = true;
+
+// Warn developers when the backend is not reachable over HTTPS
+if (import.meta.env.PROD) {
+  fetch(apiUrl, { method: "HEAD", mode: "no-cors" }).catch(() => {
+    console.warn(
+      `Unable to reach backend over HTTPS at ${apiUrl}. ` +
+        `Please configure SSL before deployment.`
+    );
+  });
+}
 
 axios.interceptors.response.use((response) => {
   if (response.data && typeof response.data === "object") {
