@@ -65,7 +65,12 @@ export default function UsersPage() {
   const fetchRoles = async () => {
     try {
       const res = await axios.get("/roles");
-      setRoles(res.data);
+      if (Array.isArray(res.data)) {
+        setRoles(res.data);
+      } else {
+        console.warn("Unexpected roles response", res.data);
+        setRoles([]);
+      }
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil role");
     }

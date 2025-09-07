@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import UsersPage from '../pages/users/UsersPage';
 import { useAuth } from '../pages/auth/useAuth';
 import axios from 'axios';
@@ -26,6 +26,26 @@ test('handles non-array responses from /users', async () => {
   await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/users'));
   await waitFor(() => expect(screen.getByTestId('data-table').textContent).toBe('[]'));
   await waitFor(() => expect(warn).toHaveBeenCalledWith('Unexpected users response', {}));
+
+  warn.mockRestore();
+});
+
+test('handles non-array responses from /roles', async () => {
+  useAuth.mockReturnValue({ user: { role: 'admin' } });
+  axios.get.mockImplementation((url) => {
+    if (url === '/roles') return Promise.resolve({ data: {} });
+    return Promise.resolve({ data: [] });
+  });
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  render(<UsersPage />);
+
+  await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/roles'));
+
+  const select = await screen.findByRole('combobox');
+  expect(within(select).getAllByRole('option')).toHaveLength(1);
+
+  await waitFor(() => expect(warn).toHaveBeenCalledWith('Unexpected roles response', {}));
 
   warn.mockRestore();
 });
