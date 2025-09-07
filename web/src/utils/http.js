@@ -9,15 +9,43 @@ export function initHttp() {
 
   // Simple in-memory cache for idempotent GETs (TTL ms)
   const GET_TTL = 5000; // 5s burst cache
+  const MAX_CACHE_SIZE = 100;
   const cache = new Map(); // key -> { at:number, data:any }
+
+  const sortValue = (val) => {
+    if (Array.isArray(val)) return val.map(sortValue);
+    if (val && typeof val === "object") {
+      return Object.keys(val)
+        .sort()
+        .reduce((acc, k) => {
+          acc[k] = sortValue(val[k]);
+          return acc;
+        }, {});
+    }
+    return val;
+  };
+
+  const stableStringify = (obj) => {
+    if (!obj) return "";
+    if (typeof obj !== "object") return String(obj);
+    return JSON.stringify(sortValue(obj));
+  };
 
   const makeKey = (config) => {
     const url = config.url || "";
     const method = (config.method || "get").toLowerCase();
-    const params = config.params ? JSON.stringify(config.params) : "";
+    const params = stableStringify(config.params);
     // do not cache body
     return `${method}:${url}?${params}`;
   };
+
+  const prune = () => {
+    const now = Date.now();
+    for (const [k, v] of cache.entries()) {
+      if (now - v.at > GET_TTL) cache.delete(k);
+    }
+  };
+  setInterval(prune, GET_TTL);
 
   axios.interceptors.request.use((config) => {
     if ((config.method || "get").toLowerCase() === "get") {
@@ -44,8 +72,12 @@ export function initHttp() {
       // Cache GET responses briefly
       const cfg = response.config || {};
       if (!cfg.__fromCache && (cfg.method || "get").toLowerCase() === "get") {
-        const key = `${(cfg.method || "get").toLowerCase()}:${cfg.url}?${cfg.params ? JSON.stringify(cfg.params) : ""}`;
+        const key = makeKey(cfg);
         cache.set(key, { at: Date.now(), data: response.data });
+        while (cache.size > MAX_CACHE_SIZE) {
+          const first = cache.keys().next().value;
+          cache.delete(first);
+        }
       }
       return response;
     },
