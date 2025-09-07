@@ -14,8 +14,13 @@ import { toast } from "react-toastify";
 import camelizeKeys from "./utils/camelizeKeys.js";
 import { HelmetProvider } from "react-helmet-async";
 
-axios.defaults.baseURL =
+let apiUrl =
   import.meta.env.VITE_API_URL ?? `${window.location.origin}`;
+if (import.meta.env.PROD && apiUrl.startsWith("http://")) {
+  apiUrl = apiUrl.replace(/^http:\/\//, "https://");
+}
+
+axios.defaults.baseURL = apiUrl;
 axios.defaults.withCredentials = true;
 
 axios.interceptors.response.use((response) => {
