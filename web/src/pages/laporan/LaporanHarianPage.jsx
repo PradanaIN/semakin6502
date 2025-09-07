@@ -92,6 +92,16 @@ export default function LaporanHarianPage() {
         params.tambahan = true;
       }
       const res = await axios.get(url, { params });
+      const contentType = res.headers["content-type"];
+      if (!contentType || !contentType.includes("application/json")) {
+        if (res.status === 401) {
+          window.location.href = "/login";
+        } else {
+          handleAxiosError(new Error(), "Respon server tidak valid");
+        }
+        setLaporan([]);
+        return;
+      }
       const data = res.data;
       if (Array.isArray(data)) {
         setLaporan(data);
