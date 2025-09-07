@@ -19,15 +19,16 @@ export class UsersService {
     role: true,
   };
 
-  async findAll(page = 1, pageSize = 10) {
+  async findAll(page = 1, pageSize = 10, all = false) {
     const p = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
-    const ps = Number.isFinite(pageSize) && pageSize > 0 ? Math.floor(pageSize) : 10;
+    const ps =
+      Number.isFinite(pageSize) && pageSize > 0 ? Math.floor(pageSize) : 10;
 
     const [total, data] = await this.prisma.$transaction([
       this.prisma.user.count(),
       this.prisma.user.findMany({
-        skip: (p - 1) * ps,
-        take: ps,
+        ...(all ? {} : { skip: (p - 1) * ps, take: ps }),
+        orderBy: { nama: "asc" },
         select: {
           ...this.userSelect,
           members: { include: { team: true } },
@@ -39,9 +40,9 @@ export class UsersService {
       data,
       meta: {
         page: p,
-        pageSize: ps,
+        pageSize: all ? total : ps,
         total,
-        totalPages: Math.max(1, Math.ceil(total / ps)),
+        totalPages: all ? 1 : Math.max(1, Math.ceil(total / ps)),
       },
     };
   }
