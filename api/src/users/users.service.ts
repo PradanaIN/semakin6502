@@ -9,8 +9,12 @@ import { UpdateUserDto } from "./update-user.dto";
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
-  findAll() {
+  findAll(page = 1, pageSize = 10) {
+    const p = page > 0 ? page : 1;
+    const ps = pageSize > 0 ? pageSize : 10;
     return this.prisma.user.findMany({
+      skip: (p - 1) * ps,
+      take: ps,
       include: {
         members: { include: { team: true } },
       },

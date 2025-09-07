@@ -8,8 +8,9 @@ import {
   Body,
   UseGuards,
   Req,
+  Query,
 } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiQuery, ApiTags } from "@nestjs/swagger";
 import { UsersService } from "./users.service";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { RolesGuard } from "../common/guards/roles.guard";
@@ -28,8 +29,25 @@ export class UsersController {
 
   @Get()
   @Roles(ROLES.ADMIN, ROLES.KETUA)
-  findAll() {
-    return this.usersService.findAll();
+  @ApiQuery({
+    name: "page",
+    required: false,
+    type: Number,
+    description: "Page number (default: 1)",
+  })
+  @ApiQuery({
+    name: "pageSize",
+    required: false,
+    type: Number,
+    description: "Items per page (default: 10)",
+  })
+  findAll(
+    @Query("page") page?: string,
+    @Query("pageSize") pageSize?: string,
+  ) {
+    const p = page ? parseInt(page, 10) : undefined;
+    const ps = pageSize ? parseInt(pageSize, 10) : undefined;
+    return this.usersService.findAll(p, ps);
   }
 
   @Get(":id")
