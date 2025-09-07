@@ -12,9 +12,10 @@ import formatDate from "../../utils/formatDate";
 import formatWita from "../../utils/formatWita";
 import exportFileName from "../../utils/exportFileName";
 
+const DEFAULT_DATA = { day1: [], day3: [], day7: [] };
 
 const MissedReportsPage = () => {
-  const [data, setData] = useState({ day1: [], day3: [], day7: [] });
+  const [data, setData] = useState(DEFAULT_DATA);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [lastUpdate, setLastUpdate] = useState("");
@@ -28,7 +29,7 @@ const MissedReportsPage = () => {
           axios.get("/monitoring/laporan/terlambat"),
           axios.get("/monitoring/last-update"),
         ]);
-        setData(reportRes.data);
+        setData({ ...DEFAULT_DATA, ...reportRes.data });
         // Gabungkan libur untuk tahun sebelumnya, berjalan, dan berikutnya agar aman lintas tahun
         const now = new Date();
         const y = now.getFullYear();
@@ -146,19 +147,19 @@ const MissedReportsPage = () => {
       const sections = [
         {
           title: "Belum Melapor 1+ Hari",
-          data: data.day1,
+          data: data.day1 ?? [],
           fill: [253, 230, 138], // amber-200
           accent: [180, 83, 9], // amber-700
         },
         {
           title: "Belum Melapor 3+ Hari",
-          data: data.day3,
+          data: data.day3 ?? [],
           fill: [254, 215, 170], // orange-200
           accent: [194, 65, 12], // orange-700
         },
         {
           title: "Belum Melapor 7+ Hari",
-          data: data.day7,
+          data: data.day7 ?? [],
           fill: [254, 202, 202], // red-200
           accent: [185, 28, 28], // red-700
         },
@@ -277,9 +278,9 @@ const MissedReportsPage = () => {
       XLSX.utils.sheet_add_aoa(ws, [[]], { origin: -1 });
     };
 
-    addSection("Belum Melapor 1+ Hari", data.day1);
-    addSection("Belum Melapor 3+ Hari", data.day3);
-    addSection("Belum Melapor 7+ Hari", data.day7);
+    addSection("Belum Melapor 1+ Hari", data.day1 ?? []);
+    addSection("Belum Melapor 3+ Hari", data.day3 ?? []);
+    addSection("Belum Melapor 7+ Hari", data.day7 ?? []);
 
     // Lebar kolom (No, Nama, Belum Melapor, Terakhir Melapor)
     ws["!cols"] = [{ wch: 6 }, { wch: 30 }, { wch: 18 }, { wch: 20 }];
@@ -423,24 +424,24 @@ const MissedReportsPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card
             title="Belum Melapor 1+ Hari"
-            count={data.day1.length}
+            count={data.day1?.length ?? 0}
             color="#f59e0b"
           >
-            {renderList(data.day1)}
+            {renderList(data.day1 ?? [])}
           </Card>
           <Card
             title="Belum Melapor 3+ Hari"
-            count={data.day3.length}
+            count={data.day3?.length ?? 0}
             color="#ea580c"
           >
-            {renderList(data.day3)}
+            {renderList(data.day3 ?? [])}
           </Card>
           <Card
             title="Belum Melapor 7+ Hari"
-            count={data.day7.length}
+            count={data.day7?.length ?? 0}
             color="#ef4444"
           >
-            {renderList(data.day7)}
+            {renderList(data.day7 ?? [])}
           </Card>
         </div>
       )}
