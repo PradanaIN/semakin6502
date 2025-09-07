@@ -26,7 +26,26 @@ export class WhatsappService {
     const fonnte = this.config.get<string>("FONNTE_TOKEN");
     const generic = this.config.get<string>("WHATSAPP_TOKEN");
     this.token = fonnte || generic || undefined;
-    this.apiUrl = this.config.get<string>("WHATSAPP_API_URL");
+
+    const rawUrl = this.config.get<string>("WHATSAPP_API_URL");
+    if (rawUrl) {
+      try {
+        const url = new URL(rawUrl);
+        if (!url.pathname.endsWith("/send")) {
+          url.pathname = url.pathname.replace(/\/$/, "") + "/send";
+          this.logger.warn(
+            `WHATSAPP_API_URL missing '/send' path. Normalized to ${url.toString()}`
+          );
+        }
+        this.apiUrl = url.toString();
+      } catch {
+        this.logger.warn(`Invalid WHATSAPP_API_URL: ${rawUrl}`);
+        this.apiUrl = undefined;
+      }
+    } else {
+      this.apiUrl = undefined;
+    }
+
     // If using generic token (non-Fonnte), default to Bearer scheme unless already present
     const hasBearerPrefix = (this.token || "").toLowerCase().startsWith("bearer ");
     this.useBearer = !!generic && !hasBearerPrefix;

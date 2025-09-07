@@ -1,7 +1,34 @@
 import { WhatsappService } from "../src/notifications/whatsapp.service";
 import { ConfigService } from "@nestjs/config";
+import { Logger } from "@nestjs/common";
 
 const BASE_URL = process.env.BASE_URL || "https://semakin.databenuanta.id";
+
+describe("WhatsappService URL normalization", () => {
+  it("appends /send when missing and logs a warning", () => {
+    const warnSpy = jest.spyOn(Logger.prototype, "warn").mockImplementation();
+
+    const config = {
+      get: (key: string) => {
+        if (key === "FONNTE_TOKEN" || key === "WHATSAPP_TOKEN") {
+          return "token";
+        }
+        if (key === "WHATSAPP_API_URL") {
+          return "https://example.com";
+        }
+        return undefined;
+      },
+    } as unknown as ConfigService;
+
+    const service = new WhatsappService(config);
+    expect((service as any).apiUrl).toBe("https://example.com/send");
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("missing '/send'")
+    );
+
+    warnSpy.mockRestore();
+  });
+});
 
 describe("WhatsappService retries", () => {
   let service: WhatsappService;
@@ -14,7 +41,7 @@ describe("WhatsappService retries", () => {
           return "token";
         }
         if (key === "WHATSAPP_API_URL") {
-          return BASE_URL;
+          return `${BASE_URL}/send`;
         }
         return undefined;
       },
