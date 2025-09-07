@@ -144,11 +144,15 @@ export default function TugasTambahanDetailPage() {
     const fetchTeams = async () => {
       try {
         const res = await axios.get("/teams/all");
-        setTeams(
-          res.data.filter(
-            (t) => t.namaTim !== "Admin" && t.namaTim !== "Pimpinan"
-          )
-        );
+        if (Array.isArray(res.data)) {
+          setTeams(
+            res.data.filter(
+              (t) => t.namaTim !== "Admin" && t.namaTim !== "Pimpinan"
+            )
+          );
+        } else {
+          setTeams([]);
+        }
       } catch (err) {
         handleAxiosError(err, "Gagal mengambil tim");
       }
