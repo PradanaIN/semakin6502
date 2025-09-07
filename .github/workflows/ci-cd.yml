@@ -10,6 +10,8 @@ jobs:
       contents: read
       packages: write
     runs-on: ubuntu-latest
+    env:
+      VITE_API_URL: https://semakin.databenuanta.id
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,7 +30,9 @@ jobs:
       - name: Build API image
         run: docker build -t ghcr.io/${{ github.repository_owner }}/semakin6502-backend:${{ github.sha }} api
       - name: Build Web image
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/semakin6502-frontend:${{ github.sha }} web
+        run: |
+          docker build --build-arg VITE_API_URL=${VITE_API_URL} \
+            -t ghcr.io/${{ github.repository_owner }}/semakin6502-frontend:${{ github.sha }} web
       - name: Login to registry
         uses: docker/login-action@v2
         with:
