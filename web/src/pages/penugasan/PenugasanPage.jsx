@@ -218,7 +218,8 @@ export default function PenugasanPage() {
           (t) => t.namaTim !== "Admin" && t.namaTim !== "Pimpinan"
         )
       );
-      setUsers([...uRes.data].sort((a, b) => a.nama.localeCompare(b.nama)));
+      const usersData = Array.isArray(uRes.data) ? uRes.data : uRes.data.data;
+      setUsers([...usersData].sort((a, b) => a.nama.localeCompare(b.nama)));
       const kData = kRes.data.data || kRes.data;
       setKegiatan(
         [...kData].sort((a, b) => a.namaKegiatan.localeCompare(b.namaKegiatan))
