@@ -6,7 +6,7 @@ SEMAKIN 6502 (Sistem Monitoring Kinerja) adalah aplikasi internal untuk mencata
 
 1. Salin berkas contoh `.env` (misalnya dari `api/.env.example`) ke direktori root sebagai `.env` dan sesuaikan variabel seperti `DATABASE_URL` untuk koneksi database serta `PORT` (port dalam kontainer, bawaan 3000) dan `BACKEND_PORT` (port host yang memetakan port 3000, bawaan 3002).
 2. Jalankan `docker-compose up` untuk membangun dan menjalankan seluruh layanan.
-3. Setelah kontainer berjalan, API dapat diakses di `http://localhost:${BACKEND_PORT}` (default `http://localhost:3002`) dan antarmuka web di `http://localhost:5173`.
+3. Setelah kontainer berjalan, API dapat diakses di `http://localhost:${BACKEND_PORT}` (default `http://localhost:3002`) dan antarmuka web di `http://localhost:5173`. Layanan MySQL hanya dipetakan ke `127.0.0.1:3307`, sehingga tidak dapat diakses dari luar host kecuali Anda mengubah pemetaan port secara eksplisit.
 
 ## Menggunakan dump SQL untuk seeding
 
@@ -34,6 +34,7 @@ File dump tetap tersedia di folder root untuk referensi.
 
 1. Pastikan server sudah login ke registry yang menyimpan image, misalnya: `docker login ghcr.io`.
 2. Jalankan `./deploy.sh` (menggunakan `docker-compose -f docker-compose.prod.yml pull && docker-compose -f docker-compose.prod.yml up -d`) untuk menarik image terbaru dan me-restart kontainer.
+   > **Catatan keamanan:** Berkas `docker-compose.prod.yml` tidak memublikasikan port MySQL ke host, sehingga hanya kontainer lain yang dapat mengaksesnya. Tambahkan konfigurasi `ports` secara eksplisit jika akses luar benar-benar dibutuhkan.
 3. Untuk otomatisasi, Anda dapat memakai salah satu dari berikut:
    - **Watchtower** untuk memantau dan memperbarui image secara berkala.
    - **GitHub Actions**: workflow `deploy.yml` di repo ini akan mengeksekusi `deploy.sh` melalui SSH ketika image baru dipublikasikan.
