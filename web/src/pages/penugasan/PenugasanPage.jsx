@@ -193,14 +193,24 @@ export default function PenugasanPage() {
           return axios.get("/teams/member");
         return res;
       });
-      let usersReq = canManage
-        ? axios.get("/users", { params: { pageSize: 1000 } })
-        : Promise.resolve({ data: [user] });
-      const [pRes, tRes, uRes] = await Promise.all([
-        penugasanReq,
-        teamsReq,
-        usersReq,
-      ]);
+      const [pRes, tRes] = await Promise.all([penugasanReq, teamsReq]);
+
+      let usersData;
+      if (canManage) {
+        usersData = [];
+        let page = 1;
+        let totalPages = 1;
+        do {
+          const res = await axios.get("/users", { params: { page } });
+          const pageData = Array.isArray(res.data) ? res.data : res.data.data;
+          usersData = usersData.concat(pageData);
+          totalPages = res.data.meta?.totalPages || 1;
+          page += 1;
+        } while (page <= totalPages);
+      } else {
+        usersData = [user];
+      }
+
       let kRes;
       if (user?.role === ROLES.ADMIN) {
         kRes = await axios.get("/master-kegiatan?limit=1000");
@@ -218,7 +228,6 @@ export default function PenugasanPage() {
           (t) => t.namaTim !== "Admin" && t.namaTim !== "Pimpinan"
         )
       );
-      const usersData = Array.isArray(uRes.data) ? uRes.data : uRes.data.data;
       setUsers([...usersData].sort((a, b) => a.nama.localeCompare(b.nama)));
       const kData = kRes.data.data || kRes.data;
       setKegiatan(
