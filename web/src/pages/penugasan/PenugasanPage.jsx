@@ -223,11 +223,15 @@ export default function PenugasanPage() {
         kRes = { data: { data: [] } };
       }
       setPenugasan(sortPenugasan(pRes.data, user?.teamId));
-      setTeams(
-        tRes.data.filter(
-          (t) => t.namaTim !== "Admin" && t.namaTim !== "Pimpinan"
-        )
-      );
+      if (Array.isArray(tRes.data)) {
+        setTeams(
+          tRes.data.filter(
+            (t) => t.namaTim !== "Admin" && t.namaTim !== "Pimpinan"
+          )
+        );
+      } else {
+        setTeams([]);
+      }
       setUsers([...usersData].sort((a, b) => a.nama.localeCompare(b.nama)));
       const kData = kRes.data.data || kRes.data;
       setKegiatan(

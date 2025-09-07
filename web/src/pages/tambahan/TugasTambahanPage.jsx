@@ -134,11 +134,15 @@ export default function TugasTambahanPage() {
       ]);
       setItems(sortTambahan(tRes.data, user?.teamId));
       setKegiatan(kRes.data.data || kRes.data);
-      setTeams(
-        teamRes.data.filter(
-          (t) => t.namaTim !== "Admin" && t.namaTim !== "Pimpinan"
-        )
-      );
+      if (Array.isArray(teamRes.data)) {
+        setTeams(
+          teamRes.data.filter(
+            (t) => t.namaTim !== "Admin" && t.namaTim !== "Pimpinan"
+          )
+        );
+      } else {
+        setTeams([]);
+      }
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil data");
     } finally {
