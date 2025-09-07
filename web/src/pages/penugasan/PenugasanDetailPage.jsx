@@ -93,20 +93,46 @@ export default function PenugasanDetailPage() {
     }
   }, [id]);
 
+  const fetchUsers = useCallback(async () => {
+    if (!canManage) {
+      if (user) setUsers([user]);
+      return;
+    }
+    try {
+      const pageSize = 1000;
+      let page = 1;
+      let lastPage = 1;
+      let all = [];
+      do {
+        const res = await axios.get("/users", { params: { page, pageSize } });
+        const data = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data?.data)
+            ? res.data.data
+            : [];
+        all = all.concat(data);
+        lastPage =
+          res.data?.lastPage ||
+          res.data?.totalPages ||
+          res.data?.meta?.totalPages ||
+          res.data?.meta?.lastPage ||
+          1;
+        page += 1;
+      } while (page <= lastPage);
+      const sorted = all.sort((a, b) => a.nama.localeCompare(b.nama));
+      setUsers(sorted);
+    } catch (err) {
+      handleAxiosError(err, "Gagal mengambil pengguna");
+    }
+  }, [canManage, user]);
+
   useEffect(() => {
     fetchDetail();
     axios
       .get(`/laporan-harian/penugasan/${id}`)
       .then((r) => setLaporan(r.data));
-    if (canManage) {
-      axios.get("/users", { params: { pageSize: 1000 } }).then((r) => {
-        const sorted = [...r.data].sort((a, b) => a.nama.localeCompare(b.nama));
-        setUsers(sorted);
-      });
-    } else if (user) {
-      setUsers([user]);
-    }
-  }, [id, canManage, user, fetchDetail]);
+    fetchUsers();
+  }, [id, fetchDetail, fetchUsers]);
 
   useEffect(() => {
     if (!canManage) return;
