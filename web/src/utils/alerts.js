@@ -33,6 +33,7 @@ export const handleAxiosError = (error, defaultMessage = "Terjadi kesalahan") =>
         (error?.request
           ? "Tidak dapat terhubung ke server. Coba lagi nanti."
           : defaultMessage);
+  console.error(error);
   showError("Error", message);
 };
 
