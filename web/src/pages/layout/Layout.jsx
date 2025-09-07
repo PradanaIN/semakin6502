@@ -43,10 +43,11 @@ export default function Layout() {
     if (!user || user.role === ROLES.PIMPINAN) return;
     try {
       const res = await axios.get("/notifications");
-      if (!Array.isArray(res.data)) {
-        throw new Error("Unexpected notifications response");
-      }
-      const data = res.data;
+      const data = Array.isArray(res.data)
+        ? res.data
+        : Array.isArray(res.data?.data)
+        ? res.data.data
+        : [];
       setNotifications(data);
       setNotifCount(data.filter((n) => !n.isRead).length);
     } catch (err) {
