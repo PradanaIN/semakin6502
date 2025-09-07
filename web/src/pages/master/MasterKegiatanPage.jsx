@@ -122,10 +122,20 @@ export default function MasterKegiatanPage() {
   const fetchTeams = useCallback(async () => {
     try {
       let res = await axios.get("/teams");
-      if (Array.isArray(res.data) && res.data.length === 0) {
+      let teamsData = Array.isArray(res.data)
+        ? res.data
+        : Array.isArray(res.data?.data)
+          ? res.data.data
+          : [];
+      if (teamsData.length === 0) {
         res = await axios.get("/teams/member");
+        teamsData = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data?.data)
+            ? res.data.data
+            : [];
       }
-      setTeams(res.data);
+      setTeams(teamsData);
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil tim");
     }
