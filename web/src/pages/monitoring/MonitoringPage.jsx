@@ -10,7 +10,7 @@ import { exportMonthlyCurrentPDF, exportMonthlyYearPDF } from "./export/pdfTable
 import Legend from "../../components/ui/Legend";
 import { useAuth } from "../auth/useAuth";
 import axios from "axios";
-import { handleAxiosError } from "../../utils/alerts";
+import { handleAxiosError, showWarning } from "../../utils/alerts";
 import formatWita from "../../utils/formatWita";
 
 // formatWita dipindahkan ke util bersama
@@ -63,7 +63,17 @@ export default function MonitoringPage() {
     const fetchTeams = async () => {
       try {
         const res = await axios.get("/teams/all");
-        setTeams(res.data);
+        const data = res?.data;
+        if (
+          typeof data === "string" && data.trim().startsWith("<")
+        ) {
+          console.warn("Unexpected HTML response for teams", data);
+          showWarning("Gagal mengambil tim", "Respon tidak valid");
+        } else if (!Array.isArray(data)) {
+          console.warn("Unexpected teams response", data);
+          showWarning("Gagal mengambil tim", "Data tim tidak valid");
+        }
+        setTeams(Array.isArray(data) ? data : []);
       } catch (err) {
         handleAxiosError(err, "Gagal mengambil tim");
       }
