@@ -524,6 +524,11 @@ async function main() {
         for (let i = 0; i < taskCount; i++) {
           const k = masters[randomInt(0, masters.length - 1)];
           const id = ulid();
+          const status =
+            info.bulan === "7" || info.bulan === "8"
+              ? STATUS.SELESAI_DIKERJAKAN
+              : STATUS.BELUM;
+
           const row = {
             id,
             kegiatanId: k.id,
@@ -533,23 +538,40 @@ async function main() {
             bulan: info.bulan,
             tahun: info.year,
             deskripsi: `Tugas ${k.namaKegiatan}`,
-            status: STATUS.BELUM,
+            status,
           };
           penugasanRows.push(row);
           arr.push(row);
+          if (status === STATUS.SELESAI_DIKERJAKAN) selesaiPenugasanIds.add(id);
         }
         penugasanMap.set(key, arr);
 
         // tambahan at least one per week
         const { start, end } = weekRanges[w - 1];
-        const day = randomInt(start, end);
-        const date = new Date(Date.UTC(info.year, info.monthIndex, day));
+        let day: number;
+        let date: Date;
+        let dateStr: string;
+        do {
+          day = randomInt(start, end);
+          date = new Date(Date.UTC(info.year, info.monthIndex, day));
+          dateStr = date.toISOString().slice(0, 10);
+        } while (
+          date.getUTCDay() === 0 ||
+          date.getUTCDay() === 6 ||
+          holidays.has(dateStr)
+        );
+
         const statusOptions = [
           STATUS.BELUM,
           STATUS.SEDANG_DIKERJAKAN,
           STATUS.SELESAI_DIKERJAKAN,
         ];
-        const tStatus = statusOptions[randomInt(0, statusOptions.length - 1)];
+        
+        const tStatus =
+          info.bulan === "7" || info.bulan === "8"
+            ? STATUS.SELESAI_DIKERJAKAN
+            : statusOptions[randomInt(0, statusOptions.length - 1)];
+
         const kTambahan = masters[randomInt(0, masters.length - 1)];
         const tambahanId = ulid();
         const tambahan = {
@@ -557,7 +579,9 @@ async function main() {
           nama: kTambahan.namaKegiatan,
           tanggal: date.toISOString(),
           status: tStatus,
-          buktiLink: tStatus === STATUS.BELUM ? undefined : `${BASE_URL}/bukti`,
+          buktiLink:
+            tStatus === STATUS.BELUM ? undefined : `${BASE_URL}/bukti`,
+
           userId: m.userId,
           kegiatanId: kTambahan.id,
           teamId: m.teamId,
