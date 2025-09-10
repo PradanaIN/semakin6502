@@ -528,6 +528,7 @@ async function main() {
             info.bulan === "7" || info.bulan === "8"
               ? STATUS.SELESAI_DIKERJAKAN
               : STATUS.BELUM;
+
           const row = {
             id,
             kegiatanId: k.id,
@@ -559,15 +560,18 @@ async function main() {
           date.getUTCDay() === 6 ||
           holidays.has(dateStr)
         );
+
         const statusOptions = [
           STATUS.BELUM,
           STATUS.SEDANG_DIKERJAKAN,
           STATUS.SELESAI_DIKERJAKAN,
         ];
+        
         const tStatus =
           info.bulan === "7" || info.bulan === "8"
             ? STATUS.SELESAI_DIKERJAKAN
             : statusOptions[randomInt(0, statusOptions.length - 1)];
+
         const kTambahan = masters[randomInt(0, masters.length - 1)];
         const tambahanId = ulid();
         const tambahan = {
@@ -577,6 +581,7 @@ async function main() {
           status: tStatus,
           buktiLink:
             tStatus === STATUS.BELUM ? undefined : `${BASE_URL}/bukti`,
+
           userId: m.userId,
           kegiatanId: kTambahan.id,
           teamId: m.teamId,
