@@ -439,35 +439,49 @@ async function main() {
     await prisma.member.createMany({ data: memberRows, skipDuplicates: true });
   }
 
-  // seed penugasan for June to August 2025
+  // seed penugasan for July to September 2025
   const months = [
-    { bulan: "6", monthIndex: 5, year: 2025, days: 30 },
     { bulan: "7", monthIndex: 6, year: 2025, days: 31 },
     { bulan: "8", monthIndex: 7, year: 2025, days: 31 },
+    {
+      bulan: "9",
+      monthIndex: 8,
+      year: 2025,
+      days: 30,
+      weeks: [
+        { start: 1, end: 7 },
+        { start: 8, end: 14 },
+      ],
+    },
   ];
 
   type WeekRange = { start: number; end: number };
-  function getWeekRanges(year: number, monthIndex: number): WeekRange[] {
+  function getWeekRanges(
+    year: number,
+    monthIndex: number,
+    weeks?: WeekRange[]
+  ): WeekRange[] {
+    if (weeks) return weeks;
     const daysInMonth = new Date(
       Date.UTC(year, monthIndex + 1, 0)
     ).getUTCDate();
     const firstDay = new Date(Date.UTC(year, monthIndex, 1)).getUTCDay();
     const firstWeekEnd = firstDay === 0 ? 7 : 7 - firstDay + 1;
-    const weeks: WeekRange[] = [{ start: 1, end: firstWeekEnd }];
+    const result: WeekRange[] = [{ start: 1, end: firstWeekEnd }];
     let start = firstWeekEnd;
     if (firstWeekEnd < 7) {
       const end = Math.min(start + 7, daysInMonth);
-      weeks.push({ start, end });
+      result.push({ start, end });
       start = end + 1;
     } else {
       start = firstWeekEnd + 1;
     }
     while (start <= daysInMonth) {
       const end = Math.min(start + 6, daysInMonth);
-      weeks.push({ start, end });
+      result.push({ start, end });
       start = end + 1;
     }
-    return weeks;
+    return result;
   }
 
   const members = await prisma.member.findMany({ include: { user: true } });
@@ -476,93 +490,42 @@ async function main() {
     if (m.isLeader) leaderByTeam.set(m.teamId, m.userId);
   }
 
-  // seed tugas tambahan linked to master kegiatan using explicit dates
-  const sampleDates = [
-    new Date("2025-06-15T00:00:00Z"),
-    new Date("2025-07-14T00:00:00Z"),
-    new Date("2025-07-31T00:00:00Z"),
-    new Date("2025-08-17T00:00:00Z"),
-  ];
-  sampleDates.forEach((d) => console.log("Seeded:", d.toISOString()));
-  /*
+  const holidays = new Set(getHolidays(2025));
+
   const tambahanRows: any[] = [];
-  for (const m of members) {
-    if (m.user.role === "admin") continue;
-    const masters = await prisma.masterKegiatan.findMany({
-      where: { teamId: m.teamId },
-    });
-    if (!masters.length) continue;
-
-    for (let i = 0; i < sampleDates.length; i++) {
-      const k = masters[randomInt(0, masters.length - 1)];
-      const date = sampleDates[i];
-      const status =
-        i === 0
-          ? STATUS.BELUM
-          : i === 1
-          ? STATUS.SEDANG_DIKERJAKAN
-          : STATUS.SELESAI_DIKERJAKAN;
-      tambahanRows.push({
-        id: ulid(),
-        nama: k.namaKegiatan,
-        tanggal: date.toISOString(),
-        status,
-        buktiLink:
-          status === STATUS.BELUM ? undefined : `${BASE_URL}/bukti`,
-        userId: m.userId,
-        kegiatanId: k.id,
-        teamId: m.teamId,
-        deskripsi: `Tugas tambahan ${k.namaKegiatan}`,
-        capaianKegiatan: `Capaian ${k.namaKegiatan}`,
-      });
-    }
-  }
-
-  if (tambahanRows.length) {
-    await prisma.kegiatanTambahan.createMany({
-      data: tambahanRows,
-      skipDuplicates: true,
-    });
-
-    const laporanTambahanRows = tambahanRows.map((t) => ({
-      id: ulid(),
-      tambahanId: t.id,
-      pegawaiId: t.userId,
-      tanggal: t.tanggal,
-      status: t.status,
-      capaianKegiatan: t.capaianKegiatan,
-      buktiLink:
-        t.status === STATUS.BELUM ? undefined : `${BASE_URL}/bukti`,
-    }));
-
-    await prisma.laporanHarian.createMany({
-      data: laporanTambahanRows,
-      skipDuplicates: true,
-    });
-  }
-  */
-
-  /*
+  const laporanTambahanRows: any[] = [];
   const penugasanRows: any[] = [];
+  const laporanPenugasanRows: any[] = [];
+  const selesaiPenugasanIds = new Set<string>();
 
-  for (const m of members) {
-    if (m.user.role === "admin") continue;
+  // maps member-month-week to assignments for laporan generation
+  const penugasanMap = new Map<string, any[]>();
+
+  // prepare member subsets for September week 2 scenarios
+  const nonAdminMembers = members.filter((m) => m.user.role !== "admin");
+  const mid = Math.ceil(nonAdminMembers.length / 2);
+  const scenario1Members = nonAdminMembers.slice(0, mid);
+  const scenario2Members = nonAdminMembers.slice(mid);
+
+  for (const m of nonAdminMembers) {
     const masters = await prisma.masterKegiatan.findMany({
       where: { teamId: m.teamId },
     });
     if (!masters.length) continue;
 
     for (const info of months) {
-      const weekRanges = getWeekRanges(info.year, info.monthIndex);
-      const maxWeeks = ["7", "8"].includes(info.bulan)
-        ? Math.min(3, weekRanges.length)
-        : weekRanges.length;
-      for (let w = 1; w <= maxWeeks; w++) {
+      const weekRanges = getWeekRanges(info.year, info.monthIndex, info.weeks);
+      const weeksToProcess = weekRanges.length;
+      for (let w = 1; w <= weeksToProcess; w++) {
+        // penugasan 5-7 per week
         const taskCount = randomInt(5, 7);
+        const key = `${m.userId}-${info.bulan}-${w}`;
+        const arr: any[] = [];
         for (let i = 0; i < taskCount; i++) {
           const k = masters[randomInt(0, masters.length - 1)];
-          penugasanRows.push({
-            id: ulid(),
+          const id = ulid();
+          const row = {
+            id,
             kegiatanId: k.id,
             pegawaiId: m.userId,
             creatorId: leaderByTeam.get(m.teamId) || m.userId,
@@ -571,8 +534,46 @@ async function main() {
             tahun: info.year,
             deskripsi: `Tugas ${k.namaKegiatan}`,
             status: STATUS.BELUM,
-          });
+          };
+          penugasanRows.push(row);
+          arr.push(row);
         }
+        penugasanMap.set(key, arr);
+
+        // tambahan at least one per week
+        const { start, end } = weekRanges[w - 1];
+        const day = randomInt(start, end);
+        const date = new Date(Date.UTC(info.year, info.monthIndex, day));
+        const statusOptions = [
+          STATUS.BELUM,
+          STATUS.SEDANG_DIKERJAKAN,
+          STATUS.SELESAI_DIKERJAKAN,
+        ];
+        const tStatus = statusOptions[randomInt(0, statusOptions.length - 1)];
+        const kTambahan = masters[randomInt(0, masters.length - 1)];
+        const tambahanId = ulid();
+        const tambahan = {
+          id: tambahanId,
+          nama: kTambahan.namaKegiatan,
+          tanggal: date.toISOString(),
+          status: tStatus,
+          buktiLink: tStatus === STATUS.BELUM ? undefined : `${BASE_URL}/bukti`,
+          userId: m.userId,
+          kegiatanId: kTambahan.id,
+          teamId: m.teamId,
+          deskripsi: `Tugas tambahan ${kTambahan.namaKegiatan}`,
+          capaianKegiatan: `Capaian ${kTambahan.namaKegiatan}`,
+        };
+        tambahanRows.push(tambahan);
+        laporanTambahanRows.push({
+          id: ulid(),
+          tambahanId: tambahan.id,
+          pegawaiId: m.userId,
+          tanggal: tambahan.tanggal,
+          status: tambahan.status,
+          capaianKegiatan: tambahan.capaianKegiatan,
+          buktiLink: tambahan.buktiLink,
+        });
       }
     }
   }
@@ -583,74 +584,111 @@ async function main() {
       skipDuplicates: true,
     });
   }
-  */
 
-  // seed laporan harian based on penugasan
-  /*
-  const penugasans = await prisma.penugasan.findMany({
-    where: { tahun: 2025, bulan: { in: ["6", "7", "8"] } },
-  });
-
-  if (penugasans.length) {
-    const laporanRows: any[] = [];
-    const selesaiIds = new Set<string>();
-    const holidays = new Set(getHolidays(2025));
-
-    for (const m of members) {
-      if (m.user.role === "admin") continue;
-      for (const info of months) {
-        const weekRanges = getWeekRanges(info.year, info.monthIndex);
-        const maxWeeks = ["7", "8"].includes(info.bulan)
-          ? Math.min(3, weekRanges.length)
-          : weekRanges.length;
-        for (let w = 1; w <= maxWeeks; w++) {
-          const tugas = penugasans.filter(
-            (p) =>
-              p.pegawaiId === m.userId &&
-              p.bulan === info.bulan &&
-              p.minggu === w
-          );
-          if (!tugas.length) continue;
-          const { start, end } = weekRanges[w - 1];
-          for (let d = start; d <= end; d++) {
-            const date = new Date(Date.UTC(info.year, info.monthIndex, d));
-            const day = date.getDay();
-            const dateStr = date.toISOString().slice(0, 10);
-            if (day === 0 || day === 6 || holidays.has(dateStr)) continue;
-
-            const laporanCount = randomInt(1, 3);
-            for (let i = 0; i < laporanCount; i++) {
-              const p = tugas[randomInt(0, tugas.length - 1)];
-              laporanRows.push({
-                id: ulid(),
-                penugasanId: p.id,
-                pegawaiId: m.userId,
-                tanggal: date.toISOString(),
-                status: STATUS.SELESAI_DIKERJAKAN,
-                capaianKegiatan: `Capaian ${p.id}`,
-                buktiLink: `${BASE_URL}/bukti`,
-              });
-              selesaiIds.add(p.id);
-            }
-          }
-        }
-      }
-    }
-
-    if (laporanRows.length) {
-      await prisma.laporanHarian.createMany({
-        data: laporanRows,
-        skipDuplicates: true,
-      });
-    }
-    if (selesaiIds.size) {
-      await prisma.penugasan.updateMany({
-        where: { id: { in: Array.from(selesaiIds) } },
-        data: { status: STATUS.SELESAI_DIKERJAKAN },
+  if (tambahanRows.length) {
+    await prisma.kegiatanTambahan.createMany({
+      data: tambahanRows,
+      skipDuplicates: true,
+    });
+    await prisma.laporanHarian.createMany({
+      data: laporanTambahanRows,
+      skipDuplicates: true,
+    });
+    // synchronize status with latest laporan
+    for (const t of tambahanRows) {
+      await prisma.kegiatanTambahan.update({
+        where: { id: t.id },
+        data: { status: t.status },
       });
     }
   }
-  */
+
+  // generate laporan harian for penugasan
+  for (const info of months) {
+    const weekRanges = getWeekRanges(info.year, info.monthIndex, info.weeks);
+    // week 1 reports for all months
+    const week1 = weekRanges[0];
+    for (const m of nonAdminMembers) {
+      const tugas = penugasanMap.get(`${m.userId}-${info.bulan}-1`);
+      if (!tugas || !tugas.length) continue;
+      for (let d = week1.start; d <= week1.end; d++) {
+        const date = new Date(Date.UTC(info.year, info.monthIndex, d));
+        const day = date.getUTCDay();
+        const dateStr = date.toISOString().slice(0, 10);
+        if (day === 0 || day === 6 || holidays.has(dateStr)) continue;
+        const p = tugas[randomInt(0, tugas.length - 1)];
+        laporanPenugasanRows.push({
+          id: ulid(),
+          penugasanId: p.id,
+          pegawaiId: m.userId,
+          tanggal: date.toISOString(),
+          status: STATUS.SELESAI_DIKERJAKAN,
+          capaianKegiatan: `Capaian ${p.id}`,
+          buktiLink: `${BASE_URL}/bukti`,
+        });
+        selesaiPenugasanIds.add(p.id);
+      }
+    }
+
+    // September week 2 special handling
+    if (info.bulan === "9" && weekRanges[1]) {
+      const week2 = weekRanges[1];
+      const scenario1Days = [8, 9, 10];
+      const scenario2Days = [9, 10];
+      for (const m of scenario1Members) {
+        const tugas = penugasanMap.get(`${m.userId}-9-2`);
+        if (!tugas || !tugas.length) continue;
+        for (const d of scenario1Days) {
+          if (d < week2.start || d > week2.end) continue;
+          const date = new Date(Date.UTC(info.year, info.monthIndex, d));
+          const p = tugas[randomInt(0, tugas.length - 1)];
+          laporanPenugasanRows.push({
+            id: ulid(),
+            penugasanId: p.id,
+            pegawaiId: m.userId,
+            tanggal: date.toISOString(),
+            status: STATUS.SELESAI_DIKERJAKAN,
+            capaianKegiatan: `Capaian ${p.id}`,
+            buktiLink: `${BASE_URL}/bukti`,
+          });
+          selesaiPenugasanIds.add(p.id);
+        }
+      }
+      for (const m of scenario2Members) {
+        const tugas = penugasanMap.get(`${m.userId}-9-2`);
+        if (!tugas || !tugas.length) continue;
+        for (const d of scenario2Days) {
+          if (d < week2.start || d > week2.end) continue;
+          const date = new Date(Date.UTC(info.year, info.monthIndex, d));
+          const p = tugas[randomInt(0, tugas.length - 1)];
+          laporanPenugasanRows.push({
+            id: ulid(),
+            penugasanId: p.id,
+            pegawaiId: m.userId,
+            tanggal: date.toISOString(),
+            status: STATUS.SELESAI_DIKERJAKAN,
+            capaianKegiatan: `Capaian ${p.id}`,
+            buktiLink: `${BASE_URL}/bukti`,
+          });
+          selesaiPenugasanIds.add(p.id);
+        }
+      }
+    }
+  }
+
+  if (laporanPenugasanRows.length) {
+    await prisma.laporanHarian.createMany({
+      data: laporanPenugasanRows,
+      skipDuplicates: true,
+    });
+  }
+
+  if (selesaiPenugasanIds.size) {
+    await prisma.penugasan.updateMany({
+      where: { id: { in: Array.from(selesaiPenugasanIds) } },
+      data: { status: STATUS.SELESAI_DIKERJAKAN },
+    });
+  }
 
   // Assign some members late laporan_harian before BASE_DATE to simulate
   // late reports using existing penugasan. Members are randomly selected to be late by 1, 3 or 7 days.
@@ -682,7 +720,7 @@ async function main() {
         where: {
           pegawaiId: m.userId,
           tahun: 2025,
-          bulan: { in: ["6", "7", "8"] },
+          bulan: { in: ["7", "8", "9"] },
         },
       });
       if (!penugasan) continue;
