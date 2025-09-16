@@ -5,7 +5,12 @@ describe('MonitoringService month boundary', () => {
     laporanHarian: { findMany: jest.fn() },
     penugasan: { findMany: jest.fn() },
   } as any;
-  const service = new MonitoringService(prisma);
+  const cache = {
+    get: jest.fn().mockResolvedValue(undefined),
+    set: jest.fn().mockResolvedValue(undefined),
+    wrap: jest.fn((key, ttl, factory) => factory()),
+  } as any;
+  const service = new MonitoringService(prisma, cache);
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -24,3 +29,4 @@ describe('MonitoringService month boundary', () => {
     expect(res.minggu).toBe(1);
   });
 });
+
