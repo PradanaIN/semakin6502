@@ -5,6 +5,13 @@
     "moduleResolution": "node",
     "outDir": "./dist",
     "rootDir": "./",
+    "baseUrl": "./src",
+    "paths": {
+      "@core/*": ["core/*"],
+      "@shared/*": ["shared/*"],
+      "@modules/*": ["modules/*"],
+      "@app/*": ["*"]
+    },
     "strict": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

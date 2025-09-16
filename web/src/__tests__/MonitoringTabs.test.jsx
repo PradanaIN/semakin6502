@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import MonitoringTabs from "../pages/dashboard/components/MonitoringTabs";
 import months from "../utils/months";
 import userEvent from "@testing-library/user-event";
-import { getWeekStarts } from "../pages/monitoring/MonitoringPage";
+import { getWeekStarts } from "@/modules/monitoring/utils/date";
 import { useState } from "react";
 
 globalThis.ResizeObserver = class {

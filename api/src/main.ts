@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import helmet from "helmet";
 import { AppModule } from "./app.module";
-import { LoggingInterceptor } from "./common/logging.interceptor";
+import { LoggingInterceptor } from "@shared/interceptors/logging.interceptor";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

@@ -1,0 +1,48 @@
+import { Transform } from "class-transformer";
+import { IsDateString, IsOptional, IsString, ValidateIf } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import STATUS, { Status } from "@shared/constants/status.constants";
+
+export class SubmitLaporanDto {
+  @ApiProperty()
+  @IsString()
+  penugasanId!: string;
+
+  @ApiProperty()
+  @IsDateString()
+  tanggal!: string;
+
+  @ApiProperty()
+  @IsString()
+  status!: Status;
+
+  @ApiProperty()
+  @IsString()
+  deskripsi!: string;
+
+  @ApiProperty()
+  @IsString()
+  capaianKegiatan!: string;
+
+  @ApiProperty({ required: false })
+  @Transform(({ value }) => (value === null || value === "" ? undefined : value))
+  @ValidateIf(
+    (o) =>
+      (
+        [STATUS.SEDANG_DIKERJAKAN, STATUS.SELESAI_DIKERJAKAN] as Status[]
+      ).includes(o.status)
+  )
+  @IsString()
+  buktiLink?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Transform(({ value }) => (value === null || value === "" ? undefined : value))
+  @IsString()
+  catatan?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  pegawaiId?: string;
+}

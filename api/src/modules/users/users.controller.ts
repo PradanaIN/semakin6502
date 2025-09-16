@@ -1,0 +1,90 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  UseGuards,
+  Req,
+  Query,
+} from "@nestjs/common";
+import { ApiQuery, ApiTags } from "@nestjs/swagger";
+import { UsersService } from "./users.service";
+import { JwtAuthGuard } from "@shared/guards/jwt-auth.guard";
+import { RolesGuard } from "@shared/guards/roles.guard";
+import { Roles } from "@shared/guards/roles.decorator";
+import { ROLES } from "@shared/constants/roles.constants";
+import { CreateUserDto } from "./create-user.dto";
+import { UpdateUserDto } from "./update-user.dto";
+import { Request } from "express";
+import { AuthRequestUser } from "@shared/interfaces/auth-request-user.interface";
+
+@ApiTags("users")
+@Controller("users")
+@UseGuards(JwtAuthGuard, RolesGuard)
+export class UsersController {
+  constructor(private usersService: UsersService) {}
+
+  @Get()
+  @Roles(ROLES.ADMIN, ROLES.KETUA)
+  @ApiQuery({
+    name: "page",
+    required: false,
+    type: Number,
+    description: "Page number (default: 1)",
+  })
+  @ApiQuery({
+    name: "pageSize",
+    required: false,
+    type: Number,
+    description: "Items per page (default: 10)",
+  })
+  findAll(
+    @Query("page") page?: string,
+    @Query("pageSize") pageSize?: string,
+  ) {
+    const p = page ? parseInt(page, 10) : undefined;
+    const ps = pageSize ? parseInt(pageSize, 10) : undefined;
+    return this.usersService.findAll(p, ps);
+  }
+
+  @Get(":id")
+  @Roles(ROLES.ADMIN)
+  findOne(@Param("id") id: string) {
+    return this.usersService.findOne(id);
+  }
+
+  @Get("profile")
+  getProfile(@Req() req: Request) {
+    const { userId } = req.user as AuthRequestUser;
+    return this.usersService.findProfile(userId);
+  }
+
+  @Put("profile")
+  updateProfile(@Req() req: Request, @Body() body: UpdateUserDto) {
+    const { userId, role } = req.user as AuthRequestUser;
+    const data: UpdateUserDto = { ...body };
+    if (role !== ROLES.ADMIN) data.role = undefined;
+    return this.usersService.updateProfile(userId, data);
+  }
+
+  @Post()
+  @Roles(ROLES.ADMIN)
+  create(@Body() body: CreateUserDto) {
+    return this.usersService.create({ ...body });
+  }
+
+  @Put(":id")
+  @Roles(ROLES.ADMIN)
+  update(@Param("id") id: string, @Body() body: UpdateUserDto) {
+    return this.usersService.update(id, { ...body });
+  }
+
+  @Delete(":id")
+  @Roles(ROLES.ADMIN)
+  remove(@Param("id") id: string) {
+    return this.usersService.remove(id);
+  }
+}
