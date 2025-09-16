@@ -147,7 +147,9 @@ export class MonitoringService {
       d.setUTCDate(start.getUTCDate() + i);
       const dateStr = d.toISOString();
       const data = perDay[dateStr] || { selesai: 0, total: 0 };
-      const persen = data.total > 0 ? 100 : 0;
+      const persen = data.total
+        ? Math.round((data.selesai / data.total) * 100)
+        : 0;
       detail.push({
         hari: hari[d.getUTCDay()],
         tanggal: dateStr,
@@ -541,7 +543,9 @@ export class MonitoringService {
       .map(([id, v]) => {
         const weeks = weekStarts.map((_, i) => {
           const w = v.perWeek[i] || { selesai: 0, total: 0 };
-          const persen = w.total > 0 ? 100 : 0;
+          const persen = w.total
+            ? Math.round((w.selesai / w.total) * 100)
+            : 0;
           return { selesai: w.selesai, total: w.total, persen };
         });
         return { userId: id, nama: v.nama, weeks };
