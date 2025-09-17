@@ -4,7 +4,7 @@ SEMAKIN 6502 (Sistem Monitoring Kinerja) adalah aplikasi internal untuk mencata
 
 ## Instalasi
 
-1. Salin berkas contoh `.env` (misalnya dari `api/.env.example`) ke direktori root sebagai `.env`. Minimal isilah `MYSQL_ROOT_PASSWORD` dan `MYSQL_DATABASE`; `docker compose` akan menyusun `DATABASE_URL` backend secara otomatis dari dua nilai tersebut. Atur juga variabel lain seperti `PORT` (port dalam kontainer, bawaan 3000) dan `BACKEND_PORT` (port host yang memetakan port 3000, bawaan 3002) jika diperlukan.
+1. Salin berkas contoh `.env` (misalnya dari `api/.env.example`) ke direktori root sebagai `.env`. Minimal isilah `MYSQL_ROOT_PASSWORD` dan `MYSQL_DATABASE`. `docker compose` akan meneruskan host, port, pengguna, sandi, dan nama database ke backend sehingga URL koneksi dibangun otomatis saat runtime. Jika Anda menjalankan backend tanpa Compose, atur variabel `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, dan `DATABASE_NAME` (atau langsung isi `DATABASE_URL`). Atur juga variabel lain seperti `PORT` (port dalam kontainer, bawaan 3000) dan `BACKEND_PORT` (port host yang memetakan port 3000, bawaan 3002) jika diperlukan.
 2. Jalankan `docker-compose up` untuk membangun dan menjalankan seluruh layanan.
 3. Setelah kontainer berjalan, API dapat diakses di `http://localhost:${BACKEND_PORT}` (default `http://localhost:3002`) dan antarmuka web di `http://localhost:5173`. Layanan MySQL hanya dipetakan ke `127.0.0.1:3307`, sehingga tidak dapat diakses dari luar host kecuali Anda mengubah pemetaan port secara eksplisit.
 
@@ -55,7 +55,8 @@ Sistem hanya mengenali keempat peran di atas.
 Beberapa pengaturan aplikasi dibaca dari berkas `.env`.
 
 - `WEB_URL` – URL dasar frontend yang digunakan backend untuk membentuk tautan pada notifikasi.
-- `DATABASE_URL` hanya perlu diisi manual jika backend dijalankan di luar `docker compose`; saat menggunakan Compose, nilainya otomatis dibentuk dari `MYSQL_ROOT_PASSWORD` dan `MYSQL_DATABASE`.
+- `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_NAME` – potongan kredensial database. `docker compose` mengisi nilai ini dari layanan MySQL; saat menjalankan backend secara manual, isi variabel tersebut untuk membentuk koneksi yang sama.
+- `DATABASE_URL` – opsional untuk menimpa seluruh koneksi database (misalnya menggunakan DSN lain). Bila diisi, nilai ini akan mengesampingkan potongan kredensial di atas.
 
 ## Alur Penggunaan Umum
 
