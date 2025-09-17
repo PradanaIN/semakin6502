@@ -28,7 +28,11 @@ services:
   backend:
     image: ${REGISTRY_USERNAME}/semakin6502-backend:latest
     environment:
-      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
+      DATABASE_HOST: mysql
+      DATABASE_PORT: 3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DATABASE_NAME: ${MYSQL_DATABASE}
       JWT_SECRET: ${JWT_SECRET}
       PORT: ${PORT}
       CORS_ORIGIN: ${CORS_ORIGIN}
