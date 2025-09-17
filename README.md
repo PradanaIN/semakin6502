@@ -4,7 +4,7 @@ SEMAKIN 6502 (Sistem Monitoring Kinerja) adalah aplikasi internal untuk mencata
 
 ## Instalasi
 
-1. Salin berkas contoh `.env` (misalnya dari `api/.env.example`) ke direktori root sebagai `.env` dan sesuaikan variabel seperti `DATABASE_URL` untuk koneksi database serta `PORT` (port dalam kontainer, bawaan 3000) dan `BACKEND_PORT` (port host yang memetakan port 3000, bawaan 3002).
+1. Salin berkas contoh `.env` (misalnya dari `api/.env.example`) ke direktori root sebagai `.env`. Minimal isilah `MYSQL_ROOT_PASSWORD` dan `MYSQL_DATABASE`; `docker compose` akan menyusun `DATABASE_URL` backend secara otomatis dari dua nilai tersebut. Atur juga variabel lain seperti `PORT` (port dalam kontainer, bawaan 3000) dan `BACKEND_PORT` (port host yang memetakan port 3000, bawaan 3002) jika diperlukan.
 2. Jalankan `docker-compose up` untuk membangun dan menjalankan seluruh layanan.
 3. Setelah kontainer berjalan, API dapat diakses di `http://localhost:${BACKEND_PORT}` (default `http://localhost:3002`) dan antarmuka web di `http://localhost:5173`. Layanan MySQL hanya dipetakan ke `127.0.0.1:3307`, sehingga tidak dapat diakses dari luar host kecuali Anda mengubah pemetaan port secara eksplisit.
 
@@ -52,10 +52,10 @@ Sistem hanya mengenali keempat peran di atas.
 
 ## Konfigurasi Lingkungan
 
-Beberapa pengaturan aplikasi dibaca dari berkas `.env`. Tambahkan entri berikut:
+Beberapa pengaturan aplikasi dibaca dari berkas `.env`.
 
-- `DATABASE_URL` – URL koneksi MySQL, misal `mysql://root:password@mysql:3306/semakin_6502`.
 - `WEB_URL` – URL dasar frontend yang digunakan backend untuk membentuk tautan pada notifikasi.
+- `DATABASE_URL` hanya perlu diisi manual jika backend dijalankan di luar `docker compose`; saat menggunakan Compose, nilainya otomatis dibentuk dari `MYSQL_ROOT_PASSWORD` dan `MYSQL_DATABASE`.
 
 ## Alur Penggunaan Umum
 
