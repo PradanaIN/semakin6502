@@ -7,18 +7,13 @@ describe('MonitoringService', () => {
     penugasan: { findMany: jest.fn() },
     user: { findMany: jest.fn() },
   } as any;
-<<<<<<< HEAD
   const cache = {
-    get: jest.fn().mockResolvedValue(undefined),
-    set: jest.fn().mockResolvedValue(undefined),
+    get: jest.fn(),
+    set: jest.fn(),
     wrap: jest.fn((key, ttl, factory) => factory()),
   } as any;
-  const service = new MonitoringService(prisma, cache);
-=======
-  const cache = { get: jest.fn(), set: jest.fn() } as any;
 
   let service: MonitoringService;
->>>>>>> 7a15c40772e35ca39e3281e993992c32846e5732
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -27,6 +22,9 @@ describe('MonitoringService', () => {
     prisma.user.findMany.mockResolvedValue([]);
     cache.get.mockResolvedValue(null);
     cache.set.mockResolvedValue(undefined);
+    cache.wrap.mockImplementation(
+      (_key: string, _ttl: number, factory: () => unknown) => factory()
+    );
     service = new MonitoringService(prisma, cache);
   });
 
