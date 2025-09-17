@@ -14,18 +14,47 @@ import { toast } from "react-toastify";
 import camelizeKeys from "./utils/camelizeKeys.js";
 import { HelmetProvider } from "react-helmet-async";
 
-let apiUrl =
-  import.meta.env.VITE_API_URL ?? `${window.location.origin}`;
+function resolveApiBaseUrl() {
+  const fallbackOrigin = window.location.origin;
+  const rawValue = import.meta.env.VITE_API_URL;
 
-const url = new URL(apiUrl, window.location.origin);
-const isLocal =
-  url.hostname === "localhost" || url.hostname === "127.0.0.1";
+  let parsedUrl;
 
-if (import.meta.env.PROD && !isLocal && url.protocol !== "https:") {
-  url.protocol = "https:";
+  try {
+    parsedUrl = new URL(rawValue ?? fallbackOrigin, window.location.origin);
+  } catch (error) {
+    console.warn(
+      "Failed to parse VITE_API_URL. Falling back to window.location.origin.",
+      error
+    );
+    parsedUrl = new URL(fallbackOrigin);
+  }
+
+  const isLocal =
+    parsedUrl.hostname === "localhost" || parsedUrl.hostname === "127.0.0.1";
+
+  const resolvedBeforeSanitizing = parsedUrl.href;
+  const shouldForceHttps =
+    window.location.protocol === "https:" &&
+    parsedUrl.protocol === "http:" &&
+    !isLocal;
+
+  if (shouldForceHttps) {
+    if (import.meta.env.PROD) {
+      console.warn(
+        `VITE_API_URL resolved to insecure endpoint "${resolvedBeforeSanitizing}". Forcing HTTPS to match current origin.`
+      );
+    }
+    parsedUrl.protocol = "https:";
+  }
+
+  return {
+    baseUrl: parsedUrl.href.replace(/\/$/, ""),
+    isLocal,
+  };
 }
 
-apiUrl = url.href.replace(/\/$/, "");
+const { baseUrl: apiUrl, isLocal } = resolveApiBaseUrl();
 
 axios.defaults.baseURL = apiUrl;
 axios.defaults.withCredentials = true;
