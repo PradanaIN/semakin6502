@@ -10,7 +10,7 @@ export function initHttp() {
   // Simple in-memory cache for idempotent GETs (TTL ms)
   const GET_TTL = 5000; // 5s burst cache
   const MAX_CACHE_SIZE = 100;
-  const cache = new Map(); // key -> { at:number, data:any }
+  const cache = new Map(); // key -> { at:number, payload:{ data, headers, status, statusText } }
 
   const sortValue = (val) => {
     if (Array.isArray(val)) return val.map(sortValue);
@@ -54,11 +54,17 @@ export function initHttp() {
       if (hit && Date.now() - hit.at < GET_TTL) {
         // Attach a flag so response interceptor can short-circuit
         config.__fromCache = true;
-        config.adapter = async () => ({
+        const payload = hit.payload || {
           data: hit.data,
+          headers: {},
           status: 200,
           statusText: "OK",
-          headers: {},
+        };
+        config.adapter = async () => ({
+          data: payload.data,
+          status: payload.status ?? 200,
+          statusText: payload.statusText ?? "OK",
+          headers: payload.headers ?? {},
           config,
           request: undefined,
         });
@@ -73,7 +79,15 @@ export function initHttp() {
       const cfg = response.config || {};
       if (!cfg.__fromCache && (cfg.method || "get").toLowerCase() === "get") {
         const key = makeKey(cfg);
-        cache.set(key, { at: Date.now(), data: response.data });
+        cache.set(key, {
+          at: Date.now(),
+          payload: {
+            data: response.data,
+            headers: response.headers ?? {},
+            status: response.status,
+            statusText: response.statusText,
+          },
+        });
         while (cache.size > MAX_CACHE_SIZE) {
           const first = cache.keys().next().value;
           cache.delete(first);
