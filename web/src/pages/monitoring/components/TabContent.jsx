@@ -20,6 +20,7 @@ export default function TabContent({
   weekStarts,
   year,
   teamId = "",
+  teams: teamsProp = [],
   monthlyMode: monthlyModeProp,
   onMonthlyModeChange,
   contentRef,
@@ -42,6 +43,51 @@ export default function TabContent({
   const EXCLUDED_NAMES = useMemo(() => ["Admin Utama", "Yuda Agus Irianto"], []);
   const { user } = useAuth();
   const [tambahanItems, setTambahanItems] = useState([]);
+  const normalizeName = useCallback(
+    (s) =>
+      typeof s === "string"
+        ? s.toLowerCase().replace(/\s+/g, " ").trim()
+        : "",
+    []
+  );
+  const rosterMembers = useMemo(() => {
+    const arr = Array.isArray(teamsProp) ? teamsProp : [];
+    const selectedTeams = teamId
+      ? arr.filter((t) => String(t?.id) === String(teamId))
+      : arr;
+    const seen = new Set();
+    const list = [];
+    selectedTeams.forEach((team) => {
+      const members = Array.isArray(team?.members) ? team.members : [];
+      members.forEach((member) => {
+        const nama =
+          member?.nama ??
+          member?.user?.nama ??
+          member?.pegawai?.nama ??
+          member?.fullName ??
+          member?.name;
+        if (!nama || EXCLUDED_NAMES.includes(nama)) return;
+        const normNama = normalizeName(nama);
+        const rawId =
+          member?.userId ??
+          member?.pegawaiId ??
+          member?.id ??
+          member?.user?.id ??
+          member?.pegawai?.id ??
+          null;
+        const key =
+          rawId != null
+            ? `id:${String(rawId)}`
+            : normNama
+            ? `nama:${normNama}`
+            : null;
+        if (!key || seen.has(key)) return;
+        seen.add(key);
+        list.push({ rawId, nama, normNama, key });
+      });
+    });
+    return list;
+  }, [teamsProp, teamId, EXCLUDED_NAMES, normalizeName]);
 
   // Controlled monthlyMode support (dideklarasikan SEBELUM dipakai di efek)
   const monthlyMode = monthlyModeProp ?? monthlyModeState;
@@ -113,7 +159,68 @@ export default function TabContent({
         const res = await axios.get("/monitoring/harian/bulan", {
           params: { tanggal: first, teamId: teamId || undefined },
         });
-        setDailyData(excludeUsers(res.data));
+        const responseData = excludeUsers(res.data);
+        const rowsRaw = Array.isArray(responseData) ? responseData : [];
+        const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+        const zeroDetailTemplate = Array.from({ length: daysInMonth }, (_, idx) => ({
+          tanggal: `${year}-${mm}-${String(idx + 1).padStart(2, "0")}`,
+          count: 0,
+        }));
+        const cloneZeroDetail = () => zeroDetailTemplate.map((d) => ({ ...d }));
+        const sanitizedRows = rowsRaw.map((row) => {
+          const detail =
+            Array.isArray(row?.detail) && row.detail.length > 0
+              ? row.detail
+              : cloneZeroDetail();
+          return { ...row, detail };
+        });
+        if (!rosterMembers.length) {
+          setDailyData(sanitizedRows);
+          return;
+        }
+        const byId = new Map();
+        const byName = new Map();
+        sanitizedRows.forEach((row) => {
+          const idKey =
+            row?.userId != null ? `id:${String(row.userId)}` : null;
+          const nameKey =
+            row?.nama ? `nama:${normalizeName(row.nama)}` : null;
+          if (idKey) byId.set(idKey, row);
+          if (nameKey) byName.set(nameKey, row);
+        });
+        const usedKeys = new Set();
+        const baseline = rosterMembers.map((member) => {
+          const idKey =
+            member.rawId != null ? `id:${String(member.rawId)}` : null;
+          const nameKey = member.normNama
+            ? `nama:${member.normNama}`
+            : null;
+          const row =
+            (idKey && byId.get(idKey)) || (nameKey && byName.get(nameKey));
+          if (row) {
+            if (idKey) usedKeys.add(idKey);
+            if (nameKey) usedKeys.add(nameKey);
+            return row;
+          }
+          const fallbackUserId =
+            member.rawId != null ? member.rawId : member.nama;
+          return {
+            userId: fallbackUserId,
+            nama: member.nama,
+            detail: cloneZeroDetail(),
+          };
+        });
+        sanitizedRows.forEach((row) => {
+          const idKey =
+            row?.userId != null ? `id:${String(row.userId)}` : null;
+          const nameKey =
+            row?.nama ? `nama:${normalizeName(row.nama)}` : null;
+          const isUsed =
+            (idKey && usedKeys.has(idKey)) ||
+            (nameKey && usedKeys.has(nameKey));
+          if (!isUsed) baseline.push(row);
+        });
+        setDailyData(baseline);
       } catch (err) {
         handleAxiosError(err, "Gagal mengambil monitoring harian");
       } finally {
@@ -121,7 +228,15 @@ export default function TabContent({
       }
     };
     if (activeTab === "harian") fetchDaily();
-  }, [activeTab, monthIndex, teamId, year, excludeUsers]);
+  }, [
+    activeTab,
+    monthIndex,
+    teamId,
+    year,
+    excludeUsers,
+    rosterMembers,
+    normalizeName,
+  ]);
 
   useEffect(() => {
     const fetchWeekly = async () => {
@@ -210,16 +325,30 @@ export default function TabContent({
 
         const baseMap = new Map();
         const baseByName = new Map();
-        const norm = (s) =>
-          typeof s === "string"
-            ? s.toLowerCase().replace(/\s+/g, " ").trim()
-            : "";
+        const norm = normalizeName;
         (Array.isArray(baseRows) ? baseRows : []).forEach((r) => {
           const k = keyOf(r);
           const nm = nameOf(r);
           // Baseline user list; do not count from baseRows to avoid double counting
           baseMap.set(k, { nama: nm, total: 0, selesai: 0 });
           if (nm) baseByName.set(norm(nm), k);
+        });
+
+        rosterMembers.forEach((member) => {
+          const nm = member?.nama;
+          if (!nm) return;
+          const rosterKey =
+            member.rawId != null ? String(member.rawId) : String(nm);
+          if (!baseMap.has(rosterKey)) {
+            baseMap.set(rosterKey, { nama: nm, total: 0, selesai: 0 });
+          } else {
+            const existing = baseMap.get(rosterKey);
+            if (existing && !existing.nama) existing.nama = nm;
+          }
+          const normalized = member.normNama;
+          if (normalized && !baseByName.has(normalized)) {
+            baseByName.set(normalized, rosterKey);
+          }
         });
 
         // Tambahkan kontribusi penugasan (tugas mingguan) per user ke baseMap
@@ -324,6 +453,8 @@ export default function TabContent({
     tambahanItems,
     EXCLUDED_NAMES,
     excludeUsers,
+    rosterMembers,
+    normalizeName,
   ]);
 
   // Sinkronkan kolom minggu terpilih di Matrix dengan capaian dari Ringkasan Minggu Ini

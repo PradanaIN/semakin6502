@@ -119,6 +119,7 @@ export default function MonitoringPage() {
               weekStarts={weekStarts}
               year={year}
               teamId={teamId}
+              teams={teams}
               monthlyMode={monthlyMode}
               onMonthlyModeChange={setMonthlyMode}
               contentRef={contentRef}
