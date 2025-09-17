@@ -14,20 +14,25 @@ import { toast } from "react-toastify";
 import camelizeKeys from "./utils/camelizeKeys.js";
 import { HelmetProvider } from "react-helmet-async";
 
-function resolveApiBaseUrl() {
-  const fallbackOrigin = window.location.origin;
+const runtimeWindow = Function(
+  "return typeof window !== 'undefined' ? window : undefined;"
+)();
+
+function resolveApiBaseUrl(runtime) {
+  const fallbackOrigin = runtime?.location?.origin;
   const rawValue = import.meta.env.VITE_API_URL;
 
   let parsedUrl;
+  const defaultOrigin = fallbackOrigin ?? "http://localhost";
 
   try {
-    parsedUrl = new URL(rawValue ?? fallbackOrigin, window.location.origin);
+    parsedUrl = new URL(rawValue ?? defaultOrigin, fallbackOrigin ?? defaultOrigin);
   } catch (error) {
     console.warn(
-      "Failed to parse VITE_API_URL. Falling back to window.location.origin.",
+      `Failed to parse VITE_API_URL. Falling back to ${defaultOrigin}.`,
       error
     );
-    parsedUrl = new URL(fallbackOrigin);
+    parsedUrl = new URL(defaultOrigin);
   }
 
   const isLocal =
@@ -35,7 +40,7 @@ function resolveApiBaseUrl() {
 
   const resolvedBeforeSanitizing = parsedUrl.href;
   const shouldForceHttps =
-    window.location.protocol === "https:" &&
+    runtime?.location?.protocol === "https:" &&
     parsedUrl.protocol === "http:" &&
     !isLocal;
 
@@ -54,20 +59,29 @@ function resolveApiBaseUrl() {
   };
 }
 
-const { baseUrl: apiUrl, isLocal } = resolveApiBaseUrl();
+let apiConfig;
 
-axios.defaults.baseURL = apiUrl;
-axios.defaults.withCredentials = true;
+function ensureApiClientConfigured() {
+  if (!apiConfig && runtimeWindow) {
+    apiConfig = resolveApiBaseUrl(runtimeWindow);
+    axios.defaults.baseURL = apiConfig.baseUrl;
+    axios.defaults.withCredentials = true;
 
-// Warn developers when the backend is not reachable over HTTPS
-if (import.meta.env.PROD && !isLocal) {
-  fetch(apiUrl, { method: "HEAD", mode: "no-cors" }).catch(() => {
-    console.warn(
-      `Unable to reach backend over HTTPS at ${apiUrl}. ` +
-        `Please configure SSL before deployment.`
-    );
-  });
+    // Warn developers when the backend is not reachable over HTTPS
+    if (import.meta.env.PROD && !apiConfig.isLocal) {
+      fetch(apiConfig.baseUrl, { method: "HEAD", mode: "no-cors" }).catch(
+        () => {
+          console.warn(
+            `Unable to reach backend over HTTPS at ${apiConfig.baseUrl}. ` +
+              `Please configure SSL before deployment.`
+          );
+        }
+      );
+    }
+  }
 }
+
+ensureApiClientConfigured();
 
 axios.interceptors.response.use((response) => {
   if (response.data && typeof response.data === "object") {
