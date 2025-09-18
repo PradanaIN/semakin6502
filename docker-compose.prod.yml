@@ -54,9 +54,14 @@ services:
   frontend:
     image: ${REGISTRY_USERNAME}/semakin6502-frontend:latest
     ports:
-      - "5173:80"
+      - "80:80"
+      - "443:443"
     environment:
       - BACKEND_PORT=${BACKEND_PORT:-3002}
+      - VITE_API_URL=${VITE_API_URL:-https://semakin.databenuanta.id/api}
+    volumes:
+      - ${SSL_CERTIFICATE:?SSL_CERTIFICATE must point to the TLS certificate}:/etc/nginx/certs/tls.crt:ro
+      - ${SSL_CERTIFICATE_KEY:?SSL_CERTIFICATE_KEY must point to the TLS private key}:/etc/nginx/certs/tls.key:ro
     depends_on:
       - backend
 
