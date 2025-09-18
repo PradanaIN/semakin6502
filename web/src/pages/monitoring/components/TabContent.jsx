@@ -86,6 +86,11 @@ export default function TabContent({
         list.push({ rawId, nama, normNama, key });
       });
     });
+    list.sort((a, b) => {
+      const left = a.normNama || normalizeName(a.nama) || "";
+      const right = b.normNama || normalizeName(b.nama) || "";
+      return left.localeCompare(right, "id-ID");
+    });
     return list;
   }, [teamsProp, teamId, EXCLUDED_NAMES, normalizeName]);
 
@@ -220,6 +225,12 @@ export default function TabContent({
             (nameKey && usedKeys.has(nameKey));
           if (!isUsed) baseline.push(row);
         });
+        baseline.sort((a, b) =>
+          normalizeName(a?.nama).localeCompare(
+            normalizeName(b?.nama),
+            "id-ID"
+          )
+        );
         setDailyData(baseline);
       } catch (err) {
         handleAxiosError(err, "Gagal mengambil monitoring harian");
