@@ -51,10 +51,17 @@ export default function UsersPage() {
     try {
       setLoading(true);
       const res = await axios.get("/users");
-      if (Array.isArray(res.data)) {
-        setUsers(res.data);
+      const payload = res.data;
+      const usersData = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.data)
+          ? payload.data
+          : null;
+
+      if (Array.isArray(usersData)) {
+        setUsers(usersData);
       } else {
-        console.warn("Unexpected users response", res.data);
+        console.warn("Unexpected users response", payload);
         setUsers([]);
       }
     } catch (err) {
