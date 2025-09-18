@@ -1,3 +1,5 @@
+import { useMemo, useState } from "react";
+import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { getHolidays } from "../../utils/holidays";
 import { useAuth } from "../auth/useAuth";
 import dayjs from "../../utils/dayjs";
@@ -38,8 +40,17 @@ export const DailyMatrixRow = ({ user, boxClass, currentUser }) => {
 
 const DailyMatrix = ({ data = [], monthIndex, year }) => {
   const { user: currentUser } = useAuth();
+  const [nameSortDir, setNameSortDir] = useState("asc");
 
-  const rows = Array.isArray(data) ? data : [];
+  const rows = useMemo(() => {
+    const arr = Array.isArray(data) ? [...data] : [];
+    const dir = nameSortDir === "asc" ? 1 : -1;
+    return arr.sort((a, b) =>
+      dir * (a?.nama || "").localeCompare(b?.nama || "", "id", {
+        sensitivity: "base",
+      })
+    );
+  }, [data, nameSortDir]);
 
   const today = dayjs().tz("Asia/Makassar");
   const HOLIDAYS = getHolidays(year);
@@ -64,6 +75,22 @@ const DailyMatrix = ({ data = [], monthIndex, year }) => {
 
   const dayCount = dayjs().year(year).month(monthIndex).daysInMonth();
 
+  const toggleNameSort = () => {
+    setNameSortDir((dir) => (dir === "asc" ? "desc" : "asc"));
+  };
+
+  const SortIcon = ({ active, dir }) => {
+    if (!active)
+      return (
+        <ArrowUpDown className="inline-block w-3.5 h-3.5 opacity-40 align-middle" />
+      );
+    return dir === "asc" ? (
+      <ArrowUp className="inline-block w-3.5 h-3.5 align-middle" />
+    ) : (
+      <ArrowDown className="inline-block w-3.5 h-3.5 align-middle" />
+    );
+  };
+
   return (
     <div
       className="overflow-x-auto w-full rounded-md shadow border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 max-h-[65vh] overflow-y-auto"
@@ -71,8 +98,14 @@ const DailyMatrix = ({ data = [], monthIndex, year }) => {
       <table className="min-w-[1000px] w-full table-fixed text-sm">
         <thead className="sticky top-0 bg-gray-50 dark:bg-gray-800 z-20 border-b border-gray-300 dark:border-gray-700">
           <tr>
-            <th className="sticky left-0 z-30 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-left font-bold border-r border-gray-300 dark:border-gray-700 w-48 md:w-60">
-              Nama
+            <th
+              className="sticky left-0 z-30 bg-gray-50 dark:bg-gray-800 px-4 py-2 text-left font-bold border-r border-gray-300 dark:border-gray-700 w-48 md:w-60 select-none cursor-pointer"
+              onClick={toggleNameSort}
+              title="Urutkan berdasarkan Nama"
+            >
+              <span className="inline-flex items-center gap-1">
+                Nama <SortIcon active={rows.length > 0} dir={nameSortDir} />
+              </span>
             </th>
             {Array.from({ length: dayCount }, (_, i) => (
               <th
