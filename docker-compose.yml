@@ -64,6 +64,8 @@ services:
       - "5173:80"
     environment:
       - BACKEND_PORT=${BACKEND_PORT:-3002}
+    volumes:
+      - ./web/nginx.dev.conf:/etc/nginx/templates/default.conf.template:ro
     depends_on:
       - backend
 
