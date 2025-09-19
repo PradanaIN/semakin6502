@@ -31,6 +31,15 @@ Berkas `semakin_6502.sql` berisi struktur dan data awal aplikasi. Berkas ini bis
 
 File dump tetap tersedia di folder root untuk referensi.
 
+## Pembersihan Data Tim Duplikat
+
+Sebelum menjalankan migrasi yang menambahkan constraint unik _case-insensitive_ pada kolom `nama_tim`, bersihkan terlebih dahulu data lama yang mungkin sudah memiliki duplikasi. Jalankan kueri pada berkas [`docs/cleanup-duplicate-teams.sql`](docs/cleanup-duplicate-teams.sql) terhadap database produksi maupun pengembangan:
+
+1. Periksa terlebih dahulu apakah ada duplikasi nama tim (diabaikan kapitalisasinya).
+2. Jika terdeteksi, hapus entri duplikat dan pertahankan baris dengan ULID terendah.
+
+Setelah memastikan data bersih, lanjutkan proses migrasi Prisma seperti biasa.
+
 ## Deployment
 
 1. Pastikan server sudah login ke registry yang menyimpan image, misalnya: `docker login ghcr.io`.

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { ulid } from "ulid";
 import { PrismaService } from "@core/database/prisma.service";
 
@@ -41,11 +45,36 @@ export class TeamsService {
     return team;
   }
 
-  create(data: any) {
+  async create(data: any) {
+    const namaTim = data?.namaTim;
+    if (namaTim) {
+      const existing = await this.prisma.team.findFirst({
+        where: {
+          namaTim,
+        },
+      });
+      if (existing) {
+        throw new ConflictException("Nama tim sudah ada");
+      }
+    }
+
     return this.prisma.team.create({ data: { id: ulid(), ...data } });
   }
 
-  update(id: string, data: any) {
+  async update(id: string, data: any) {
+    const namaTim = data?.namaTim;
+    if (namaTim) {
+      const existing = await this.prisma.team.findFirst({
+        where: {
+          namaTim,
+          id: { not: id },
+        },
+      });
+      if (existing) {
+        throw new ConflictException("Nama tim sudah ada");
+      }
+    }
+
     return this.prisma.team.update({ where: { id }, data });
   }
 
