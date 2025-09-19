@@ -50,20 +50,34 @@ export default function UsersPage() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("/users");
-      const payload = res.data;
-      const usersData = Array.isArray(payload)
-        ? payload
-        : Array.isArray(payload?.data)
-          ? payload.data
-          : null;
+      let page = 1;
+      let totalPages = 1;
+      let combined = [];
+      let invalidResponse = false;
 
-      if (Array.isArray(usersData)) {
-        setUsers(usersData);
-      } else {
-        console.warn("Unexpected users response", payload);
-        setUsers([]);
-      }
+      do {
+        const res = await axios.get("/users", { params: { page } });
+        const payload = res.data;
+        const usersData = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload?.data)
+            ? payload.data
+            : null;
+
+        if (Array.isArray(usersData)) {
+          combined = combined.concat(usersData);
+        } else {
+          console.warn("Unexpected users response", payload);
+          invalidResponse = true;
+          break;
+        }
+
+        const pageCount = Number(payload?.meta?.totalPages);
+        totalPages = Number.isFinite(pageCount) && pageCount > 0 ? Math.floor(pageCount) : 1;
+        page += 1;
+      } while (page <= totalPages);
+
+      setUsers(invalidResponse ? [] : combined);
     } catch (err) {
       handleAxiosError(err, "Gagal mengambil pengguna");
     } finally {
