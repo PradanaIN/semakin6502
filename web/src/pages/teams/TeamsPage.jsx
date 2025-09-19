@@ -94,6 +94,11 @@ export default function TeamsPage() {
       fetchTeams();
       showSuccess("Berhasil", "Tim disimpan");
     } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 409) {
+        const message = err.response?.data?.message || "Nama tim sudah ada";
+        showWarning("Nama tim sudah ada", message);
+        return;
+      }
       handleAxiosError(err, "Gagal menyimpan tim");
     }
   };

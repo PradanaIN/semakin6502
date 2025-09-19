@@ -30,6 +30,8 @@ model Team {
   members          Member[]
   masterKegiatan   MasterKegiatan[]
   kegiatanTambahan KegiatanTambahan[]
+
+  @@unique([namaTim], map: "Team_namaTim_key")
 }
 
 model Member {

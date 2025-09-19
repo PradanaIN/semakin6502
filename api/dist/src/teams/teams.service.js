@@ -49,10 +49,33 @@ let TeamsService = class TeamsService {
             throw new common_1.NotFoundException("not found");
         return team;
     }
-    create(data) {
+    async create(data) {
+        const namaTim = data?.namaTim;
+        if (namaTim) {
+            const existing = await this.prisma.team.findFirst({
+                where: {
+                    namaTim,
+                },
+            });
+            if (existing) {
+                throw new common_1.ConflictException("Nama tim sudah ada");
+            }
+        }
         return this.prisma.team.create({ data: { id: (0, ulid_1.ulid)(), ...data } });
     }
-    update(id, data) {
+    async update(id, data) {
+        const namaTim = data?.namaTim;
+        if (namaTim) {
+            const existing = await this.prisma.team.findFirst({
+                where: {
+                    namaTim,
+                    id: { not: id },
+                },
+            });
+            if (existing) {
+                throw new common_1.ConflictException("Nama tim sudah ada");
+            }
+        }
         return this.prisma.team.update({ where: { id }, data });
     }
     remove(id) {
