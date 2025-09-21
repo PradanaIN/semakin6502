@@ -11,7 +11,7 @@ jobs:
       packages: write
     runs-on: ubuntu-latest
     env:
-      VITE_API_URL: http://localhost:3002
+      VITE_API_URL: https://semakin.databenuanta.id/api
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
