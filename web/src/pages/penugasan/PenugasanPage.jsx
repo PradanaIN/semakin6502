@@ -31,7 +31,7 @@ import Spinner from "../../components/Spinner";
 import { STATUS } from "../../utils/status";
 import EmptyState from "../../components/ui/EmptyState";
 
-const EXCLUDED_TB_NAMES = ["Ayu Pinta Gabina Siregar", "Elly Astutik"];
+const EXCLUDED_TB_NAMES = ["Ayu Pinta Gabina Siregar"];
 
 function sortPenugasan(list, teamId) {
   const dateVal = (p) =>

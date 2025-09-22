@@ -330,7 +330,7 @@ INSERT INTO `user` (`id`, `nama`, `username`, `email`, `password`, `role`, `phon
 ('01K4AJP5DP02DHH4V5MQXJSP85', 'Sega Purwa Wika', 'sega.wika', 'sega.wika@bps.go.id', '$2b$10$eVzRNN7ADsA2WaAmh2S27u8qH/YrHgWC4Gety.qDlkSpggnnJi3d.', 'anggota', '6282149633011'),
 ('01K4AJP5FF62QGHE4R9JCB5VTJ', 'Alphin Pratama Husada', 'alphin.pratama', 'alphin.pratama@bps.go.id', '$2b$10$gR9UvwGDMtyFvcmTghlrHOEGEF8tU7VClAFPtHL7hZbZy43DxEZyG', 'anggota', '6282261828467'),
 ('01K4AJP5H7E6CA9E9Z8ARAHP4N', 'Bambang Luhat', 'bambang_luhat', 'bambang_luhat@bps.go.id', '$2b$10$mGexq7nw/3JNk3tt6rhurumaAU2YO9nn7pG3fYQx4pAK9k60MlCh.', 'anggota', '6282358880344'),
-('01K4AJP5JY6QTS3EPKCWPEXYKF', 'Fachri Izzudin Lazuardi', 'fachri.lazuardi', 'fachri.lazuardi@bps.go.id', '$2b$10$Tbo77WIw7XTa7ZV6fa4UXe8/0SlIqQQbm4N.6DvNHeYQsz5tEePta', 'ketua', '6285155228104'),
+('01K4AJP5JY6QTS3EPKCWPEXYKF', 'Chafri Fajar Erwandra', 'chafri.fajar', 'chafri.fajar@bps.go.id', '$2b$10$Tbo77WIw7XTa7ZV6fa4UXe8/0SlIqQQbm4N.6DvNHeYQsz5tEePta', 'ketua', '6285784585563'),
 ('01K4AJP5MKTAH7VEEXZ71F0H14', 'Andi Nurdiansyah', 'andi.nurdiansyah', 'andi.nurdiansyah@bps.go.id', '$2b$10$4sxa9tOuO6vY/rOQhKKht.bbVCVjTXmsqiVFpljoPQyJHXnUMtZEW', 'anggota', '6287834620297'),
 ('01K4AJP5P9S8WAFASQ6N5XH02P', 'Afnita Rahma Auliya Putri', 'afnita.rahma', 'afnita.rahma@bps.go.id', '$2b$10$zsqouw5KV/TRy4sE8JkHZe2fhTO3xxX3tOngryB0frk4InUdIYtbS', 'anggota', '6285882292588'),
 ('01K4AJP5R2DJ65S3KNCB1D63WV', 'Anissa Nurullya Fernanda', 'anissa.nurullya', 'anissa.nurullya@bps.go.id', '$2b$10$wwEfpaQYUuqCOqG7hSiIGOi.I0D0HzFq7YUwnifqyB7zSdnoWDWPu', 'anggota', '6282140772590'),

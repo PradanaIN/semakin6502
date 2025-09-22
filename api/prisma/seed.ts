@@ -141,9 +141,9 @@ const baseUsers = [
     role: "Anggota Tim",
   },
   {
-    nama: "Fachri Izzudin Lazuardi",
-    email: "fachri.lazuardi@bps.go.id",
-    username: "fachri.lazuardi",
+    nama: "Chafri Fajar Erwandra",
+    email: "chafri.fajar@bps.go.id",
+    username: "chafri.fajar",
     password: "password",
     team: "IPDS",
     role: "Ketua Tim",
@@ -225,7 +225,7 @@ const baseUsers = [
     email: "elly.astutik@bps.go.id",
     username: "elly.astutik",
     password: "password",
-    team: "Umum",
+    team: "Sosial",
     role: "Anggota Tim",
   },
   {
