@@ -188,11 +188,14 @@ export default function PenugasanPage() {
       if (filterMinggu) params.minggu = filterMinggu;
       if (viewTab === "dariSaya") params.creator = user?.id;
       const penugasanReq = axios.get("/penugasan", { params });
-      const teamsReq = axios.get("/teams").then(async (res) => {
-        if (Array.isArray(res.data) && res.data.length === 0)
-          return axios.get("/teams/member");
-        return res;
-      });
+      const teamsReq =
+        user?.role === ROLES.PIMPINAN
+          ? axios.get("/teams/all")
+          : axios.get("/teams").then(async (res) => {
+              if (Array.isArray(res.data) && res.data.length === 0)
+                return axios.get("/teams/member");
+              return res;
+            });
       const [pRes, tRes] = await Promise.all([penugasanReq, teamsReq]);
 
       let usersData;
