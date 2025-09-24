@@ -225,10 +225,6 @@ export default function TugasTambahanPage() {
     }
   };
 
-  const openDetail = (id) => {
-    navigate(`/tugas-tambahan/${id}`);
-  };
-
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
       const text = `${item.nama} ${
@@ -258,33 +254,63 @@ export default function TugasTambahanPage() {
 
   // No manual pagination; pass full filteredItems to DataTable
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const base = [
       {
         Header: "No",
         accessor: (_row, i) => i + 1,
         disableFilters: true,
       },
       { Header: "Kegiatan", accessor: "nama", disableFilters: true },
-      { Header: "Deskripsi", accessor: (row) => row.deskripsi || "-", disableFilters: true },
-      { Header: "Tim", accessor: (row) => row.kegiatan.team?.namaTim || "-", disableFilters: true },
-      { Header: "Minggu", accessor: (row) => getWeekOfMonth(new Date(row.tanggal)), disableFilters: true },
-      { Header: "Bulan", accessor: (row) => {
+      {
+        Header: "Deskripsi",
+        accessor: (row) => row.deskripsi || "-",
+        disableFilters: true,
+      },
+    ];
+
+    if (user?.role === ROLES.PIMPINAN) {
+      base.push({
+        Header: "Pegawai",
+        accessor: (row) => row.user?.nama || "-",
+        disableFilters: true,
+      });
+    }
+
+    base.push(
+      {
+        Header: "Tim",
+        accessor: (row) => row.kegiatan.team?.namaTim || "-",
+        disableFilters: true,
+      },
+      {
+        Header: "Minggu",
+        accessor: (row) => getWeekOfMonth(new Date(row.tanggal)),
+        disableFilters: true,
+      },
+      {
+        Header: "Bulan",
+        accessor: (row) => {
           const d = new Date(row.tanggal);
           return `${months[d.getMonth()]} ${d.getFullYear()}`;
-        }, disableFilters: true },
+        },
+        disableFilters: true,
+      },
       {
         Header: "Status",
         accessor: "status",
         Cell: ({ row }) => <StatusBadge status={row.original.status} />,
         disableFilters: true,
-      },
-      {
+      }
+    );
+
+    if (user?.role !== ROLES.PIMPINAN) {
+      base.push({
         Header: "Aksi",
         accessor: "id",
         Cell: ({ row }) => (
           <Button
-            onClick={() => openDetail(row.original.id)}
+            onClick={() => navigate(`/tugas-tambahan/${row.original.id}`)}
             variant="icon"
             icon
             aria-label="Detail"
@@ -293,10 +319,11 @@ export default function TugasTambahanPage() {
           </Button>
         ),
         disableFilters: true,
-      },
-    ],
-    [user?.role]
-  );
+      });
+    }
+
+    return base;
+  }, [navigate, user?.role]);
 
   return (
     <div className="space-y-6">
