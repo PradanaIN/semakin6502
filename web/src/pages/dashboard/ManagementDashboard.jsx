@@ -47,7 +47,8 @@ const collectTeamMappings = (teams = []) => {
 
   teams.forEach((team) => {
     const idRaw = team?.id ?? team?.teamId ?? team?.value ?? team?.kode;
-    const name = team?.namaTim ?? team?.nama ?? team?.name ?? `Tim ${idRaw ?? ""}`;
+    const name =
+      team?.namaTim ?? team?.nama ?? team?.name ?? `Tim ${idRaw ?? ""}`;
     const teamId = idRaw != null ? String(idRaw) : FALLBACK_TEAM_KEY;
 
     const members = Array.isArray(team?.members) ? team.members : [];
@@ -98,22 +99,30 @@ const getDoneFromRow = (row) => {
   if (typeof row.done === "number") return row.done;
   if (typeof row.selesaiTugas === "number") return row.selesaiTugas;
   if (Array.isArray(row.tugas)) {
-    return row.tugas.filter((t) => t?.status === STATUS.SELESAI_DIKERJAKAN).length;
+    return row.tugas.filter((t) => t?.status === STATUS.SELESAI_DIKERJAKAN)
+      .length;
   }
   if (Array.isArray(row.detail)) {
-    return row.detail.reduce((sum, item) => sum + Number(item?.selesai || 0), 0);
+    return row.detail.reduce(
+      (sum, item) => sum + Number(item?.selesai || 0),
+      0
+    );
   }
   return 0;
 };
 
 const classifyProgress = (progress) => {
-  if (!Number.isFinite(progress)) return { label: "Belum Ada Data", tone: "text-gray-500" };
+  if (!Number.isFinite(progress))
+    return { label: "Belum Ada Data", tone: "text-gray-500" };
   if (progress >= 85)
     return { label: "Sangat Baik", tone: "text-green-600 dark:text-green-400" };
   if (progress >= 70)
     return { label: "Baik", tone: "text-blue-600 dark:text-blue-300" };
   if (progress >= 50)
-    return { label: "Perlu Perhatian", tone: "text-amber-600 dark:text-amber-400" };
+    return {
+      label: "Perlu Perhatian",
+      tone: "text-amber-600 dark:text-amber-400",
+    };
   return { label: "Kritis", tone: "text-red-600 dark:text-red-400" };
 };
 
@@ -268,8 +277,14 @@ const computeTopActivities = (assignments = []) => {
 
 const summarizeTeamList = (list = []) => {
   const total = list.reduce((sum, item) => sum + (Number(item.total) || 0), 0);
-  const selesai = list.reduce((sum, item) => sum + (Number(item.selesai) || 0), 0);
-  const backlog = list.reduce((sum, item) => sum + (Number(item.backlog) || 0), 0);
+  const selesai = list.reduce(
+    (sum, item) => sum + (Number(item.selesai) || 0),
+    0
+  );
+  const backlog = list.reduce(
+    (sum, item) => sum + (Number(item.backlog) || 0),
+    0
+  );
   const progress = total ? Math.round((selesai / Math.max(total, 1)) * 100) : 0;
   return { total, selesai, backlog, progress };
 };
@@ -285,52 +300,71 @@ const buildInsights = ({
     const top = topActivities[0];
     insights.push(
       `Kegiatan ${top.name} memiliki ${numberFormatter.format(
-        top.total,
-      )} penugasan dengan capaian ${top.progress}%`,
+        top.total
+      )} penugasan dengan capaian ${top.progress}%`
     );
   }
   if (collectiveWeekly.backlog > 0) {
     insights.push(
       `${numberFormatter.format(
-        collectiveWeekly.backlog,
-      )} penugasan mingguan masih menunggu penyelesaian`,
+        collectiveWeekly.backlog
+      )} penugasan mingguan masih menunggu penyelesaian`
     );
   } else if (collectiveWeekly.total > 0) {
     insights.push("Seluruh penugasan mingguan telah terselesaikan");
   }
   if (collectiveMonthly.progress >= 85) {
     insights.push(
-      `Capaian bulanan stabil di ${collectiveMonthly.progress}% dan berada di atas target`,
+      `Capaian bulanan stabil di ${collectiveMonthly.progress}% dan berada di atas target`
     );
   } else if (collectiveMonthly.total > 0) {
     insights.push(
-      `Capaian bulanan ${collectiveMonthly.progress}% perlu percepatan tindak lanjut`,
+      `Capaian bulanan ${collectiveMonthly.progress}% perlu percepatan tindak lanjut`
     );
   }
   if (yearlyTeams?.length) {
     const best = yearlyTeams[0];
     const worst = yearlyTeams[yearlyTeams.length - 1];
     if (best) {
-      insights.push(`Tim ${best.name} memimpin capaian tahunan dengan ${best.progress}%`);
+      insights.push(
+        `Tim ${best.name} memimpin capaian tahunan dengan ${best.progress}%`
+      );
     }
     if (worst && worst.teamId !== best?.teamId) {
       insights.push(
-        `Tim ${worst.name} membutuhkan dukungan karena capaian tahunan ${worst.progress}%`,
+        `Tim ${worst.name} membutuhkan dukungan karena capaian tahunan ${worst.progress}%`
       );
     }
   }
   return Array.from(new Set(insights)).slice(0, 4);
 };
 
-const HighlightCard = ({ icon: Icon, title, value, description, accent = "bg-blue-100 text-blue-600" }) => (
+const HighlightCard = ({
+  icon: Icon,
+  title,
+  value,
+  description,
+  accent = "bg-blue-100 text-blue-600",
+}) => (
   <div className="flex items-start gap-4 p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm">
-    <div className={clsx("w-12 h-12 rounded-xl flex items-center justify-center text-xl", accent)}>
+    <div
+      className={clsx(
+        "w-12 h-12 rounded-xl flex items-center justify-center text-xl",
+        accent
+      )}
+    >
       <Icon className="w-6 h-6" />
     </div>
     <div>
-      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
-      <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{value}</p>
-      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{description}</p>
+      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+        {title}
+      </p>
+      <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+        {value}
+      </p>
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+        {description}
+      </p>
     </div>
   </div>
 );
@@ -365,7 +399,8 @@ const ActivitiesCard = ({ activities }) => (
                 {activity.name}
               </h3>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {numberFormatter.format(activity.total)} penugasan • {activity.progress}% selesai
+                {numberFormatter.format(activity.total)} penugasan •{" "}
+                {activity.progress}% selesai
               </p>
             </div>
             <span
@@ -375,7 +410,7 @@ const ActivitiesCard = ({ activities }) => (
                   ? "bg-green-100 text-green-700"
                   : activity.progress >= 60
                   ? "bg-blue-100 text-blue-700"
-                  : "bg-amber-100 text-amber-700",
+                  : "bg-amber-100 text-amber-700"
               )}
             >
               {activity.progress >= 85
@@ -436,7 +471,7 @@ const TeamPerformanceCard = ({ data, period }) => {
                 "px-4 py-1.5 rounded-full text-sm font-semibold transition",
                 tab === t.id
                   ? "bg-blue-600 text-white shadow"
-                  : "bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700",
+                  : "bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700"
               )}
             >
               {t.label}
@@ -491,7 +526,9 @@ const TeamPerformanceCard = ({ data, period }) => {
                   />
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 flex justify-between">
-                  <span>Selesai: {numberFormatter.format(team.selesai || 0)}</span>
+                  <span>
+                    Selesai: {numberFormatter.format(team.selesai || 0)}
+                  </span>
                   <span>Total: {numberFormatter.format(team.total || 0)}</span>
                 </div>
               </>
@@ -525,7 +562,8 @@ const CollectivePerformanceCard = ({ collective, period }) => (
           {collective.weekly.progress}%
         </p>
         <p className="text-xs text-blue-700/80 dark:text-blue-300">
-          {numberFormatter.format(collective.weekly.selesai)} selesai dari {numberFormatter.format(collective.weekly.total)} penugasan
+          {numberFormatter.format(collective.weekly.selesai)} selesai dari{" "}
+          {numberFormatter.format(collective.weekly.total)} penugasan
         </p>
       </div>
       <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 space-y-2">
@@ -536,7 +574,8 @@ const CollectivePerformanceCard = ({ collective, period }) => (
           {collective.monthly.progress}%
         </p>
         <p className="text-xs text-emerald-700/80 dark:text-emerald-300">
-          {numberFormatter.format(collective.monthly.selesai)} selesai dari {numberFormatter.format(collective.monthly.total)} penugasan
+          {numberFormatter.format(collective.monthly.selesai)} selesai dari{" "}
+          {numberFormatter.format(collective.monthly.total)} penugasan
         </p>
       </div>
       <div className="p-4 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 space-y-2">
@@ -572,7 +611,9 @@ const TrendsCard = ({ trends }) => {
   const prev = lastSix[lastSix.length - 2];
   const delta = last && prev ? last.value - prev.value : null;
   const recentAvg = lastSix.length
-    ? Math.round(lastSix.reduce((sum, item) => sum + item.value, 0) / lastSix.length)
+    ? Math.round(
+        lastSix.reduce((sum, item) => sum + item.value, 0) / lastSix.length
+      )
     : 0;
 
   return (
@@ -595,7 +636,10 @@ const TrendsCard = ({ trends }) => {
           </p>
         )}
         {lastSix.map((item) => (
-          <div key={item.label} className="flex-1 flex flex-col items-center gap-1">
+          <div
+            key={item.label}
+            className="flex-1 flex flex-col items-center gap-1"
+          >
             <div className="relative w-full max-w-[32px] h-32 bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden">
               <div
                 className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-600 to-blue-400"
@@ -733,13 +777,14 @@ const ManagementDashboard = () => {
           }
         };
 
-        const [teams, assignments, weekly, monthly, yearlyMatrix] = await Promise.all([
-          fetchTeams(),
-          fetchAssignments(),
-          fetchWeekly(),
-          fetchMonthly(),
-          fetchYearly(),
-        ]);
+        const [teams, assignments, weekly, monthly, yearlyMatrix] =
+          await Promise.all([
+            fetchTeams(),
+            fetchAssignments(),
+            fetchWeekly(),
+            fetchMonthly(),
+            fetchYearly(),
+          ]);
 
         const { teamMap } = collectTeamMappings(teams);
         const topActivities = computeTopActivities(assignments);
@@ -756,15 +801,16 @@ const ManagementDashboard = () => {
         const collectiveYearlyProgress = yearlyProgressValues.length
           ? Math.round(
               yearlyProgressValues.reduce((sum, val) => sum + val, 0) /
-                yearlyProgressValues.length,
+                yearlyProgressValues.length
             )
           : 0;
 
         const highlights = {
           activeAssignments: assignments.filter(
-            (item) => item?.status !== STATUS.SELESAI_DIKERJAKAN,
+            (item) => item?.status !== STATUS.SELESAI_DIKERJAKAN
           ).length,
-          backlog: assignments.filter((item) => item?.status === STATUS.BELUM).length,
+          backlog: assignments.filter((item) => item?.status === STATUS.BELUM)
+            .length,
           completedThisWeek: collectiveWeekly.selesai,
           weeklyProgress: collectiveWeekly.progress,
           monthlyProgress: collectiveMonthly.progress,
@@ -778,7 +824,9 @@ const ManagementDashboard = () => {
             progress: collectiveYearlyProgress,
             bestTeam: yearlyTeams[0] || null,
             lowestTeam:
-              yearlyTeams.length > 1 ? yearlyTeams[yearlyTeams.length - 1] : null,
+              yearlyTeams.length > 1
+                ? yearlyTeams[yearlyTeams.length - 1]
+                : null,
           },
           insights: buildInsights({
             topActivities,
@@ -811,7 +859,9 @@ const ManagementDashboard = () => {
         if (!isMounted) return;
         setPartial(true);
         if (err?.response?.status === 403) {
-          setError("Anda tidak memiliki akses untuk melihat dashboard pimpinan.");
+          setError(
+            "Anda tidak memiliki akses untuk melihat dashboard pimpinan."
+          );
         } else {
           setError("Gagal memuat data dashboard pimpinan.");
           if (err) handleAxiosError(err, "Gagal memuat dashboard pimpinan");
@@ -830,13 +880,17 @@ const ManagementDashboard = () => {
 
   const leadingTeam = useMemo(() => {
     if (!data?.teamPerformance?.weekly?.length) return null;
-    return [...data.teamPerformance.weekly].sort((a, b) => b.progress - a.progress)[0];
+    return [...data.teamPerformance.weekly].sort(
+      (a, b) => b.progress - a.progress
+    )[0];
   }, [data]);
 
   if (loading) return <Loading fullScreen />;
   if (error)
     return (
-      <div className="p-6 text-center text-red-600 dark:text-red-400">{error}</div>
+      <div className="p-6 text-center text-red-600 dark:text-red-400">
+        {error}
+      </div>
     );
 
   if (!data)
@@ -846,23 +900,34 @@ const ManagementDashboard = () => {
       </div>
     );
 
-  const { highlights, period, topActivities, teamPerformance, collective, trends } =
-    data;
+  const {
+    highlights,
+    period,
+    topActivities,
+    teamPerformance,
+    collective,
+    trends,
+  } = data;
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6 animate-fade-in">
       <section className="bg-gradient-to-br from-blue-600 via-blue-500 to-blue-700 text-white rounded-3xl shadow-lg p-8 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"400\" height=\"400\" viewBox=\"0 0 400 400\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cdefs%3E%3ClinearGradient id=\"g\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\"%3E%3Cstop stop-color=\"%23ffffff\" stop-opacity=\"0.1\" offset=\"0%\"/%3E%3Cstop stop-color=\"%23ffffff\" stop-opacity=\"0\" offset=\"100%\"/%3E%3C/linearGradient%3E%3C/pattern%3E%3Cdefs%3E%3Crect fill=\"url(%23g)\" width=\"400\" height=\"400\"/%3E%3C/svg%3E')] opacity-30" aria-hidden="true" />
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg width='400' height='400' viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'%3E%3Cstop stop-color='%23ffffff' stop-opacity='0.1' offset='0%'/%3E%3Cstop stop-color='%23ffffff' stop-opacity='0' offset='100%'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect fill='url(%23g)' width='400' height='400'/%3E%3C/svg%3E\")",
+          }}
+          aria-hidden="true"
+        />
         <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div>
-            <p className="text-sm uppercase tracking-widest text-blue-100">Dashboard Strategis</p>
-            <h1 className="text-3xl sm:text-4xl font-bold mt-2">
-              Selamat datang, {user?.nama || "Pimpinan"}
-            </h1>
-            <p className="mt-3 text-blue-100 max-w-2xl">
-              Monitor performa organisasi secara menyeluruh, identifikasi kegiatan prioritas,
-              dan ambil keputusan berbasis data dengan cepat.
+            <p className="text-sm uppercase tracking-widest text-blue-100">
+              Dashboard
             </p>
+            <h1 className="text-3xl sm:text-4xl font-bold mt-2">
+              Selamat datang, {user?.nama || "Pimpinan"}!
+            </h1>
           </div>
           {leadingTeam && (
             <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-4 min-w-[220px]">
@@ -871,7 +936,9 @@ const ManagementDashboard = () => {
               </p>
               <p className="text-lg font-semibold">{leadingTeam.name}</p>
               <p className="text-3xl font-bold">{leadingTeam.progress}%</p>
-              <p className="text-xs text-blue-100">{leadingTeam.status.label}</p>
+              <p className="text-xs text-blue-100">
+                {leadingTeam.status.label}
+              </p>
             </div>
           )}
         </div>
@@ -879,7 +946,8 @@ const ManagementDashboard = () => {
 
       {partial && (
         <div className="bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-100 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
-          Sebagian data gagal dimuat. Informasi yang ditampilkan mungkin belum lengkap.
+          Sebagian data gagal dimuat. Informasi yang ditampilkan mungkin belum
+          lengkap.
         </div>
       )}
 
