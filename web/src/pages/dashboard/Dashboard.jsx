@@ -1,5 +1,6 @@
 import MonitoringTabs from "./components/MonitoringTabs";
 import StatsSummary from "./components/StatsSummary";
+import ManagementDashboard from "./ManagementDashboard";
 import { useAuth } from "../auth/useAuth";
 import axios from "axios";
 import { useEffect, useState, useCallback, useRef } from "react";
@@ -33,7 +34,7 @@ const getWeekStarts = (month, year) => {
   return weeks;
 };
 
-const Dashboard = () => {
+const MemberDashboard = () => {
   const { user } = useAuth();
   const [dailyData, setDailyData] = useState([]);
   const [weeklyList, setWeeklyList] = useState([]);
@@ -509,6 +510,14 @@ const Dashboard = () => {
       />
     </div>
   );
+};
+
+const Dashboard = () => {
+  const { user } = useAuth();
+  if ([ROLES.ADMIN, ROLES.PIMPINAN].includes(user?.role)) {
+    return <ManagementDashboard />;
+  }
+  return <MemberDashboard />;
 };
 
 export default Dashboard;
