@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router-dom';
 import Dashboard from '../pages/dashboard/Dashboard';
 import { useAuth } from '../pages/auth/useAuth';
 import axios from 'axios';
+import { STATUS } from '../utils/status';
 
 jest.mock('axios');
 jest.mock('../pages/auth/useAuth');
@@ -25,8 +26,12 @@ afterAll(() => {
   jest.useRealTimers();
 });
 
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 test('dates with reports appear green', async () => {
-  mockedUseAuth.mockReturnValue({ user: { role: 'admin' } });
+  mockedUseAuth.mockReturnValue({ user: { role: 'anggota' } });
   axios.get.mockImplementation((url) => {
     if (url === '/monitoring/harian') {
       return Promise.resolve({
@@ -62,5 +67,66 @@ test('dates with reports appear green', async () => {
   const dayText = await screen.findByText(/02 April 2024/);
   const dayBox = dayText.parentElement;
   expect(dayBox).toHaveClass('bg-green-100');
+});
+
+test('admin sees strategic management dashboard', async () => {
+  mockedUseAuth.mockReturnValue({ user: { role: 'admin', nama: 'Admin' } });
+  axios.get.mockImplementation((url) => {
+    if (url === '/teams/all') {
+      return Promise.resolve({
+        data: [
+          {
+            id: 1,
+            namaTim: 'Tim A',
+            members: [{ user: { id: 10, nama: 'Pegawai A', role: 'anggota' } }],
+          },
+        ],
+      });
+    }
+    if (url === '/penugasan') {
+      return Promise.resolve({
+        data: [
+          {
+            id: 1,
+            kegiatan: { namaKegiatan: 'Project Strategis' },
+            status: STATUS.BELUM,
+            pegawaiId: 10,
+          },
+          {
+            id: 2,
+            kegiatan: { namaKegiatan: 'Project Strategis' },
+            status: STATUS.SELESAI_DIKERJAKAN,
+            pegawaiId: 10,
+          },
+        ],
+      });
+    }
+    if (url === '/monitoring/mingguan/all') {
+      return Promise.resolve({ data: [{ userId: 10, total: 5, selesai: 3 }] });
+    }
+    if (url === '/monitoring/bulanan/all') {
+      return Promise.resolve({ data: [{ userId: 10, total: 20, selesai: 15 }] });
+    }
+    if (url === '/monitoring/bulanan/matrix') {
+      return Promise.resolve({
+        data: [
+          {
+            userId: 10,
+            months: Array.from({ length: 12 }, () => ({ persen: 70 })),
+          },
+        ],
+      });
+    }
+    return Promise.resolve({ data: [] });
+  });
+
+  render(
+    <MemoryRouter>
+      <Dashboard />
+    </MemoryRouter>
+  );
+
+  expect(await screen.findByText(/Dashboard Strategis/i)).toBeInTheDocument();
+  expect(await screen.findByText(/Project Strategis/)).toBeInTheDocument();
 });
 

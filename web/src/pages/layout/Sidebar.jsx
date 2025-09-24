@@ -20,7 +20,7 @@ const links = {
     to: "/dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
-    roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA],
+    roles: [ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA, ROLES.PIMPINAN],
   },
   tugasMingguan: {
     to: "/tugas-mingguan",
@@ -93,7 +93,7 @@ const sectionsGeneral = [
 ];
 
 const sectionsPimpinan = [
-  { label: null, links: ["monitoring", "keterlambatan"] },
+  { label: null, links: ["dashboard", "monitoring", "keterlambatan"] },
   { label: "Data Pegawai", links: ["tugasMingguan", "tugasTambahan"] },
   { label: "Lainnya", links: ["panduan"] },
 ];

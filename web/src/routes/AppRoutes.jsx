@@ -51,12 +51,7 @@ function PrivateRoute({ children }) {
 function RoleRoute({ roles, children }) {
   const { user } = useAuth();
   if (roles && !roles.includes(user?.role)) {
-    return (
-      <Navigate
-        to={user?.role === ROLES.PIMPINAN ? "/monitoring" : "/dashboard"}
-        replace
-      />
-    );
+    return <Navigate to="/dashboard" replace />;
   }
   return children;
 }
@@ -89,7 +84,9 @@ export default function AppRoutes() {
             <Route
               path="dashboard"
               element={
-                <RoleRoute roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA]}>
+                <RoleRoute
+                  roles={[ROLES.ADMIN, ROLES.KETUA, ROLES.ANGGOTA, ROLES.PIMPINAN]}
+                >
                   <Dashboard />
                 </RoleRoute>
               }
