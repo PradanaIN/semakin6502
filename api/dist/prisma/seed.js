@@ -28,6 +28,14 @@ const baseUsers = [
         role: "Pimpinan",
     },
     {
+        nama: "BPS Provinsi",
+        email: "bpsprovinsi@bps.go.id",
+        username: "bpsprovinsi",
+        password: "password",
+        team: "Pimpinan",
+        role: "Pimpinan",
+    },
+    {
         nama: "Warsidi",
         email: "warsidi2@bps.go.id",
         username: "warsidi2",
