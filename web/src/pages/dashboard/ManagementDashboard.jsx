@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import {
@@ -17,6 +17,7 @@ import { handleAxiosError } from "../../utils/alerts";
 import { STATUS } from "../../utils/status";
 import months from "../../utils/months";
 import formatDate from "../../utils/formatDate";
+import MonthYearPicker from "../../components/ui/MonthYearPicker";
 
 const FALLBACK_TEAM_KEY = "__others__";
 
@@ -676,192 +677,289 @@ const ManagementDashboard = () => {
   const [error, setError] = useState("");
   const [partial, setPartial] = useState(false);
   const [data, setData] = useState(null);
+  const [selectedWeek, setSelectedWeek] = useState(() => {
+    const { start } = getWeekBounds(new Date());
+    return formatISO(start);
+  });
+  const [selectedMonth, setSelectedMonth] = useState(
+    () => new Date().getMonth() + 1
+  );
+  const [selectedYear, setSelectedYear] = useState(
+    () => new Date().getFullYear()
+  );
+
+  const yearNumber = Number.isFinite(Number(selectedYear))
+    ? Number(selectedYear)
+    : new Date().getFullYear();
+
+  const weekOptions = useMemo(() => {
+    const options = [];
+    const januaryFirst = new Date(yearNumber, 0, 1);
+    januaryFirst.setHours(0, 0, 0, 0);
+    const endOfYear = new Date(yearNumber, 11, 31);
+    endOfYear.setHours(0, 0, 0, 0);
+
+    let cursor = new Date(januaryFirst);
+    let guard = 0;
+    while (guard < 60) {
+      const { start, end } = getWeekBounds(cursor);
+      if (end < januaryFirst) {
+        cursor.setDate(cursor.getDate() + 7);
+        guard += 1;
+        continue;
+      }
+      if (start > endOfYear) break;
+      options.push({
+        value: formatISO(start),
+        label: `${formatDate(start)} - ${formatDate(end)}`,
+      });
+      cursor.setDate(cursor.getDate() + 7);
+      guard += 1;
+    }
+
+    if (!options.length) {
+      const { start, end } = getWeekBounds(new Date());
+      options.push({
+        value: formatISO(start),
+        label: `${formatDate(start)} - ${formatDate(end)}`,
+      });
+    }
+
+    if (selectedWeek) {
+      const selectedDate = new Date(selectedWeek);
+      if (!Number.isNaN(selectedDate.getTime())) {
+        const { start, end } = getWeekBounds(selectedDate);
+        const value = formatISO(start);
+        if (!options.some((opt) => opt.value === value)) {
+          options.push({
+            value,
+            label: `${formatDate(start)} - ${formatDate(end)}`,
+          });
+        }
+      }
+    }
+
+    return options.sort((a, b) => a.value.localeCompare(b.value));
+  }, [selectedWeek, yearNumber]);
+
+  const yearOptions = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const baseYears = Array.from({ length: 5 }, (_, index) => currentYear - index);
+    if (!baseYears.includes(yearNumber)) baseYears.push(yearNumber);
+    return baseYears.sort((a, b) => b - a);
+  }, [yearNumber]);
+
+  const handleMonthChange = (value) => {
+    if (!value) {
+      setSelectedMonth(new Date().getMonth() + 1);
+      return;
+    }
+    setSelectedMonth(Number(value));
+  };
+
+  const fetchDashboardData = useCallback(async () => {
+    let partialFlag = false;
+    const markPartial = () => {
+      partialFlag = true;
+    };
+
+    let weekDate = selectedWeek ? new Date(selectedWeek) : new Date();
+    if (Number.isNaN(weekDate.getTime())) weekDate = new Date();
+    const { start: weekStart, end: weekEnd } = getWeekBounds(weekDate);
+    const minggu = formatISO(weekStart);
+
+    const parsedMonth = Number.parseInt(selectedMonth, 10);
+    const month = Number.isFinite(parsedMonth)
+      ? Math.min(Math.max(parsedMonth, 1), 12)
+      : new Date().getMonth() + 1;
+    const year = yearNumber;
+
+    const fetchTeams = async () => {
+      try {
+        const res = await axios.get("/teams/all");
+        const arr = Array.isArray(res.data) ? res.data : [];
+        if (arr.length) return arr;
+      } catch (err) {
+        markPartial();
+        if (err?.response?.status === 403) throw err;
+      }
+      try {
+        const res = await axios.get("/teams");
+        const arr = Array.isArray(res.data) ? res.data : [];
+        if (arr.length) return arr;
+      } catch (err) {
+        markPartial();
+        if (err?.response?.status === 403) throw err;
+      }
+      try {
+        const res = await axios.get("/teams/member");
+        return Array.isArray(res.data) ? res.data : [];
+      } catch (err) {
+        markPartial();
+        if (err?.response?.status === 403) throw err;
+      }
+      return [];
+    };
+
+    const fetchAssignments = async () => {
+      try {
+        const res = await axios.get("/penugasan", {
+          params: { bulan: month, tahun: year },
+        });
+        return Array.isArray(res.data) ? res.data : [];
+      } catch (err) {
+        markPartial();
+        if (err?.response?.status === 403) throw err;
+        handleAxiosError(err, "Gagal mengambil data penugasan");
+        return [];
+      }
+    };
+
+    const fetchWeekly = async () => {
+      try {
+        const res = await axios.get("/monitoring/mingguan/all", {
+          params: { minggu },
+        });
+        return Array.isArray(res.data) ? res.data : [];
+      } catch (err) {
+        markPartial();
+        if (err?.response?.status === 403) throw err;
+        handleAxiosError(err, "Gagal mengambil data mingguan");
+        return [];
+      }
+    };
+
+    const fetchMonthly = async () => {
+      try {
+        const res = await axios.get("/monitoring/bulanan/all", {
+          params: { year, bulan: String(month) },
+        });
+        return Array.isArray(res.data) ? res.data : [];
+      } catch (err) {
+        markPartial();
+        if (err?.response?.status === 403) throw err;
+        handleAxiosError(err, "Gagal mengambil data bulanan");
+        return [];
+      }
+    };
+
+    const fetchYearly = async () => {
+      try {
+        const res = await axios.get("/monitoring/bulanan/matrix", {
+          params: { year },
+        });
+        return Array.isArray(res.data) ? res.data : [];
+      } catch (err) {
+        markPartial();
+        if (err?.response?.status === 403) throw err;
+        handleAxiosError(err, "Gagal mengambil data tahunan");
+        return [];
+      }
+    };
+
+    const [teams, assignments, weekly, monthly, yearlyMatrix] =
+      await Promise.all([
+        fetchTeams(),
+        fetchAssignments(),
+        fetchWeekly(),
+        fetchMonthly(),
+        fetchYearly(),
+      ]);
+
+    const { teamMap } = collectTeamMappings(teams);
+    const topActivities = computeTopActivities(assignments);
+    const weeklyTeams = aggregateTeamPerformance(weekly, teamMap);
+    const monthlyTeams = aggregateTeamPerformance(monthly, teamMap);
+    const yearlyTeams = aggregateYearlyPerformance(yearlyMatrix, teamMap);
+    const trends = computeTrends(yearlyMatrix);
+
+    const collectiveWeekly = summarizeTeamList(weeklyTeams);
+    const collectiveMonthly = summarizeTeamList(monthlyTeams);
+    const yearlyProgressValues = trends
+      .map((t) => t.value)
+      .filter((val) => Number.isFinite(val) && val > 0);
+    const collectiveYearlyProgress = yearlyProgressValues.length
+      ? Math.round(
+          yearlyProgressValues.reduce((sum, val) => sum + val, 0) /
+            yearlyProgressValues.length
+        )
+      : 0;
+
+    const highlights = {
+      activeAssignments: assignments.filter(
+        (item) => item?.status !== STATUS.SELESAI_DIKERJAKAN
+      ).length,
+      backlog: assignments.filter((item) => item?.status === STATUS.BELUM)
+        .length,
+      completedThisWeek: collectiveWeekly.selesai,
+      weeklyProgress: collectiveWeekly.progress,
+      monthlyProgress: collectiveMonthly.progress,
+      yearlyProgress: collectiveYearlyProgress,
+    };
+
+    const collective = {
+      weekly: collectiveWeekly,
+      monthly: collectiveMonthly,
+      yearly: {
+        progress: collectiveYearlyProgress,
+        bestTeam: yearlyTeams[0] || null,
+        lowestTeam:
+          yearlyTeams.length > 1 ? yearlyTeams[yearlyTeams.length - 1] : null,
+      },
+      insights: buildInsights({
+        topActivities,
+        collectiveWeekly,
+        collectiveMonthly,
+        yearlyTeams,
+      }),
+    };
+
+    const monthIndex = month - 1;
+    const weekLabel = `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
+    const monthLabel =
+      monthIndex >= 0 && monthIndex < months.length
+        ? `${months[monthIndex]} ${year}`
+        : String(year);
+
+    return {
+      partialFlag,
+      payload: {
+        topActivities,
+        teamPerformance: {
+          weekly: weeklyTeams,
+          monthly: monthlyTeams,
+          yearly: yearlyTeams,
+        },
+        highlights,
+        collective,
+        trends,
+        period: {
+          weekLabel,
+          monthLabel,
+          year,
+        },
+      },
+    };
+  }, [selectedMonth, selectedWeek, yearNumber]);
 
   useEffect(() => {
     let isMounted = true;
-    const fetchData = async () => {
+
+    const loadData = async () => {
       setLoading(true);
       setError("");
       setPartial(false);
 
-      let partialFlag = false;
-
       try {
-        const now = new Date();
-        const year = now.getFullYear();
-        const monthIndex = now.getMonth();
-        const month = monthIndex + 1;
-        const { start: weekStart, end: weekEnd } = getWeekBounds(now);
-        const minggu = formatISO(weekStart);
-
-        const fetchTeams = async () => {
-          try {
-            const res = await axios.get("/teams/all");
-            const arr = Array.isArray(res.data) ? res.data : [];
-            if (arr.length) return arr;
-          } catch (err) {
-            partialFlag = true;
-            if (err?.response?.status === 403) throw err;
-          }
-          try {
-            const res = await axios.get("/teams");
-            const arr = Array.isArray(res.data) ? res.data : [];
-            if (arr.length) return arr;
-          } catch (err) {
-            partialFlag = true;
-            if (err?.response?.status === 403) throw err;
-          }
-          try {
-            const res = await axios.get("/teams/member");
-            return Array.isArray(res.data) ? res.data : [];
-          } catch (err) {
-            partialFlag = true;
-            if (err?.response?.status === 403) throw err;
-          }
-          return [];
-        };
-
-        const fetchAssignments = async () => {
-          try {
-            const res = await axios.get("/penugasan", {
-              params: { bulan: month, tahun: year },
-            });
-            return Array.isArray(res.data) ? res.data : [];
-          } catch (err) {
-            partialFlag = true;
-            if (err?.response?.status === 403) throw err;
-            handleAxiosError(err, "Gagal mengambil data penugasan");
-            return [];
-          }
-        };
-
-        const fetchWeekly = async () => {
-          try {
-            const res = await axios.get("/monitoring/mingguan/all", {
-              params: { minggu },
-            });
-            return Array.isArray(res.data) ? res.data : [];
-          } catch (err) {
-            partialFlag = true;
-            if (err?.response?.status === 403) throw err;
-            handleAxiosError(err, "Gagal mengambil data mingguan");
-            return [];
-          }
-        };
-
-        const fetchMonthly = async () => {
-          try {
-            const res = await axios.get("/monitoring/bulanan/all", {
-              params: { year, bulan: String(month) },
-            });
-            return Array.isArray(res.data) ? res.data : [];
-          } catch (err) {
-            partialFlag = true;
-            if (err?.response?.status === 403) throw err;
-            handleAxiosError(err, "Gagal mengambil data bulanan");
-            return [];
-          }
-        };
-
-        const fetchYearly = async () => {
-          try {
-            const res = await axios.get("/monitoring/bulanan/matrix", {
-              params: { year },
-            });
-            return Array.isArray(res.data) ? res.data : [];
-          } catch (err) {
-            partialFlag = true;
-            if (err?.response?.status === 403) throw err;
-            handleAxiosError(err, "Gagal mengambil data tahunan");
-            return [];
-          }
-        };
-
-        const [teams, assignments, weekly, monthly, yearlyMatrix] =
-          await Promise.all([
-            fetchTeams(),
-            fetchAssignments(),
-            fetchWeekly(),
-            fetchMonthly(),
-            fetchYearly(),
-          ]);
-
-        const { teamMap } = collectTeamMappings(teams);
-        const topActivities = computeTopActivities(assignments);
-        const weeklyTeams = aggregateTeamPerformance(weekly, teamMap);
-        const monthlyTeams = aggregateTeamPerformance(monthly, teamMap);
-        const yearlyTeams = aggregateYearlyPerformance(yearlyMatrix, teamMap);
-        const trends = computeTrends(yearlyMatrix);
-
-        const collectiveWeekly = summarizeTeamList(weeklyTeams);
-        const collectiveMonthly = summarizeTeamList(monthlyTeams);
-        const yearlyProgressValues = trends
-          .map((t) => t.value)
-          .filter((val) => Number.isFinite(val) && val > 0);
-        const collectiveYearlyProgress = yearlyProgressValues.length
-          ? Math.round(
-              yearlyProgressValues.reduce((sum, val) => sum + val, 0) /
-                yearlyProgressValues.length
-            )
-          : 0;
-
-        const highlights = {
-          activeAssignments: assignments.filter(
-            (item) => item?.status !== STATUS.SELESAI_DIKERJAKAN
-          ).length,
-          backlog: assignments.filter((item) => item?.status === STATUS.BELUM)
-            .length,
-          completedThisWeek: collectiveWeekly.selesai,
-          weeklyProgress: collectiveWeekly.progress,
-          monthlyProgress: collectiveMonthly.progress,
-          yearlyProgress: collectiveYearlyProgress,
-        };
-
-        const collective = {
-          weekly: collectiveWeekly,
-          monthly: collectiveMonthly,
-          yearly: {
-            progress: collectiveYearlyProgress,
-            bestTeam: yearlyTeams[0] || null,
-            lowestTeam:
-              yearlyTeams.length > 1
-                ? yearlyTeams[yearlyTeams.length - 1]
-                : null,
-          },
-          insights: buildInsights({
-            topActivities,
-            collectiveWeekly,
-            collectiveMonthly,
-            yearlyTeams,
-          }),
-        };
-
-        if (isMounted) {
-          setData({
-            topActivities,
-            teamPerformance: {
-              weekly: weeklyTeams,
-              monthly: monthlyTeams,
-              yearly: yearlyTeams,
-            },
-            highlights,
-            collective,
-            trends,
-            period: {
-              weekLabel: `${formatDate(weekStart)} - ${formatDate(weekEnd)}`,
-              monthLabel: `${months[monthIndex]} ${year}`,
-              year,
-            },
-          });
-          setPartial(partialFlag);
-        }
+        const result = await fetchDashboardData();
+        if (!isMounted) return;
+        setData(result.payload);
+        setPartial(result.partialFlag);
       } catch (err) {
         if (!isMounted) return;
         setPartial(true);
         if (err?.response?.status === 403) {
-          setError(
-            "Anda tidak memiliki akses untuk melihat dashboard pimpinan."
-          );
+          setError("Anda tidak memiliki akses untuk melihat dashboard pimpinan.");
         } else {
           setError("Gagal memuat data dashboard pimpinan.");
           if (err) handleAxiosError(err, "Gagal memuat dashboard pimpinan");
@@ -871,12 +969,12 @@ const ManagementDashboard = () => {
       }
     };
 
-    fetchData();
+    loadData();
 
     return () => {
       isMounted = false;
     };
-  }, [user?.id]);
+  }, [fetchDashboardData, user?.id]);
 
   const leadingTeam = useMemo(() => {
     if (!data?.teamPerformance?.weekly?.length) return null;
@@ -941,6 +1039,47 @@ const ManagementDashboard = () => {
               </p>
             </div>
           )}
+        </div>
+        <div className="relative mt-6">
+          <div className="flex flex-wrap items-end gap-6">
+            <div className="flex flex-col gap-2 text-blue-100">
+              <span className="text-xs uppercase tracking-widest">Pekan</span>
+              <select
+                value={selectedWeek}
+                onChange={(event) => setSelectedWeek(event.target.value)}
+                className="min-w-[220px] rounded-xl border border-white/40 bg-white/90 px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-white"
+              >
+                {weekOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col gap-2 text-blue-100">
+              <span className="text-xs uppercase tracking-widest">Bulan</span>
+              <div className="bg-white/10 rounded-xl p-1">
+                <MonthYearPicker
+                  month={selectedMonth}
+                  onMonthChange={handleMonthChange}
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 text-blue-100">
+              <span className="text-xs uppercase tracking-widest">Tahun</span>
+              <select
+                value={yearNumber}
+                onChange={(event) => setSelectedYear(Number(event.target.value))}
+                className="w-28 rounded-xl border border-white/40 bg-white/90 px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-white"
+              >
+                {yearOptions.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
       </section>
 
