@@ -312,82 +312,100 @@ export default function PenugasanPage() {
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
 
   const columns = useMemo(() => {
-    const base = [
-      {
-        Header: "No",
-        accessor: (_row, i) => (currentPage - 1) * pageSize + i + 1,
-        disableFilters: true,
-      },
-      {
-        Header: "Kegiatan",
-        accessor: (row) => row.kegiatan?.namaKegiatan || "-",
-        disableFilters: true,
-      },
-      {
-        Header: "Deskripsi",
-        accessor: (row) => row.deskripsi || "-",
-        disableFilters: true,
-      },
-    ];
+    const isAllTab = viewTab === "all";
+    const showPegawaiFirst =
+      isAllTab && [ROLES.ADMIN, ROLES.PIMPINAN].includes(user?.role);
 
-    // Kolom khusus per tab
-    if (viewTab === "all") {
-      base.push(
-        {
-          Header: "Tim",
-          accessor: (row) => row.kegiatan?.team?.namaTim || "-",
-          disableFilters: true,
-        },
-        {
-          Header: "Pegawai",
-          accessor: (row) => row.pegawai?.nama || "-",
-          disableFilters: true,
-        }
-      );
-    } else {
-      base.push({
-        Header: "Pegawai",
-        accessor: (row) => row.pegawai?.nama || "-",
-        disableFilters: true,
-      });
+    const noColumn = {
+      Header: "No",
+      accessor: (_row, i) => (currentPage - 1) * pageSize + i + 1,
+      disableFilters: true,
+    };
+
+    const pegawaiColumn = {
+      Header: "Pegawai",
+      accessor: (row) => row.pegawai?.nama || "-",
+      disableFilters: true,
+    };
+
+    const kegiatanColumn = {
+      Header: "Kegiatan",
+      accessor: (row) => row.kegiatan?.namaKegiatan || "-",
+      disableFilters: true,
+    };
+
+    const deskripsiColumn = {
+      Header: "Deskripsi",
+      accessor: (row) => row.deskripsi || "-",
+      disableFilters: true,
+    };
+
+    const timColumn = {
+      Header: "Tim",
+      accessor: (row) => row.kegiatan?.team?.namaTim || "-",
+      disableFilters: true,
+    };
+
+    const mingguColumn = {
+      Header: "Minggu",
+      accessor: "minggu",
+      disableFilters: true,
+    };
+
+    const bulanColumn = {
+      Header: "Bulan",
+      accessor: (row) => `${months[(parseInt(row.bulan, 10) || 1) - 1]} ${row.tahun}`,
+      disableFilters: true,
+    };
+
+    const statusColumn = {
+      Header: "Status",
+      accessor: "status",
+      Cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      disableFilters: true,
+    };
+
+    const actionColumn = {
+      Header: "Aksi",
+      accessor: "id",
+      Cell: ({ row }) => (
+        <Button
+          onClick={() => navigate(`/tugas-mingguan/${row.original.id}`)}
+          variant="icon"
+          icon
+          aria-label="Detail"
+        >
+          <Eye size={16} />
+        </Button>
+      ),
+      disableFilters: true,
+    };
+
+    const orderedColumns = [noColumn];
+
+    if (showPegawaiFirst) {
+      orderedColumns.push(pegawaiColumn);
     }
 
-    base.push(
-      { Header: "Minggu", accessor: "minggu", disableFilters: true },
-      {
-        Header: "Bulan",
-        // Format contoh: "Agustus 2025"
-        accessor: (row) => `${months[(parseInt(row.bulan, 10) || 1) - 1]} ${row.tahun}`,
-        disableFilters: true,
-      },
-      {
-        Header: "Status",
-        accessor: "status",
-        Cell: ({ row }) => <StatusBadge status={row.original.status} />,
-        disableFilters: true,
+    orderedColumns.push(kegiatanColumn, deskripsiColumn);
+
+    if (isAllTab) {
+      orderedColumns.push(timColumn);
+      if (!showPegawaiFirst) {
+        orderedColumns.push(pegawaiColumn);
       }
-    );
-
-    if (viewTab !== "all") {
-      base.push({
-        Header: "Aksi",
-        accessor: "id",
-        Cell: ({ row }) => (
-          <Button
-            onClick={() => navigate(`/tugas-mingguan/${row.original.id}`)}
-            variant="icon"
-            icon
-            aria-label="Detail"
-          >
-            <Eye size={16} />
-          </Button>
-        ),
-        disableFilters: true,
-      });
+    } else {
+      orderedColumns.push(pegawaiColumn);
     }
 
-    return base;
-  }, [currentPage, pageSize, navigate, viewTab]);
+    orderedColumns.push(mingguColumn, bulanColumn, statusColumn);
+
+    if (!isAllTab) {
+      orderedColumns.push(actionColumn);
+    }
+
+    return orderedColumns;
+  }, [currentPage, pageSize, navigate, user?.role, viewTab]);
 
   // --- UI
 
