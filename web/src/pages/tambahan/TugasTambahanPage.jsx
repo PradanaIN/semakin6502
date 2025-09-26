@@ -261,15 +261,9 @@ export default function TugasTambahanPage() {
         accessor: (_row, i) => i + 1,
         disableFilters: true,
       },
-      { Header: "Kegiatan", accessor: "nama", disableFilters: true },
-      {
-        Header: "Deskripsi",
-        accessor: (row) => row.deskripsi || "-",
-        disableFilters: true,
-      },
     ];
 
-    if (user?.role === ROLES.PIMPINAN) {
+    if ([ROLES.ADMIN, ROLES.PIMPINAN].includes(user?.role)) {
       base.push({
         Header: "Pegawai",
         accessor: (row) => row.user?.nama || "-",
@@ -278,6 +272,12 @@ export default function TugasTambahanPage() {
     }
 
     base.push(
+      { Header: "Kegiatan", accessor: "nama", disableFilters: true },
+      {
+        Header: "Deskripsi",
+        accessor: (row) => row.deskripsi || "-",
+        disableFilters: true,
+      },
       {
         Header: "Tim",
         accessor: (row) => row.kegiatan.team?.namaTim || "-",
