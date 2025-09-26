@@ -430,45 +430,25 @@ const ActivitiesCard = ({ activities }) => {
         },
       },
       {
-        id: STATUS.BELUM,
-        label: STATUS_LABELS[STATUS.BELUM] ?? "Belum",
-        predicate: (activity) => activity.belum > 0,
-        emptyMessage: "Tidak ada kegiatan yang belum dimulai.",
+        id: "pending",
+        label: "Belum/Sedang",
+        predicate: (activity) => activity.belum > 0 || activity.berjalan > 0,
+        emptyMessage: "Tidak ada kegiatan yang belum atau sedang berjalan.",
         getMetrics: (activity) => {
+          const pendingCount = Number(activity.belum || 0) + Number(activity.berjalan || 0);
           const portion = activity.total
-            ? Math.round((activity.belum / Math.max(activity.total, 1)) * 100)
+            ? Math.round((pendingCount / Math.max(activity.total, 1)) * 100)
             : 0;
           return {
             barColor: "bg-amber-500",
             barValue: portion,
-            chipLabel: `${numberFormatter.format(activity.belum)} belum dimulai`,
+            chipLabel: `${numberFormatter.format(pendingCount)} belum/sedang`,
             chipTone: "bg-amber-100 text-amber-700",
-            description: `${numberFormatter.format(activity.total)} penugasan • ${portion}% belum dimulai`,
+            description: `${numberFormatter.format(activity.total)} penugasan • ${portion}% belum atau sedang berlangsung`,
             details: [
+              `Belum: ${numberFormatter.format(activity.belum)}`,
               `Sedang: ${numberFormatter.format(activity.berjalan)}`,
               `Selesai: ${numberFormatter.format(activity.selesai)}`,
-            ],
-          };
-        },
-      },
-      {
-        id: STATUS.SEDANG_DIKERJAKAN,
-        label: STATUS_LABELS[STATUS.SEDANG_DIKERJAKAN] ?? "Sedang",
-        predicate: (activity) => activity.berjalan > 0,
-        emptyMessage: "Tidak ada kegiatan yang sedang berjalan.",
-        getMetrics: (activity) => {
-          const portion = activity.total
-            ? Math.round((activity.berjalan / Math.max(activity.total, 1)) * 100)
-            : 0;
-          return {
-            barColor: "bg-blue-500",
-            barValue: portion,
-            chipLabel: `${numberFormatter.format(activity.berjalan)} sedang berjalan`,
-            chipTone: "bg-blue-100 text-blue-700",
-            description: `${numberFormatter.format(activity.total)} penugasan • ${portion}% masih berlangsung`,
-            details: [
-              `Selesai: ${numberFormatter.format(activity.selesai)}`,
-              `Belum: ${numberFormatter.format(activity.belum)}`,
             ],
           };
         },
