@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import clsx from "clsx";
 import {
@@ -13,9 +13,10 @@ import {
 } from "lucide-react";
 import Loading from "../../components/Loading";
 import Skeleton from "../../components/ui/Skeleton";
+import Button from "../../components/ui/Button";
 import { useAuth } from "../auth/useAuth";
 import { handleAxiosError } from "../../utils/alerts";
-import { STATUS } from "../../utils/status";
+import { STATUS, STATUS_LABELS } from "../../utils/status";
 import months from "../../utils/months";
 import formatDate from "../../utils/formatDate";
 import {
@@ -28,6 +29,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import MonthYearPicker from "../../components/ui/MonthYearPicker";
 
 const FALLBACK_TEAM_KEY = "__others__";
 
@@ -250,7 +252,7 @@ const computeTrends = (matrixRows) => {
   });
 };
 
-const computeTopActivities = (assignments = []) => {
+const computeTopActivities = (assignments = [], limit) => {
   const map = new Map();
   assignments.forEach((item) => {
     const name =
@@ -275,15 +277,20 @@ const computeTopActivities = (assignments = []) => {
     else entry.belum += 1;
   });
 
-  return Array.from(map.values())
+  const result = Array.from(map.values())
     .map((entry) => ({
       ...entry,
       progress: entry.total
         ? Math.round((entry.selesai / Math.max(entry.total, 1)) * 100)
         : 0,
     }))
-    .sort((a, b) => b.total - a.total || b.progress - a.progress)
-    .slice(0, 5);
+    .sort((a, b) => b.total - a.total || b.progress - a.progress);
+
+  if (Number.isFinite(limit) && limit > 0) {
+    return result.slice(0, limit);
+  }
+
+  return result;
 };
 
 const summarizeTeamList = (list = []) => {
@@ -380,73 +387,245 @@ const HighlightCard = ({
   </div>
 );
 
-const ActivitiesCard = ({ activities }) => (
-  <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-6 space-y-4">
-    <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-      <div>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          Ringkasan Kegiatan Berjalan
-        </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Aktivitas dengan penugasan terbanyak sebagai indikator prioritas
-        </p>
-      </div>
-      <Activity className="w-8 h-8 text-blue-500" />
-    </header>
-    <div className="space-y-4">
-      {activities.length === 0 && (
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Belum ada data kegiatan untuk ditampilkan.
-        </p>
-      )}
-      {activities.map((activity) => (
-        <div
-          key={activity.name}
-          className="p-4 border border-gray-200 dark:border-gray-800 rounded-xl bg-gray-50 dark:bg-gray-800/60"
-        >
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <div>
-              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                {activity.name}
-              </h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {numberFormatter.format(activity.total)} penugasan •{" "}
-                {activity.progress}% selesai
-              </p>
-            </div>
-            <span
-              className={clsx(
-                "text-xs font-semibold px-2.5 py-1 rounded-full",
-                activity.progress >= 85
-                  ? "bg-green-100 text-green-700"
-                  : activity.progress >= 60
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-amber-100 text-amber-700"
-              )}
-            >
-              {activity.progress >= 85
-                ? "Stabil"
-                : activity.progress >= 60
-                ? "Perlu Monitoring"
-                : "Butuh Percepatan"}
-            </span>
-          </div>
-          <div className="w-full h-3 bg-white dark:bg-gray-900 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-blue-500 rounded-full transition-all"
-              style={{ width: `${activity.progress}%` }}
-            />
-          </div>
-          <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-4">
-            <span>Selesai: {numberFormatter.format(activity.selesai)}</span>
-            <span>Sedang: {numberFormatter.format(activity.berjalan)}</span>
-            <span>Belum: {numberFormatter.format(activity.belum)}</span>
-          </div>
+const DEFAULT_ACTIVITY_LIMIT = 5;
+
+const ActivitiesCard = ({ activities }) => {
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [visibleLimit, setVisibleLimit] = useState(DEFAULT_ACTIVITY_LIMIT);
+
+  const filters = useMemo(
+    () => [
+      {
+        id: "all",
+        label: "Semua",
+        predicate: () => true,
+        emptyMessage: "Belum ada data kegiatan untuk ditampilkan.",
+        getMetrics: (activity) => {
+          const progress = activity.progress;
+          const chipTone =
+            progress >= 85
+              ? "bg-green-100 text-green-700"
+              : progress >= 60
+              ? "bg-blue-100 text-blue-700"
+              : "bg-amber-100 text-amber-700";
+          const chipLabel =
+            progress >= 85
+              ? "Stabil"
+              : progress >= 60
+              ? "Perlu Monitoring"
+              : "Butuh Percepatan";
+
+          return {
+            barColor: "bg-blue-500",
+            barValue: progress,
+            chipLabel,
+            chipTone,
+            description: `${numberFormatter.format(activity.total)} penugasan • ${progress}% selesai`,
+            details: [
+              `Selesai: ${numberFormatter.format(activity.selesai)}`,
+              `Sedang: ${numberFormatter.format(activity.berjalan)}`,
+              `Belum: ${numberFormatter.format(activity.belum)}`,
+            ],
+          };
+        },
+      },
+      {
+        id: STATUS.BELUM,
+        label: STATUS_LABELS[STATUS.BELUM] ?? "Belum",
+        predicate: (activity) => activity.belum > 0,
+        emptyMessage: "Tidak ada kegiatan yang belum dimulai.",
+        getMetrics: (activity) => {
+          const portion = activity.total
+            ? Math.round((activity.belum / Math.max(activity.total, 1)) * 100)
+            : 0;
+          return {
+            barColor: "bg-amber-500",
+            barValue: portion,
+            chipLabel: `${numberFormatter.format(activity.belum)} belum dimulai`,
+            chipTone: "bg-amber-100 text-amber-700",
+            description: `${numberFormatter.format(activity.total)} penugasan • ${portion}% belum dimulai`,
+            details: [
+              `Sedang: ${numberFormatter.format(activity.berjalan)}`,
+              `Selesai: ${numberFormatter.format(activity.selesai)}`,
+            ],
+          };
+        },
+      },
+      {
+        id: STATUS.SEDANG_DIKERJAKAN,
+        label: STATUS_LABELS[STATUS.SEDANG_DIKERJAKAN] ?? "Sedang",
+        predicate: (activity) => activity.berjalan > 0,
+        emptyMessage: "Tidak ada kegiatan yang sedang berjalan.",
+        getMetrics: (activity) => {
+          const portion = activity.total
+            ? Math.round((activity.berjalan / Math.max(activity.total, 1)) * 100)
+            : 0;
+          return {
+            barColor: "bg-blue-500",
+            barValue: portion,
+            chipLabel: `${numberFormatter.format(activity.berjalan)} sedang berjalan`,
+            chipTone: "bg-blue-100 text-blue-700",
+            description: `${numberFormatter.format(activity.total)} penugasan • ${portion}% masih berlangsung`,
+            details: [
+              `Selesai: ${numberFormatter.format(activity.selesai)}`,
+              `Belum: ${numberFormatter.format(activity.belum)}`,
+            ],
+          };
+        },
+      },
+      {
+        id: STATUS.SELESAI_DIKERJAKAN,
+        label: STATUS_LABELS[STATUS.SELESAI_DIKERJAKAN] ?? "Selesai",
+        predicate: (activity) => activity.selesai > 0,
+        emptyMessage: "Tidak ada kegiatan yang telah selesai.",
+        getMetrics: (activity) => {
+          const portion = activity.total
+            ? Math.round((activity.selesai / Math.max(activity.total, 1)) * 100)
+            : 0;
+          return {
+            barColor: "bg-green-500",
+            barValue: portion,
+            chipLabel: `${numberFormatter.format(activity.selesai)} selesai`,
+            chipTone: "bg-green-100 text-green-700",
+            description: `${numberFormatter.format(activity.total)} penugasan • ${portion}% telah selesai`,
+            details: [
+              `Sedang: ${numberFormatter.format(activity.berjalan)}`,
+              `Belum: ${numberFormatter.format(activity.belum)}`,
+            ],
+          };
+        },
+      },
+    ],
+    []
+  );
+
+  const activeFilter = useMemo(
+    () => filters.find((item) => item.id === statusFilter) ?? filters[0],
+    [filters, statusFilter]
+  );
+
+  const filteredActivities = useMemo(() => {
+    const predicate = activeFilter?.predicate ?? (() => true);
+    const source = Array.isArray(activities) ? activities : [];
+    return source.filter(predicate);
+  }, [activities, activeFilter]);
+
+  const visibleActivities = useMemo(() => {
+    if (!Number.isFinite(visibleLimit)) return filteredActivities;
+    return filteredActivities.slice(0, Math.max(visibleLimit, 0));
+  }, [filteredActivities, visibleLimit]);
+
+  const canToggleLimit = filteredActivities.length > DEFAULT_ACTIVITY_LIMIT;
+  const isExpanded = !Number.isFinite(visibleLimit);
+  const emptyMessage = activeFilter?.emptyMessage;
+
+  const handleFilterChange = (id) => {
+    setStatusFilter(id);
+    setVisibleLimit(DEFAULT_ACTIVITY_LIMIT);
+  };
+
+  const toggleLimit = () => {
+    setVisibleLimit((prev) =>
+      Number.isFinite(prev) ? Number.POSITIVE_INFINITY : DEFAULT_ACTIVITY_LIMIT
+    );
+  };
+
+  return (
+    <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-6 space-y-4">
+      <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="space-y-1">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Ringkasan Kegiatan Berjalan
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Aktivitas dengan penugasan terbanyak sebagai indikator prioritas
+          </p>
         </div>
-      ))}
-    </div>
-  </section>
-);
+        <Activity className="w-8 h-8 text-blue-500" />
+      </header>
+      <div className="flex flex-wrap items-center gap-2">
+        {filters.map((filter) => (
+          <Button
+            key={filter.id}
+            variant={statusFilter === filter.id ? "primary" : "secondary"}
+            className={clsx(
+              "text-sm px-3 py-1.5",
+              statusFilter === filter.id
+                ? "shadow"
+                : "bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+            )}
+            onClick={() => handleFilterChange(filter.id)}
+          >
+            {filter.label}
+          </Button>
+        ))}
+      </div>
+      <div className="space-y-4">
+        {filteredActivities.length === 0 && (
+          <p className="text-sm text-gray-500 dark:text-gray-400">{emptyMessage}</p>
+        )}
+        {visibleActivities.map((activity) => {
+          const metrics = activeFilter?.getMetrics(activity);
+          const barWidth = Math.max(
+            0,
+            Math.min(metrics?.barValue ?? 0, 100)
+          );
+
+          return (
+            <div
+              key={activity.name}
+              className="p-4 border border-gray-200 dark:border-gray-800 rounded-xl bg-gray-50 dark:bg-gray-800/60"
+            >
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {activity.name}
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {metrics?.description}
+                  </p>
+                </div>
+                {metrics?.chipLabel && (
+                  <span
+                    className={clsx(
+                      "text-xs font-semibold px-2.5 py-1 rounded-full",
+                      metrics?.chipTone
+                    )}
+                  >
+                    {metrics.chipLabel}
+                  </span>
+                )}
+              </div>
+              <div className="w-full h-3 bg-white dark:bg-gray-900 rounded-full overflow-hidden">
+                <div
+                  className={clsx(
+                    "h-full rounded-full transition-all",
+                    metrics?.barColor ?? "bg-blue-500"
+                  )}
+                  style={{ width: `${barWidth}%` }}
+                />
+              </div>
+              {!!metrics?.details?.length && (
+                <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-4">
+                  {metrics.details.map((detail) => (
+                    <span key={detail}>{detail}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {canToggleLimit && (
+        <div className="flex justify-end">
+          <Button variant="icon" onClick={toggleLimit}>
+            {isExpanded ? "Lihat lebih sedikit" : "Lihat semua"}
+          </Button>
+        </div>
+      )}
+    </section>
+  );
+};
 
 const TeamPerformanceCard = ({ data, period }) => {
   const [tab, setTab] = useState("weekly");
@@ -732,192 +911,289 @@ const ManagementDashboard = () => {
   const [error, setError] = useState("");
   const [partial, setPartial] = useState(false);
   const [data, setData] = useState(null);
+  const [selectedWeek, setSelectedWeek] = useState(() => {
+    const { start } = getWeekBounds(new Date());
+    return formatISO(start);
+  });
+  const [selectedMonth, setSelectedMonth] = useState(
+    () => new Date().getMonth() + 1
+  );
+  const [selectedYear, setSelectedYear] = useState(
+    () => new Date().getFullYear()
+  );
+
+  const yearNumber = Number.isFinite(Number(selectedYear))
+    ? Number(selectedYear)
+    : new Date().getFullYear();
+
+  const weekOptions = useMemo(() => {
+    const options = [];
+    const januaryFirst = new Date(yearNumber, 0, 1);
+    januaryFirst.setHours(0, 0, 0, 0);
+    const endOfYear = new Date(yearNumber, 11, 31);
+    endOfYear.setHours(0, 0, 0, 0);
+
+    let cursor = new Date(januaryFirst);
+    let guard = 0;
+    while (guard < 60) {
+      const { start, end } = getWeekBounds(cursor);
+      if (end < januaryFirst) {
+        cursor.setDate(cursor.getDate() + 7);
+        guard += 1;
+        continue;
+      }
+      if (start > endOfYear) break;
+      options.push({
+        value: formatISO(start),
+        label: `${formatDate(start)} - ${formatDate(end)}`,
+      });
+      cursor.setDate(cursor.getDate() + 7);
+      guard += 1;
+    }
+
+    if (!options.length) {
+      const { start, end } = getWeekBounds(new Date());
+      options.push({
+        value: formatISO(start),
+        label: `${formatDate(start)} - ${formatDate(end)}`,
+      });
+    }
+
+    if (selectedWeek) {
+      const selectedDate = new Date(selectedWeek);
+      if (!Number.isNaN(selectedDate.getTime())) {
+        const { start, end } = getWeekBounds(selectedDate);
+        const value = formatISO(start);
+        if (!options.some((opt) => opt.value === value)) {
+          options.push({
+            value,
+            label: `${formatDate(start)} - ${formatDate(end)}`,
+          });
+        }
+      }
+    }
+
+    return options.sort((a, b) => a.value.localeCompare(b.value));
+  }, [selectedWeek, yearNumber]);
+
+  const yearOptions = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const baseYears = Array.from({ length: 5 }, (_, index) => currentYear - index);
+    if (!baseYears.includes(yearNumber)) baseYears.push(yearNumber);
+    return baseYears.sort((a, b) => b - a);
+  }, [yearNumber]);
+
+  const handleMonthChange = (value) => {
+    if (!value) {
+      setSelectedMonth(new Date().getMonth() + 1);
+      return;
+    }
+    setSelectedMonth(Number(value));
+  };
+
+  const fetchDashboardData = useCallback(async () => {
+    let partialFlag = false;
+    const markPartial = () => {
+      partialFlag = true;
+    };
+
+    let weekDate = selectedWeek ? new Date(selectedWeek) : new Date();
+    if (Number.isNaN(weekDate.getTime())) weekDate = new Date();
+    const { start: weekStart, end: weekEnd } = getWeekBounds(weekDate);
+    const minggu = formatISO(weekStart);
+
+    const parsedMonth = Number.parseInt(selectedMonth, 10);
+    const month = Number.isFinite(parsedMonth)
+      ? Math.min(Math.max(parsedMonth, 1), 12)
+      : new Date().getMonth() + 1;
+    const year = yearNumber;
+
+    const fetchTeams = async () => {
+      try {
+        const res = await axios.get("/teams/all");
+        const arr = Array.isArray(res.data) ? res.data : [];
+        if (arr.length) return arr;
+      } catch (err) {
+        markPartial();
+        if (err?.response?.status === 403) throw err;
+      }
+      try {
+        const res = await axios.get("/teams");
+        const arr = Array.isArray(res.data) ? res.data : [];
+        if (arr.length) return arr;
+      } catch (err) {
+        markPartial();
+        if (err?.response?.status === 403) throw err;
+      }
+      try {
+        const res = await axios.get("/teams/member");
+        return Array.isArray(res.data) ? res.data : [];
+      } catch (err) {
+        markPartial();
+        if (err?.response?.status === 403) throw err;
+      }
+      return [];
+    };
+
+    const fetchAssignments = async () => {
+      try {
+        const res = await axios.get("/penugasan", {
+          params: { bulan: month, tahun: year },
+        });
+        return Array.isArray(res.data) ? res.data : [];
+      } catch (err) {
+        markPartial();
+        if (err?.response?.status === 403) throw err;
+        handleAxiosError(err, "Gagal mengambil data penugasan");
+        return [];
+      }
+    };
+
+    const fetchWeekly = async () => {
+      try {
+        const res = await axios.get("/monitoring/mingguan/all", {
+          params: { minggu },
+        });
+        return Array.isArray(res.data) ? res.data : [];
+      } catch (err) {
+        markPartial();
+        if (err?.response?.status === 403) throw err;
+        handleAxiosError(err, "Gagal mengambil data mingguan");
+        return [];
+      }
+    };
+
+    const fetchMonthly = async () => {
+      try {
+        const res = await axios.get("/monitoring/bulanan/all", {
+          params: { year, bulan: String(month) },
+        });
+        return Array.isArray(res.data) ? res.data : [];
+      } catch (err) {
+        markPartial();
+        if (err?.response?.status === 403) throw err;
+        handleAxiosError(err, "Gagal mengambil data bulanan");
+        return [];
+      }
+    };
+
+    const fetchYearly = async () => {
+      try {
+        const res = await axios.get("/monitoring/bulanan/matrix", {
+          params: { year },
+        });
+        return Array.isArray(res.data) ? res.data : [];
+      } catch (err) {
+        markPartial();
+        if (err?.response?.status === 403) throw err;
+        handleAxiosError(err, "Gagal mengambil data tahunan");
+        return [];
+      }
+    };
+
+    const [teams, assignments, weekly, monthly, yearlyMatrix] =
+      await Promise.all([
+        fetchTeams(),
+        fetchAssignments(),
+        fetchWeekly(),
+        fetchMonthly(),
+        fetchYearly(),
+      ]);
+
+    const { teamMap } = collectTeamMappings(teams);
+    const topActivities = computeTopActivities(assignments);
+    const weeklyTeams = aggregateTeamPerformance(weekly, teamMap);
+    const monthlyTeams = aggregateTeamPerformance(monthly, teamMap);
+    const yearlyTeams = aggregateYearlyPerformance(yearlyMatrix, teamMap);
+    const trends = computeTrends(yearlyMatrix);
+
+    const collectiveWeekly = summarizeTeamList(weeklyTeams);
+    const collectiveMonthly = summarizeTeamList(monthlyTeams);
+    const yearlyProgressValues = trends
+      .map((t) => t.value)
+      .filter((val) => Number.isFinite(val) && val > 0);
+    const collectiveYearlyProgress = yearlyProgressValues.length
+      ? Math.round(
+          yearlyProgressValues.reduce((sum, val) => sum + val, 0) /
+            yearlyProgressValues.length
+        )
+      : 0;
+
+    const highlights = {
+      activeAssignments: assignments.filter(
+        (item) => item?.status !== STATUS.SELESAI_DIKERJAKAN
+      ).length,
+      backlog: assignments.filter((item) => item?.status === STATUS.BELUM)
+        .length,
+      completedThisWeek: collectiveWeekly.selesai,
+      weeklyProgress: collectiveWeekly.progress,
+      monthlyProgress: collectiveMonthly.progress,
+      yearlyProgress: collectiveYearlyProgress,
+    };
+
+    const collective = {
+      weekly: collectiveWeekly,
+      monthly: collectiveMonthly,
+      yearly: {
+        progress: collectiveYearlyProgress,
+        bestTeam: yearlyTeams[0] || null,
+        lowestTeam:
+          yearlyTeams.length > 1 ? yearlyTeams[yearlyTeams.length - 1] : null,
+      },
+      insights: buildInsights({
+        topActivities,
+        collectiveWeekly,
+        collectiveMonthly,
+        yearlyTeams,
+      }),
+    };
+
+    const monthIndex = month - 1;
+    const weekLabel = `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
+    const monthLabel =
+      monthIndex >= 0 && monthIndex < months.length
+        ? `${months[monthIndex]} ${year}`
+        : String(year);
+
+    return {
+      partialFlag,
+      payload: {
+        topActivities,
+        teamPerformance: {
+          weekly: weeklyTeams,
+          monthly: monthlyTeams,
+          yearly: yearlyTeams,
+        },
+        highlights,
+        collective,
+        trends,
+        period: {
+          weekLabel,
+          monthLabel,
+          year,
+        },
+      },
+    };
+  }, [selectedMonth, selectedWeek, yearNumber]);
 
   useEffect(() => {
     let isMounted = true;
-    const fetchData = async () => {
+
+    const loadData = async () => {
       setLoading(true);
       setError("");
       setPartial(false);
 
-      let partialFlag = false;
-
       try {
-        const now = new Date();
-        const year = now.getFullYear();
-        const monthIndex = now.getMonth();
-        const month = monthIndex + 1;
-        const { start: weekStart, end: weekEnd } = getWeekBounds(now);
-        const minggu = formatISO(weekStart);
-
-        const fetchTeams = async () => {
-          try {
-            const res = await axios.get("/teams/all");
-            const arr = Array.isArray(res.data) ? res.data : [];
-            if (arr.length) return arr;
-          } catch (err) {
-            partialFlag = true;
-            if (err?.response?.status === 403) throw err;
-          }
-          try {
-            const res = await axios.get("/teams");
-            const arr = Array.isArray(res.data) ? res.data : [];
-            if (arr.length) return arr;
-          } catch (err) {
-            partialFlag = true;
-            if (err?.response?.status === 403) throw err;
-          }
-          try {
-            const res = await axios.get("/teams/member");
-            return Array.isArray(res.data) ? res.data : [];
-          } catch (err) {
-            partialFlag = true;
-            if (err?.response?.status === 403) throw err;
-          }
-          return [];
-        };
-
-        const fetchAssignments = async () => {
-          try {
-            const res = await axios.get("/penugasan", {
-              params: { bulan: month, tahun: year },
-            });
-            return Array.isArray(res.data) ? res.data : [];
-          } catch (err) {
-            partialFlag = true;
-            if (err?.response?.status === 403) throw err;
-            handleAxiosError(err, "Gagal mengambil data penugasan");
-            return [];
-          }
-        };
-
-        const fetchWeekly = async () => {
-          try {
-            const res = await axios.get("/monitoring/mingguan/all", {
-              params: { minggu },
-            });
-            return Array.isArray(res.data) ? res.data : [];
-          } catch (err) {
-            partialFlag = true;
-            if (err?.response?.status === 403) throw err;
-            handleAxiosError(err, "Gagal mengambil data mingguan");
-            return [];
-          }
-        };
-
-        const fetchMonthly = async () => {
-          try {
-            const res = await axios.get("/monitoring/bulanan/all", {
-              params: { year, bulan: String(month) },
-            });
-            return Array.isArray(res.data) ? res.data : [];
-          } catch (err) {
-            partialFlag = true;
-            if (err?.response?.status === 403) throw err;
-            handleAxiosError(err, "Gagal mengambil data bulanan");
-            return [];
-          }
-        };
-
-        const fetchYearly = async () => {
-          try {
-            const res = await axios.get("/monitoring/bulanan/matrix", {
-              params: { year },
-            });
-            return Array.isArray(res.data) ? res.data : [];
-          } catch (err) {
-            partialFlag = true;
-            if (err?.response?.status === 403) throw err;
-            handleAxiosError(err, "Gagal mengambil data tahunan");
-            return [];
-          }
-        };
-
-        const [teams, assignments, weekly, monthly, yearlyMatrix] =
-          await Promise.all([
-            fetchTeams(),
-            fetchAssignments(),
-            fetchWeekly(),
-            fetchMonthly(),
-            fetchYearly(),
-          ]);
-
-        const { teamMap } = collectTeamMappings(teams);
-        const topActivities = computeTopActivities(assignments);
-        const weeklyTeams = aggregateTeamPerformance(weekly, teamMap);
-        const monthlyTeams = aggregateTeamPerformance(monthly, teamMap);
-        const yearlyTeams = aggregateYearlyPerformance(yearlyMatrix, teamMap);
-        const trends = computeTrends(yearlyMatrix);
-
-        const collectiveWeekly = summarizeTeamList(weeklyTeams);
-        const collectiveMonthly = summarizeTeamList(monthlyTeams);
-        const yearlyProgressValues = trends
-          .map((t) => t.value)
-          .filter((val) => Number.isFinite(val) && val > 0);
-        const collectiveYearlyProgress = yearlyProgressValues.length
-          ? Math.round(
-              yearlyProgressValues.reduce((sum, val) => sum + val, 0) /
-                yearlyProgressValues.length
-            )
-          : 0;
-
-        const highlights = {
-          activeAssignments: assignments.filter(
-            (item) => item?.status !== STATUS.SELESAI_DIKERJAKAN
-          ).length,
-          backlog: assignments.filter((item) => item?.status === STATUS.BELUM)
-            .length,
-          completedThisWeek: collectiveWeekly.selesai,
-          weeklyProgress: collectiveWeekly.progress,
-          monthlyProgress: collectiveMonthly.progress,
-          yearlyProgress: collectiveYearlyProgress,
-        };
-
-        const collective = {
-          weekly: collectiveWeekly,
-          monthly: collectiveMonthly,
-          yearly: {
-            progress: collectiveYearlyProgress,
-            bestTeam: yearlyTeams[0] || null,
-            lowestTeam:
-              yearlyTeams.length > 1
-                ? yearlyTeams[yearlyTeams.length - 1]
-                : null,
-          },
-          insights: buildInsights({
-            topActivities,
-            collectiveWeekly,
-            collectiveMonthly,
-            yearlyTeams,
-          }),
-        };
-
-        if (isMounted) {
-          setData({
-            topActivities,
-            teamPerformance: {
-              weekly: weeklyTeams,
-              monthly: monthlyTeams,
-              yearly: yearlyTeams,
-            },
-            highlights,
-            collective,
-            trends,
-            period: {
-              weekLabel: `${formatDate(weekStart)} - ${formatDate(weekEnd)}`,
-              monthLabel: `${months[monthIndex]} ${year}`,
-              year,
-            },
-          });
-          setPartial(partialFlag);
-        }
+        const result = await fetchDashboardData();
+        if (!isMounted) return;
+        setData(result.payload);
+        setPartial(result.partialFlag);
       } catch (err) {
         if (!isMounted) return;
         setPartial(true);
         if (err?.response?.status === 403) {
-          setError(
-            "Anda tidak memiliki akses untuk melihat dashboard pimpinan."
-          );
+          setError("Anda tidak memiliki akses untuk melihat dashboard pimpinan.");
         } else {
           setError("Gagal memuat data dashboard pimpinan.");
           if (err) handleAxiosError(err, "Gagal memuat dashboard pimpinan");
@@ -927,12 +1203,12 @@ const ManagementDashboard = () => {
       }
     };
 
-    fetchData();
+    loadData();
 
     return () => {
       isMounted = false;
     };
-  }, [user?.id]);
+  }, [fetchDashboardData, user?.id]);
 
   const leadingTeam = useMemo(() => {
     if (!data?.teamPerformance?.weekly?.length) return null;
@@ -997,6 +1273,47 @@ const ManagementDashboard = () => {
               </p>
             </div>
           )}
+        </div>
+        <div className="relative mt-6">
+          <div className="flex flex-wrap items-end gap-6">
+            <div className="flex flex-col gap-2 text-blue-100">
+              <span className="text-xs uppercase tracking-widest">Pekan</span>
+              <select
+                value={selectedWeek}
+                onChange={(event) => setSelectedWeek(event.target.value)}
+                className="min-w-[220px] rounded-xl border border-white/40 bg-white/90 px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-white"
+              >
+                {weekOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col gap-2 text-blue-100">
+              <span className="text-xs uppercase tracking-widest">Bulan</span>
+              <div className="bg-white/10 rounded-xl p-1">
+                <MonthYearPicker
+                  month={selectedMonth}
+                  onMonthChange={handleMonthChange}
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 text-blue-100">
+              <span className="text-xs uppercase tracking-widest">Tahun</span>
+              <select
+                value={yearNumber}
+                onChange={(event) => setSelectedYear(Number(event.target.value))}
+                className="w-28 rounded-xl border border-white/40 bg-white/90 px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-white"
+              >
+                {yearOptions.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
       </section>
 
