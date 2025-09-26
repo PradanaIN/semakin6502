@@ -12,9 +12,10 @@ import {
   Users as UsersIcon,
 } from "lucide-react";
 import Loading from "../../components/Loading";
+import Button from "../../components/ui/Button";
 import { useAuth } from "../auth/useAuth";
 import { handleAxiosError } from "../../utils/alerts";
-import { STATUS } from "../../utils/status";
+import { STATUS, STATUS_LABELS } from "../../utils/status";
 import months from "../../utils/months";
 import formatDate from "../../utils/formatDate";
 import MonthYearPicker from "../../components/ui/MonthYearPicker";
@@ -240,7 +241,7 @@ const computeTrends = (matrixRows) => {
   });
 };
 
-const computeTopActivities = (assignments = []) => {
+const computeTopActivities = (assignments = [], limit) => {
   const map = new Map();
   assignments.forEach((item) => {
     const name =
@@ -265,15 +266,20 @@ const computeTopActivities = (assignments = []) => {
     else entry.belum += 1;
   });
 
-  return Array.from(map.values())
+  const result = Array.from(map.values())
     .map((entry) => ({
       ...entry,
       progress: entry.total
         ? Math.round((entry.selesai / Math.max(entry.total, 1)) * 100)
         : 0,
     }))
-    .sort((a, b) => b.total - a.total || b.progress - a.progress)
-    .slice(0, 5);
+    .sort((a, b) => b.total - a.total || b.progress - a.progress);
+
+  if (Number.isFinite(limit) && limit > 0) {
+    return result.slice(0, limit);
+  }
+
+  return result;
 };
 
 const summarizeTeamList = (list = []) => {
@@ -370,73 +376,245 @@ const HighlightCard = ({
   </div>
 );
 
-const ActivitiesCard = ({ activities }) => (
-  <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-6 space-y-4">
-    <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-      <div>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          Ringkasan Kegiatan Berjalan
-        </h2>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Aktivitas dengan penugasan terbanyak sebagai indikator prioritas
-        </p>
-      </div>
-      <Activity className="w-8 h-8 text-blue-500" />
-    </header>
-    <div className="space-y-4">
-      {activities.length === 0 && (
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Belum ada data kegiatan untuk ditampilkan.
-        </p>
-      )}
-      {activities.map((activity) => (
-        <div
-          key={activity.name}
-          className="p-4 border border-gray-200 dark:border-gray-800 rounded-xl bg-gray-50 dark:bg-gray-800/60"
-        >
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <div>
-              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                {activity.name}
-              </h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {numberFormatter.format(activity.total)} penugasan •{" "}
-                {activity.progress}% selesai
-              </p>
-            </div>
-            <span
-              className={clsx(
-                "text-xs font-semibold px-2.5 py-1 rounded-full",
-                activity.progress >= 85
-                  ? "bg-green-100 text-green-700"
-                  : activity.progress >= 60
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-amber-100 text-amber-700"
-              )}
-            >
-              {activity.progress >= 85
-                ? "Stabil"
-                : activity.progress >= 60
-                ? "Perlu Monitoring"
-                : "Butuh Percepatan"}
-            </span>
-          </div>
-          <div className="w-full h-3 bg-white dark:bg-gray-900 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-blue-500 rounded-full transition-all"
-              style={{ width: `${activity.progress}%` }}
-            />
-          </div>
-          <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-4">
-            <span>Selesai: {numberFormatter.format(activity.selesai)}</span>
-            <span>Sedang: {numberFormatter.format(activity.berjalan)}</span>
-            <span>Belum: {numberFormatter.format(activity.belum)}</span>
-          </div>
+const DEFAULT_ACTIVITY_LIMIT = 5;
+
+const ActivitiesCard = ({ activities }) => {
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [visibleLimit, setVisibleLimit] = useState(DEFAULT_ACTIVITY_LIMIT);
+
+  const filters = useMemo(
+    () => [
+      {
+        id: "all",
+        label: "Semua",
+        predicate: () => true,
+        emptyMessage: "Belum ada data kegiatan untuk ditampilkan.",
+        getMetrics: (activity) => {
+          const progress = activity.progress;
+          const chipTone =
+            progress >= 85
+              ? "bg-green-100 text-green-700"
+              : progress >= 60
+              ? "bg-blue-100 text-blue-700"
+              : "bg-amber-100 text-amber-700";
+          const chipLabel =
+            progress >= 85
+              ? "Stabil"
+              : progress >= 60
+              ? "Perlu Monitoring"
+              : "Butuh Percepatan";
+
+          return {
+            barColor: "bg-blue-500",
+            barValue: progress,
+            chipLabel,
+            chipTone,
+            description: `${numberFormatter.format(activity.total)} penugasan • ${progress}% selesai`,
+            details: [
+              `Selesai: ${numberFormatter.format(activity.selesai)}`,
+              `Sedang: ${numberFormatter.format(activity.berjalan)}`,
+              `Belum: ${numberFormatter.format(activity.belum)}`,
+            ],
+          };
+        },
+      },
+      {
+        id: STATUS.BELUM,
+        label: STATUS_LABELS[STATUS.BELUM] ?? "Belum",
+        predicate: (activity) => activity.belum > 0,
+        emptyMessage: "Tidak ada kegiatan yang belum dimulai.",
+        getMetrics: (activity) => {
+          const portion = activity.total
+            ? Math.round((activity.belum / Math.max(activity.total, 1)) * 100)
+            : 0;
+          return {
+            barColor: "bg-amber-500",
+            barValue: portion,
+            chipLabel: `${numberFormatter.format(activity.belum)} belum dimulai`,
+            chipTone: "bg-amber-100 text-amber-700",
+            description: `${numberFormatter.format(activity.total)} penugasan • ${portion}% belum dimulai`,
+            details: [
+              `Sedang: ${numberFormatter.format(activity.berjalan)}`,
+              `Selesai: ${numberFormatter.format(activity.selesai)}`,
+            ],
+          };
+        },
+      },
+      {
+        id: STATUS.SEDANG_DIKERJAKAN,
+        label: STATUS_LABELS[STATUS.SEDANG_DIKERJAKAN] ?? "Sedang",
+        predicate: (activity) => activity.berjalan > 0,
+        emptyMessage: "Tidak ada kegiatan yang sedang berjalan.",
+        getMetrics: (activity) => {
+          const portion = activity.total
+            ? Math.round((activity.berjalan / Math.max(activity.total, 1)) * 100)
+            : 0;
+          return {
+            barColor: "bg-blue-500",
+            barValue: portion,
+            chipLabel: `${numberFormatter.format(activity.berjalan)} sedang berjalan`,
+            chipTone: "bg-blue-100 text-blue-700",
+            description: `${numberFormatter.format(activity.total)} penugasan • ${portion}% masih berlangsung`,
+            details: [
+              `Selesai: ${numberFormatter.format(activity.selesai)}`,
+              `Belum: ${numberFormatter.format(activity.belum)}`,
+            ],
+          };
+        },
+      },
+      {
+        id: STATUS.SELESAI_DIKERJAKAN,
+        label: STATUS_LABELS[STATUS.SELESAI_DIKERJAKAN] ?? "Selesai",
+        predicate: (activity) => activity.selesai > 0,
+        emptyMessage: "Tidak ada kegiatan yang telah selesai.",
+        getMetrics: (activity) => {
+          const portion = activity.total
+            ? Math.round((activity.selesai / Math.max(activity.total, 1)) * 100)
+            : 0;
+          return {
+            barColor: "bg-green-500",
+            barValue: portion,
+            chipLabel: `${numberFormatter.format(activity.selesai)} selesai`,
+            chipTone: "bg-green-100 text-green-700",
+            description: `${numberFormatter.format(activity.total)} penugasan • ${portion}% telah selesai`,
+            details: [
+              `Sedang: ${numberFormatter.format(activity.berjalan)}`,
+              `Belum: ${numberFormatter.format(activity.belum)}`,
+            ],
+          };
+        },
+      },
+    ],
+    []
+  );
+
+  const activeFilter = useMemo(
+    () => filters.find((item) => item.id === statusFilter) ?? filters[0],
+    [filters, statusFilter]
+  );
+
+  const filteredActivities = useMemo(() => {
+    const predicate = activeFilter?.predicate ?? (() => true);
+    const source = Array.isArray(activities) ? activities : [];
+    return source.filter(predicate);
+  }, [activities, activeFilter]);
+
+  const visibleActivities = useMemo(() => {
+    if (!Number.isFinite(visibleLimit)) return filteredActivities;
+    return filteredActivities.slice(0, Math.max(visibleLimit, 0));
+  }, [filteredActivities, visibleLimit]);
+
+  const canToggleLimit = filteredActivities.length > DEFAULT_ACTIVITY_LIMIT;
+  const isExpanded = !Number.isFinite(visibleLimit);
+  const emptyMessage = activeFilter?.emptyMessage;
+
+  const handleFilterChange = (id) => {
+    setStatusFilter(id);
+    setVisibleLimit(DEFAULT_ACTIVITY_LIMIT);
+  };
+
+  const toggleLimit = () => {
+    setVisibleLimit((prev) =>
+      Number.isFinite(prev) ? Number.POSITIVE_INFINITY : DEFAULT_ACTIVITY_LIMIT
+    );
+  };
+
+  return (
+    <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm p-6 space-y-4">
+      <header className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="space-y-1">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Ringkasan Kegiatan Berjalan
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Aktivitas dengan penugasan terbanyak sebagai indikator prioritas
+          </p>
         </div>
-      ))}
-    </div>
-  </section>
-);
+        <Activity className="w-8 h-8 text-blue-500" />
+      </header>
+      <div className="flex flex-wrap items-center gap-2">
+        {filters.map((filter) => (
+          <Button
+            key={filter.id}
+            variant={statusFilter === filter.id ? "primary" : "secondary"}
+            className={clsx(
+              "text-sm px-3 py-1.5",
+              statusFilter === filter.id
+                ? "shadow"
+                : "bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+            )}
+            onClick={() => handleFilterChange(filter.id)}
+          >
+            {filter.label}
+          </Button>
+        ))}
+      </div>
+      <div className="space-y-4">
+        {filteredActivities.length === 0 && (
+          <p className="text-sm text-gray-500 dark:text-gray-400">{emptyMessage}</p>
+        )}
+        {visibleActivities.map((activity) => {
+          const metrics = activeFilter?.getMetrics(activity);
+          const barWidth = Math.max(
+            0,
+            Math.min(metrics?.barValue ?? 0, 100)
+          );
+
+          return (
+            <div
+              key={activity.name}
+              className="p-4 border border-gray-200 dark:border-gray-800 rounded-xl bg-gray-50 dark:bg-gray-800/60"
+            >
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {activity.name}
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {metrics?.description}
+                  </p>
+                </div>
+                {metrics?.chipLabel && (
+                  <span
+                    className={clsx(
+                      "text-xs font-semibold px-2.5 py-1 rounded-full",
+                      metrics?.chipTone
+                    )}
+                  >
+                    {metrics.chipLabel}
+                  </span>
+                )}
+              </div>
+              <div className="w-full h-3 bg-white dark:bg-gray-900 rounded-full overflow-hidden">
+                <div
+                  className={clsx(
+                    "h-full rounded-full transition-all",
+                    metrics?.barColor ?? "bg-blue-500"
+                  )}
+                  style={{ width: `${barWidth}%` }}
+                />
+              </div>
+              {!!metrics?.details?.length && (
+                <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 flex flex-wrap gap-4">
+                  {metrics.details.map((detail) => (
+                    <span key={detail}>{detail}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {canToggleLimit && (
+        <div className="flex justify-end">
+          <Button variant="icon" onClick={toggleLimit}>
+            {isExpanded ? "Lihat lebih sedikit" : "Lihat semua"}
+          </Button>
+        </div>
+      )}
+    </section>
+  );
+};
 
 const TeamPerformanceCard = ({ data, period }) => {
   const [tab, setTab] = useState("weekly");
