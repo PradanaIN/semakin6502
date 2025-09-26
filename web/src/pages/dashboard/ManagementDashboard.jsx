@@ -12,12 +12,23 @@ import {
   Users as UsersIcon,
 } from "lucide-react";
 import Loading from "../../components/Loading";
+import Skeleton from "../../components/ui/Skeleton";
 import Button from "../../components/ui/Button";
 import { useAuth } from "../auth/useAuth";
 import { handleAxiosError } from "../../utils/alerts";
 import { STATUS, STATUS_LABELS } from "../../utils/status";
 import months from "../../utils/months";
 import formatDate from "../../utils/formatDate";
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import MonthYearPicker from "../../components/ui/MonthYearPicker";
 
 const FALLBACK_TEAM_KEY = "__others__";
@@ -786,6 +797,11 @@ const CollectivePerformanceCard = ({ collective, period }) => (
 
 const TrendsCard = ({ trends }) => {
   const lastSix = trends.slice(-6);
+  const chartData = lastSix.map((item) => ({
+    label: item.label,
+    shortLabel: item.label.slice(0, 3),
+    value: item.value,
+  }));
   const last = lastSix[lastSix.length - 1];
   const prev = lastSix[lastSix.length - 2];
   const delta = last && prev ? last.value - prev.value : null;
@@ -808,31 +824,71 @@ const TrendsCard = ({ trends }) => {
           </p>
         </div>
       </header>
-      <div className="h-44 flex items-end gap-3">
-        {lastSix.length === 0 && (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Belum ada data tren yang dapat ditampilkan.
-          </p>
-        )}
-        {lastSix.map((item) => (
-          <div
-            key={item.label}
-            className="flex-1 flex flex-col items-center gap-1"
-          >
-            <div className="relative w-full max-w-[32px] h-32 bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden">
-              <div
-                className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-blue-600 to-blue-400"
-                style={{ height: `${Math.min(item.value, 100)}%` }}
-              />
-            </div>
-            <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
-              {item.label.slice(0, 3)}
-            </span>
-            <span className="text-[10px] text-gray-500 dark:text-gray-400">
-              {item.value}%
-            </span>
+      <div className="h-64 w-full">
+        {chartData.length > 0 ? (
+          <div className="h-full" data-testid="trends-chart">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={chartData}
+                margin={{ top: 12, right: 16, bottom: 8, left: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis
+                  dataKey="shortLabel"
+                  tick={{ fill: "#6b7280", fontSize: 12 }}
+                  axisLine={{ stroke: "#d1d5db" }}
+                  tickLine={{ stroke: "#d1d5db" }}
+                />
+                <YAxis
+                  tickFormatter={(value) => `${value}%`}
+                  domain={[0, 100]}
+                  allowDecimals={false}
+                  tick={{ fill: "#6b7280", fontSize: 12 }}
+                  axisLine={{ stroke: "#d1d5db" }}
+                  tickLine={{ stroke: "#d1d5db" }}
+                />
+                <Tooltip
+                  labelFormatter={(value) =>
+                    chartData.find((item) => item.shortLabel === value)?.label ??
+                    value
+                  }
+                  formatter={(value) => [`${value}%`, "Progress"]}
+                  contentStyle={{
+                    borderRadius: "0.75rem",
+                    borderColor: "#e5e7eb",
+                    boxShadow:
+                      "0 10px 30px rgba(15, 23, 42, 0.08), 0 4px 6px rgba(15, 23, 42, 0.06)",
+                  }}
+                />
+                <Legend
+                  verticalAlign="top"
+                  align="right"
+                  wrapperStyle={{ paddingBottom: 12 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  name="Progress"
+                  stroke="#2563eb"
+                  strokeWidth={3}
+                  dot={{ strokeWidth: 2, r: 5, fill: "#2563eb" }}
+                  activeDot={{ r: 7 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
-        ))}
+        ) : (
+          <div
+            className="flex h-full flex-col items-center justify-center gap-3"
+            data-testid="trends-skeleton"
+          >
+            <Skeleton className="h-12 w-3/4 max-w-xs" />
+            <Skeleton className="h-40 w-full" />
+            <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+              Belum ada data tren yang dapat ditampilkan.
+            </p>
+          </div>
+        )}
       </div>
       <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-300">
         <span>

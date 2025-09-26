@@ -15,6 +15,27 @@ jest.mock('../pages/dashboard/components/MonitoringTabs', () => {
   const DailyOverview = require('../pages/dashboard/components/DailyOverview').default;
   return ({ dailyData }) => <DailyOverview data={dailyData} />;
 });
+jest.mock('recharts', () => {
+  // eslint-disable-next-line no-undef
+  // eslint-disable-next-line no-unused-vars
+  const React = require('react');
+  const createElement = (role) => ({ children, ...props }) => (
+    <div data-mock-role={role} {...props}>
+      {children}
+    </div>
+  );
+
+  return {
+    ResponsiveContainer: createElement('ResponsiveContainer'),
+    LineChart: createElement('LineChart'),
+    Line: () => null,
+    CartesianGrid: () => null,
+    Tooltip: () => null,
+    Legend: () => null,
+    XAxis: () => null,
+    YAxis: () => null,
+  };
+});
 
 const mockedUseAuth = useAuth;
 
@@ -128,5 +149,36 @@ test('admin sees strategic management dashboard', async () => {
 
   expect(await screen.findByText(/Dashboard Strategis/i)).toBeInTheDocument();
   expect(await screen.findByText(/Project Strategis/)).toBeInTheDocument();
+  expect(await screen.findByTestId('trends-chart')).toBeInTheDocument();
+});
+
+test('shows skeleton placeholder when trend data is unavailable', async () => {
+  mockedUseAuth.mockReturnValue({ user: { role: 'admin', nama: 'Admin' } });
+  axios.get.mockImplementation((url) => {
+    if (url === '/teams/all') {
+      return Promise.resolve({ data: [] });
+    }
+    if (url === '/penugasan') {
+      return Promise.resolve({ data: [] });
+    }
+    if (url === '/monitoring/mingguan/all') {
+      return Promise.resolve({ data: [] });
+    }
+    if (url === '/monitoring/bulanan/all') {
+      return Promise.resolve({ data: [] });
+    }
+    if (url === '/monitoring/bulanan/matrix') {
+      return Promise.resolve({ data: [] });
+    }
+    return Promise.resolve({ data: [] });
+  });
+
+  render(
+    <MemoryRouter>
+      <Dashboard />
+    </MemoryRouter>
+  );
+
+  expect(await screen.findByTestId('trends-skeleton')).toBeInTheDocument();
 });
 
