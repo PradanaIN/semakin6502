@@ -29,7 +29,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import MonthYearPicker from "../../components/ui/MonthYearPicker";
 
 const FALLBACK_TEAM_KEY = "__others__";
 
@@ -1273,47 +1272,6 @@ const ManagementDashboard = () => {
               </p>
             </div>
           )}
-        </div>
-        <div className="relative mt-6">
-          <div className="flex flex-wrap items-end gap-6">
-            <div className="flex flex-col gap-2 text-blue-100">
-              <span className="text-xs uppercase tracking-widest">Pekan</span>
-              <select
-                value={selectedWeek}
-                onChange={(event) => setSelectedWeek(event.target.value)}
-                className="min-w-[220px] rounded-xl border border-white/40 bg-white/90 px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-white"
-              >
-                {weekOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-col gap-2 text-blue-100">
-              <span className="text-xs uppercase tracking-widest">Bulan</span>
-              <div className="bg-white/10 rounded-xl p-1">
-                <MonthYearPicker
-                  month={selectedMonth}
-                  onMonthChange={handleMonthChange}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-2 text-blue-100">
-              <span className="text-xs uppercase tracking-widest">Tahun</span>
-              <select
-                value={yearNumber}
-                onChange={(event) => setSelectedYear(Number(event.target.value))}
-                className="w-28 rounded-xl border border-white/40 bg-white/90 px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-white"
-              >
-                {yearOptions.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
         </div>
       </section>
 
